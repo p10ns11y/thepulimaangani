@@ -654,14 +654,14 @@ fn check_venpaa_multiline(lines: &[Line]) -> Option<String> {
     }
 }
 
-// Check if Venpaavinam (2-line Venbaa variant)
+// Check if multi-line Venbaa (2-line Venbaa)
 fn check_venpaavinam(
     lines: &[Line],
     total_bonds: usize,
     kali_bonds: usize,
     ven_bonds: usize,
 ) -> Option<String> {
-    // Venpaavinam typically has 2 lines with 4 + 3 feet pattern
+    // Multi-line Venbaa typically has 2 lines with 4 + 3 feet pattern
     if lines.len() != 2 {
         return None;
     }
@@ -686,7 +686,7 @@ fn check_venpaavinam(
 
     // Basic bonding check
     if total_bonds > 0 {
-        Some("வெண்பாவினம் (Venpaavinam)".to_string())
+        Some("வெண்பா (Venpaa)".to_string())
     } else {
         None
     }
@@ -949,7 +949,7 @@ mod tests {
         let parsed: serde_json::Value = serde_json::from_str(&result).unwrap();
 
         assert_eq!(parsed["lines"].as_array().unwrap().len(), 2);
-        assert!(parsed["metre_type"].as_str().unwrap().contains("வெண்பாவினம்"));
+        assert!(parsed["metre_type"].as_str().unwrap().contains("வெண்பா"));
     }
 
     #[test]
@@ -964,6 +964,37 @@ mod tests {
             .as_str()
             .unwrap()
             .contains("kaliviru_tta_m"));
+    }
+
+    #[test]
+    fn test_debug_venpaa_2line() {
+        let text = "முற்ற உணர்ந்தானை ஏத்தி மொழிகுவன்\nகுற்றமொன்று இல்லா அறம்";
+
+        let result = parse_poem(text);
+        let parsed: serde_json::Value = serde_json::from_str(&result).unwrap();
+
+        println!("=== 2-LINE VENPAA DEBUG ===");
+        println!("Text: {}", text);
+        println!("Lines: {}", parsed["lines"].as_array().unwrap().len());
+        println!("Metre type: {}", parsed["metre_type"].as_str().unwrap());
+
+        // Check line structure
+        for (i, line) in parsed["lines"].as_array().unwrap().iter().enumerate() {
+            let feet = line["feet"].as_array().unwrap();
+            println!("Line {}: {} feet", i + 1, feet.len());
+            for (j, foot) in feet.iter().enumerate() {
+                let syllables = foot["syllables"].as_array().unwrap();
+                println!(
+                    "  Foot {}: {} ({})",
+                    j + 1,
+                    foot["foot_type"],
+                    syllables.len()
+                );
+            }
+        }
+
+        assert_eq!(parsed["lines"].as_array().unwrap().len(), 2);
+        // This should be venpaa, not venpaavinam
     }
 
     #[test]
