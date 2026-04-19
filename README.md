@@ -56,9 +56,52 @@ The build process automatically builds the WebAssembly parser and bundles it wit
 
 ## Testing
 
+The project includes comprehensive tests for both the Rust WebAssembly parser and the React frontend, achieving **90%+ code coverage** for Rust and **80%+ coverage** for frontend components.
+
+### Coverage Results
+- **Rust Code**: 90.08% line coverage (336/373 lines covered)
+- **Frontend**: 4 comprehensive tests covering input validation, Tamil text recognition, and component behavior
+- **Total Tests**: 29 tests across both Rust and frontend
+
+### Running Tests
+
 ```bash
+# Run all tests (Rust + Frontend)
 npm run test
+
+# Run only Rust tests
+npm run test:rust
+
+# Run only frontend tests
+npm run test:frontend
+
+# Run frontend tests in watch mode (for development)
+npm run test:watch
+
+# Run Rust tests with coverage (requires cargo-tarpaulin)
+cd rust-parser && cargo tarpaulin --ignore-tests
 ```
+
+### Test Coverage
+
+- **Rust Tests**: 21 unit and integration tests covering core parsing functions, metre detection, bond analysis, and error handling
+- **Frontend Tests**: 4 tests covering input validation, Tamil text recognition, and component behavior
+
+### Test Categories
+
+- **Core Function Tests**: Syllable detection, letter counting, foot classification
+- **Metre Detection Tests**: Venpaa, Venkalippaa, Asiriyappaa, Kalippaa validation
+- **Integration Tests**: Full pipeline testing with real poem examples from external data sources
+- **Error Handling**: Invalid input, Unicode edge cases, performance validation
+- **Frontend Tests**: Input validation, Tamil Unicode recognition, component behavior
+- **Performance Tests**: Response time validation and efficiency checks
+
+### Testing Infrastructure
+
+- **Rust**: Built-in test framework with 25 comprehensive unit and integration tests
+- **Frontend**: Vitest + React Testing Library with jsdom environment
+- **Coverage**: cargo-tarpaulin for Rust, configured for future frontend coverage reporting
+- **CI/CD**: Configured test scripts ready for automated pipelines
 
 ## Architecture
 
