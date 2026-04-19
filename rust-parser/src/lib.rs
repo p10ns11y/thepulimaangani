@@ -1051,6 +1051,37 @@ mod tests {
     }
 
     #[test]
+    fn test_debug_venpaa_2line() {
+        let text = "முற்ற உணர்ந்தானை ஏத்தி மொழிகுவன்\nகுற்றமொன்று இல்லா அறம்";
+
+        let result = parse_poem(text);
+        let parsed: serde_json::Value = serde_json::from_str(&result).unwrap();
+
+        println!("=== 2-LINE VENPAA DEBUG ===");
+        println!("Text: {}", text);
+        println!("Lines: {}", parsed["lines"].as_array().unwrap().len());
+        println!("Metre type: {}", parsed["metre_type"].as_str().unwrap());
+
+        // Check line structure
+        for (i, line) in parsed["lines"].as_array().unwrap().iter().enumerate() {
+            let feet = line["feet"].as_array().unwrap();
+            println!("Line {}: {} feet", i + 1, feet.len());
+            for (j, foot) in feet.iter().enumerate() {
+                let syllables = foot["syllables"].as_array().unwrap();
+                println!(
+                    "  Foot {}: {} ({})",
+                    j + 1,
+                    foot["foot_type"],
+                    syllables.len()
+                );
+            }
+        }
+
+        assert_eq!(parsed["lines"].as_array().unwrap().len(), 2);
+        // This should be venpaa, not venpaavinam
+    }
+
+    #[test]
     fn test_wordlist_validation() {
         // Test some examples from wordlist - syllable counts may differ from traditional
         let test_cases = vec![("அ", "mA", 1), ("அக", "viLa_m", 2)];
