@@ -8,11 +8,11 @@
   "scripts": {
     "dev": "npm run build:wasm  && vite dev --port 3000",
     "build": "npm run build:wasm && vite build",
-    "build:wasm": "cd rust-parser && wasm-pack build --target web --out-dir pkg && cd .. && cp rust-parser/pkg/* src/wasm/",
+    "build:wasm": "cd tamil-seiyul-alagi && wasm-pack build --target web --out-dir pkg && cd .. && cp rust-parser/pkg/* src/wasm/",
     "build:only": "vite build",
     "preview": "vite preview",
     "test": "npm run test:rust && npm run test:frontend",
-    "test:rust": "cd rust-parser && cargo test",
+    "test:rust": "cd tamil-seiyul-alagi  && cargo test",
     "test:frontend": "vitest run",
     "test:watch": "vitest",
     "lint": "echo 'No linter configured yet'",
