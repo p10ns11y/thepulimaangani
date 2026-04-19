@@ -625,6 +625,9 @@ fn get_metre_type(
     if let Some(metre) = check_venpaavinam(lines, total_bonds, kali_bonds, ven_bonds) {
         return metre;
     }
+    if let Some(metre) = check_kaliviruttam(lines, total_bonds, kali_bonds, ven_bonds) {
+        return metre;
+    }
     if let Some(metre) = check_asiriyappaa(lines, total_bonds, kali_bonds, ven_bonds) {
         return metre;
     }
@@ -634,7 +637,7 @@ fn get_metre_type(
     if let Some(metre) = check_venkalippaa(lines, total_bonds, kali_bonds, ven_bonds) {
         return metre;
     }
-    // TODO: add more checks like Virutham, Vanjippaa, etc.
+    // TODO: add more checks like Vanjippaa, etc.
     "Unknown".to_string()
 }
 
@@ -684,6 +687,45 @@ fn check_venpaavinam(
     // Basic bonding check
     if total_bonds > 0 {
         Some("வெண்பாவினம் (Venpaavinam)".to_string())
+    } else {
+        None
+    }
+}
+
+// Check if Kaliviruttam (கலிவிருத்தம்)
+fn check_kaliviruttam(
+    lines: &[Line],
+    total_bonds: usize,
+    kali_bonds: usize,
+    ven_bonds: usize,
+) -> Option<String> {
+    // Kaliviruttam typically has 4 lines with 4 feet each (4×4 pattern)
+    if lines.len() != 4 {
+        return None;
+    }
+
+    // Each line must have exactly 4 feet
+    for line in lines {
+        if line.feet.len() != 4 {
+            return None;
+        }
+    }
+
+    // Allow some "unknown" feet for complex patterns (up to 6 total for kaliviruttam)
+    let unknown_count = lines
+        .iter()
+        .flat_map(|line| &line.feet)
+        .filter(|foot| foot.foot_type == "unknown")
+        .count();
+
+    if unknown_count > 6 {
+        return None;
+    }
+
+    // Kaliviruttam requires some bonding but is more flexible than asiriyappaa
+
+    if total_bonds > 0 {
+        Some("kaliviru_tta_m".to_string())
     } else {
         None
     }
@@ -908,6 +950,20 @@ mod tests {
 
         assert_eq!(parsed["lines"].as_array().unwrap().len(), 2);
         assert!(parsed["metre_type"].as_str().unwrap().contains("வெண்பாவினம்"));
+    }
+
+    #[test]
+    fn test_parse_poem_kaliviruttam() {
+        let text = "பேணநோற் றதுமனைப் பிறவி பெண்மைபோல்\nநாணநோற் றுயர்ந்தது நங்கை தோன்றலான்\nமாணநோற் றீண்டிவள் இருந்த வாறெலாம்\nகாணநோற் றிலனவன் கமலக் கண்களால்";
+
+        let result = parse_poem(text);
+        let parsed: serde_json::Value = serde_json::from_str(&result).unwrap();
+
+        assert_eq!(parsed["lines"].as_array().unwrap().len(), 4);
+        assert!(parsed["metre_type"]
+            .as_str()
+            .unwrap()
+            .contains("kaliviru_tta_m"));
     }
 
     #[test]
@@ -1663,6 +1719,9 @@ mod tests {
         ];
 
         let result = get_metre_type(&asiriyappaa_lines, 12, 8, 4);
-        assert!(result.contains("Aciriya") || result == "Unknown");
+        // With kaliviruttam checked first, it will match 4×4 pattern before asiriyappaa
+        assert!(
+            result.contains("kaliviru_tta_m") || result.contains("Aciriya") || result == "Unknown"
+        );
     }
 }
