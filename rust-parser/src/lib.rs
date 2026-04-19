@@ -731,6 +731,45 @@ fn check_kaliviruttam(
     }
 }
 
+// Check if Kaliviruttam (கலிவிருத்தம்)
+fn check_kaliviruttam(
+    lines: &[Line],
+    total_bonds: usize,
+    kali_bonds: usize,
+    ven_bonds: usize,
+) -> Option<String> {
+    // Kaliviruttam typically has 4 lines with 4 feet each (4×4 pattern)
+    if lines.len() != 4 {
+        return None;
+    }
+
+    // Each line must have exactly 4 feet
+    for line in lines {
+        if line.feet.len() != 4 {
+            return None;
+        }
+    }
+
+    // Allow some "unknown" feet for complex patterns (up to 6 total for kaliviruttam)
+    let unknown_count = lines
+        .iter()
+        .flat_map(|line| &line.feet)
+        .filter(|foot| foot.foot_type == "unknown")
+        .count();
+
+    if unknown_count > 6 {
+        return None;
+    }
+
+    // Kaliviruttam requires some bonding but is more flexible than asiriyappaa
+
+    if total_bonds > 0 {
+        Some("kaliviru_tta_m".to_string())
+    } else {
+        None
+    }
+}
+
 // Check if Venkalippaa
 fn check_venkalippaa(
     lines: &[Line],
@@ -995,6 +1034,20 @@ mod tests {
 
         assert_eq!(parsed["lines"].as_array().unwrap().len(), 2);
         // This should be venpaa, not venpaavinam
+    }
+
+    #[test]
+    fn test_parse_poem_kaliviruttam() {
+        let text = "பேணநோற் றதுமனைப் பிறவி பெண்மைபோல்\nநாணநோற் றுயர்ந்தது நங்கை தோன்றலான்\nமாணநோற் றீண்டிவள் இருந்த வாறெலாம்\nகாணநோற் றிலனவன் கமலக் கண்களால்";
+
+        let result = parse_poem(text);
+        let parsed: serde_json::Value = serde_json::from_str(&result).unwrap();
+
+        assert_eq!(parsed["lines"].as_array().unwrap().len(), 4);
+        assert!(parsed["metre_type"]
+            .as_str()
+            .unwrap()
+            .contains("kaliviru_tta_m"));
     }
 
     #[test]
