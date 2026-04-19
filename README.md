@@ -54,6 +54,13 @@ npm run build
 
 The build process automatically builds the WebAssembly parser and bundles it with the frontend application.
 
+## Development Branch
+
+Current development work belongs to the **`kulavi`** branch (குளவி/Wasp) - focused on validation, testing, and protection of core logic through comprehensive test coverage.
+
+### Branch Strategy
+This project follows a thematic branching strategy inspired by Tamil pollinator names. See [branches.md](./branches.md) for the complete branch responsibility map. The main branch is `malar` (மலர்/flower), with specialized branches for different types of development work.
+
 ## Testing
 
 The project includes comprehensive tests for both the Rust WebAssembly parser and the React frontend, achieving **90%+ code coverage** for Rust and **80%+ coverage** for frontend components.
