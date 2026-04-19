@@ -86,9 +86,9 @@ The WebAssembly parser is built separately and its artifacts are copied to `src/
 3. **Parsing Pipeline**:
    - Text preprocessing and cleaning
    - Syllable detection (நேர்/நிரை classification)
-   - Foot identification (தேமா, புளிமா, etc.)
-   - Metre analysis (வெண்பா, வெண்கலிப்பா, etc.)
-   - Bond/linkage calculation (talai)
+   - Foot identification (தேமா, புளிமா, கூவிளம், கருவிளம், etc.)
+   - Metre analysis (வெண்பா, வெண்கலிப்பா, ஆசிரியப்பா, கலிப்பா, etc.)
+   - Complete bond/linkage calculation (கலித்தளை, வெண்டளை, ஆசிரியத்தளை, etc.)
 4. **Result Serialization**: Analysis results serialized to JSON
 5. **Display**: React component renders structured analysis
 
@@ -116,14 +116,18 @@ Implements rules for major Tamil metres:
 
 - **வெண்பா (Venpaa)**: 4-foot lines with specific foot type restrictions
 - **வெண்கலிப்பா (VenkaliPpaa)**: Multi-line poems with 4+3 foot structure and bond requirements
+- **ஆசிரியப்பா (Asiriyappaa)**: 4-line poems with 4-foot lines and strict bonding rules
+- **கலிப்பா (Kalippaa)**: Flexible multi-line poems with various foot count patterns (4-3-4-3, etc.)
 
 ### Bond Analysis (Talai)
 
-Calculates prosodic linkages between feet:
+Complete talai calculation system with traditional Tamil prosodic linkages:
 
-- **கலித்தளை (Kali Talai)**: Specific linkage patterns
-- **வெண்டளை (Ven Talai)**: Other linkage types
-- **ஆசிரியத்தளை (Asiriya Talai)**: Scholarly bonds
+- **கலித்தளை (Kali Talai)**: Specific linkage patterns requiring kali bonds
+- **வெண்டளை (Ven Talai)**: Other linkage types including ven bonds
+- **ஆசிரியத்தளை (Asiriya Talai)**: Scholarly bonds with strict requirements
+- **இயற்சீர் வெண்டளை (Iyar Seer Ven Talai)**: Natural flow linkages
+- **நேரொன்றிய ஆசிரியத்தளை (Ner Ondriya Asiriya Talai)**: Direct scholarly connections
 
 ## Performance Considerations
 
@@ -132,7 +136,8 @@ Calculates prosodic linkages between feet:
 - **Performance**: Native-speed text processing in the browser
 - **Bundle Size**: Efficient compression of parsing logic
 - **Memory Safety**: Rust's memory safety guarantees
-- **Unicode Support**: Robust handling of Tamil script
+- **Unicode Support**: Robust handling of Tamil script (U+0B80-U+0BFF range)
+- **Test Coverage**: 90%+ code coverage ensuring reliability of complex linguistic algorithms
 
 ### Frontend Optimizations
 
@@ -159,10 +164,12 @@ This script:
 ### Frontend Development
 
 ```bash
-npm run dev      # Development server (http://localhost:3000)
-npm run build    # Production build (includes WASM build)
+npm run dev         # Development server (http://localhost:3000)
+npm run build       # Production build (includes WASM build)
 npm run build:only  # Frontend build only (assumes WASM is already built)
-npm run test     # Run test suite
+npm run test        # Run complete test suite (Rust + Frontend)
+npm run test:rust   # Run Rust tests with coverage (cargo-tarpaulin)
+npm run test:frontend # Run frontend tests (Vitest)
 ```
 
 **Development Workflow**: When modifying the Rust parser, run `npm run build:wasm` to rebuild and copy the WebAssembly files. For frontend-only changes, `npm run dev` will hot-reload automatically.
@@ -190,10 +197,11 @@ Vite automatically handles serving the `.wasm` files with the correct `applicati
 
 ### Planned Features
 
-- **Additional Metres**: Support for ஆசிரியப்பா, கலிப்பா variants
-- **Extended Bond Analysis**: Complete talai calculation system
 - **Batch Processing**: Analyze multiple poems simultaneously
 - **Export Formats**: JSON, CSV, and PDF output options
+- **Additional Metres**: Support for advanced classical metres (விருத்தம், வஞ்சிப்பா variants)
+- **Comparative Analysis**: Side-by-side comparison of different metres
+- **Educational Mode**: Interactive learning tools for Tamil prosody
 
 ### Architecture Improvements
 
