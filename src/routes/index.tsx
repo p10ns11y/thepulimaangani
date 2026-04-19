@@ -3,6 +3,30 @@ import { useState } from 'react'
 
 export const Route = createFileRoute('/')({ component: App })
 
+// Mapping functions for user-friendly display
+const getLineClassDisplay = (lineClass: string): string => {
+  const classMap: { [key: string]: string } = {
+    'kuRaLaTi': 'குறளடி',
+    'ci_ntaTi': 'சிந்தடி',
+    'taVi_cco_l': 'தவிச்சொல்',
+    '_aLavaTi': 'அளவடி',
+    'neTilaTi': 'நெடிலடி'
+  }
+  return classMap[lineClass] || lineClass
+}
+
+const getFootTypeDisplay = (footType: string): string => {
+  const footMap: { [key: string]: string } = {
+    'tEmA': 'தேமா',
+    'puLimA': 'புளிமா',
+    'kUviLa_m': 'கூவிளம்',
+    'karuviLa_m': 'கருவிளம்',
+    'mA': 'மா',
+    'viLa_m': 'விளம்'
+  }
+  return footMap[footType] || footType
+}
+
 function App() {
   const [poemText, setPoemText] = useState('')
   const [result, setResult] = useState<string | null>(null)
@@ -147,64 +171,69 @@ function App() {
                         <p className="text-lg font-tamil text-[var(--sea-ink)]">{data.original_text}</p>
                       </div>
 
-                      <div className="p-4 bg-[var(--surface)] rounded-lg">
-                        <h3 className="font-medium text-[var(--sea-ink)] mb-3">Summary</h3>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                          <div>
-                            <span className="text-[var(--sea-ink-soft)]">Lines:</span>
-                            <span className="ml-2 font-medium text-[var(--sea-ink)]">{data.lines.length}</span>
-                          </div>
-                          <div>
-                            <span className="text-[var(--sea-ink-soft)]">Feet:</span>
-                            <span className="ml-2 font-medium text-[var(--sea-ink)]">{data.lines.reduce((sum: number, line: any) => sum + line.feet.length, 0)}</span>
-                          </div>
-                          <div>
-                            <span className="text-[var(--sea-ink-soft)]">Syllables:</span>
-                            <span className="ml-2 font-medium text-[var(--sea-ink)]">{data.lines.reduce((sum: number, line: any) => sum + line.feet.reduce((s: number, foot: any) => s + foot.syllables.length, 0), 0)}</span>
-                          </div>
-                          <div>
-                            <span className="text-[var(--sea-ink-soft)]">Bonds:</span>
-                            <span className="ml-2 font-medium text-[var(--sea-ink)]">{data.word_bond.match(/Total bonds: (\d+)/)?.[1] || 'N/A'}</span>
-                          </div>
-                        </div>
-                      </div>
+                       <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
+                         <h3 className="font-medium text-gray-900 mb-3">Analysis Summary</h3>
+                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                           <div className="bg-gray-50 p-3 rounded">
+                             <span className="text-gray-600">Lines:</span>
+                             <span className="ml-2 font-medium text-gray-900">{data.lines.length}</span>
+                           </div>
+                           <div className="bg-gray-50 p-3 rounded">
+                             <span className="text-gray-600">Feet:</span>
+                             <span className="ml-2 font-medium text-gray-900">{data.lines.reduce((sum: number, line: any) => sum + line.feet.length, 0)}</span>
+                           </div>
+                           <div className="bg-gray-50 p-3 rounded">
+                             <span className="text-gray-600">Syllables:</span>
+                             <span className="ml-2 font-medium text-gray-900">{data.lines.reduce((sum: number, line: any) => sum + line.feet.reduce((s: number, foot: any) => s + foot.syllables.length, 0), 0)}</span>
+                           </div>
+                           <div className="bg-gray-50 p-3 rounded">
+                             <span className="text-gray-600">Bonds:</span>
+                             <span className="ml-2 font-medium text-gray-900">{data.word_bond.match(/Total bonds: (\d+)/)?.[1] || 'N/A'}</span>
+                           </div>
+                         </div>
+                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div className="p-4 bg-[var(--surface)] rounded-lg">
-                          <h4 className="font-medium text-[var(--sea-ink)] mb-1">Metre Type</h4>
-                          <p className="text-[var(--sea-ink)]">{data.metre_type}</p>
-                        </div>
-                        <div className="p-4 bg-[var(--surface)] rounded-lg">
-                          <h4 className="font-medium text-[var(--sea-ink)] mb-1">Vowels</h4>
-                          <p className="text-[var(--sea-ink)]">{data.letter_count.vowel}</p>
-                        </div>
-                        <div className="p-4 bg-[var(--surface)] rounded-lg">
-                          <h4 className="font-medium text-[var(--sea-ink)] mb-1">Consonants</h4>
-                          <p className="text-[var(--sea-ink)]">{data.letter_count.consonant}</p>
-                        </div>
-                        <div className="p-4 bg-[var(--surface)] rounded-lg">
-                          <h4 className="font-medium text-[var(--sea-ink)] mb-1">Vikalpa</h4>
-                          <p className="text-[var(--sea-ink)]">{data.vikalpa_count}</p>
-                        </div>
-                      </div>
+                       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                         <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
+                           <h4 className="font-medium text-gray-900 mb-1">Metre Type</h4>
+                           <p className="text-gray-700 font-medium">{data.metre_type}</p>
+                         </div>
+                         <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
+                           <h4 className="font-medium text-gray-900 mb-1">Vowels</h4>
+                           <p className="text-gray-700 font-medium">{data.letter_count.vowel}</p>
+                         </div>
+                         <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
+                           <h4 className="font-medium text-gray-900 mb-1">Consonants</h4>
+                           <p className="text-gray-700 font-medium">{data.letter_count.consonant}</p>
+                         </div>
+                         <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
+                           <h4 className="font-medium text-gray-900 mb-1">Vikalpa</h4>
+                           <p className="text-gray-700 font-medium">{data.vikalpa_count}</p>
+                         </div>
+                       </div>
 
-                      <div>
-                        <h3 className="font-medium text-[var(--sea-ink)] mb-4">Prosodic Structure</h3>
-                        <div className="space-y-4">
-                          {data.lines.map((line: any, i: number) => (
-                            <div key={i} className="p-4 bg-[var(--surface)] rounded-lg">
-                              <h4 className="font-medium text-[var(--sea-ink)] mb-2">Line {i+1} - {line.line_class}</h4>
-                              <div className="space-y-2">
-                                {line.feet.map((foot: any, j: number) => (
-                                  <div key={j} className="ml-4 p-3 bg-white rounded border border-[var(--line)]">
-                                    <div className="font-medium text-[var(--sea-ink)] mb-1">Foot {j+1} - {foot.foot_type}</div>
-                                    <div className="flex flex-wrap gap-2">
-                                      {foot.syllables.map((syl: any, k: number) => (
-                                        <span key={k} className="inline-flex items-center px-2 py-1 bg-[var(--foam)] text-[var(--sea-ink)] rounded text-sm font-tamil">
-                                          {syl.text} <span className="ml-1 text-xs opacity-75">({syl.syllable_type === 'Ner' ? 'நேர்' : 'நிரை'})</span>
-                                        </span>
-                                      ))}
-                                    </div>
+                       <div>
+                         <h3 className="font-medium text-gray-900 mb-4">Prosodic Structure</h3>
+                         <div className="space-y-4">
+                           {data.lines.map((line: any, i: number) => (
+                             <div key={i} className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
+                               <h4 className="font-medium text-gray-900 mb-3">
+                                 Line {i+1} <span className="text-gray-600 text-sm ml-2">({getLineClassDisplay(line.line_class)})</span>
+                               </h4>
+                               <div className="space-y-3">
+                                 {line.feet.map((foot: any, j: number) => (
+                                   <div key={j} className="ml-4 p-3 bg-gray-50 rounded border border-gray-100">
+                                     <div className="font-medium text-gray-900 mb-2">
+                                       Foot {j+1} <span className="text-gray-600 text-sm ml-2">({getFootTypeDisplay(foot.foot_type)})</span>
+                                     </div>
+                                     <div className="flex flex-wrap gap-2">
+                                       {foot.syllables.map((syl: any, k: number) => (
+                                         <span key={k} className="inline-flex items-center px-3 py-2 bg-blue-50 text-blue-900 rounded text-sm font-medium border border-blue-200">
+                                           <span className="font-tamil mr-1">{syl.text}</span>
+                                           <span className="text-xs text-blue-700">({syl.syllable_type === 'Ner' ? 'நேர்' : 'நிரை'})</span>
+                                         </span>
+                                       ))}
+                                     </div>
                                   </div>
                                 ))}
                               </div>
