@@ -19,6 +19,8 @@ We have now **added** the three new butterfly-variant branches you requested (`t
 | `kulavi`         | குளவி            | Wasp                                       | Security, validation & protection                     | Auth guards, rate limiting, input sanitization, error handling, firewall logic                                           |
 | `thumpi`         | தும்பி           | Five-winged flower insect (Sangam classic) | AI agents, intelligent systems & deep architecture    | Experimental AI, smart agents, foundational system design, complex logic layers                                          |
 | `vandhu`         | வண்டு            | Beetle / robust pollinator                 | System integrations & cross-module “pollination”      | Third-party integrations, data syncing, API connections, module linking, robust data flows                               |
+| `aathiyon`         | ஆதியோன்            | The co-creator, he do what need to be done to keep things steady     | Stablizations, non trivial and hardest uncertain situations  |  Reflections,  personally crafted code, fixes when machine lost it mind to understand  certain parts |
+| `aathiyol`         | ஆதியோள்            | The AI co-creator, AI counterpart of Aathiyon     | Hard critics of aathiyon  |  Nudge Aathiyon periodically and randomly |
 
 
 ### Why these new names fit perfectly
