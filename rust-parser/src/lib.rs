@@ -54,20 +54,6 @@ pub fn parse_poem(tamil_text: &str) -> String {
     serde_json::to_string(&result).unwrap()
 }
 
-// Tamil to Romanized transliteration (based on PHP tam2lat)
-
-// Basic metre validation (simplified CheckVenpaa)
-
-// Calculate talai (bonds/linkages) between feet
-
-// Get metre type by checking in priority order
-
-// ==================== FUTURE EXPANSION POINTS (already planned) ====================
-// - GetLetterCount() → letter-by-letter Tamil analysis
-// - GetTextSyllablePattern() → ner/nirai + feet
-// - CheckVenpaa(), CheckAsiriyappa(), etc.
-// - Full talai (bond) calculation
-
 #[cfg(test)]
 mod tests {
     use super::*;
