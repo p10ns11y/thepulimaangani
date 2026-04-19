@@ -1,4 +1,4 @@
-**✅ The Puli Maan Gani — Full Setup + Rust Parser Skeleton**
+## The Puli Maan Gani — Full Setup + Rust Parser Skeleton ##
 
 We’re moving fast (hobby mode, complete rewrite, strict stack).  
 You now have **everything** to get a working TanStack Start (React + TS) + Rust WASM project running in <30 minutes.
@@ -166,12 +166,6 @@ pub fn parse_poem(tamil_text: &str) -> String {
 
     serde_json::to_string(&result).unwrap()
 }
-
-// ==================== FUTURE EXPANSION POINTS (already planned) ====================
-// - GetLetterCount() → letter-by-letter Tamil analysis
-// - GetTextSyllablePattern() → ner/nirai + feet
-// - CheckVenpaa(), CheckAsiriyappa(), etc.
-// - Full talai (bond) calculation
 ```
 
 ### Step 4: Build & Integrate WASM (one command)
