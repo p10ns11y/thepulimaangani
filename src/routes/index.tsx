@@ -7,19 +7,54 @@ function App() {
   const [poemText, setPoemText] = useState('')
   const [result, setResult] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [validationError, setValidationError] = useState<string | null>(null)
+
+  // Tamil Unicode ranges for validation
+  const isTamilText = (text: string): boolean => {
+    const tamilRegex = /[\u0B80-\u0BFF]/; // Tamil Unicode block
+    return tamilRegex.test(text);
+  }
+
+  const validateInput = (text: string): string | null => {
+    const trimmed = text.trim();
+    if (!trimmed) {
+      return 'Please enter some text to analyze.';
+    }
+    if (!isTamilText(trimmed)) {
+      return 'Please enter text containing Tamil characters (தமிழ் எழுத்துக்கள்).';
+    }
+    if (trimmed.length < 2) {
+      return 'Please enter more text for meaningful analysis.';
+    }
+    return null;
+  }
 
   const handleParse = async () => {
-    if (!poemText.trim()) return
-    setLoading(true)
+    const inputError = validateInput(poemText);
+    if (inputError) {
+      setValidationError(inputError);
+      setResult(null);
+      return;
+    }
+
+    setValidationError(null);
+    setLoading(true);
     try {
       // Dynamic import of WASM module
       const wasm = await import('../wasm/thepulimaangani_parser.js')
       await wasm.default()  // Initialize WASM
       const parseResult = wasm.parse_poem(poemText)
+
+      // Check if parsing returned an error
+      if (parseResult.includes('Error') || parseResult.trim() === '') {
+        throw new Error('Unable to analyze the provided text. Please check that it contains valid Tamil poetry.');
+      }
+
       setResult(parseResult)
     } catch (error) {
       console.error('Parsing error:', error)
-      setResult('Error parsing poem')
+      setValidationError(error instanceof Error ? error.message : 'An error occurred while analyzing the poem. Please try again.')
+      setResult(null)
     } finally {
       setLoading(false)
     }
@@ -34,17 +69,35 @@ function App() {
         <h1 className="display-title mb-5 max-w-3xl text-4xl leading-[1.02] font-bold tracking-tight text-[var(--sea-ink)] sm:text-6xl">
           Analyze Tamil Poetry
         </h1>
-        <p className="mb-8 max-w-2xl text-base text-[var(--sea-ink-soft)] sm:text-lg">
+        <p className="mb-6 max-w-2xl text-base text-[var(--sea-ink-soft)] sm:text-lg">
           Enter your Tamil poem below to see its prosodic analysis, including syllables, feet, and metre type.
         </p>
+
+        <div className="mb-8 p-4 bg-[var(--foam)] rounded-lg border border-[var(--line)]">
+          <h3 className="font-medium text-[var(--sea-ink)] mb-2">Quick Start</h3>
+          <p className="text-sm text-[var(--sea-ink-soft)] mb-3">
+            Try analyzing traditional Tamil poetry. The parser supports major metres like வெண்பா, வெண்கலிப்பா, ஆசிரியப்பா, and கலிப்பா.
+          </p>
+          <button
+            onClick={() => setPoemText('கற்றது கை செயல்\nஅறிவது ஆவது\nஇருந்தது இல்லை\nஇல்லாதது வரும்')}
+            className="px-4 py-2 text-sm bg-white text-[var(--sea-ink)] rounded border border-[var(--line)] hover:bg-[var(--surface)] transition"
+          >
+            Load Sample Poem
+          </button>
+        </div>
 
         <div className="space-y-4">
           <textarea
             value={poemText}
             onChange={(e) => setPoemText(e.target.value)}
             placeholder="Enter Tamil poem here..."
-            className="w-full h-32 p-4 border border-[var(--line)] rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[var(--lagoon)] font-tamil text-[var(--sea-ink)] bg-white"
+            className="w-full h-32 p-4 border border-[var(--line)] rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[var(--lagoon)] font-tamil text-[var(--sea-ink)] bg-[var(--surface-strong)]"
           />
+          {validationError && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-700 text-sm">{validationError}</p>
+            </div>
+          )}
           <button
             onClick={handleParse}
             disabled={loading}
@@ -56,7 +109,33 @@ function App() {
 
         {result && (
           <div className="mt-8 p-6 bg-white border border-[var(--line)] rounded-lg shadow-sm">
-            <h2 className="text-xl font-semibold mb-6 text-[var(--sea-ink)]">Analysis Result</h2>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold text-[var(--sea-ink)]">Analysis Result</h2>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => navigator.clipboard.writeText(result)}
+                  className="px-3 py-1.5 text-sm bg-[var(--foam)] text-[var(--sea-ink)] rounded border border-[var(--line)] hover:bg-[var(--surface)] transition"
+                  title="Copy results to clipboard"
+                >
+                  Copy
+                </button>
+                <button
+                  onClick={() => {
+                    const blob = new Blob([result], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'tamil-prosody-analysis.json';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  }}
+                  className="px-3 py-1.5 text-sm bg-[var(--foam)] text-[var(--sea-ink)] rounded border border-[var(--line)] hover:bg-[var(--surface)] transition"
+                  title="Download results as JSON"
+                >
+                  Export JSON
+                </button>
+              </div>
+            </div>
             <div className="space-y-4">
               {(() => {
                 try {
@@ -66,6 +145,28 @@ function App() {
                       <div className="p-4 bg-[var(--foam)] rounded-lg">
                         <h3 className="font-medium text-[var(--sea-ink)] mb-2">Original Text</h3>
                         <p className="text-lg font-tamil text-[var(--sea-ink)]">{data.original_text}</p>
+                      </div>
+
+                      <div className="p-4 bg-[var(--surface)] rounded-lg">
+                        <h3 className="font-medium text-[var(--sea-ink)] mb-3">Summary</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                          <div>
+                            <span className="text-[var(--sea-ink-soft)]">Lines:</span>
+                            <span className="ml-2 font-medium text-[var(--sea-ink)]">{data.lines.length}</span>
+                          </div>
+                          <div>
+                            <span className="text-[var(--sea-ink-soft)]">Feet:</span>
+                            <span className="ml-2 font-medium text-[var(--sea-ink)]">{data.lines.reduce((sum: number, line: any) => sum + line.feet.length, 0)}</span>
+                          </div>
+                          <div>
+                            <span className="text-[var(--sea-ink-soft)]">Syllables:</span>
+                            <span className="ml-2 font-medium text-[var(--sea-ink)]">{data.lines.reduce((sum: number, line: any) => sum + line.feet.reduce((s: number, foot: any) => s + foot.syllables.length, 0), 0)}</span>
+                          </div>
+                          <div>
+                            <span className="text-[var(--sea-ink-soft)]">Bonds:</span>
+                            <span className="ml-2 font-medium text-[var(--sea-ink)]">{data.word_bond.match(/Total bonds: (\d+)/)?.[1] || 'N/A'}</span>
+                          </div>
+                        </div>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
