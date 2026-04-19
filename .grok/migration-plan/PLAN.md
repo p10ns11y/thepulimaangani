@@ -1,4 +1,5 @@
-# Thepulimaangani — Master Execution Plan
+# Thepulimaangani — Plan
+
 **Project**: Complete modern rewrite of Avalokitam (Tamil Prosody Analyzer)  
 **Repo**: https://github.com/p10ns11y/thepulimaangani  
 **Stack**: TanStack Start (React + TS) + Rust WebAssembly + Tailwind + Vite  

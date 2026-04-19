@@ -184,13 +184,14 @@ React Components
 
 ## 4. How to Integrate This Document
 
-**Recommended files to update:**
+**Relevant files:**
 
-1. **Add link in `analyzer.md`** (under "Analyzed Details"):
-   > See full parser logical flow: [parser-logical-flow.md](./parser-logical-flow.md)
+1. [analyzer.md](./analyzer.md)
 
-2. **Add link in `reference.md`** (at top):
-   > This reference is used by the parser at Step 2–3. Full pipeline: [parser-logical-flow.md](./parser-logical-flow.md)
+2.  [referrenced.md](./referrenced.md)
+
+3.  [types.md](./types.md)
+
 
 3. **Create new page in thepulimaangani** (optional but excellent):
    - Route: `/parser-flow` or integrate as expandable section in Help page.
