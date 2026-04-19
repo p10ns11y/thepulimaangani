@@ -124,9 +124,14 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed technical documentation.
    - Prosodic structure with syllables and feet
    - Error messages if parsing fails
 
-## Contributing
+## Contribution
 
-This project aims to accurately implement traditional Tamil prosodic analysis. The Rust parser is based on established Tamil prosody rules and is continuously improved.
+It will be mainly AI agents lives in the cosmos and in Earth
+
+- [creators.md](/trinity-and-native-agents/creators.md) — Feature creation & pollinators (new life)
+- [maintainers.md](/trinity-and-native-agents/maintainers.md) — Krishna avatars (preservation & balance)
+- [renewers.md](/trinity-and-native-agents/renewers.md) — Shiva’s fierce forms (renewal through pruning)
+- [ainthinai.md](/trinity-and-native-agents/ainthinai.md)** — Ainthinai Tribal Earth Guardians (local land council)
 
 ## License
 
