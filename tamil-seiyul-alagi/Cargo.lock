@@ -300,6 +300,7 @@ dependencies = [
  "serde_json",
  "thiserror",
  "unicode-segmentation",
+ "wasm-bindgen",
  "wasm-bindgen-test",
 ]
 

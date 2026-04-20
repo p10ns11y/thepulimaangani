@@ -5,7 +5,7 @@ use crate::prosodic_unit::{ProsodicUnit, Vowel};
 #[derive(Debug, Clone)]
 pub struct ProsodicSequence {
     pub units: Vec<ProsodicUnit>,
-    pub sequence: Vec<u8>,        // 0 = Consonant, 1 = Short, 2 = Long
+    pub sequence: Vec<u8>, // 0 = Consonant, 1 = Short, 2 = Long
     pub original_text: String,
 }
 
@@ -55,7 +55,10 @@ impl ProsodicSequence {
         println!("\n=== ProsodicSequence Debug ===");
         println!("Original : {}", self.original_text);
         println!("Sequence : {}", self.as_string());
-        println!("Units    : {:?}", self.units.iter().map(|u| u.text()).collect::<Vec<_>>());
+        println!(
+            "Units    : {:?}",
+            self.units.iter().map(|u| u.text()).collect::<Vec<_>>()
+        );
         println!("================================\n");
     }
 }

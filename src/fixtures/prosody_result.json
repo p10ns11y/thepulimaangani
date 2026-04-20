@@ -1,0 +1,2817 @@
+{
+    "original_text": "சுடர்த்தொடீஇ கேளாய் தெருவில்நாம் ஆடும்\nமணற்சிற்றில் காலில் சிதையா அடைச்சிய\nகோதை பரிந்து வரிப்பந்து கொண்டோடி\nநோதக்க செய்யும் சிறுபட்டி மேல்ஓர்நாள்\nஅன்னையும் யானும் இருந்தேமா இல்லிரே\nஉண்ணுநீர் வேட்டேன் எனவந்தாற் கன்னை\nஅடர்பொற் சிரகத்தால் வாக்கிச் சுடரிழாய்\nஉண்ணுநீர் ஊட்டிவா என்றாள் எனயானும்\nதன்னை அறியாது சென்றேன்மற் றென்னை\nவளைமுன்கை பற்றி நலியத் தெருமந்திட்(டு)\nஅன்னாய் இவனொருவன் செய்ததுகாண்’ என்றேனா\nஅன்னை அலறிப் படர்தரத் தன்னையான்\nஉண்ணுநீர் விக்கினான் என்றேனா அன்னையும்\nதன்னைப் புறம்பழித்து நீவமற் றென்னைக்\nகடைக்கணால் கொல்வான்போல் நோக்கி நகைக்கூட்டம்\nசெய்தானக் கள்வன் மகன்",
+    "normalized_text": "சுடர்த்தொடீஇ கேளாய் தெருவில்நாம் ஆடும்\nமணற்சிற்றில் காலில் சிதையா அடைச்சிய\nகோதை பரிந்து வரிப்பந்து கொண்டோடி\nநோதக்க செய்யும் சிறுபட்டி மேல்ஓர்நாள்\nஅன்னையும் யானும் இருந்தேமா இல்லிரே\nஉண்ணுநீர் வேட்டேன் எனவந்தாற் கன்னை\nஅடர்பொற் சிரகத்தால் வாக்கிச் சுடரிழாய்\nஉண்ணுநீர் ஊட்டிவா என்றாள் எனயானும்\nதன்னை அறியாது சென்றேன்மற் றென்னை\nவளைமுன்கை பற்றி நலியத் தெருமந்திட் டு \nஅன்னாய் இவனொருவன் செய்ததுகாண்’ என்றேனா\nஅன்னை அலறிப் படர்தரத் தன்னையான்\nஉண்ணுநீர் விக்கினான் என்றேனா அன்னையும்\nதன்னைப் புறம்பழித்து நீவமற் றென்னைக்\nகடைக்கணால் கொல்வான்போல் நோக்கி நகைக்கூட்டம்\nசெய்தானக் கள்வன் மகன்",
+    "letter_count": 355,
+    "vikalpa_count": 0,
+    "syllables": [
+        {
+            "text": "சுடர்",
+            "syllable_type": "Nirai",
+            "split_hint": "uyir-U elision",
+            "alt_split": false,
+            "rule_ref": "Nirai (triplet)"
+        },
+        {
+            "text": "தொடீ",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "இகே",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "ளாய்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "தெரு",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "வில்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "நாம்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "ஆ",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": null
+        },
+        {
+            "text": "டும்",
+            "syllable_type": "Ner",
+            "split_hint": "uyir-U elision",
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "மணற்",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai (triplet)"
+        },
+        {
+            "text": "சிற்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "றில்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "கா",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": null
+        },
+        {
+            "text": "லில்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "சிதை",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "யா",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": null
+        },
+        {
+            "text": "அடைச்",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai (triplet)"
+        },
+        {
+            "text": "சிய",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "கோ",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": null
+        },
+        {
+            "text": "தை",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": null
+        },
+        {
+            "text": "பரிந்",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai (triplet)"
+        },
+        {
+            "text": "துவ",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "ரிப்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "பந்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "துகொண்",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai (triplet)"
+        },
+        {
+            "text": "டோ",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": null
+        },
+        {
+            "text": "டிநோ",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "தக்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "கசெய்",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai (triplet)"
+        },
+        {
+            "text": "யும்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "சிறு",
+            "syllable_type": "Nirai",
+            "split_hint": "uyir-U elision",
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "பட்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "டிமேல்",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai (triplet)"
+        },
+        {
+            "text": "ஓர்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "நாள்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "அன்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "னை",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": null
+        },
+        {
+            "text": "யும்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "யா",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": null
+        },
+        {
+            "text": "னும்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "இருந்",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai (triplet)"
+        },
+        {
+            "text": "தே",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": null
+        },
+        {
+            "text": "மா",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": null
+        },
+        {
+            "text": "இல்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "லிரே",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "உண்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "ணுநீர்",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai (triplet)"
+        },
+        {
+            "text": "வேட்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "டேன்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "என",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "வந்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "தாற்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "கன்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "னை",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": null
+        },
+        {
+            "text": "அடர்",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai (triplet)"
+        },
+        {
+            "text": "பொற்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "சிர",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "கத்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "தால்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "வாக்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "கிச்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "சுட",
+            "syllable_type": "Nirai",
+            "split_hint": "uyir-U elision",
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "ரிழாய்",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai (triplet)"
+        },
+        {
+            "text": "உண்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "ணுநீர்",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai (triplet)"
+        },
+        {
+            "text": "ஊட்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "டிவா",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "என்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "றாள்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "என",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "யா",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": null
+        },
+        {
+            "text": "னும்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "தன்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "னை",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": null
+        },
+        {
+            "text": "அறி",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "யா",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": null
+        },
+        {
+            "text": "துசென்",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai (triplet)"
+        },
+        {
+            "text": "றேன்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "மற்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "றென்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "னை",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": null
+        },
+        {
+            "text": "வளை",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "முன்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "கை",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": null
+        },
+        {
+            "text": "பற்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "றிந",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "லியத்",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai (triplet)"
+        },
+        {
+            "text": "தெரு",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "மந்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "திட்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "டுஅன்",
+            "syllable_type": "Nirai",
+            "split_hint": "uyir-U elision",
+            "alt_split": false,
+            "rule_ref": "Nirai (triplet)"
+        },
+        {
+            "text": "னாய்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "இவ",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "னொரு",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "வன்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "செய்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "தது",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "காண்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "என்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "றே",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": null
+        },
+        {
+            "text": "னா",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": null
+        },
+        {
+            "text": "அன்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "னை",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": null
+        },
+        {
+            "text": "அல",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "றிப்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "படர்",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai (triplet)"
+        },
+        {
+            "text": "தரத்",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai (triplet)"
+        },
+        {
+            "text": "தன்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "னை",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": null
+        },
+        {
+            "text": "யான்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "உண்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "ணுநீர்",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai (triplet)"
+        },
+        {
+            "text": "விக்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "கினான்",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai (triplet)"
+        },
+        {
+            "text": "என்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "றே",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": null
+        },
+        {
+            "text": "னா",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": null
+        },
+        {
+            "text": "அன்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "னை",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": null
+        },
+        {
+            "text": "யும்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "தன்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "னைப்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "புறம்",
+            "syllable_type": "Nirai",
+            "split_hint": "uyir-U elision",
+            "alt_split": false,
+            "rule_ref": "Nirai (triplet)"
+        },
+        {
+            "text": "பழித்",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai (triplet)"
+        },
+        {
+            "text": "துநீ",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "வமற்",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai (triplet)"
+        },
+        {
+            "text": "றென்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "னைக்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "கடைக்",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai (triplet)"
+        },
+        {
+            "text": "கணால்",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai (triplet)"
+        },
+        {
+            "text": "கொல்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "வான்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "போல்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "நோக்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "கிந",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "கைக்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "கூட்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "டம்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "செய்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "தா",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": null
+        },
+        {
+            "text": "னக்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "கள்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "வன்",
+            "syllable_type": "Ner",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai/Ner (pair)"
+        },
+        {
+            "text": "மகன்",
+            "syllable_type": "Nirai",
+            "split_hint": null,
+            "alt_split": false,
+            "rule_ref": "Nirai (triplet)"
+        }
+    ],
+    "feet": [
+        {
+            "syllables": [
+                {
+                    "text": "சுடர்",
+                    "syllable_type": "Nirai",
+                    "split_hint": "uyir-U elision",
+                    "alt_split": false,
+                    "rule_ref": "Nirai (triplet)"
+                },
+                {
+                    "text": "தொடீ",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "tEmA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "இகே",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "ளாய்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "puLimA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "தெரு",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "வில்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "kUviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "நாம்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "ஆ",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": null
+                }
+            ],
+            "foot_type": "karuviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "டும்",
+                    "syllable_type": "Ner",
+                    "split_hint": "uyir-U elision",
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "மணற்",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai (triplet)"
+                }
+            ],
+            "foot_type": "tEmA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "சிற்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "றில்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "puLimA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "கா",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": null
+                },
+                {
+                    "text": "லில்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "kUviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "சிதை",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "யா",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": null
+                }
+            ],
+            "foot_type": "karuviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "அடைச்",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai (triplet)"
+                },
+                {
+                    "text": "சிய",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "tEmA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "கோ",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": null
+                },
+                {
+                    "text": "தை",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": null
+                }
+            ],
+            "foot_type": "puLimA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "பரிந்",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai (triplet)"
+                },
+                {
+                    "text": "துவ",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "kUviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "ரிப்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "பந்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "karuviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "துகொண்",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai (triplet)"
+                },
+                {
+                    "text": "டோ",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": null
+                }
+            ],
+            "foot_type": "tEmA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "டிநோ",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "தக்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "puLimA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "கசெய்",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai (triplet)"
+                },
+                {
+                    "text": "யும்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "kUviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "சிறு",
+                    "syllable_type": "Nirai",
+                    "split_hint": "uyir-U elision",
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "பட்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "karuviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "டிமேல்",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai (triplet)"
+                },
+                {
+                    "text": "ஓர்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "tEmA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "நாள்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "அன்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "puLimA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "னை",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": null
+                },
+                {
+                    "text": "யும்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "kUviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "யா",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": null
+                },
+                {
+                    "text": "னும்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "karuviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "இருந்",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai (triplet)"
+                },
+                {
+                    "text": "தே",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": null
+                }
+            ],
+            "foot_type": "tEmA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "மா",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": null
+                },
+                {
+                    "text": "இல்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "puLimA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "லிரே",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "உண்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "kUviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "ணுநீர்",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai (triplet)"
+                },
+                {
+                    "text": "வேட்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "karuviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "டேன்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "என",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "tEmA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "வந்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "தாற்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "puLimA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "கன்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "னை",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": null
+                }
+            ],
+            "foot_type": "kUviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "அடர்",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai (triplet)"
+                },
+                {
+                    "text": "பொற்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "karuviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "சிர",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "கத்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "tEmA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "தால்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "வாக்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "puLimA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "கிச்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "சுட",
+                    "syllable_type": "Nirai",
+                    "split_hint": "uyir-U elision",
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "kUviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "ரிழாய்",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai (triplet)"
+                },
+                {
+                    "text": "உண்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "karuviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "ணுநீர்",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai (triplet)"
+                },
+                {
+                    "text": "ஊட்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "tEmA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "டிவா",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "என்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "puLimA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "றாள்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "என",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "kUviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "யா",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": null
+                },
+                {
+                    "text": "னும்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "karuviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "தன்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "னை",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": null
+                }
+            ],
+            "foot_type": "tEmA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "அறி",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "யா",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": null
+                }
+            ],
+            "foot_type": "puLimA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "துசென்",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai (triplet)"
+                },
+                {
+                    "text": "றேன்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "kUviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "மற்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "றென்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "karuviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "னை",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": null
+                },
+                {
+                    "text": "வளை",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "tEmA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "முன்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "கை",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": null
+                }
+            ],
+            "foot_type": "puLimA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "பற்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "றிந",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "kUviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "லியத்",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai (triplet)"
+                },
+                {
+                    "text": "தெரு",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "karuviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "மந்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "திட்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "tEmA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "டுஅன்",
+                    "syllable_type": "Nirai",
+                    "split_hint": "uyir-U elision",
+                    "alt_split": false,
+                    "rule_ref": "Nirai (triplet)"
+                },
+                {
+                    "text": "னாய்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "puLimA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "இவ",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "னொரு",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "kUviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "வன்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "செய்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "karuviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "தது",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "காண்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "tEmA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "என்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "றே",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": null
+                }
+            ],
+            "foot_type": "puLimA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "னா",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": null
+                },
+                {
+                    "text": "அன்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "kUviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "னை",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": null
+                },
+                {
+                    "text": "அல",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "karuviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "றிப்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "படர்",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai (triplet)"
+                }
+            ],
+            "foot_type": "tEmA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "தரத்",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai (triplet)"
+                },
+                {
+                    "text": "தன்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "puLimA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "னை",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": null
+                },
+                {
+                    "text": "யான்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "kUviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "உண்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "ணுநீர்",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai (triplet)"
+                }
+            ],
+            "foot_type": "karuviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "விக்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "கினான்",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai (triplet)"
+                }
+            ],
+            "foot_type": "tEmA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "என்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "றே",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": null
+                }
+            ],
+            "foot_type": "puLimA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "னா",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": null
+                },
+                {
+                    "text": "அன்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "kUviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "னை",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": null
+                },
+                {
+                    "text": "யும்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "karuviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "தன்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "னைப்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "tEmA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "புறம்",
+                    "syllable_type": "Nirai",
+                    "split_hint": "uyir-U elision",
+                    "alt_split": false,
+                    "rule_ref": "Nirai (triplet)"
+                },
+                {
+                    "text": "பழித்",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai (triplet)"
+                }
+            ],
+            "foot_type": "puLimA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "துநீ",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "வமற்",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai (triplet)"
+                }
+            ],
+            "foot_type": "kUviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "றென்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "னைக்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "karuviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "கடைக்",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai (triplet)"
+                },
+                {
+                    "text": "கணால்",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai (triplet)"
+                }
+            ],
+            "foot_type": "tEmA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "கொல்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "வான்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "puLimA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "போல்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "நோக்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "kUviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "கிந",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "கைக்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "karuviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "கூட்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "டம்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "tEmA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "செய்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "தா",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": null
+                }
+            ],
+            "foot_type": "puLimA"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "னக்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "கள்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                }
+            ],
+            "foot_type": "kUviLa_m"
+        },
+        {
+            "syllables": [
+                {
+                    "text": "வன்",
+                    "syllable_type": "Ner",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai/Ner (pair)"
+                },
+                {
+                    "text": "மகன்",
+                    "syllable_type": "Nirai",
+                    "split_hint": null,
+                    "alt_split": false,
+                    "rule_ref": "Nirai (triplet)"
+                }
+            ],
+            "foot_type": "karuviLa_m"
+        }
+    ],
+    "talai": [
+        {
+            "from_foot": 0,
+            "to_foot": 1,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 1,
+            "to_foot": 2,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 2,
+            "to_foot": 3,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 3,
+            "to_foot": 4,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 4,
+            "to_foot": 5,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 5,
+            "to_foot": 6,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 6,
+            "to_foot": 7,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 7,
+            "to_foot": 8,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 8,
+            "to_foot": 9,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 9,
+            "to_foot": 10,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 10,
+            "to_foot": 11,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 11,
+            "to_foot": 12,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 12,
+            "to_foot": 13,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 13,
+            "to_foot": 14,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 14,
+            "to_foot": 15,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 15,
+            "to_foot": 16,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 16,
+            "to_foot": 17,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 17,
+            "to_foot": 18,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 18,
+            "to_foot": 19,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 19,
+            "to_foot": 20,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 20,
+            "to_foot": 21,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 21,
+            "to_foot": 22,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 22,
+            "to_foot": 23,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 23,
+            "to_foot": 24,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 24,
+            "to_foot": 25,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 25,
+            "to_foot": 26,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 26,
+            "to_foot": 27,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 27,
+            "to_foot": 28,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 28,
+            "to_foot": 29,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 29,
+            "to_foot": 30,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 30,
+            "to_foot": 31,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 31,
+            "to_foot": 32,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 32,
+            "to_foot": 33,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 33,
+            "to_foot": 34,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 34,
+            "to_foot": 35,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 35,
+            "to_foot": 36,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 36,
+            "to_foot": 37,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 37,
+            "to_foot": 38,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 38,
+            "to_foot": 39,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 39,
+            "to_foot": 40,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 40,
+            "to_foot": 41,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 41,
+            "to_foot": 42,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 42,
+            "to_foot": 43,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 43,
+            "to_foot": 44,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 44,
+            "to_foot": 45,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 45,
+            "to_foot": 46,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 46,
+            "to_foot": 47,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 47,
+            "to_foot": 48,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 48,
+            "to_foot": 49,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 49,
+            "to_foot": 50,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 50,
+            "to_foot": 51,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 51,
+            "to_foot": 52,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 52,
+            "to_foot": 53,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 53,
+            "to_foot": 54,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 54,
+            "to_foot": 55,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 55,
+            "to_foot": 56,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 56,
+            "to_foot": 57,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 57,
+            "to_foot": 58,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 58,
+            "to_foot": 59,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 59,
+            "to_foot": 60,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 60,
+            "to_foot": 61,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 61,
+            "to_foot": 62,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 62,
+            "to_foot": 63,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 63,
+            "to_foot": 64,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 64,
+            "to_foot": 65,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 65,
+            "to_foot": 66,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 66,
+            "to_foot": 67,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 67,
+            "to_foot": 68,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 68,
+            "to_foot": 69,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 69,
+            "to_foot": 70,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        },
+        {
+            "from_foot": 70,
+            "to_foot": 71,
+            "talai_type": "VenTalai",
+            "is_valid": true
+        }
+    ],
+    "lines": [],
+    "metre_type": "Venpaa",
+    "errors": []
+}

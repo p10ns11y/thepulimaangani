@@ -2,13 +2,40 @@ use crate::tamil_chars::generate_uyirmei_matrix;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Vowel {
-    A, Aa, I, Ii, U, Uu, E, Ee, Ai, O, Oo, Au,
+    A,
+    Aa,
+    I,
+    Ii,
+    U,
+    Uu,
+    E,
+    Ee,
+    Ai,
+    O,
+    Oo,
+    Au,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Consonant {
-    K, Ng, Ch, Nj, Tt, Nn, Th, N, P, M,
-    Y, R, L, V, Zh, Lll, Rr, Nnn,
+    K,
+    Ng,
+    Ch,
+    Nj,
+    Tt,
+    Nn,
+    Th,
+    N,
+    P,
+    M,
+    Y,
+    R,
+    L,
+    V,
+    Zh,
+    Lll,
+    Rr,
+    Nnn,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -77,27 +104,26 @@ impl ProsodicUnit {
         match self {
             ProsodicUnit::Vowel(v) => {
                 match v {
-                    Vowel::A | Vowel::I | Vowel::U | Vowel::E | Vowel::O => 1,   // குறில்
-                    _ => 2,                                                      // நெடில்
+                    Vowel::A | Vowel::I | Vowel::U | Vowel::E | Vowel::O => 1, // குறில்
+                    _ => 2,                                                    // நெடில்
                 }
             }
-            ProsodicUnit::VowelConsonant { vowel, .. } => {
-                match vowel {
-                    Vowel::A | Vowel::I | Vowel::U | Vowel::E | Vowel::O => 1,
-                    _ => 2,
-                }
-            }
+            ProsodicUnit::VowelConsonant { vowel, .. } => match vowel {
+                Vowel::A | Vowel::I | Vowel::U | Vowel::E | Vowel::O => 1,
+                _ => 2,
+            },
             ProsodicUnit::Consonant(_) => 0, // 1/2  for foot grouping it is not useful
-            ProsodicUnit::Aaytham => 0, //  1/2
+            ProsodicUnit::Aaytham => 0,      //  1/2
             ProsodicUnit::ConsonantCluster(_) => 0, // 1/2
         }
     }
 
     pub fn ends_with_consonant(&self) -> bool {
-        matches!(self, 
-            ProsodicUnit::VowelConsonant { .. } | 
-            ProsodicUnit::Consonant(_) | 
-            ProsodicUnit::ConsonantCluster(_)
+        matches!(
+            self,
+            ProsodicUnit::VowelConsonant { .. }
+                | ProsodicUnit::Consonant(_)
+                | ProsodicUnit::ConsonantCluster(_)
         )
     }
 }
@@ -106,18 +132,40 @@ impl ProsodicUnit {
 
 fn vowel_to_index(v: Vowel) -> usize {
     match v {
-        Vowel::A => 0, Vowel::Aa => 1, Vowel::I => 2, Vowel::Ii => 3,
-        Vowel::U => 4, Vowel::Uu => 5, Vowel::E => 6, Vowel::Ee => 7,
-        Vowel::Ai => 8, Vowel::O => 9, Vowel::Oo => 10, Vowel::Au => 11,
+        Vowel::A => 0,
+        Vowel::Aa => 1,
+        Vowel::I => 2,
+        Vowel::Ii => 3,
+        Vowel::U => 4,
+        Vowel::Uu => 5,
+        Vowel::E => 6,
+        Vowel::Ee => 7,
+        Vowel::Ai => 8,
+        Vowel::O => 9,
+        Vowel::Oo => 10,
+        Vowel::Au => 11,
     }
 }
 
 fn consonant_to_index(c: Consonant) -> usize {
     match c {
-        Consonant::K => 0, Consonant::Ng => 1, Consonant::Ch => 2, Consonant::Nj => 3,
-        Consonant::Tt => 4, Consonant::Nn => 5, Consonant::Th => 6, Consonant::N => 7,
-        Consonant::P => 8, Consonant::M => 9, Consonant::Y => 10, Consonant::R => 11,
-        Consonant::L => 12, Consonant::V => 13, Consonant::Zh => 14, Consonant::Lll => 15,
-        Consonant::Rr => 16, Consonant::Nnn => 17,
+        Consonant::K => 0,
+        Consonant::Ng => 1,
+        Consonant::Ch => 2,
+        Consonant::Nj => 3,
+        Consonant::Tt => 4,
+        Consonant::Nn => 5,
+        Consonant::Th => 6,
+        Consonant::N => 7,
+        Consonant::P => 8,
+        Consonant::M => 9,
+        Consonant::Y => 10,
+        Consonant::R => 11,
+        Consonant::L => 12,
+        Consonant::V => 13,
+        Consonant::Zh => 14,
+        Consonant::Lll => 15,
+        Consonant::Rr => 16,
+        Consonant::Nnn => 17,
     }
 }

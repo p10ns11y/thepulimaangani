@@ -11,7 +11,7 @@ use crate::{Foot, MetreType, ParseResult, Syllable, Talai};
 
 pub struct DisplayResult {
     pub original_text: String,
-    pub metre_type: Option<String>,           // Human-readable ("வெண்பா", "ஆசிரியப்பா")
+    pub metre_type: Option<String>, // Human-readable ("வெண்பா", "ஆசிரியப்பா")
     pub syllables: Vec<DisplaySyllable>,
     pub feet: Vec<DisplayFoot>,
     pub talai: Vec<DisplayTalai>,
@@ -19,19 +19,19 @@ pub struct DisplayResult {
 
 pub struct DisplaySyllable {
     pub text: String,
-    pub syllable_type: String,                // "நேர்" / "நிரை"
+    pub syllable_type: String, // "நேர்" / "நிரை"
     pub hint: Option<String>,
 }
 
 pub struct DisplayFoot {
     pub text: String,
-    pub foot_type: String,                    // "தேமா", "புளிமா", etc.
+    pub foot_type: String, // "தேமா", "புளிமா", etc.
 }
 
 pub struct DisplayTalai {
     pub from: usize,
     pub to: usize,
-    pub talai_type: String,                   // "வெண்டளை", "ஆசிரியத்தளை"
+    pub talai_type: String, // "வெண்டளை", "ஆசிரியத்தளை"
     pub is_valid: bool,
 }
 
@@ -69,7 +69,11 @@ fn to_display_syllable(s: &Syllable) -> DisplaySyllable {
 
 fn to_display_foot(f: &Foot) -> DisplayFoot {
     DisplayFoot {
-        text: f.syllables.iter().map(|s| s.text.as_str()).collect::<String>(),
+        text: f
+            .syllables
+            .iter()
+            .map(|s| s.text.as_str())
+            .collect::<String>(),
         foot_type: f.foot_type.clone(), // Already contains traditional name
     }
 }
