@@ -114,9 +114,11 @@ npm run test:frontend
 # Total rethink, machine-first approach prosody
 cd tamil-seiyul-alagi && cargo tarpaulin
 
-# First version of prosody parser  close to original avalokitam
-cd rust-parser && cargo tarpaulin
+# Main prosody parser implementation
+cd tamil-seiyul-alagi && cargo tarpaulin
 ```
+
+`rust-parser` folder contains quick prototype build based on original avalokitam. Not feature complete 
 
 ## Architecture
 

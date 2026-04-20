@@ -47,12 +47,12 @@ src/
     └── thepulimaangani_parser_bg.wasm
 ```
 
-### 2. Rust WebAssembly Parser (`rust-parser/`)
+### 2. Rust WebAssembly Parser (`tamil-seiyul-alagi/`)
 
 The Rust parser handles all Tamil prosody analysis:
 
 ```
-rust-parser/
+tamil-seiyul-alagi/
 ├── src/
 │   └── lib.rs          # Main parser implementation
 ├── pkg/                # Generated WebAssembly bindings
@@ -71,8 +71,8 @@ rust-parser/
 The WebAssembly parser is built separately and its artifacts are copied to `src/wasm/` for bundling. These generated files are **not tracked in git** to keep the repository clean and ensure builds are reproducible from source.
 
 **Build Process**:
-1. **Rust Compilation**: `wasm-pack build --target web --out-dir pkg` generates JavaScript bindings and WASM binary in `rust-parser/pkg/`
-2. **File Copy**: Generated files are automatically copied from `rust-parser/pkg/` to `src/wasm/` via `npm run build:wasm`
+1. **Rust Compilation**: `wasm-pack build --target web --out-dir pkg` generates JavaScript bindings and WASM binary in `tamil-seiyul-alagi/pkg/`
+2. **File Copy**: Generated files are automatically copied from `tamil-seiyul-alagi/pkg/` to `src/wasm/` via `npm run build:wasm`
 3. **Vite Bundling**: Vite processes the WASM files as static assets, serving them with proper MIME types
 4. **Dynamic Import**: Frontend uses `import('../wasm/thepulimaangani_parser.js')` for lazy loading
 5. **Runtime Connection**: JavaScript bindings initialize the WASM module and expose the `parse_poem()` function

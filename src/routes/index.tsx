@@ -165,7 +165,6 @@ function App() {
             <div className="space-y-4">
               {(() => {
                 try {
-                  debugger;
                   const data = JSON.parse(result);
                   return (
                     <div className="space-y-6">
