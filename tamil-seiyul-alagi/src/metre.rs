@@ -1,10 +1,9 @@
-//! Metre (பாவகை) detection.
-
 use serde::{Deserialize, Serialize};
-use super::foot::Foot;
-use super::talai::Talai;
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+use crate::foot::Foot;
+use crate::talai::Talai;
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum MetreType {
     Venpaa,
     Asiriyappaa,
@@ -18,7 +17,6 @@ pub fn detect_metre(feet: &[Foot], _talai: &[Talai], no_detect: bool) -> Option<
         return None;
     }
 
-    // Very simplified detection (real version would use CheckVenpaa etc.)
     if feet.len() >= 4 {
         Some(MetreType::Venpaa)
     } else {

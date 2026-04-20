@@ -1,7 +1,6 @@
-//! Talai (தளை) linkage analysis.
-
 use serde::{Deserialize, Serialize};
-use super::foot::Foot;
+
+use crate::foot::Foot;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum TalaiType {
@@ -21,10 +20,10 @@ pub struct Talai {
 pub fn analyze_talai(feet: &[Foot]) -> Vec<Talai> {
     feet.windows(2)
         .enumerate()
-        .map(|(i, _w)| Talai {
+        .map(|(i, _)| Talai {
             from_foot: i,
             to_foot: i + 1,
-            talai_type: TalaiType::VenTalai, // default for demo
+            talai_type: TalaiType::VenTalai,
             is_valid: true,
         })
         .collect()

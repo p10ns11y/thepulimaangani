@@ -1,17 +1,16 @@
-//! Foot (சீர்) grouping using traditional Tamil names (WordType from original PHP).
-
 use serde::{Deserialize, Serialize};
-use super::syllable::Syllable;
+
+use crate::syllable::Syllable;
+
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Foot {
     pub syllables: Vec<Syllable>,
-    pub foot_type: String, // "tEmA", "puLimA", "kUviLa_m", etc.
+    pub foot_type: String,
 }
 
 pub fn group_into_feet(syllables: &[Syllable]) -> Vec<Foot> {
-    // Simplified but correct grouping (2–4 syllables per foot)
-    // Full WordType mapping would go here in production
+    // Simplified version - improve with full WordType map later
     syllables
         .chunks(2)
         .enumerate()
