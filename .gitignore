@@ -133,6 +133,7 @@ vite.config.ts.timestamp-*
 .vite/
 
 # Rust build output
+target/
 rust-parser/target/
 tamil-seiyul-alagi/target/
 
