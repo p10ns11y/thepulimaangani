@@ -1,4 +1,9 @@
-# Thepulimaangani - Tamil Prosody Parser
+# Thepulimaangani 
+
+Language and grammar tools
+
+
+## Tamil Prosody Parser
 
 A modern web application for analyzing Tamil poetry prosody, built with React, Rust WebAssembly, and TanStack Start. thepulimaangani provides detailed analysis of Tamil verses including syllable classification (நேர்/நிரை), foot types, metre identification, and prosodic structure.
 
@@ -10,10 +15,12 @@ This project is a complete rewrite of the original [Avalokitam](https://github.c
 
 - **Syllable Analysis**: Classifies syllables as நேர் (Ner) or நிரை (Nirai)
 - **Foot Classification**: Identifies traditional Tamil prosodic feet (தேமா, புளிமா, கூவிளம், etc.)
-- **Metre Detection**: Recognizes metre types like வெண்பா, வெண்கலிப்பா, etc.
+- **Metre Detection**: Recognizes metre types like வெண்பா, வெண்கலிப்பா, ஆசிரியப்பா, and கலிப்பா
 - **Letter Counting**: Counts vowels, consonants, and special Tamil characters
+- **Foot Group Calculation**: Analyzes and calculates foot groups based on traditional rules
 - **Bond Analysis**: Analyzes talai (prosodic linkages) between feet
 - **Real-time Parsing**: Instant analysis of Tamil text input
+- **Export Functionality**: Export analysis results as JSON for further processing
 
 ## Installation
 
@@ -23,17 +30,21 @@ This project is a complete rewrite of the original [Avalokitam](https://github.c
 - Rust 1.70 or higher (for building the WebAssembly parser)
 - wasm-pack (for WebAssembly compilation)
 
+### Prerequisites
+
+- `rsync` (linux cli tool) to sync prosody rust wasm build sync with web app 
+- Otherwise use `build:wasm:old` which uses `cp`
+
 ### Install Dependencies
 
 ```bash
-# Install Node.js dependencies
-npm install
-
 # Install wasm-pack (one-time setup for Rust WebAssembly builds)
 cargo install wasm-pack
+```
 
-# Build the Rust WebAssembly parser and copy files to frontend
-npm run build:wasm
+```bash
+# Install Node.js dependencies
+pnpm install
 ```
 
 ## Running the Application
@@ -41,51 +52,35 @@ npm run build:wasm
 ### Development Mode
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
-The application will be available at `http://localhost:3000`. The development server will automatically rebuild when you make changes to the frontend code, but you'll need to run `npm run build:wasm` if you modify the Rust parser.
+The application will be available at `http://localhost:3000`. 
+
+The development server will automatically rebuild when you make changes to the frontend code, but you'll need to run `npm run build:wasm` if you modify the Rust parser.
 
 ### Production Build
 
 ```bash
-npm run build
+pnpm run build
+pnpm run preview
 ```
 
 The build process automatically builds the WebAssembly parser and bundles it with the frontend application.
 
 ## Testing
 
-The project includes comprehensive tests for both the Rust WebAssembly parser and the React frontend, achieving **90%+ code coverage** for Rust and **80%+ coverage** for frontend components.
+The project includes comprehensive tests for both the Rust WebAssembly parser and the React frontend.
 
 ### Coverage Results
 - **Rust Code**: 90.08% line coverage (336/373 lines covered)
 - **Frontend**: 4 comprehensive tests covering input validation, Tamil text recognition, and component behavior
 - **Total Tests**: 29 tests across both Rust and frontend
 
-### Running Tests
-
-```bash
-# Run all tests (Rust + Frontend)
-npm run test
-
-# Run only Rust tests
-npm run test:rust
-
-# Run only frontend tests
-npm run test:frontend
-
-# Run frontend tests in watch mode (for development)
-npm run test:watch
-
-# Run Rust tests with coverage (requires cargo-tarpaulin)
-cd rust-parser && cargo tarpaulin --ignore-tests
-```
-
 ### Test Coverage
 
 - **Rust Tests**: 21 unit and integration tests covering core parsing functions, metre detection, bond analysis, and error handling
-- **Frontend Tests**: 4 tests covering input validation, Tamil text recognition, and component behavior
+- **Frontend Tests**: 4 tests covering input validation, Tamil Unicode recognition, and component behavior
 
 ### Test Categories
 
@@ -103,6 +98,28 @@ cd rust-parser && cargo tarpaulin --ignore-tests
 - **Coverage**: cargo-tarpaulin for Rust, configured for future frontend coverage reporting
 - **CI/CD**: Configured test scripts ready for automated pipelines
 
+### Running Tests (In Progress)
+
+```bash
+# Run all tests (Rust + Frontend)
+npm run test
+
+# Run only Rust tests
+npm run test:rust
+
+# Run only frontend tests
+npm run test:frontend
+
+# Run Rust tests with coverage (requires cargo-tarpaulin)
+# Total rethink, machine-first approach prosody
+cd tamil-seiyul-alagi && cargo tarpaulin
+
+# Main prosody parser implementation
+cd tamil-seiyul-alagi && cargo tarpaulin
+```
+
+`rust-parser` folder contains quick prototype build based on original avalokitam. Not feature complete 
+
 ## Architecture
 
 Thepulimaangani consists of:
@@ -113,25 +130,32 @@ Thepulimaangani consists of:
 
 See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed technical documentation.
 
+## Study Materials
+
+Reference materials and documentation are available in [.grok/study-materials/](./.grok/study-materials/) for development and research purposes.
+
 ## Usage
 
-1. Enter Tamil poetry text in the textarea
+1. Enter Tamil poetry text in the textarea (or use the "Load Sample Poem" button)
 2. Click "Parse Poem" to analyze the prosody
 3. View detailed analysis including:
    - Original text
    - Metre type
    - Letter counts (vowels, consonants, etc.)
-   - Prosodic structure with syllables and feet
+   - Prosodic structure with syllables, feet, and foot groups
    - Error messages if parsing fails
+4. Export results as JSON or copy to clipboard for further use
 
 ## Contribution
 
-It will be mainly AI agents lives in the cosmos and in Earth
+Contributions are welcome! The project embraces a cosmic AI collaboration model:
 
-- [creators.md](/trinity-and-native-agents/creators.md) — Feature creation & pollinators (new life)
-- [maintainers.md](/trinity-and-native-agents/maintainers.md) — Krishna avatars (preservation & balance)
-- [renewers.md](/trinity-and-native-agents/renewers.md) — Shiva’s fierce forms (renewal through pruning)
-- [ainthinai.md](/trinity-and-native-agents/ainthinai.md)** — Ainthinai Tribal Earth Guardians (local land council)
+- **[Creators](/trinity-and-native-agents/creators.md)** — Feature creation & pollinators (new life)
+- **[Maintainers](/trinity-and-native-agents/maintainers.md)** — Krishna avatars (preservation & balance)
+- **[Renewers](/trinity-and-native-agents/renewers.md)** — Shiva's fierce forms (renewal through pruning)
+- **[Ainthinai](/trinity-and-native-agents/ainthinai.md)** — Ainthinai Tribal Earth Guardians (local land council)
+
+Please see individual files for contribution guidelines and areas of focus.
 
 ## License
 

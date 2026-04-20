@@ -1,24 +1,16 @@
 // Tamil Character Set - Complete 247 Characters
 // Clean & Idiomatic Rust version for thepulimaangani
 
-pub const VOWELS: [&str; 12] = [
-    "அ", "ஆ", "இ", "ஈ", "உ", "ஊ",
-    "எ", "ஏ", "ஐ", "ஒ", "ஓ", "ஔ",
-];
+pub const VOWELS: [&str; 12] = ["அ", "ஆ", "இ", "ஈ", "உ", "ஊ", "எ", "ஏ", "ஐ", "ஒ", "ஓ", "ஔ"];
 
 pub const PURE_CONSONANTS: [&str; 18] = [
-    "க்", "ங்", "ச்", "ஞ்", "ட்", "ண்",
-    "த்", "ந்", "ப்", "ம்", "ய்", "ர்",
-    "ல்", "வ்", "ழ்", "ள்", "ற்", "ன்",
+    "க்", "ங்", "ச்", "ஞ்", "ட்", "ண்", "த்", "ந்", "ப்", "ம்", "ய்", "ர்", "ல்", "வ்", "ழ்", "ள்", "ற்", "ன்",
 ];
 
 pub const AYTHAM: &str = "ஃ";
 
 /// Vowel signs corresponding to each vowel index
-const VOWEL_SIGNS: [&str; 12] = [
-    "", "ா", "ி", "ீ", "ு", "ூ",
-    "ெ", "ே", "ை", "ொ", "ோ", "ௌ",
-];
+const VOWEL_SIGNS: [&str; 12] = ["", "ா", "ி", "ீ", "ு", "ூ", "ெ", "ே", "ை", "ொ", "ோ", "ௌ"];
 
 /// Generates the 12×18 Uyirmei matrix at runtime
 pub fn generate_uyirmei_matrix() -> Vec<Vec<String>> {
@@ -86,8 +78,8 @@ mod tests {
     #[test]
     fn test_first_uyirmei() {
         let matrix = generate_uyirmei_matrix();
-        assert_eq!(matrix[0][0], "க");   // க் + அ
-        assert_eq!(matrix[0][1], "ங");   // ங் + அ
-        assert_eq!(matrix[1][0], "கா");  // க் + ஆ
+        assert_eq!(matrix[0][0], "க"); // க் + அ
+        assert_eq!(matrix[0][1], "ங"); // ங் + அ
+        assert_eq!(matrix[1][0], "கா"); // க் + ஆ
     }
 }

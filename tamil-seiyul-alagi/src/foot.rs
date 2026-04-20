@@ -2,7 +2,6 @@ use serde::{Deserialize, Serialize};
 
 use crate::syllable::Syllable;
 
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Foot {
     pub syllables: Vec<Syllable>,

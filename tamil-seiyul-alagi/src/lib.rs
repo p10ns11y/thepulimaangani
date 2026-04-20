@@ -2,22 +2,24 @@ mod error;
 mod foot;
 mod letter;
 mod metre;
+mod presentation;
+mod prosodic_sequence;
 mod prosodic_unit;
 mod syllable;
 mod syllable_builder;
 mod talai;
-mod types;
-mod presentation;
 mod tamil_chars;
-mod prosodic_sequence;
+mod types;
 
 pub use prosodic_sequence::ProsodicSequence;
+
+use wasm_bindgen::prelude::*;
 
 pub use error::ParseError;
 pub use foot::Foot;
 pub use letter::Letter;
 pub use metre::MetreType;
-pub use prosodic_unit::{ProsodicUnit, Vowel, Consonant};
+pub use prosodic_unit::{Consonant, ProsodicUnit, Vowel};
 pub use syllable::{Syllable, SyllableType};
 pub use syllable_builder::SyllableBuilder;
 pub use talai::Talai;
@@ -52,6 +54,17 @@ pub fn parse_poem(text: &str, options: ParseOptions) -> Result<ParseResult, Pars
         metre_type: metre,
         errors: vec![],
     })
+}
+
+#[wasm_bindgen]
+pub fn parse_poem_wasm(text: &str) -> String {
+    let options = ParseOptions::default();
+    match parse_poem(text, options) {
+        Ok(result) => {
+            serde_json::to_string(&result).unwrap_or_else(|_| "Serialization error".to_string())
+        }
+        Err(e) => format!("Error: {}", e),
+    }
 }
 
 fn normalize_text(text: &str, uyir_u: bool) -> String {

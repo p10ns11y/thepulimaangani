@@ -1,5 +1,5 @@
+use crate::{Foot, MetreType, Syllable, Talai};
 use serde::{Deserialize, Serialize};
-use crate::{Foot, Syllable, Talai, MetreType};
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ParseOptions {

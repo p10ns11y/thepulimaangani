@@ -19,7 +19,7 @@
 - package.json exists at the repository root.
 - public/ exists at the repository root.
 - README.md exists at the repository root.
-- rust-parser/ exists at the repository root.
+- tamil-seiyul-alagi/ exists at the repository root.
 - src/ exists at the repository root.
 - table.csv exists at the repository root.
 - test_parser.js exists at the repository root.
@@ -33,7 +33,7 @@
 ## Build, Test, and Development Commands
 - npm run dev  # vite dev --port 3000
 - npm run build  # npm run build:wasm && vite build
-- npm run build:wasm  # cd rust-parser && wasm-pack build --target web --out-dir pkg && cd .. && cp rust-parser/pkg/* src/wasm/
+- npm run build:wasm  # bash build/tamil_seiyul_alagi_wasm.sh
 - npm run build:only  # vite build
 - npm run preview  # vite preview
 - npm run test  # vitest run

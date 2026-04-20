@@ -67,7 +67,7 @@ function App() {
       // Dynamic import of WASM module
       const wasm = await import('../wasm/thepulimaangani_parser.js')
       await wasm.default()  // Initialize WASM
-      const parseResult = wasm.parse_poem(poemText)
+      const parseResult = wasm.parse_poem_wasm(poemText)
 
       // Check if parsing returned an error
       if (parseResult.includes('Error') || parseResult.trim() === '') {
@@ -103,7 +103,9 @@ function App() {
             Try analyzing traditional Tamil poetry. The parser supports major metres like வெண்பா, வெண்கலிப்பா, ஆசிரியப்பா, and கலிப்பா.
           </p>
           <button
-            onClick={() => setPoemText('கற்றது கை செயல்\nஅறிவது ஆவது\nஇருந்தது இல்லை\nஇல்லாதது வரும்')}
+            onClick={() => setPoemText(
+              "சுடர்த்தொடீஇ கேளாய் தெருவில்நாம் ஆடும்\nமணற்சிற்றில் காலில் சிதையா அடைச்சிய\nகோதை பரிந்து வரிப்பந்து கொண்டோடி\nநோதக்க செய்யும் சிறுபட்டி மேல்ஓர்நாள்\nஅன்னையும் யானும் இருந்தேமா இல்லிரே\nஉண்ணுநீர் வேட்டேன் எனவந்தாற் கன்னை\nஅடர்பொற் சிரகத்தால் வாக்கிச் சுடரிழாய்\nஉண்ணுநீர் ஊட்டிவா என்றாள் எனயானும்\nதன்னை அறியாது சென்றேன்மற் றென்னை\nவளைமுன்கை பற்றி நலியத் தெருமந்திட்(டு)\nஅன்னாய் இவனொருவன் செய்ததுகாண்’ என்றேனா\nஅன்னை அலறிப் படர்தரத் தன்னையான்\nஉண்ணுநீர் விக்கினான் என்றேனா அன்னையும்\nதன்னைப் புறம்பழித்து நீவமற் றென்னைக்\nகடைக்கணால் கொல்வான்போல் நோக்கி நகைக்கூட்டம்\nசெய்தானக் கள்வன் மகன்",
+            )}
             className="px-4 py-2 text-sm bg-white text-[var(--sea-ink)] rounded border border-[var(--line)] hover:bg-[var(--surface)] transition"
           >
             Load Sample Poem
@@ -184,12 +186,12 @@ function App() {
                            </div>
                            <div className="bg-gray-50 p-3 rounded">
                              <span className="text-gray-600">Syllables:</span>
-                             <span className="ml-2 font-medium text-gray-900">{data.lines.reduce((sum: number, line: any) => sum + line.feet.reduce((s: number, foot: any) => s + foot.syllables.length, 0), 0)}</span>
+                             <span className="ml-2 font-medium text-gray-900">{data.syllables.length}</span>
                            </div>
-                           <div className="bg-gray-50 p-3 rounded">
+                           {/* <div className="bg-gray-50 p-3 rounded">
                              <span className="text-gray-600">Bonds:</span>
                              <span className="ml-2 font-medium text-gray-900">{data.word_bond.match(/Total bonds: (\d+)/)?.[1] || 'N/A'}</span>
-                           </div>
+                           </div> */}
                          </div>
                        </div>
 
@@ -199,13 +201,13 @@ function App() {
                            <p className="text-gray-700 font-medium">{data.metre_type}</p>
                          </div>
                          <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
-                           <h4 className="font-medium text-gray-900 mb-1">Vowels</h4>
-                           <p className="text-gray-700 font-medium">{data.letter_count.vowel}</p>
+                           <h4 className="font-medium text-gray-900 mb-1">Letter Count</h4>
+                           <p className="text-gray-700 font-medium">{data.letter_count}</p>
                          </div>
-                         <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
+                         {/* <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
                            <h4 className="font-medium text-gray-900 mb-1">Consonants</h4>
                            <p className="text-gray-700 font-medium">{data.letter_count.consonant}</p>
-                         </div>
+                         </div> */}
                          <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
                            <h4 className="font-medium text-gray-900 mb-1">Vikalpa</h4>
                            <p className="text-gray-700 font-medium">{data.vikalpa_count}</p>
