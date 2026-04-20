@@ -76,7 +76,7 @@ mod tests {
         assert_eq!(all.len(), 247);
     }
 
-    #[test]serialize
+    #[test]
     fn test_matrix_shape() {
         let matrix = generate_uyirmei_matrix();
         assert_eq!(matrix.len(), 12);

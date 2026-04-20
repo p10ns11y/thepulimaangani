@@ -106,19 +106,28 @@ fn test_vanjippaa_variations() {
 
 #[test]
 fn test_uyir_u_elision_annotation() {
-    // Test that uyir-U elision hint appears on known cases
-    let text = "கற்றது";
-    let opts = ParseOptions { alt_scansion: true, ..Default::default() };
-    let result = parse_poem(text, opts).expect("parse failed");
+    let input = "கற்றது";
+    println!("\n=== Testing uyir-U elision on: '{}' ===", input);
 
-    let has_uyir_hint = result.syllables.iter().any(|s| {
-        s.split_hint.as_ref()
-            .map_or(false, |h| h.contains("uyir-U"))
+    let result = parse_poem(input, ParseOptions::default()).unwrap();
+    
+    println!("Total syllables: {}", result.syllables.len());
+    
+    for (i, syl) in result.syllables.iter().enumerate() {
+        println!("  [{}] text='{}' | type={:?} | hint={:?}", 
+                 i, syl.text, syl.syllable_type, syl.split_hint);
+    }
+
+    let has_uyir_u = result.syllables.iter().any(|s| {
+        s.split_hint.as_ref().map_or(false, |h| h.contains("uyir-U"))
     });
 
+    println!("Has uyir-U annotation: {}", has_uyir_u);
+
     assert!(
-        has_uyir_hint,
-        "uyir-U elision annotation should be present for 'கற்றது'"
+        has_uyir_u,
+        "uyir-U elision annotation should be present for '{}'. Check if last unit reached finalize()",
+        input
     );
 }
 

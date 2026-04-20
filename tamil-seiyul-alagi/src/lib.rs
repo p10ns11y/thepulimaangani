@@ -9,6 +9,9 @@ mod talai;
 mod types;
 mod presentation;
 mod tamil_chars;
+mod prosodic_sequence;
+
+pub use prosodic_sequence::ProsodicSequence;
 
 pub use error::ParseError;
 pub use foot::Foot;

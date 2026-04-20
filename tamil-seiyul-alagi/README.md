@@ -1,5 +1,3 @@
-# Layers in Thepulimaangani
-
 **Date**: April 19, 2026
 
 ## Philosophy
