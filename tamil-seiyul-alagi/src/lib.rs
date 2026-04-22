@@ -58,7 +58,8 @@ pub fn parse_poem(text: &str, options: ParseOptions) -> Result<ParseResult, Pars
 
 #[wasm_bindgen]
 pub fn parse_poem_wasm(text: &str) -> String {
-    let options = ParseOptions::default();
+    let mut options = ParseOptions::default();
+    options.uyir_u = true;
     match parse_poem(text, options) {
         Ok(result) => {
             serde_json::to_string(&result).unwrap_or_else(|_| "Serialization error".to_string())

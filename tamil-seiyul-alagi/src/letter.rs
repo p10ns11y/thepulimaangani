@@ -15,7 +15,6 @@ pub fn to_prosodic_units(graphemes: &[&str]) -> Vec<ProsodicUnit> {
             // Pure Vowels (12)
             if VOWELS.contains(&g) {
                 let idx = VOWELS.iter().position(|&v| v == g).unwrap();
-                let is_long = matches!(idx, 1 | 3 | 5 | 7 | 8 | 10 | 11);
                 return Some(ProsodicUnit::Vowel(Vowel::from_index(idx)));
             }
 
