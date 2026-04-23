@@ -37,6 +37,9 @@ collect_state() {
     echo -e "${C_PHASE1}║ PHASE 1: Collecting Repository State                       ║${C_RESET}"
     echo -e "${C_PHASE1}╚════════════════════════════════════════════════════════════╝${C_RESET}\n"
 
+    # Capture original branch FIRST, before any checkout
+    ORIGINAL_BRANCH=$(git branch --show-current)
+
     echo -e "${C_PHASE1}→ Fetching latest from remote...${C_RESET}"
     git fetch --all --prune --quiet
 
@@ -50,11 +53,14 @@ collect_state() {
     fi
     [ -z "$MAIN_BRANCH" ] && { echo -e "${C_ERROR}ERROR: No default branch found${C_RESET}"; exit 1; }
 
+    # Make sure local main branch is also up to date (use --rebase for squash-merge safety)
+    git checkout "$MAIN_BRANCH" --quiet 2>/dev/null || true
+    git pull --rebase --autostash --quiet 2>/dev/null || git pull --rebase --quiet 2>/dev/null || true
+
     echo "   Default branch:     $MAIN_BRANCH"
     MAIN_COMMIT=$(git rev-parse "origin/$MAIN_BRANCH")
     echo "   Latest commit:      $(git rev-parse --short $MAIN_COMMIT)"
 
-    ORIGINAL_BRANCH=$(git branch --show-current)
     echo "   Current branch:     $ORIGINAL_BRANCH"
 
     if ! git diff --quiet || ! git diff --cached --quiet; then
@@ -153,23 +159,20 @@ sync() {
 
             rebase)
                 branch="$arg"
-                echo "→ Rebasing $branch..."
+                echo "→ Resetting $branch to $MAIN_BRANCH..."
+
                 if [ "$DRY_RUN" = "1" ]; then
-                    echo "   [DRY] Would rebase with -X ours"
+                    echo "   [DRY] Would reset $branch to $MAIN_BRANCH"
                     continue
                 fi
+
                 if ! git checkout "$branch" --quiet 2>/dev/null; then
                     echo "   ✗ Checkout failed — skipping"
                     continue
                 fi
-                if git rebase -X ours "$MAIN_BRANCH" --quiet 2>/dev/null; then
-                    echo "   ✓ Rebase successful"
-                else
-                    git rebase --abort 2>/dev/null || true
-                    git branch -m "$branch" "$branch--to-be-deleted"
-                    git checkout -b "$branch" "$MAIN_BRANCH" --quiet
-                    echo "   ✓ Recreated cleanly"
-                fi
+
+                git reset --hard "origin/$MAIN_BRANCH"
+                echo "   ✓ Reset to $MAIN_BRANCH"
                 ;;
 
             cleanup_deleted)
@@ -226,7 +229,7 @@ main() {
     echo "  ███████║   ██║   ██║ ╚████║╚██████╗"
     echo "  ╚══════╝   ╚═╝   ╚═╝  ╚═══╝ ╚═════╝"
     echo ""
-    echo "sync-branches — Synchronizer"
+    echo "sync-branches — Clean One-Color-Per-Phase Synchronizer"
     echo ""
 
     collect_state
