@@ -134,7 +134,7 @@ vite.config.ts.timestamp-*
 
 # Rust build output
 target/
-rust-parser/target/
+rust-parser-prototype/target/
 tamil-seiyul-alagi/target/
 
 # WebAssembly build output (generated files)

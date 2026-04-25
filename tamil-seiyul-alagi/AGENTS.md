@@ -23,6 +23,6 @@ Rust WebAssembly parser for high-performance Tamil prosody analysis. Implements 
 ## Rules
 - Maintain 90%+ test coverage
 - Run `cargo test` after changes
-- Rebuild WASM with `npm run build:wasm`
+- Rebuild WASM with `pnpm run build:wasm`
 - No direct pkg/ edits (use wasm-pack)
 - Validate Tamil input handling

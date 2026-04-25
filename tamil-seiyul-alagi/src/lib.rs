@@ -1,13 +1,13 @@
 mod error;
 mod foot;
 mod letter;
+mod linkage;
 mod metre;
 mod presentation;
 mod prosodic_sequence;
 mod prosodic_unit;
 mod syllable;
 mod syllable_builder;
-mod talai;
 mod tamil_chars;
 mod types;
 
@@ -18,12 +18,12 @@ use wasm_bindgen::prelude::*;
 pub use error::ParseError;
 pub use foot::Foot;
 pub use letter::Letter;
+pub use linkage::{Linkage, LinkageType, Talai, TalaiType};
 pub use metre::MetreType;
 pub use prosodic_unit::{Consonant, ProsodicUnit, Vowel};
 pub use syllable::{Syllable, SyllableType};
 pub use syllable_builder::SyllableBuilder;
-pub use talai::Talai;
-pub use types::{ParseOptions, ParseResult};
+pub use types::{MetreHypothesis, ParseOptions, ParseResult, RuleId};
 
 use unicode_segmentation::UnicodeSegmentation;
 
@@ -39,8 +39,9 @@ pub fn parse_poem(text: &str, options: ParseOptions) -> Result<ParseResult, Pars
     let units = letter::to_prosodic_units(&graphemes);
     let syllables = SyllableBuilder::new(options.alt_scansion).build(&units);
     let feet = foot::group_into_feet(&syllables);
-    let talai = talai::analyze_talai(&feet);
-    let metre = metre::detect_metre(&feet, &talai, options.no_detect);
+    let linkage = linkage::analyze_linkage(&feet);
+    let metre_hypotheses = metre::detect_metre_hypotheses(&feet, &linkage, options.no_detect);
+    let metre = metre_hypotheses.first().map(|h| h.metre_type.clone());
 
     Ok(ParseResult {
         original_text: text.to_string(),
@@ -49,9 +50,15 @@ pub fn parse_poem(text: &str, options: ParseOptions) -> Result<ParseResult, Pars
         vikalpa_count: if options.alt_scansion { 1 } else { 0 },
         syllables,
         feet,
-        talai,
+        talai: linkage.clone(),
+        linkage,
         lines: vec![],
         metre_type: metre,
+        confidence: metre_hypotheses.first().map_or(0, |h| h.aggregate_score),
+        provenance: metre_hypotheses
+            .first()
+            .map_or_else(Vec::new, |h| h.rule_ids.clone()),
+        top_k_metre_hypotheses: metre_hypotheses,
         errors: vec![],
     })
 }

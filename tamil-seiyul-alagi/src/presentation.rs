@@ -7,7 +7,7 @@
 //!
 //! IMPORTANT: This layer should NEVER be used inside the core calculation logic.
 
-use crate::{Foot, MetreType, ParseResult, Syllable, Talai};
+use crate::{Foot, Linkage, MetreType, ParseResult, Syllable};
 
 pub struct DisplayResult {
     pub original_text: String,
@@ -42,7 +42,7 @@ pub fn to_display(result: &ParseResult) -> DisplayResult {
         metre_type: result.metre_type.as_ref().map(|m| format_metre(m)),
         syllables: result.syllables.iter().map(to_display_syllable).collect(),
         feet: result.feet.iter().map(to_display_foot).collect(),
-        talai: result.talai.iter().map(to_display_talai).collect(),
+        talai: result.linkage.iter().map(to_display_talai).collect(),
     }
 }
 
@@ -78,14 +78,14 @@ fn to_display_foot(f: &Foot) -> DisplayFoot {
     }
 }
 
-fn to_display_talai(t: &Talai) -> DisplayTalai {
+fn to_display_talai(t: &Linkage) -> DisplayTalai {
     DisplayTalai {
         from: t.from_foot,
         to: t.to_foot,
-        talai_type: match t.talai_type {
-            crate::talai::TalaiType::VenTalai => "வெண்டளை".to_string(),
-            crate::talai::TalaiType::AsiriyaTalai => "ஆசிரியத்தளை".to_string(),
-            crate::talai::TalaiType::Other(ref s) => s.clone(),
+        talai_type: match t.linkage_type {
+            crate::linkage::LinkageType::Ven => "வெண்டளை".to_string(),
+            crate::linkage::LinkageType::Asiriya => "ஆசிரியத்தளை".to_string(),
+            crate::linkage::LinkageType::Other(ref s) => s.clone(),
         },
         is_valid: t.is_valid,
     }

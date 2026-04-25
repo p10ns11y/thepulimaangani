@@ -19,12 +19,6 @@ impl ProsodicSequence {
             original_text,
         };
 
-        // === DEBUG OUTPUT ===
-        println!("\n[ProsodicSequence] Created");
-        println!("  Original Text : {}", seq.original_text);
-        println!("  Numeric Seq   : {}", seq.as_string());
-        println!("  Length        : {}", seq.sequence.len());
-
         seq
     }
 

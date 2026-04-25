@@ -32,8 +32,7 @@ This project is a complete rewrite of the original [Avalokitam](https://github.c
 
 ### Prerequisites
 
-- `rsync` (linux cli tool) to sync prosody rust wasm build sync with web app 
-- Otherwise use `build:wasm:old` which uses `cp`
+- `rsync` (Linux CLI tool) to sync generated Rust WASM artifacts into the frontend `src/wasm/` directory
 
 ### Install Dependencies
 
@@ -57,7 +56,7 @@ pnpm run dev
 
 The application will be available at `http://localhost:3000`. 
 
-The development server will automatically rebuild when you make changes to the frontend code, but you'll need to run `npm run build:wasm` if you modify the Rust parser.
+The development server will automatically rebuild when you make changes to the frontend code, but you'll need to run `pnpm run build:wasm` if you modify the Rust parser.
 
 ### Production Build
 
@@ -102,13 +101,13 @@ The project includes comprehensive tests for both the Rust WebAssembly parser an
 
 ```bash
 # Run all tests (Rust + Frontend)
-npm run test
+pnpm run test
 
 # Run only Rust tests
-npm run test:rust
+pnpm run test:rust
 
 # Run only frontend tests
-npm run test:frontend
+pnpm run test:frontend
 
 # Run Rust tests with coverage (requires cargo-tarpaulin)
 # Total rethink, machine-first approach prosody
@@ -118,7 +117,7 @@ cd tamil-seiyul-alagi && cargo tarpaulin
 cd tamil-seiyul-alagi && cargo tarpaulin
 ```
 
-`rust-parser` folder contains quick prototype build based on original avalokitam. Not feature complete 
+`rust-parser-prototype/` contains a quick prototype build based on original Avalokitam. It is archived for reference and is not meant to be extended.
 
 ## Architecture
 

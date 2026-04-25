@@ -19,7 +19,7 @@ React/TypeScript frontend using TanStack Start/Router, Vite, Tailwind CSS. Focus
 
 ## Rules
 - Dynamic import WASM modules for performance
-- Handle Tamil text input/output properly (Unicode support)
+- Handle Tamil text input/output properly (Unicode sor test/validation strategy.upport)
 - Test components with Vitest
-- Run `npm run typecheck` after changes
+- Run `pnpm run typecheck` after changes
 - No direct WASM file edits (use build scripts)
