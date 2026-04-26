@@ -738,23 +738,23 @@ html[data-look="redfill"] .luxe-prosody-card {
     0 4px 24px color-mix(in oklab, var(--gem-diamond) 8%, transparent);
 }
 
-/* Select dropdown — solid underpaint so portaled menu never shows page text through; gradient is tint only */
+/* Select dropdown — real (light): same language as .luxe-prosody-card + cool lagoon air */
 .luxe-select-content {
   isolation: isolate;
-  /* Fully opaque base (no alpha in the fill itself) */
   background-color: var(--card);
   background-image: linear-gradient(
-    170deg,
-    color-mix(in oklab, var(--popover) 12%, var(--card) 88%) 0%,
-    color-mix(in oklab, var(--card) 8%, var(--surface-2) 92%) 100%
+    165deg,
+    color-mix(in oklab, var(--diamond-ice) 28%, var(--surface-1) 72%) 0%,
+    color-mix(in oklab, var(--surface-1) 55%, var(--surface-2) 45%) 45%,
+    color-mix(in oklab, var(--surface-2) 90%, var(--gem-ruby) 0.8%) 100%
   );
   color: var(--popover-foreground);
-  border: 1px solid color-mix(in oklab, var(--rim) 72%, var(--border) 28%);
+  border: 1px solid var(--rim);
   box-shadow:
-    0 1px 0 color-mix(in oklab, var(--inset-glint) 50%, white 50%) inset,
     0 1px 0 var(--diamond-glint) inset,
-    0 8px 28px color-mix(in oklab, var(--foreground) 3.4%, transparent),
-    0 0 0 1px color-mix(in oklab, var(--rim) 22%, transparent);
+    0 10px 32px color-mix(in oklab, var(--foreground) 3.2%, transparent),
+    0 0 0 1px color-mix(in oklab, var(--lagoon) 7%, var(--rim) 38%, transparent 55%),
+    0 4px 18px color-mix(in oklab, var(--lagoon) 4.5%, transparent);
 }
 
 html[data-look="redfill"] .luxe-select-content {
@@ -777,9 +777,12 @@ html[data-look="redfill"] .luxe-select-content {
 }
 
 .luxe-select-content .luxe-select-scroll-edge {
-  color: var(--muted-foreground);
-  background-color: color-mix(in oklab, var(--card) 55%, var(--surface-2) 45%);
-  background-image: linear-gradient(180deg, var(--card) 0%, color-mix(in oklab, var(--surface-2) 20%, var(--card) 80%) 100%);
+  color: var(--sea-ink-soft);
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--diamond-ice) 35%, var(--card) 65%) 0%,
+    color-mix(in oklab, var(--surface-2) 25%, var(--card) 75%) 100%
+  );
 }
 
 html[data-look="redfill"] .luxe-select-content .luxe-select-scroll-edge {
@@ -793,11 +796,11 @@ html[data-look="redfill"] .luxe-select-content .luxe-select-scroll-edge {
 }
 
 .luxe-select-content [data-slot="select-scroll-up-button"] {
-  border-bottom: 1px solid color-mix(in oklab, var(--rim) 22%, transparent);
+  border-bottom: 1px solid color-mix(in oklab, var(--rim) 38%, var(--lagoon) 8%, transparent 54%);
 }
 
 .luxe-select-content [data-slot="select-scroll-down-button"] {
-  border-top: 1px solid color-mix(in oklab, var(--rim) 22%, transparent);
+  border-top: 1px solid color-mix(in oklab, var(--rim) 38%, var(--lagoon) 8%, transparent 54%);
 }
 
 html[data-look="redfill"] .luxe-select-content [data-slot="select-scroll-up-button"] {

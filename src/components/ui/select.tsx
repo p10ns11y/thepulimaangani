@@ -44,8 +44,13 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "flex w-fit items-center justify-between gap-1.5 rounded-lg border border-input bg-transparent py-2 pr-2 pl-2.5 text-sm whitespace-nowrap transition-colors outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 data-placeholder:text-muted-foreground data-[size=default]:h-8 data-[size=sm]:h-7 data-[size=sm]:rounded-[min(var(--radius-md),10px)] *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5",
-        "redfill:border-[var(--line)] redfill:bg-input/35 redfill:text-[var(--sea-ink)] redfill:hover:bg-input/55 redfill:focus-visible:border-[color-mix(in_oklab,var(--gem-yellow-sapphire)_55%,var(--rim)_45%)] redfill:focus-visible:ring-2 redfill:focus-visible:ring-[color-mix(in_oklab,var(--gem-diamond)_40%,var(--lagoon)_30%)] redfill:aria-invalid:border-destructive/50 redfill:aria-invalid:ring-destructive/50 [&_svg]:text-[var(--sea-ink-soft)]",
+        "flex w-fit items-center justify-between gap-1.5 rounded-lg border py-2 pr-2 pl-2.5 text-sm whitespace-nowrap transition-[color,box-shadow,background-color,border-color] outline-none select-none disabled:cursor-not-allowed disabled:opacity-50 data-placeholder:text-muted-foreground data-[size=default]:h-8 data-[size=sm]:h-7 data-[size=sm]:rounded-[min(var(--radius-md),10px)] *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5",
+        /* Real (light): card lift + lagoon focus — matches .luxe-prosody-card / luxe-select-content */
+        "border-[color-mix(in_oklab,var(--rim)_90%,var(--lagoon)_6%)] bg-[color-mix(in_oklab,var(--card)_88%,var(--diamond-ice)_12%)] text-foreground shadow-sm",
+        "hover:bg-[color-mix(in_oklab,var(--surface-2)_78%,var(--card)_22%)] hover:border-[color-mix(in_oklab,var(--rim)_75%,var(--lagoon)_14%)]",
+        "focus-visible:border-[var(--lagoon)] focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,var(--lagoon)_30%,transparent)]",
+        "aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20",
+        "redfill:border-[var(--line)] redfill:bg-input/35 redfill:text-[var(--sea-ink)] redfill:shadow-none redfill:hover:bg-input/55 redfill:focus-visible:border-[color-mix(in_oklab,var(--gem-yellow-sapphire)_55%,var(--rim)_45%)] redfill:focus-visible:ring-2 redfill:focus-visible:ring-[color-mix(in_oklab,var(--gem-diamond)_40%,var(--lagoon)_30%)] redfill:aria-invalid:border-destructive/50 redfill:aria-invalid:ring-destructive/50",
         "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
@@ -53,7 +58,7 @@ function SelectTrigger({
     >
       {children}
       <SelectPrimitive.Icon asChild>
-        <ChevronDownIcon className="pointer-events-none size-4 text-muted-foreground" />
+        <ChevronDownIcon className="pointer-events-none size-4 text-[var(--sea-ink-soft)]" />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   )
@@ -107,8 +112,7 @@ function SelectLabel({
     <SelectPrimitive.Label
       data-slot="select-label"
       className={cn(
-        "px-1.5 py-1 text-xs text-muted-foreground",
-        "redfill:font-semibold redfill:text-[var(--kicker)] redfill:tracking-wide",
+        "px-1.5 py-1 text-xs font-semibold tracking-wide text-[var(--kicker)]",
         className,
       )}
       {...props}
@@ -127,16 +131,16 @@ function SelectItem({
       className={cn(
         "relative flex w-full cursor-default items-center gap-1.5 rounded-md py-1.5 pr-8 pl-2 text-sm outline-none select-none",
         "text-popover-foreground",
-        /* Selected (current value): visible wash; keyboard highlight stacks below */
-        "data-[state=checked]:bg-primary/10 data-[state=checked]:text-foreground",
+        /* Real: lagoon wash; Redfill: dark gem wash */
+        "data-[state=checked]:bg-[color-mix(in_oklab,var(--lagoon)_12%,var(--diamond-ice)_88%)] data-[state=checked]:text-foreground",
         "redfill:data-[state=checked]:bg-[color:color-mix(in_oklab,var(--gem-diamond)_26%,oklch(0.3_0.06_24)_74%)]",
         "redfill:data-[state=checked]:text-[var(--sea-ink)]",
-        /* Keyboard / pointer “active line” */
-        "data-[highlighted]:text-accent-foreground",
-        "data-[highlighted]:bg-accent",
+        "data-[highlighted]:bg-[color-mix(in_oklab,var(--lagoon)_20%,var(--diamond-ice)_80%)] data-[highlighted]:text-foreground",
+        "data-[highlighted]:ring-1 data-[highlighted]:ring-inset data-[highlighted]:ring-[color-mix(in_oklab,var(--lagoon)_32%,var(--rim)_68%)]",
         "redfill:data-[highlighted]:bg-[color:color-mix(in_oklab,var(--lagoon)_42%,oklch(0.3_0.06_25)_58%)]",
+        "redfill:data-[highlighted]:ring-[var(--gem-yellow-sapphire)]/90",
         "redfill:data-[highlighted]:text-[var(--sea-ink)]",
-        "redfill:data-[highlighted]:ring-1 redfill:data-[highlighted]:ring-inset redfill:data-[highlighted]:ring-[var(--gem-yellow-sapphire)]/90",
+        "data-[highlighted][data-state=checked]:bg-[color-mix(in_oklab,var(--lagoon)_24%,var(--diamond-ice)_76%)]",
         "redfill:data-[highlighted][data-state=checked]:bg-[color:color-mix(in_oklab,var(--lagoon)_50%,oklch(0.32_0.07_25)_50%)]",
         "data-disabled:pointer-events-none data-disabled:opacity-50",
         "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
@@ -146,7 +150,7 @@ function SelectItem({
     >
       <span className="pointer-events-none absolute right-2 flex size-4 items-center justify-center">
         <SelectPrimitive.ItemIndicator>
-          <CheckIcon className="pointer-events-none size-4 text-primary redfill:text-[var(--gem-yellow-sapphire)]" />
+          <CheckIcon className="pointer-events-none size-4 text-[var(--lagoon-deep)] redfill:text-[var(--gem-yellow-sapphire)]" />
         </SelectPrimitive.ItemIndicator>
       </span>
       <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
