@@ -32,7 +32,7 @@ This project is a complete rewrite of the original [Avalokitam](https://github.c
 
 ### Prerequisites
 
-- `rsync` (Linux CLI tool) to sync generated Rust WASM artifacts into the frontend `src/wasm/` directory
+- `rsync` (optional but recommended for local dev) to sync `wasm-pack` output into `src/wasm/` — see [`build/rsync_rust_wasm_to_web.sh`](build/rsync_rust_wasm_to_web.sh). **Production** (Vercel, minimal CI) uses [`build/copy_wasm_to_src.sh`](build/copy_wasm_to_src.sh) with `cp` when `rsync` is not installed ([`build/tamil_seiyul_alagi_wasm.sh`](build/tamil_seiyul_alagi_wasm.sh) picks automatically).
 
 ### Install Dependencies
 

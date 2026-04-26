@@ -24,7 +24,7 @@ isProject: false
 
 ## Why this is needed
 
-- [`package.json`](package.json) already chains **`pnpm run build` → `build:wasm` → Vite** ([`build/tamil_seiyul_alagi_wasm.sh`](build/tamil_seiyul_alagi_wasm.sh) → [`tamil-seiyul-alagi` + `rsync` to `src/wasm/`](build/rsync_rust_wasm_to_web.sh)).
+- [`package.json`](package.json) already chains **`pnpm run build` → `build:wasm` → Vite** ([`build/tamil_seiyul_alagi_wasm.sh`](build/tamil_seiyul_alagi_wasm.sh) → [`rsync_rust_wasm_to_web.sh`](build/rsync_rust_wasm_to_web.sh) if `rsync` exists, else [`copy_wasm_to_src.sh`](build/copy_wasm_to_src.sh)).
 - [`src/wasm/`](.gitignore) is **gitignored** ([`AGENTS.md`](AGENTS.md)), so **CI and every host** must **generate** the WASM on each build.
 - Default **Node-only** images (Vercel, Cloudflare Pages build, etc.) have **Node/pnpm** but not **Rust** or **wasm-pack**; `pnpm run build` fails at `wasm-pack build` unless the install/build phase runs a small **ensure-wasm** step first (same script everywhere).
 
