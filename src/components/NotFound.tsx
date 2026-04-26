@@ -1,20 +1,20 @@
 import { Link } from '@tanstack/react-router'
 
+import { Button } from '#/components/ui/button'
+
 export default function NotFound() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[50vh] text-center">
-      <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-        404 - Page Not Found
+    <main className="page-wrap flex min-h-[55vh] flex-col items-center justify-center px-4 py-16 text-center">
+      <p className="island-kicker mb-2">404</p>
+      <h1 className="display-title text-[var(--sea-ink)] mb-3 text-3xl font-bold tracking-tight sm:text-4xl">
+        Page not found
       </h1>
-      <p className="text-gray-600 dark:text-gray-400 mb-8">
-        The page you're looking for doesn't exist.
+      <p className="text-[var(--sea-ink-soft)] mb-8 max-w-md text-base leading-relaxed">
+        That path does not exist. Head back to the prosody lab or try the navigation above.
       </p>
-      <Link
-        to="/"
-        className="px-6 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors"
-      >
-        Go Home
-      </Link>
-    </div>
+      <Button asChild size="lg">
+        <Link to="/">Back home</Link>
+      </Button>
+    </main>
   )
 }

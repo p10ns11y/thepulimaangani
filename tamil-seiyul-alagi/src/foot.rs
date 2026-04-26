@@ -11,7 +11,7 @@ pub struct Foot {
 pub fn group_into_feet(syllables: &[Syllable]) -> Vec<Foot> {
     // Simplified version - improve with full WordType map later
     syllables
-        .chunks(2)
+        .chunks(3)
         .enumerate()
         .map(|(i, chunk)| Foot {
             syllables: chunk.to_vec(),

@@ -4,7 +4,9 @@
 React/TypeScript frontend using TanStack Start/Router, Vite, Tailwind CSS. Focus on user interface for Tamil prosody analysis.
 
 ## Structure
-- `components/`: Reusable UI components (Header, Footer, ThemeToggle)
+- `components/`: Reusable UI (Header, Footer, ThemeToggle)
+- `components/ui/`: shadcn/ui primitives (Button, Card, Tabs, Select, …)
+- `components/prosody/`: Prosody lab surface (samples, Pretext viewport, parse panels)
 - `routes/`: File-based routing (__root.tsx, index.tsx, about.tsx)
 - `styles.css`: Global styles and Tailwind imports
 - `router.tsx`: Router configuration
@@ -16,6 +18,11 @@ React/TypeScript frontend using TanStack Start/Router, Vite, Tailwind CSS. Focus
 - Props: Interface definitions
 - Imports: Group by type (React, external, internal)
 - Styling: Tailwind classes, custom CSS for complex styles
+
+## Branches and post-merge sync
+
+- **Default branch:** `malar`. Name your branch using [trinity-and-native-agents/creators.md](../trinity-and-native-agents/creators.md) (pollinator table).
+- **After every PR merge:** run `./dx/syncagents.sh` from the repo root; see [dx/sync-branches-architecture-simple.md](../dx/sync-branches-architecture-simple.md).
 
 ## Rules
 - Dynamic import WASM modules for performance
