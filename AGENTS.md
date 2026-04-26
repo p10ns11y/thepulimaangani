@@ -15,6 +15,9 @@ Thepulimaangani is a Tamil prosody analysis web application with React/TypeScrip
 - Test: `pnpm run test` (Vitest) + `cargo test` (Rust)
 - Typecheck: `pnpm run typecheck`
 
+## Deployment (Vercel)
+- Full flow: [**CI and deployment** in README.md](README.md#ci-and-deployment). In short: [`vercel.json`](vercel.json) runs the wasm toolchain install, then `NITRO_PRESET=vercel pnpm run build`, and **`outputDirectory` is `.vercel/output`** (Nitro Build Output v3). Do not point the Vercel project at `dist` or `dist/client` only.
+
 ## Coding Style
 - TypeScript: Strict typing, no `any`
 - Rust: Standard Rust conventions, memory safe

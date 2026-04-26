@@ -17,9 +17,9 @@ function readStoredLook(): AppLook | null {
     const raw = window.localStorage.getItem(LOOK_STORAGE_KEY)
     if (raw === null) return null
     const v = normalizeStoredLookString(raw)
-    if (raw === 'fantasy' && v === 'redfill') {
+    if (raw !== v) {
       try {
-        window.localStorage.setItem(LOOK_STORAGE_KEY, 'redfill')
+        window.localStorage.setItem(LOOK_STORAGE_KEY, v)
       } catch {
         /* ignore */
       }

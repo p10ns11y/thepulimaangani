@@ -50,7 +50,7 @@ export function MatrixGlyphLayer({ chars, maskStyle }: MatrixGlyphLayerProps) {
             ref={(el) => {
               elRefs.current[i] = el
             }}
-            className="redfill-mx-glyph font-tamil text-[#5dff8a] select-none [text-shadow:0_0_10px_rgba(0,255,100,0.42)]"
+            className="redpill-mx-glyph font-tamil text-[#5dff8a] select-none [text-shadow:0_0_10px_rgba(0,255,100,0.42)]"
             style={
               run
                 ? baseStyle

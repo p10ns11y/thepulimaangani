@@ -50,7 +50,7 @@ function SelectTrigger({
         "hover:bg-[color-mix(in_oklab,var(--surface-2)_78%,var(--card)_22%)] hover:border-[color-mix(in_oklab,var(--rim)_75%,var(--lagoon)_14%)]",
         "focus-visible:border-[var(--lagoon)] focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,var(--lagoon)_30%,transparent)]",
         "aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20",
-        "redfill:border-[var(--line)] redfill:bg-input/35 redfill:text-[var(--sea-ink)] redfill:shadow-none redfill:hover:bg-input/55 redfill:focus-visible:border-[color-mix(in_oklab,var(--gem-yellow-sapphire)_55%,var(--rim)_45%)] redfill:focus-visible:ring-2 redfill:focus-visible:ring-[color-mix(in_oklab,var(--gem-diamond)_40%,var(--lagoon)_30%)] redfill:aria-invalid:border-destructive/50 redfill:aria-invalid:ring-destructive/50",
+        "redpill:border-[var(--line)] redpill:bg-input/35 redpill:text-[var(--sea-ink)] redpill:shadow-none redpill:hover:bg-input/55 redpill:focus-visible:border-[color-mix(in_oklab,var(--gem-yellow-sapphire)_55%,var(--rim)_45%)] redpill:focus-visible:ring-2 redpill:focus-visible:ring-[color-mix(in_oklab,var(--gem-diamond)_40%,var(--lagoon)_30%)] redpill:aria-invalid:border-destructive/50 redpill:aria-invalid:ring-destructive/50",
         "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
@@ -131,17 +131,17 @@ function SelectItem({
       className={cn(
         "relative flex w-full cursor-default items-center gap-1.5 rounded-md py-1.5 pr-8 pl-2 text-sm outline-none select-none",
         "text-popover-foreground",
-        /* Real: lagoon wash; Redfill: dark gem wash */
+        /* Real: lagoon wash; redpill: dark gem wash */
         "data-[state=checked]:bg-[color-mix(in_oklab,var(--lagoon)_12%,var(--diamond-ice)_88%)] data-[state=checked]:text-foreground",
-        "redfill:data-[state=checked]:bg-[color:color-mix(in_oklab,var(--gem-diamond)_26%,oklch(0.3_0.06_24)_74%)]",
-        "redfill:data-[state=checked]:text-[var(--sea-ink)]",
+        "redpill:data-[state=checked]:bg-[color:color-mix(in_oklab,var(--gem-diamond)_26%,oklch(0.3_0.06_24)_74%)]",
+        "redpill:data-[state=checked]:text-[var(--sea-ink)]",
         "data-[highlighted]:bg-[color-mix(in_oklab,var(--lagoon)_20%,var(--diamond-ice)_80%)] data-[highlighted]:text-foreground",
         "data-[highlighted]:ring-1 data-[highlighted]:ring-inset data-[highlighted]:ring-[color-mix(in_oklab,var(--lagoon)_32%,var(--rim)_68%)]",
-        "redfill:data-[highlighted]:bg-[color:color-mix(in_oklab,var(--lagoon)_42%,oklch(0.3_0.06_25)_58%)]",
-        "redfill:data-[highlighted]:ring-[var(--gem-yellow-sapphire)]/90",
-        "redfill:data-[highlighted]:text-[var(--sea-ink)]",
+        "redpill:data-[highlighted]:bg-[color:color-mix(in_oklab,var(--lagoon)_42%,oklch(0.3_0.06_25)_58%)]",
+        "redpill:data-[highlighted]:ring-[var(--gem-yellow-sapphire)]/90",
+        "redpill:data-[highlighted]:text-[var(--sea-ink)]",
         "data-[highlighted][data-state=checked]:bg-[color-mix(in_oklab,var(--lagoon)_24%,var(--diamond-ice)_76%)]",
-        "redfill:data-[highlighted][data-state=checked]:bg-[color:color-mix(in_oklab,var(--lagoon)_50%,oklch(0.32_0.07_25)_50%)]",
+        "redpill:data-[highlighted][data-state=checked]:bg-[color:color-mix(in_oklab,var(--lagoon)_50%,oklch(0.32_0.07_25)_50%)]",
         "data-disabled:pointer-events-none data-disabled:opacity-50",
         "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
         className,
@@ -150,7 +150,7 @@ function SelectItem({
     >
       <span className="pointer-events-none absolute right-2 flex size-4 items-center justify-center">
         <SelectPrimitive.ItemIndicator>
-          <CheckIcon className="pointer-events-none size-4 text-[var(--lagoon-deep)] redfill:text-[var(--gem-yellow-sapphire)]" />
+          <CheckIcon className="pointer-events-none size-4 text-[var(--lagoon-deep)] redpill:text-[var(--gem-yellow-sapphire)]" />
         </SelectPrimitive.ItemIndicator>
       </span>
       <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>

@@ -4,17 +4,17 @@ import { useReducedMotion } from 'motion/react'
 import { splitGraphemes } from '#/lib/grapheme'
 import { cn } from '#/lib/utils'
 
-type RedfillButterflyTextProps = {
+type RedpillButterflyTextProps = {
   text: string
   className?: string
   as?: ElementType
 }
 
 /**
- * Redfill: looping butterfly motion per grapheme; `animation-delay` via `--bf-i` keeps a phase wave.
+ * Redpill: looping butterfly motion per grapheme; `animation-delay` via `--bf-i` keeps a phase wave.
  * Respects `prefers-reduced-motion` (static text).
  */
-export function RedfillButterflyText({ text, className, as: Tag = 'span' }: RedfillButterflyTextProps) {
+export function RedpillButterflyText({ text, className, as: Tag = 'span' }: RedpillButterflyTextProps) {
   const reduced = useReducedMotion()
   const parts = useMemo(() => splitGraphemes(text), [text])
 
@@ -27,7 +27,7 @@ export function RedfillButterflyText({ text, className, as: Tag = 'span' }: Redf
       {parts.map((g, i) => (
         <span
           key={`bf-${i}`}
-          className="redfill-butterfly-char"
+          className="redpill-butterfly-char"
           style={{ '--bf-i': i } as CSSProperties & { '--bf-i': number }}
         >
           {g}

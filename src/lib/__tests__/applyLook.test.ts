@@ -4,6 +4,7 @@
 import { afterEach, describe, expect, it } from 'vitest'
 
 import { applyLook, LOOK_STORAGE_KEY, normalizeStoredLookString } from '#/lib/applyLook'
+import { LEGACY_LOOK_STORAGE_MISSPELLING } from '#/lib/legacyLookStorage'
 
 describe('applyLook', () => {
   afterEach(() => {
@@ -11,9 +12,9 @@ describe('applyLook', () => {
     document.documentElement.style.colorScheme = ''
   })
 
-  it('sets data-look and color-scheme for redfill', () => {
-    applyLook('redfill')
-    expect(document.documentElement.dataset.look).toBe('redfill')
+  it('sets data-look and color-scheme for redpill', () => {
+    applyLook('redpill')
+    expect(document.documentElement.dataset.look).toBe('redpill')
     expect(document.documentElement.style.colorScheme).toBe('dark')
   })
 
@@ -27,7 +28,8 @@ describe('applyLook', () => {
     expect(LOOK_STORAGE_KEY).toBe('look')
   })
 
-  it('normalizes legacy fantasy storage to redfill', () => {
-    expect(normalizeStoredLookString('fantasy')).toBe('redfill')
+  it('normalizes legacy look storage values to redpill', () => {
+    expect(normalizeStoredLookString('fantasy')).toBe('redpill')
+    expect(normalizeStoredLookString(LEGACY_LOOK_STORAGE_MISSPELLING)).toBe('redpill')
   })
 })

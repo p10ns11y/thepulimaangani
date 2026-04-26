@@ -3,7 +3,7 @@ import { useReducedMotion } from 'motion/react'
 
 import { useAppSelector } from '#/components/AppActorProvider'
 import { AythamEmojiChase } from '#/components/AythamEmojiChase'
-import { RedfillButterflyText } from '#/components/RedfillButterflyText'
+import { RedpillButterflyText } from '#/components/RedpillButterflyText'
 import { SocialLinks } from '#/components/SocialLinks'
 
 import { LookToggle } from './LookToggle'
@@ -12,12 +12,12 @@ const TITLE = 'Thepulimaangani'
 const SUBLINE = 'Seiyul Alagi \u00b7 Tamil Prosody'
 
 /**
- * Shell header: wordmark (left) · aytham↔butterfly chase (center, redfill md+) · toolbar (right).
+ * Shell header: wordmark (left) · aytham↔butterfly chase (center, redpill md+) · toolbar (right).
  */
 export default function Header() {
   const look = useAppSelector((s) => s.context.look)
   const reducedPreference = useReducedMotion()
-  const isRedfill = look === 'redfill'
+  const isRedpill = look === 'redpill'
   /** `null` while hydrating: allow motion; `true` = user prefers reduced motion. */
   const chaseAsStatic = reducedPreference === true
 
@@ -34,8 +34,8 @@ export default function Header() {
                 className="size-2 shrink-0 rounded-full bg-[linear-gradient(135deg,var(--brand-mark-a),var(--brand-mark-b))] ring-1 ring-white/20"
                 aria-hidden
               />
-              {isRedfill ? (
-                <RedfillButterflyText
+              {isRedpill ? (
+                <RedpillButterflyText
                   text={TITLE}
                   className="min-w-0 text-base font-semibold tracking-tight text-[var(--sea-ink)] transition-colors group-hover:text-[var(--sea-ink)]/90 sm:text-lg"
                 />
@@ -45,8 +45,8 @@ export default function Header() {
                 </span>
               )}
             </span>
-            {isRedfill ? (
-              <RedfillButterflyText
+            {isRedpill ? (
+              <RedpillButterflyText
                 as="div"
                 text={SUBLINE}
                 className="pl-0 text-[0.68rem] leading-relaxed text-[var(--sea-ink-soft)] sm:pl-4 sm:text-xs"
@@ -64,7 +64,7 @@ export default function Header() {
         </div>
 
         <div className="hidden justify-center justify-self-center sm:flex">
-          {isRedfill ? <AythamEmojiChase reducedMotion={chaseAsStatic} /> : null}
+          {isRedpill ? <AythamEmojiChase reducedMotion={chaseAsStatic} /> : null}
         </div>
 
         <div

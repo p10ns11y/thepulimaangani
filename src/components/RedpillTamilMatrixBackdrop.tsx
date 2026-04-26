@@ -2,11 +2,11 @@ import type { CSSProperties } from 'react'
 
 import { useAppSelector } from '#/components/AppActorProvider'
 import { MatrixGlyphLayer } from '#/components/MatrixGlyphLayer'
-import { buildWavyBrokenGrid, WIRE_VB } from '#/lib/redfillGridWires'
+import { buildWavyBrokenGrid, WIRE_VB } from '#/lib/redpillGridWires'
 import { uyirmeiMatrixFlat } from '#/lib/tamilIlaganam'
 
 /**
- * Design note (redfill — Tamil uyirmei matrix backdrop)
+ * Design note (redpill look — Tamil uyirmei matrix backdrop)
  *
  * Treat the 12×18 letter field as *atmosphere* (living “matrix” energy), not a
  * literal grid of pinned labels. Glyphs are allowed to roam the masked field
@@ -50,7 +50,7 @@ function WavyWires() {
     >
       <defs>
         <filter
-          id="redfill-mx-ripple"
+          id="redpill-mx-ripple"
           x="-4%"
           y="-4%"
           width="108%"
@@ -83,14 +83,14 @@ function WavyWires() {
         </filter>
       </defs>
       <g
-        className="redfill-mx-wires-anim"
+        className="redpill-mx-wires-anim"
         style={{
           WebkitMaskImage: HOLE,
           maskImage: HOLE,
           WebkitMaskSize: '100% 100%',
           maskSize: '100% 100%',
         }}
-        filter="url(#redfill-mx-ripple)"
+        filter="url(#redpill-mx-ripple)"
       >
         {horiz.map(
           (d, i) =>
@@ -124,11 +124,11 @@ function WavyWires() {
 }
 
 /**
- * Redfill: wavy wire SVG + glyphs that roam the field (rAF, subtle).
+ * Redpill: wavy wire SVG + glyphs that roam the field (rAF, subtle).
  */
-export function RedfillTamilMatrixBackdrop() {
+export function RedpillTamilMatrixBackdrop() {
   const look = useAppSelector((s) => s.context.look)
-  if (look !== 'redfill') return null
+  if (look !== 'redpill') return null
 
   return (
     <div

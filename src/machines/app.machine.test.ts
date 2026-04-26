@@ -5,12 +5,12 @@ import { describe, expect, it } from 'vitest'
 import { appMachine } from './app.machine'
 
 describe('appMachine', () => {
-  it('toggles look between real and redfill', () => {
+  it('toggles look between real and redpill', () => {
     const app = createActor(appMachine)
     app.start()
     expect(app.getSnapshot().context.look).toBe('real')
     app.send({ type: 'app.LOOK.TOGGLE' })
-    expect(app.getSnapshot().context.look).toBe('redfill')
+    expect(app.getSnapshot().context.look).toBe('redpill')
     app.send({ type: 'app.LOOK.TOGGLE' })
     expect(app.getSnapshot().context.look).toBe('real')
   })
@@ -18,8 +18,8 @@ describe('appMachine', () => {
   it('sets look with LOOK.SET', () => {
     const app = createActor(appMachine)
     app.start()
-    app.send({ type: 'app.LOOK.SET', look: 'redfill' })
-    expect(app.getSnapshot().context.look).toBe('redfill')
+    app.send({ type: 'app.LOOK.SET', look: 'redpill' })
+    expect(app.getSnapshot().context.look).toBe('redpill')
     app.send({ type: 'app.LOOK.SET', look: 'real' })
     expect(app.getSnapshot().context.look).toBe('real')
   })

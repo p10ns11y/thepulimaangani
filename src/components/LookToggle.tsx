@@ -4,7 +4,7 @@ import type { AppLook } from '#/machines/app.machine'
 
 const LOOKS: { id: AppLook; label: string }[] = [
   { id: 'real', label: 'Real' },
-  { id: 'redfill', label: 'Redfill' },
+  { id: 'redpill', label: 'Redpill' },
 ]
 
 type LookToggleProps = {
@@ -57,14 +57,14 @@ export function LookToggle({ variant = 'default' }: LookToggleProps) {
                 if (!active) actor.send({ type: 'app.LOOK.SET', look: id })
               }}
               className={cn(
-                'luxe-look-redfill-press font-semibold text-[var(--sea-ink)] transition redfill:transition-transform redfill:duration-150',
+                'luxe-look-redpill-press font-semibold text-[var(--sea-ink)] transition redpill:transition-transform redpill:duration-150',
                 compact
                   ? 'rounded-full px-2 py-1 text-[0.65rem] sm:px-2.5 sm:py-1.5 sm:text-xs'
                   : 'rounded-full px-2 py-1.5 text-[0.7rem] sm:px-3 sm:text-sm',
                 active
                   ? 'bg-[var(--surface-1)] text-[var(--sea-ink)] shadow-sm ring-1 ring-[var(--rim)]/50'
                   : 'text-[var(--sea-ink)]/75 hover:text-[var(--sea-ink)]',
-                id === 'redfill' && active && 'luxe-look-redfill-shine',
+                id === 'redpill' && active && 'luxe-look-redpill-shine',
               )}
             >
               {label}

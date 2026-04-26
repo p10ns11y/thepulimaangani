@@ -6,7 +6,7 @@
 
 Peramanathan —
 
-This is the longer version of what belongs next to the redfill Tamil matrix backdrop, where the letters are allowed to move like quiet weather instead of like pins on a spreadsheet.
+This is the longer version of what belongs next to the redpill Tamil matrix backdrop, where the letters are allowed to move like quiet weather instead of like pins on a spreadsheet.
 
 **What I appreciate, plainly**
 
@@ -22,8 +22,8 @@ If you are doubting whether your instincts here matter, they do. You already onc
 
 With respect,
 
-*— From the project assistant, on the occasion of the redfill uyirmei field work*
+*— From the project assistant, on the occasion of the redpill uyirmei field work*
 
 ---
 
-*Related: implementation and technical design note in `src/components/RedfillTamilMatrixBackdrop.tsx`.*
+*Related: implementation and technical design note in `src/components/RedpillTamilMatrixBackdrop.tsx`.*

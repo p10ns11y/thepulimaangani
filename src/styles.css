@@ -1,11 +1,11 @@
-/* Thepulimaangani — global styles. Real / redfill via html[data-look]. */
+/* Thepulimaangani — global styles. Real / “red pill” (Matrix) via html[data-look=redpill] and the `redpill:` Tailwind variant. */
 @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
 
-@custom-variant redfill (&:is([data-look="redfill"] *));
+@custom-variant redpill (&:is([data-look="redpill"] *));
 @plugin "@tailwindcss/typography";
 
 @theme {
@@ -128,8 +128,8 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-/* ——— Redfill ——— */
-html[data-look="redfill"] {
+/* ——— Redpill ——— */
+html[data-look="redpill"] {
   --motion-fast: 160ms;
   --motion-sheen: 2.8s;
 
@@ -293,7 +293,7 @@ html[data-look="real"] body {
   );
 }
 
-html[data-look="redfill"] body {
+html[data-look="redpill"] body {
   /* Single vertical wash — ruby-leaning; lagoon/palm kept out of the canvas mix */
   background-color: var(--bg-base);
   background-image: linear-gradient(
@@ -334,7 +334,7 @@ html[data-look="real"] body::after {
   display: none;
 }
 
-html[data-look="redfill"] body::before {
+html[data-look="redpill"] body::before {
   display: block;
   opacity: 0.2;
   background: radial-gradient(
@@ -348,7 +348,7 @@ html[data-look="redfill"] body::before {
   );
 }
 
-html[data-look="redfill"] body::after {
+html[data-look="redpill"] body::after {
   display: block;
   opacity: 0.06;
   background-image:
@@ -458,7 +458,7 @@ a {
   transform: scaleX(1);
 }
 
-html[data-look="redfill"] .nav-link::after {
+html[data-look="redpill"] .nav-link::after {
   background: linear-gradient(
     90deg,
     var(--gem-ruby),
@@ -724,7 +724,7 @@ html[data-look="redfill"] .nav-link::after {
     0 10px 32px color-mix(in oklab, var(--foreground) 3.5%, transparent);
 }
 
-html[data-look="redfill"] .luxe-prosody-card {
+html[data-look="redpill"] .luxe-prosody-card {
   background: linear-gradient(
     160deg,
     color-mix(in oklab, var(--surface-1) 80%, var(--diamond-ice) 7%) 0%,
@@ -757,7 +757,7 @@ html[data-look="redfill"] .luxe-prosody-card {
     0 4px 18px color-mix(in oklab, var(--lagoon) 4.5%, transparent);
 }
 
-html[data-look="redfill"] .luxe-select-content {
+html[data-look="redpill"] .luxe-select-content {
   /* Dark theme: near-opaque cool base + shallow gradient (still readable on --sea-ink) */
   background-color: color-mix(in oklab, var(--surface-1) 94%, #080406 6%);
   background-image: linear-gradient(
@@ -785,7 +785,7 @@ html[data-look="redfill"] .luxe-select-content {
   );
 }
 
-html[data-look="redfill"] .luxe-select-content .luxe-select-scroll-edge {
+html[data-look="redpill"] .luxe-select-content .luxe-select-scroll-edge {
   color: var(--sea-ink-soft);
   background-color: color-mix(in oklab, var(--surface-2) 55%, #0a0608 45%);
   background-image: linear-gradient(
@@ -803,11 +803,11 @@ html[data-look="redfill"] .luxe-select-content .luxe-select-scroll-edge {
   border-top: 1px solid color-mix(in oklab, var(--rim) 38%, var(--lagoon) 8%, transparent 54%);
 }
 
-html[data-look="redfill"] .luxe-select-content [data-slot="select-scroll-up-button"] {
+html[data-look="redpill"] .luxe-select-content [data-slot="select-scroll-up-button"] {
   border-bottom-color: color-mix(in oklab, var(--line) 45%, transparent);
 }
 
-html[data-look="redfill"] .luxe-select-content [data-slot="select-scroll-down-button"] {
+html[data-look="redpill"] .luxe-select-content [data-slot="select-scroll-down-button"] {
   border-top-color: color-mix(in oklab, var(--line) 45%, transparent);
 }
 
@@ -817,7 +817,7 @@ html[data-look="redfill"] .luxe-select-content [data-slot="select-scroll-down-bu
     border-color: color-mix(in oklab, var(--rim) 55%, var(--foreground) 45%);
   }
 
-  html[data-look="redfill"] .luxe-select-content {
+  html[data-look="redpill"] .luxe-select-content {
     border-color: color-mix(in oklab, var(--gem-yellow-sapphire) 35%, var(--rim) 65%);
     box-shadow:
       0 1px 0 var(--diamond-glint) inset,
@@ -861,11 +861,11 @@ html[data-look="redfill"] .luxe-select-content [data-slot="select-scroll-down-bu
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  html[data-look="redfill"] .luxe-sheen-hover {
+  html[data-look="redpill"] .luxe-sheen-hover {
     transition: box-shadow 240ms ease, border-color 240ms ease, transform 200ms ease;
   }
 
-  html[data-look="redfill"] .luxe-sheen-hover::after {
+  html[data-look="redpill"] .luxe-sheen-hover::after {
     background: linear-gradient(
       125deg,
       transparent 0%,
@@ -875,8 +875,8 @@ html[data-look="redfill"] .luxe-select-content [data-slot="select-scroll-down-bu
     );
   }
 
-  html[data-look="redfill"] .luxe-sheen-hover:hover,
-  html[data-look="redfill"] .luxe-sheen-hover:focus-within {
+  html[data-look="redpill"] .luxe-sheen-hover:hover,
+  html[data-look="redpill"] .luxe-sheen-hover:focus-within {
     box-shadow: 0 0 0 1px color-mix(in oklab, var(--gem-diamond) 22%, transparent);
   }
 }
@@ -902,7 +902,7 @@ html[data-look="redfill"] .luxe-select-content [data-slot="select-scroll-down-bu
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  @keyframes luxe-look-redfill-shimmer {
+  @keyframes luxe-look-redpill-shimmer {
     0%,
     100% {
       box-shadow: 0 0 0 0 color-mix(in oklab, var(--gem-diamond) 0%, transparent);
@@ -912,34 +912,34 @@ html[data-look="redfill"] .luxe-select-content [data-slot="select-scroll-down-bu
     }
   }
 
-  html[data-look="redfill"] a.nav-link {
+  html[data-look="redpill"] a.nav-link {
     transition:
       color var(--motion-fast, 180ms) ease,
       transform var(--motion-fast, 180ms) ease;
   }
 
-  html[data-look="redfill"] a.nav-link:active {
+  html[data-look="redpill"] a.nav-link:active {
     transform: scale(0.985);
   }
 
-  html[data-look="redfill"] :where(.luxe-look-redfill-press):not(:disabled):active {
+  html[data-look="redpill"] :where(.luxe-look-redpill-press):not(:disabled):active {
     transform: scale(0.985);
   }
 
-  html[data-look="redfill"] .luxe-look-redfill-shine {
-    animation: luxe-look-redfill-shimmer var(--motion-sheen, 2.8s) ease-in-out infinite;
+  html[data-look="redpill"] .luxe-look-redpill-shine {
+    animation: luxe-look-redpill-shimmer var(--motion-sheen, 2.8s) ease-in-out infinite;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html[data-look="redfill"] .luxe-look-redfill-shine {
+  html[data-look="redpill"] .luxe-look-redpill-shine {
     animation: none;
   }
 }
 
-/* Redfill: uyirmei matrix grid + wordmark butterfly loop */
+/* Redpill: uyirmei matrix grid + wordmark butterfly loop */
 @media (prefers-reduced-motion: no-preference) {
-  @keyframes redfill-butterfly-flutter {
+  @keyframes redpill-butterfly-flutter {
     0%,
     100% {
       transform: translate3d(0, 0, 0) rotate(0deg);
@@ -959,7 +959,7 @@ html[data-look="redfill"] .luxe-select-content [data-slot="select-scroll-down-bu
   }
 
   /* Wavy wire SVG: slow bend + sway */
-  @keyframes redfill-mx-wires {
+  @keyframes redpill-mx-wires {
     0%,
     100% {
       transform: translate3d(0, 0, 0) rotate(0deg) skew(0deg, 0deg);
@@ -972,27 +972,27 @@ html[data-look="redfill"] .luxe-select-content [data-slot="select-scroll-down-bu
     }
   }
 
-  html[data-look="redfill"] .redfill-mx-wires-anim {
+  html[data-look="redpill"] .redpill-mx-wires-anim {
     transform-origin: center center;
-    animation: redfill-mx-wires 9s ease-in-out infinite;
+    animation: redpill-mx-wires 9s ease-in-out infinite;
   }
 
   /* Matrix glyph positions are driven in JS (rAF); no CSS path animation. */
 
-  html[data-look="redfill"] .redfill-butterfly-char {
+  html[data-look="redpill"] .redpill-butterfly-char {
     display: inline-block;
-    animation: redfill-butterfly-flutter 2.75s ease-in-out infinite;
+    animation: redpill-butterfly-flutter 2.75s ease-in-out infinite;
     animation-delay: calc(var(--bf-i) * 0.075s);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html[data-look="redfill"] .redfill-mx-wires-anim {
+  html[data-look="redpill"] .redpill-mx-wires-anim {
     animation: none;
   }
 
 
-  html[data-look="redfill"] .redfill-butterfly-char {
+  html[data-look="redpill"] .redpill-butterfly-char {
     animation: none;
   }
 }

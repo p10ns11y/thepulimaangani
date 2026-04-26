@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { buildWavyBrokenGrid, WIRE_VB } from '#/lib/redfillGridWires'
+import { buildWavyBrokenGrid, WIRE_VB } from '#/lib/redpillGridWires'
 
 describe('buildWavyBrokenGrid', () => {
   it('produces 13 horizontal and 19 vertical line slots for 12x18', () => {
