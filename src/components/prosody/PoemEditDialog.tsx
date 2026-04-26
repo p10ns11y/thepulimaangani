@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef } from 'react'
+import { useEffect, useId, useRef, type ReactNode } from 'react'
 
 import { Button } from '#/components/ui/button'
 import { cn } from '#/lib/utils'
@@ -9,9 +9,11 @@ type PoemEditDialogProps = {
   value: string
   onChange: (v: string) => void
   onApply: () => void
+  /** e.g. changed-line syllable strip (lives under the title on narrow screens) */
+  changeStrip?: ReactNode
 }
 
-export function PoemEditDialog({ open, onOpenChange, value, onChange, onApply }: PoemEditDialogProps) {
+export function PoemEditDialog({ open, onOpenChange, value, onChange, onApply, changeStrip }: PoemEditDialogProps) {
   const taRef = useRef<HTMLTextAreaElement>(null)
   const titleId = useId()
 
@@ -55,18 +57,23 @@ export function PoemEditDialog({ open, onOpenChange, value, onChange, onApply }:
             onKeyDown={(e) => e.stopPropagation()}
           >
         <div
-          className="border-rim/30 flex flex-col gap-1 border-b px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4 sm:py-3"
+          className="border-rim/30 flex flex-col gap-2 border-b px-3 py-2.5 sm:px-4 sm:py-3"
           style={{
             background:
               'linear-gradient(135deg, color-mix(in oklab, var(--surface-2) 92%, var(--gem-diamond) 8%) 0%, var(--surface-1) 100%)',
           }}
         >
-          <h2 id={titleId} className="font-tamil m-0 text-sm font-semibold tracking-tight sm:text-base">
-            Edit poem
-          </h2>
-          <p className="text-muted-foreground m-0 max-w-[min(20rem,55vw)] text-[0.7rem] leading-snug sm:max-w-[24rem] sm:text-right sm:text-xs">
-            Scroll the page to read more of the live preview. Done or Esc to close.
-          </p>
+          <div className="flex flex-col gap-1.5 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+            <h2 id={titleId} className="font-tamil m-0 shrink-0 text-sm font-semibold tracking-tight sm:text-base">
+              Edit poem
+            </h2>
+            <div className="min-w-0 sm:max-w-[min(24rem,52vw)] sm:text-right">
+              {changeStrip ? <div className="mb-1 sm:mb-0">{changeStrip}</div> : null}
+              <p className="text-muted-foreground m-0 text-[0.7rem] leading-snug sm:text-xs">
+                Scroll the page to read the live preview. Done or Esc to close.
+              </p>
+            </div>
+          </div>
         </div>
         <div className="prosody-poem-dialog-shimmer min-h-0 flex-1 px-3 pb-2 pt-3 sm:px-4">
           <textarea

@@ -1,21 +1,44 @@
-import { useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 
 import { Pencil } from 'lucide-react'
 
 import { useFitPoemFontSize, LINE_HEIGHT_FACTOR } from '#/hooks/useFitPoemFontSize'
+import { lineDiffOps } from '#/lib/poemLineDiff'
 import { cn } from '#/lib/utils'
 
 type PoemFitPreviewProps = {
+  /** Last committed poem (saved sample or Done). */
   text: string
+  /**
+   * While the bottom editor is open, pass the live draft so the card mirrors typing.
+   * Lines that differ from `text` are tinted as “new / edited”.
+   */
+  draftForDiff?: string
   onOpenEditor: () => void
   placeholder?: string
 }
 
-export function PoemFitPreview({ text, onOpenEditor, placeholder = 'Tap to add a Tamil poem…' }: PoemFitPreviewProps) {
+export function PoemFitPreview({
+  text,
+  draftForDiff,
+  onOpenEditor,
+  placeholder = 'Tap to add a Tamil poem…',
+}: PoemFitPreviewProps) {
   const boxRef = useRef<HTMLDivElement>(null)
-  const fontSize = useFitPoemFontSize(text, boxRef, { minPx: 10, maxPx: 22, padX: 24, padY: 20 })
+  const diffOps = useMemo(
+    () => (draftForDiff === undefined ? null : lineDiffOps(text, draftForDiff)),
+    [text, draftForDiff],
+  )
+  const displayText = draftForDiff !== undefined ? draftForDiff : text
+  const measureText = useMemo(() => {
+    if (diffOps && diffOps.length > 0) {
+      return diffOps.map((o) => o.line).join('\n')
+    }
+    return displayText
+  }, [diffOps, displayText])
+  const fontSize = useFitPoemFontSize(measureText, boxRef, { minPx: 10, maxPx: 22, padX: 24, padY: 20 })
   const [hover, setHover] = useState(false)
-  const trimmed = text.length > 0
+  const trimmed = measureText.length > 0
   const lineHeight = fontSize * LINE_HEIGHT_FACTOR
 
   return (
@@ -55,14 +78,36 @@ export function PoemFitPreview({ text, onOpenEditor, placeholder = 'Tap to add a
           >
             {trimmed ? (
               <pre
-                className="m-0 max-w-full whitespace-pre"
+                className="m-0 max-w-full whitespace-pre-wrap break-words"
                 style={{
                   fontSize: `${fontSize}px`,
                   lineHeight: `${lineHeight}px`,
                   fontWeight: 500,
                 }}
               >
-                {text}
+                {diffOps && diffOps.length > 0
+                  ? diffOps.map((op, i) => {
+                      return (
+                        <span
+                          key={`poem-diff-${i}-${op.type}`}
+                          className={cn(
+                            op.type === 'insert' && 'text-[color:var(--gem-emerald)]',
+                            op.type === 'delete' &&
+                              'text-[color:color-mix(in_oklab,var(--gem-ruby)_72%,var(--sea-ink)_28%)] line-through decoration-[color:color-mix(in_oklab,var(--gem-ruby)_40%,var(--rim)_60%)]',
+                            op.type === 'equal' && 'text-foreground',
+                          )}
+                        >
+                          {i > 0 ? '\n' : ''}
+                          {op.line}
+                        </span>
+                      )
+                    })
+                  : displayText.replace(/\r\n/g, '\n').split('\n').map((line, i) => (
+                      <span key={`poem-line-${i}`} className="text-foreground">
+                        {i > 0 ? '\n' : ''}
+                        {line}
+                      </span>
+                    ))}
               </pre>
             ) : (
               <p className="text-muted-foreground m-0 text-sm leading-relaxed">{placeholder}</p>

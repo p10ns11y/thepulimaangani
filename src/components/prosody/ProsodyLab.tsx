@@ -19,6 +19,7 @@ import { useDebouncedParsedPoem } from '#/hooks/useDebouncedParsedPoem'
 import { useWasmParser } from '#/hooks/useWasmParser'
 
 import { ParseResultPanel } from './ParseResultPanel'
+import { PoemEditChangeStrip } from './PoemEditChangeStrip'
 import { PoemEditDialog } from './PoemEditDialog'
 import { PoemFitPreview } from './PoemFitPreview'
 
@@ -110,7 +111,11 @@ export function ProsodyLab() {
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-3 px-4 pb-4 pt-0">
-              <PoemFitPreview text={poemText} onOpenEditor={openPoemEditor} />
+              <PoemFitPreview
+                text={poemText}
+                draftForDiff={poemEditorOpen ? poemDraft : undefined}
+                onOpenEditor={openPoemEditor}
+              />
               {validationError ? (
                 <div className="border-destructive/35 bg-destructive/8 rounded-lg border px-3 py-2">
                   <p className="text-destructive m-0 text-sm">{validationError}</p>
@@ -119,7 +124,7 @@ export function ProsodyLab() {
               <Separator />
               <Button
                 type="button"
-                onClick={() => void parse(poemText)}
+                onClick={() => void parse(previewSource)}
                 disabled={loading}
                 className="h-9 w-fit min-w-[7.5rem] rounded-md px-4 text-sm font-medium"
               >
@@ -204,6 +209,9 @@ export function ProsodyLab() {
         onApply={() => {
           setPoemText(poemDraft)
         }}
+        changeStrip={
+          poemEditorOpen ? <PoemEditChangeStrip base={poemText} draft={poemDraft} live={livePreview} /> : null
+        }
       />
     </main>
   )
