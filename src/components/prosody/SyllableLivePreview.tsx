@@ -128,12 +128,12 @@ export function SyllableLivePreview({ poemText, live, variant = 'default' }: Syl
                         className="inline-flex flex-col gap-1"
                       >
                         <div className="flex flex-wrap items-end gap-1">
-                          {syls.map((syl) => {
+                          {syls.map((syl, sylIdx) => {
                             const ms = stagger
                             stagger += compact ? 28 : 38
                             return (
                               <SyllableAnnotationCell
-                                key={`${live.layoutVersion}-${lineIdx}-${gi}-${syl.text}-${syl.syllable_type}`}
+                                key={`${live.layoutVersion}-${lineIdx}-${gi}-${sylIdx}`}
                                 syllableType={syl.syllable_type}
                                 text={syl.text}
                                 staggerMs={ms}
