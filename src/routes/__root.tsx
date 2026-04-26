@@ -1,5 +1,6 @@
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import { AppActorProvider } from '#/components/AppActorProvider'
+import { RedfillTamilMatrixBackdrop } from '#/components/RedfillTamilMatrixBackdrop'
 
 import Footer from '../components/Footer'
 import Header from '../components/Header'
@@ -44,9 +45,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body className="font-sans antialiased [overflow-wrap:anywhere] selection:bg-[rgba(79,184,178,0.24)]">
         <AppActorProvider>
-          <Header />
-          {children}
-          <Footer />
+          <RedfillTamilMatrixBackdrop />
+          <div className="relative z-10 min-w-0">
+            <Header />
+            {children}
+            <Footer />
+          </div>
           <Scripts />
         </AppActorProvider>
       </body>

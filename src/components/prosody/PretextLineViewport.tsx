@@ -27,6 +27,13 @@ type PretextLineViewportProps = {
    * longer than the viewport.
    */
   atomicSourceLines?: boolean
+  /**
+   * When "hidden" (e.g. full-bleed backdrops), horizontal scrollbars are suppressed; content may
+   * extend past the box (use overflow-hidden on a parent to clip). Default: `auto`.
+   */
+  overflowX?: 'auto' | 'hidden'
+  /** Applied to each laid-out row; default includes `text-foreground`. */
+  rowClassName?: string
 }
 
 /**
@@ -40,6 +47,8 @@ export function PretextLineViewport({
   font = TAMIL_PRETEXT_FONT,
   trimForMeasure = true,
   atomicSourceLines = true,
+  overflowX = 'auto',
+  rowClassName,
 }: PretextLineViewportProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [width, setWidth] = useState(0)
@@ -103,7 +112,10 @@ export function PretextLineViewport({
   }, [text, width, lineHeightPx, font, trimForMeasure, atomicSourceLines])
 
   return (
-    <div ref={containerRef} className={cn('w-full min-w-0 overflow-x-auto', className)}>
+    <div
+      ref={containerRef}
+      className={cn('w-full min-w-0', overflowX === 'hidden' ? 'overflow-x-hidden' : 'overflow-x-auto', className)}
+    >
       {lines === null ? (
         <pre className={fallbackPreClass} style={{ lineHeight: `${lineHeightPx}px` }}>
           {text}
@@ -113,7 +125,7 @@ export function PretextLineViewport({
           {lines.map((line, i) => (
             <div
               key={`${i}-${line.slice(0, 12)}`}
-              className="font-tamil text-foreground max-w-none whitespace-nowrap"
+              className={cn('font-tamil max-w-none whitespace-nowrap', rowClassName ?? 'text-foreground')}
               style={{ minHeight: lineHeightPx }}
             >
               {line}

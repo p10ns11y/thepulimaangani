@@ -937,6 +937,66 @@ html[data-look="redfill"] .luxe-select-content [data-slot="select-scroll-down-bu
   }
 }
 
+/* Redfill: uyirmei matrix grid + wordmark butterfly loop */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes redfill-butterfly-flutter {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) rotate(0deg);
+    }
+    20% {
+      transform: translate3d(0.1rem, -0.22rem, 0) rotate(1.2deg);
+    }
+    40% {
+      transform: translate3d(-0.12rem, 0.12rem, 0) rotate(-0.9deg);
+    }
+    60% {
+      transform: translate3d(0.1rem, 0.1rem, 0) rotate(0.5deg);
+    }
+    80% {
+      transform: translate3d(-0.1rem, -0.1rem, 0) rotate(-0.3deg);
+    }
+  }
+
+  /* Wavy wire SVG: slow bend + sway */
+  @keyframes redfill-mx-wires {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) rotate(0deg) skew(0deg, 0deg);
+    }
+    33% {
+      transform: translate3d(0.25%, 0.35%, 0) rotate(0.25deg) skew(0.08deg, 0.05deg);
+    }
+    66% {
+      transform: translate3d(-0.2%, -0.2%, 0) rotate(-0.2deg) skew(-0.05deg, -0.08deg);
+    }
+  }
+
+  html[data-look="redfill"] .redfill-mx-wires-anim {
+    transform-origin: center center;
+    animation: redfill-mx-wires 9s ease-in-out infinite;
+  }
+
+  /* Matrix glyph positions are driven in JS (rAF); no CSS path animation. */
+
+  html[data-look="redfill"] .redfill-butterfly-char {
+    display: inline-block;
+    animation: redfill-butterfly-flutter 2.75s ease-in-out infinite;
+    animation-delay: calc(var(--bf-i) * 0.075s);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-look="redfill"] .redfill-mx-wires-anim {
+    animation: none;
+  }
+
+
+  html[data-look="redfill"] .redfill-butterfly-char {
+    animation: none;
+  }
+}
+
 @theme inline {
   --color-surface-1: var(--surface-1);
   --color-surface-2: var(--surface-2);
