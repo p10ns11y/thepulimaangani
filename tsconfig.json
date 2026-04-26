@@ -1,6 +1,7 @@
 {
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": ["**/*.ts", "**/*.tsx", "data/poem_variations.js"],
   "compilerOptions": {
+    "allowJs": true,
     "target": "ES2022",
     "jsx": "react-jsx",
     "module": "ESNext",

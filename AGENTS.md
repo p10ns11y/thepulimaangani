@@ -15,6 +15,9 @@ Thepulimaangani is a Tamil prosody analysis web application with React/TypeScrip
 - Test: `pnpm run test` (Vitest) + `cargo test` (Rust)
 - Typecheck: `pnpm run typecheck`
 
+## Deployment (Vercel)
+- Full flow: [**CI and deployment** in README.md](README.md#ci-and-deployment). In short: [`vercel.json`](vercel.json) runs the wasm toolchain install, then `NITRO_PRESET=vercel pnpm run build`, and **`outputDirectory` is `.vercel/output`** (Nitro Build Output v3). Do not point the Vercel project at `dist` or `dist/client` only.
+
 ## Coding Style
 - TypeScript: Strict typing, no `any`
 - Rust: Standard Rust conventions, memory safe
@@ -31,6 +34,14 @@ Thepulimaangani is a Tamil prosody analysis web application with React/TypeScrip
 - Atomic changes
 - Messages: "feat: add feature", "fix: resolve issue", "refactor: improve code"
 - No secrets or binaries
+
+## Branches and post-merge sync
+
+- **Default branch:** `malar` (stable integration target on remote).
+
+- **Feature branch names:** pick a pollinator branch by the kind of work — see [trinity-and-native-agents/creators.md](trinity-and-native-agents/creators.md) (full table). Examples: `pattampoochi` for general frontend/UI, `thithali` for short UI prototypes, `vannathupoochi` for tokens/themes, `thumpi` for AI-heavy or deep architecture/parser work.
+
+- **After every PR merge:** from the repo root, run `./dx/syncagents.sh` so local branches stay aligned with `origin/malar` (skips open PR heads and `legacy`). Use `PUSH=1` only when you intend to push updated tips. Details: [dx/sync-branches-architecture-simple.md](dx/sync-branches-architecture-simple.md).
 
 ## Rules
 - Always run tests and typecheck before/after changes

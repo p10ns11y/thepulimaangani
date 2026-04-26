@@ -1,0 +1,85 @@
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs'
+import type { ParsedPoem } from '#/types/parsedPoem'
+import type { LivePreviewState } from '#/types/livePreview'
+
+import { PretextLineViewport } from '../PretextLineViewport'
+import { TAMIL_PRETEXT_FONT_COMPACT } from '../pretextConstants'
+import { buildParseFlowText } from '../parseFlowText'
+import { StructuredParseResult } from '../StructuredParseResult'
+
+import { JsonActionsFooter } from './JsonActionsFooter'
+import { LiveSyllableWithSentinel } from './LiveSyllableWithSentinel'
+
+type ParseResultTabsViewProps = {
+  parsed: ParsedPoem
+  resultJson: string
+  poemText: string
+  live: LivePreviewState
+  pinLiveEndWhileEditing: boolean
+  hasText: boolean
+}
+
+export function ParseResultTabsView({
+  parsed,
+  resultJson,
+  poemText,
+  live,
+  pinLiveEndWhileEditing,
+  hasText,
+}: ParseResultTabsViewProps) {
+  const liveBlock = hasText ? (
+    <LiveSyllableWithSentinel poemText={poemText} live={live} pinEnd={pinLiveEndWhileEditing} />
+  ) : (
+    <p className="text-muted-foreground m-0 text-sm">Add poem text to preview syllables.</p>
+  )
+  const flowTextResolved = buildParseFlowText(parsed)
+
+  return (
+    <>
+      <div className="px-4 pt-4">
+        <Tabs defaultValue="live">
+          <TabsList className="bg-surface-3/75 border-rim/40 h-auto w-full justify-start gap-0.5 border p-1 sm:w-fit">
+            <TabsTrigger
+              value="live"
+              className="luxe-gem-focus text-xs data-active:border-rim/55 data-active:bg-surface-1/95 data-active:shadow-sm sm:text-sm"
+            >
+              Live
+            </TabsTrigger>
+            <TabsTrigger
+              value="structure"
+              className="luxe-gem-focus text-xs data-active:border-rim/55 data-active:bg-surface-1/95 data-active:shadow-sm sm:text-sm"
+            >
+              Structure
+            </TabsTrigger>
+            <TabsTrigger
+              value="flow"
+              className="luxe-gem-focus text-xs data-active:border-rim/55 data-active:bg-surface-1/95 data-active:shadow-sm sm:text-sm"
+            >
+              Text flow
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="live" className="mt-3 pb-1 outline-none">
+            {liveBlock}
+          </TabsContent>
+          <TabsContent value="structure" className="mt-3 pb-1 outline-none">
+            <StructuredParseResult data={parsed} />
+          </TabsContent>
+          <TabsContent value="flow" className="mt-3 pb-1 outline-none">
+            <p className="text-muted-foreground mb-2 text-balance text-xs leading-relaxed sm:text-sm">
+              Metre and counts. Each editor line stays one row; scroll horizontally if a row is longer than
+              the panel.
+            </p>
+            <div className="luxe-inset-surface rounded-lg p-3 sm:p-4">
+              <PretextLineViewport
+                text={flowTextResolved}
+                lineHeightPx={26}
+                font={TAMIL_PRETEXT_FONT_COMPACT}
+              />
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+      <JsonActionsFooter jsonString={resultJson} />
+    </>
+  )
+}

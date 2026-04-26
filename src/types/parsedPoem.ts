@@ -1,0 +1,35 @@
+export interface ParsedSyllable {
+  text: string
+  syllable_type: string
+}
+
+export interface ParsedFoot {
+  foot_type: string
+  syllables: ParsedSyllable[]
+}
+
+export interface ParsedLine {
+  line_class: string
+  feet: ParsedFoot[]
+}
+
+export interface ParsedPoem {
+  original_text: string
+  metre_type: string
+  letter_count: string | number | Record<string, unknown>
+  vikalpa_count: string | number
+  syllables: unknown[]
+  lines: ParsedLine[]
+  errors?: string[]
+}
+
+export function isParsedPoem(value: unknown): value is ParsedPoem {
+  if (!value || typeof value !== 'object') return false
+  const o = value as Record<string, unknown>
+  return (
+    typeof o.original_text === 'string' &&
+    typeof o.metre_type === 'string' &&
+    Array.isArray(o.lines) &&
+    Array.isArray(o.syllables)
+  )
+}

@@ -29,10 +29,7 @@ This project is a complete rewrite of the original [Avalokitam](https://github.c
 - Node.js 18 or higher
 - Rust 1.70 or higher (for building the WebAssembly parser)
 - wasm-pack (for WebAssembly compilation)
-
-### Prerequisites
-
-- `rsync` (Linux CLI tool) to sync generated Rust WASM artifacts into the frontend `src/wasm/` directory
+- `rsync` (optional but recommended for local dev) to sync `wasm-pack` output into `src/wasm/` — see [`build/rsync_rust_wasm_to_web.sh`](build/rsync_rust_wasm_to_web.sh). **Production** (Vercel, minimal CI) uses [`build/copy_wasm_to_src.sh`](build/copy_wasm_to_src.sh) with `cp` when `rsync` is not installed ([`build/tamil_seiyul_alagi_wasm.sh`](build/tamil_seiyul_alagi_wasm.sh) picks automatically).
 
 ### Install Dependencies
 
@@ -129,6 +126,30 @@ Thepulimaangani consists of:
 
 See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed technical documentation.
 
+## CI and deployment
+
+### GitHub Actions
+
+- **Workflow:** [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on pushes to `malar` and `main` and on all pull requests: full `pnpm run build` (WebAssembly + Vite), `pnpm run typecheck`, and `pnpm run test` (Rust + Vitest). Node version matches [`.nvmrc`](.nvmrc).
+
+### Vercel (this repo’s working flow)
+
+These pieces work together; changing one in isolation (for example, pointing the project at `dist` only) can produce a **blank page** or **404 on `/`**.
+
+1. **Install** — [`vercel.json`](vercel.json) `installCommand` runs [`build/ensure-wasm-build-tools.sh`](build/ensure-wasm-build-tools.sh) (`rustup` when needed, the `wasm32-unknown-unknown` target, and a pinned `wasm-pack` binary on `PATH`), then `corepack enable` and `pnpm install --frozen-lockfile`. The Node version comes from the Vercel build image and [`.nvmrc`](.nvmrc) / `engines`. The subsequent `pnpm run build` compiles the Rust parser and copies WASM into [`src/wasm/`](AGENTS.md) (gitignored). The first Vercel build can take several minutes.
+
+2. **Build** — `buildCommand` is `NITRO_PRESET=vercel pnpm run build`. The `NITRO_PRESET=vercel` prefix forces Nitro’s **vercel** preset and a [Build Output API v3](https://vercel.com/docs/build-output-api/v3) bundle under [`.vercel/output`](https://vercel.com/docs/build-output-api/v3#directory-structure) (`config.json`, `static/`, `functions/__server*`). A normal local or CI `pnpm run build` (without that prefix) still writes `dist/` and `.output/` for `vite preview` and tests.
+
+3. **Output directory** — `outputDirectory` in `vercel.json` is **`.vercel/output`**. Vercel must deploy that directory. It overrides a mistaken **Output Directory** in the dashboard (for example `dist` or `dist/client`) that would deploy only the Vite client tree. Build logs that list `client/assets/...` and hashed JS/CSS/WASM are expected: those are the client artifacts; the **HTML for `/` is still rendered by the serverless function**, not by a root `index.html` in `dist/`.
+
+4. **Vite** — [`vite.config.ts`](vite.config.ts) uses [`tanstackStart()`](https://tanstack.com/start/latest) and [`nitro()`](https://v3.nitro.build/) (no manual `preset` in code; the `NITRO_PRESET` env from step 2 selects the Vercel preset on deploy). This matches the [TanStack Start on Vercel](https://vercel.com/docs/frameworks/full-stack/tanstack-start) guidance.
+
+**Production vs preview** (Vercel dashboard, not in `vercel.json`): In **Project → Settings → Git**, set **Production Branch** to `malar` for the production URL. **Pull requests** from connected branches get **Preview** deployments; if they are missing, check the same **Git** section and [deployment protection](https://vercel.com/docs/deployment-protection) / team policy.
+
+### Other hosts
+
+- **Cloudflare Pages:** the same `pnpm run build` can be a starting point, but a **static** root of `dist` alone is often wrong for TanStack Start—use current **TanStack Start + Cloudflare** docs for full-stack or worker routing.
+
 ## Study Materials
 
 Reference materials and documentation are available in [.grok/study-materials/](./.grok/study-materials/) for development and research purposes.
@@ -146,6 +167,8 @@ Reference materials and documentation are available in [.grok/study-materials/](
 4. Export results as JSON or copy to clipboard for further use
 
 ## Contribution
+
+**Git workflow:** default branch is `malar`. Pick a branch name from the pollinator table in [trinity-and-native-agents/creators.md](trinity-and-native-agents/creators.md). After merging a PR, run `./dx/syncagents.sh` from the repo root (see [dx/sync-branches-architecture-simple.md](dx/sync-branches-architecture-simple.md)).
 
 Contributions are welcome! The project embraces a cosmic AI collaboration model:
 
