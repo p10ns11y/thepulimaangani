@@ -169,3 +169,51 @@ fn consonant_to_index(c: Consonant) -> usize {
         Consonant::Nnn => 17,
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn text_and_matra_for_vowels_are_correct() {
+        let short = ProsodicUnit::Vowel(Vowel::A);
+        let long = ProsodicUnit::Vowel(Vowel::Aa);
+
+        assert_eq!(short.text(), "அ");
+        assert_eq!(short.matra(), 1);
+        assert_eq!(long.text(), "ஆ");
+        assert_eq!(long.matra(), 2);
+    }
+
+    #[test]
+    fn uyirmei_text_and_matra_are_correct() {
+        let short_unit = ProsodicUnit::VowelConsonant {
+            vowel: Vowel::U,
+            consonant: Consonant::K,
+        };
+        let long_unit = ProsodicUnit::VowelConsonant {
+            vowel: Vowel::Uu,
+            consonant: Consonant::K,
+        };
+
+        assert_eq!(short_unit.text(), "கு");
+        assert_eq!(short_unit.matra(), 1);
+        assert_eq!(long_unit.text(), "கூ");
+        assert_eq!(long_unit.matra(), 2);
+    }
+
+    #[test]
+    fn ends_with_consonant_matches_expected_categories() {
+        assert!(ProsodicUnit::Consonant(Consonant::K).ends_with_consonant());
+        assert!(
+            ProsodicUnit::VowelConsonant {
+                vowel: Vowel::Aa,
+                consonant: Consonant::R
+            }
+            .ends_with_consonant()
+        );
+        assert!(ProsodicUnit::ConsonantCluster("ந்ற்".to_string()).ends_with_consonant());
+        assert!(!ProsodicUnit::Vowel(Vowel::Ee).ends_with_consonant());
+        assert!(!ProsodicUnit::Aaytham.ends_with_consonant());
+    }
+}

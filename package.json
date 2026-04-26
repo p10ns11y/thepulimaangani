@@ -6,13 +6,13 @@
     "#/*": "./src/*"
   },
   "scripts": {
-    "dev": "npm run build:wasm  && vite dev --port 3000",
-    "build": "npm run build:wasm && vite build",
+    "dev": "pnpm run build:wasm  && vite dev --port 3000",
+    "build": "pnpm run build:wasm && vite build",
     "build:wasm": "bash build/tamil_seiyul_alagi_wasm.sh",
     "build:wasm:old": "cd tamil-seiyul-alagi && wasm-pack build --target web --out-dir pkg && cd .. && rsync --mkpath -a tamil-seiyul-alagi/pkg/ src/wasm/ && echo '✅ WASM copied to src/wasm/'",
     "build:only": "vite build",
     "preview": "vite preview",
-    "test": "npm run test:rust && npm run test:frontend",
+    "test": "pnpm run test:rust && pnpm run test:frontend",
     "test:rust": "cd tamil-seiyul-alagi  && cargo test",
     "test:frontend": "vitest run",
     "test:watch": "vitest",

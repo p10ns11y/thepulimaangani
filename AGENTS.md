@@ -9,11 +9,11 @@ Thepulimaangani is a Tamil prosody analysis web application with React/TypeScrip
 - `src/wasm/`: Generated WASM bindings (gitignored, regenerated via build)
 
 ## Commands
-- Development: `npm run dev`
-- Build: `npm run build` (includes WASM)
-- WASM Build: `npm run build:wasm`
-- Test: `npm run test` (Vitest) + `cargo test` (Rust)
-- Typecheck: `npm run typecheck`
+- Development: `pnpm run dev`
+- Build: `pnpm run build` (includes WASM)
+- WASM Build: `pnpm run build:wasm`
+- Test: `pnpm run test` (Vitest) + `cargo test` (Rust)
+- Typecheck: `pnpm run typecheck`
 
 ## Coding Style
 - TypeScript: Strict typing, no `any`

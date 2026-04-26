@@ -72,10 +72,10 @@ The WebAssembly parser is built separately and its artifacts are copied to `src/
 
 **Build Process**:
 1. **Rust Compilation**: `wasm-pack build --target web --out-dir pkg` generates JavaScript bindings and WASM binary in `tamil-seiyul-alagi/pkg/`
-2. **File Copy**: Generated files are automatically copied from `tamil-seiyul-alagi/pkg/` to `src/wasm/` via `npm run build:wasm`
+2. **File Copy**: Generated files are automatically copied from `tamil-seiyul-alagi/pkg/` to `src/wasm/` via `pnpm run build:wasm`
 3. **Vite Bundling**: Vite processes the WASM files as static assets, serving them with proper MIME types
 4. **Dynamic Import**: Frontend uses `import('../wasm/thepulimaangani_parser.js')` for lazy loading
-5. **Runtime Connection**: JavaScript bindings initialize the WASM module and expose the `parse_poem()` function
+5. **Runtime Connection**: JavaScript bindings initialize the WASM module and expose the `parse_poem_wasm()` function
 
 **Why Not Track WASM Files**: Binary files are excluded from version control to avoid repository bloat and ensure that all builds are generated from the source Rust code, maintaining build reproducibility.
 
@@ -152,7 +152,7 @@ Complete talai calculation system with traditional Tamil prosodic linkages:
 The WebAssembly parser is built using the automated `build:wasm` script:
 
 ```bash
-npm run build:wasm
+pnpm run build:wasm
 ```
 
 This script:
@@ -164,25 +164,25 @@ This script:
 ### Frontend Development
 
 ```bash
-npm run dev         # Development server (http://localhost:3000)
-npm run build       # Production build (includes WASM build)
-npm run build:only  # Frontend build only (assumes WASM is already built)
-npm run test        # Run complete test suite (Rust + Frontend)
-npm run test:rust   # Run Rust tests with coverage (cargo-tarpaulin)
-npm run test:frontend # Run frontend tests (Vitest)
+pnpm run dev         # Development server (http://localhost:3000)
+pnpm run build       # Production build (includes WASM build)
+pnpm run build:only  # Frontend build only (assumes WASM is already built)
+pnpm run test        # Run complete test suite (Rust + Frontend)
+pnpm run test:rust   # Run Rust tests
+pnpm run test:frontend # Run frontend tests (Vitest)
 ```
 
-**Development Workflow**: When modifying the Rust parser, run `npm run build:wasm` to rebuild and copy the WebAssembly files. For frontend-only changes, `npm run dev` will hot-reload automatically.
+**Development Workflow**: When modifying the Rust parser, run `pnpm run build:wasm` to rebuild and copy the WebAssembly files. For frontend-only changes, `pnpm run dev` will hot-reload automatically.
 
-**Note**: The `src/wasm/` directory is gitignored since it contains generated binary files. Always run `npm run build:wasm` after cloning the repository or modifying the Rust parser.
+**Note**: The `src/wasm/` directory is gitignored since it contains generated files. Always run `pnpm run build:wasm` after cloning the repository or modifying the Rust parser.
 
 ### WebAssembly Connection
 
 The frontend connects to the WebAssembly parser through:
 
-1. **Dynamic Import**: `import('../wasm/avalokitam_parser.js')` loads the WASM bindings
+1. **Dynamic Import**: `import('../wasm/thepulimaangani_parser.js')` loads the WASM bindings
 2. **Initialization**: `wasm.default()` initializes the WebAssembly module
-3. **Function Call**: `wasm.parse_poem(text)` executes the Rust parsing logic
+3. **Function Call**: `wasm.parse_poem_wasm(text)` executes the Rust parsing logic
 4. **Result Processing**: JSON results are parsed and displayed in the UI
 
 Vite automatically handles serving the `.wasm` files with the correct `application/wasm` MIME type required for WebAssembly instantiation.

@@ -105,3 +105,32 @@ pub enum LetterType {
     Uyirmei,
     Aaytham,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn maps_basic_graphemes_to_prosodic_units() {
+        let graphemes = vec!["அ", "க்", "க", "ஃ", "x"];
+        let units = to_prosodic_units(&graphemes);
+
+        assert_eq!(units.len(), 4);
+        assert_eq!(units[0], ProsodicUnit::Vowel(Vowel::A));
+        assert_eq!(units[1], ProsodicUnit::Consonant(Consonant::K));
+        assert_eq!(
+            units[2],
+            ProsodicUnit::VowelConsonant {
+                vowel: Vowel::A,
+                consonant: Consonant::K,
+            }
+        );
+        assert_eq!(units[3], ProsodicUnit::Aaytham);
+    }
+
+    #[test]
+    fn from_index_defaults_to_safe_values_for_out_of_range() {
+        assert_eq!(Vowel::from_index(100), Vowel::A);
+        assert_eq!(Consonant::from_index(100), Consonant::K);
+    }
+}

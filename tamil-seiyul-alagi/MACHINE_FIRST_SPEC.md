@@ -1,0 +1,185 @@
+# Machine-First Prosody Spec (Normative)
+
+Status: Draft v0.1
+Owner branch: `thumpi`
+Base branch: `malar`
+
+This is the single source of truth for the machine-first redesign of the Tamil prosody engine. All other docs (study materials, migration notes, presentation labels) reference this spec rather than redefine its rules.
+
+---
+
+## 1. Architectural Contract
+
+Two strict layers, no leaks:
+
+- **Core (machine-first)**
+  - Pure logic. Typed enums. Integer scoring. No Tamil display strings.
+  - Lives under `tamil-seiyul-alagi/src/` (excluding `presentation.rs`).
+  - Outputs structured hypotheses with rule-IDs, scores, violations.
+- **Presentation (human-first)**
+  - Maps core IDs/enums to Tamil names, classical narrative, educational text.
+  - Lives under `tamil-seiyul-alagi/src/presentation.rs`.
+  - The only place where strings like `தேமா`, `வெண்டளை`, `வெண்பா` appear.
+
+Naming policy:
+- Core module names use machine-first English: `linkage.rs` (not `talai.rs`), `foot.rs`, `metre.rs`, `syllable.rs`, etc.
+- Core type names use machine-first English: `LinkageClass`, `FootPattern`, `MetreHypothesis`. Classical names live in presentation only.
+- Exception for canonical grammar identifiers: when a concept is a standard classical-grammar term without a clean neutral replacement, keep the canonical term in English-Latin form (e.g., `VenTalai`, `AsiriyaTalai`) inside enum variants while preserving English container names (`LinkageType`).
+
+---
+
+## 2. Rule ID Registry
+
+Every core decision attaches a stable `RuleId`. Format:
+
+```
+<COMPONENT>-<TOPIC>-<NN>
+```
+
+Examples:
+- `SYL-NIRAI-01` — Nirai-formation rule #1
+- `FOOT-WIDTH-02` — Allowed width rule #2
+- `LINK-BOUNDARY-03` — Linkage boundary classification #3
+- `METRE-VENPAA-01` — Venpaa hard constraint #1
+
+Rules are versioned. A rule never silently changes meaning; either the body changes with the same ID and a doc note, or a new ID supersedes the old one.
+
+The registry lives in code as a single typed enum (later phase), with a docstring per variant pointing to the exact section in this spec.
+
+---
+
+## 3. Core Data Model (machine-first)
+
+Conceptual shape (final Rust types refined later):
+
+- `ProsodicUnit` — atomic segmental unit (vowel, consonant, uyirmei, etc.).
+- `Asai` — prosodic metreme. Variants: `Ner`, `Nirai`, plus future `NerPu`, `NiraiPu` if needed.
+- `FootCandidate` — a span of asai forming a possible foot. Carries `signature`, `width`, `feature_vector`, `score`, `rule_ids`.
+- `LinkageCandidate` — adjacency between two `FootCandidate`s. Carries `class_id`, `is_valid`, `violations`, `score`, `rule_ids`.
+- `MetreHypothesis` — a global interpretation. Carries `metre_id`, `aggregate_score`, `violations`, `rule_ids`, `selected_foot_path`, `selected_linkage_path`.
+- `ParseResult`
+  - `winner: MetreHypothesis`
+  - `top_k: Vec<MetreHypothesis>`
+  - `confidence: i32`  (fixed-point)
+  - `provenance: Vec<RuleId>`
+  - existing fields stay for backward compatibility.
+
+---
+
+## 4. Stage Specifications
+
+### 4.1 Foot Stage
+
+Replaces the placeholder logic in [`src/foot.rs`](src/foot.rs) which currently chunks syllables in pairs and cycles names by index.
+
+Algorithm (lattice-based segmentation):
+
+1. Accept `[Asai]` for a line.
+2. Enumerate candidate foot spans of allowed widths (start with 2..=4 asai).
+3. For each span:
+   - Compute `pattern_signature` (asai-type sequence).
+   - Compute `feature_vector` (length, boundary closure, weight class).
+   - Score with deterministic integer scoring.
+4. Build a directed lattice over span boundaries.
+5. Return all candidates plus best-path projection (used by metre stage).
+
+Out-of-scope here: classical foot naming. That mapping lives in presentation.
+
+### 4.2 Linkage Stage (renamed from `talai`)
+
+Module: `src/linkage.rs` (rename from current `src/talai.rs`).
+
+Replaces current logic which emits constant `VenTalai` and `is_valid = true` for every adjacency.
+
+Algorithm:
+
+1. For each adjacent pair of `FootCandidate`s on a chosen foot path:
+   - Extract `left.end_features` and `right.start_features`.
+   - Look up `LinkageClass` from a typed transition table.
+   - Mark `is_valid` based on hard constraints in the table.
+   - Append `violations` and supporting `rule_ids`.
+2. Emit `[LinkageCandidate]` for the path.
+
+Presentation maps `LinkageType::VenTalai`, `LinkageType::AsiriyaTalai`, etc., to Tamil labels.
+
+### 4.3 Metre Stage
+
+Replaces the `feet.len() >= 4` heuristic in [`src/metre.rs`](src/metre.rs).
+
+Algorithm:
+
+1. For each candidate metre, evaluate a typed constraint object:
+   - hard constraints (line shape, ending class, mandatory linkage class set);
+   - soft constraints (preference rules with weights).
+2. Score each metre against the foot path and linkage path produced by stages 4.1 and 4.2.
+3. Rank using deterministic ordering (see §5).
+4. Return `top_k` with violations and rule IDs.
+
+---
+
+## 5. Determinism Rules
+
+Tie-breaking order (applied left-to-right):
+
+1. Higher `aggregate_score` (integer).
+2. Fewer hard violations.
+3. Fewer soft violations.
+4. Earlier (lower) lexicographic `metre_id`.
+5. Earlier (lower) `rule_id` sequence.
+
+All scores are integers; no floats in core. This guarantees stable top-k across runs and platforms.
+
+---
+
+## 6. Diagnostic Output Contract
+
+`ParseResult.top_k[i]` always carries:
+
+- `metre_id`
+- `aggregate_score`
+- `violations: Vec<{ rule_id, severity, span }>`
+- `selected_foot_path` and `selected_linkage_path`
+- `rule_ids`
+
+Consumers may render only the winner; the lattice and top-k remain available for explainability and tests.
+
+---
+
+## 7. Migration & Rename Map
+
+| Current core name | New core name | Notes |
+|---|---|---|
+| `src/talai.rs` | `src/linkage.rs` | machine-first naming |
+| `Talai` | `LinkageCandidate` | type rename |
+| `TalaiType` | `LinkageType` | enum rename, with canonical variants like `VenTalai` |
+| `Foot.foot_type: String` | `Foot.pattern: FootPattern` (enum) | typed signature |
+| `MetreType` | `MetreId` (enum) | wire-compatible Display impl in presentation |
+
+Old top-level fields stay for compatibility during phased rollout; new fields are additive.
+
+---
+
+## 8. Test & Validation Contract
+
+Required guarantees before flipping defaults:
+
+- Determinism test: same input, same top-k, byte-stable JSON.
+- Lattice test: foot enumeration yields all and only allowed widths.
+- Linkage table test: every `(left.end_class, right.start_class)` resolves to one `LinkageClass`.
+- Metre constraint test: at least one passing fixture per supported metre.
+- Char-safe slicing in [`tests/test_poem_variations.rs`](tests/test_poem_variations.rs); must use grapheme/char boundaries.
+
+---
+
+## 9. Out of Scope (this phase)
+
+- New metres beyond what is currently enumerated.
+- Frontend changes beyond consuming new optional fields.
+- CI; will be wired in a later sprint.
+
+---
+
+## 10. Change Log
+
+- v0.1 — initial draft on `thumpi` branch.
+- v0.2 — naming rule clarified: English container types with canonical grammar-specific variant names (e.g., `VenTalai`).

@@ -5,12 +5,16 @@
 //
 // Run with: cargo test --test test_poem_variations
 
-use thepulimaangani_parser::{parse_poem, ParseOptions, MetreType};
+use thepulimaangani_parser::{parse_poem, ParseOptions};
+
+fn safe_prefix(text: &str, max_chars: usize) -> String {
+    text.chars().take(max_chars).collect()
+}
 
 /// Helper to run parser and basic assertions
 fn assert_parses_successfully(text: &str, expected_metre_hint: Option<&str>) {
     let result = parse_poem(text, ParseOptions::default())
-        .expect(&format!("Parser failed on poem: {}", &text[..50.min(text.len())]));
+        .unwrap_or_else(|_| panic!("Parser failed on poem: {}", safe_prefix(text, 50)));
 
     assert!(!result.syllables.is_empty(), "No syllables found");
     assert!(!result.feet.is_empty(), "No feet found");
