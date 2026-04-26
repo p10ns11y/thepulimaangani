@@ -738,6 +738,91 @@ html[data-look="redfill"] .luxe-prosody-card {
     0 4px 24px color-mix(in oklab, var(--gem-diamond) 8%, transparent);
 }
 
+/* Select dropdown — solid underpaint so portaled menu never shows page text through; gradient is tint only */
+.luxe-select-content {
+  isolation: isolate;
+  /* Fully opaque base (no alpha in the fill itself) */
+  background-color: var(--card);
+  background-image: linear-gradient(
+    170deg,
+    color-mix(in oklab, var(--popover) 12%, var(--card) 88%) 0%,
+    color-mix(in oklab, var(--card) 8%, var(--surface-2) 92%) 100%
+  );
+  color: var(--popover-foreground);
+  border: 1px solid color-mix(in oklab, var(--rim) 72%, var(--border) 28%);
+  box-shadow:
+    0 1px 0 color-mix(in oklab, var(--inset-glint) 50%, white 50%) inset,
+    0 1px 0 var(--diamond-glint) inset,
+    0 8px 28px color-mix(in oklab, var(--foreground) 3.4%, transparent),
+    0 0 0 1px color-mix(in oklab, var(--rim) 22%, transparent);
+}
+
+html[data-look="redfill"] .luxe-select-content {
+  /* Dark theme: near-opaque cool base + shallow gradient (still readable on --sea-ink) */
+  background-color: color-mix(in oklab, var(--surface-1) 94%, #080406 6%);
+  background-image: linear-gradient(
+    165deg,
+    color-mix(in oklab, var(--surface-1) 90%, var(--diamond-ice) 2%) 0%,
+    color-mix(in oklab, var(--surface-2) 78%, var(--gem-ruby) 4.5%) 50%,
+    color-mix(in oklab, var(--card) 70%, var(--gem-yellow-sapphire) 3.5%) 100%
+  );
+  color: var(--popover-foreground);
+  border: 1px solid color-mix(in oklab, var(--line) 58%, var(--rim) 42%);
+  box-shadow:
+    0 1px 0 color-mix(in oklab, var(--diamond-glint) 85%, transparent) inset,
+    0 0 0 1px color-mix(in oklab, var(--gem-diamond) 16%, var(--rim) 35%),
+    0 10px 36px color-mix(in oklab, rgba(0, 0, 0, 0.5) 42%, var(--gem-ruby) 6%),
+    0 3px 18px color-mix(in oklab, var(--gem-diamond) 9%, transparent),
+    0 0 1px color-mix(in oklab, var(--gem-yellow-sapphire) 12%, transparent);
+}
+
+.luxe-select-content .luxe-select-scroll-edge {
+  color: var(--muted-foreground);
+  background-color: color-mix(in oklab, var(--card) 55%, var(--surface-2) 45%);
+  background-image: linear-gradient(180deg, var(--card) 0%, color-mix(in oklab, var(--surface-2) 20%, var(--card) 80%) 100%);
+}
+
+html[data-look="redfill"] .luxe-select-content .luxe-select-scroll-edge {
+  color: var(--sea-ink-soft);
+  background-color: color-mix(in oklab, var(--surface-2) 55%, #0a0608 45%);
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--surface-1) 88%, var(--diamond-ice) 3%) 0%,
+    color-mix(in oklab, var(--surface-2) 82%, var(--diamond-ice) 2%) 100%
+  );
+}
+
+.luxe-select-content [data-slot="select-scroll-up-button"] {
+  border-bottom: 1px solid color-mix(in oklab, var(--rim) 22%, transparent);
+}
+
+.luxe-select-content [data-slot="select-scroll-down-button"] {
+  border-top: 1px solid color-mix(in oklab, var(--rim) 22%, transparent);
+}
+
+html[data-look="redfill"] .luxe-select-content [data-slot="select-scroll-up-button"] {
+  border-bottom-color: color-mix(in oklab, var(--line) 45%, transparent);
+}
+
+html[data-look="redfill"] .luxe-select-content [data-slot="select-scroll-down-button"] {
+  border-top-color: color-mix(in oklab, var(--line) 45%, transparent);
+}
+
+@media (prefers-contrast: more) {
+  .luxe-select-content {
+    border-width: 2px;
+    border-color: color-mix(in oklab, var(--rim) 55%, var(--foreground) 45%);
+  }
+
+  html[data-look="redfill"] .luxe-select-content {
+    border-color: color-mix(in oklab, var(--gem-yellow-sapphire) 35%, var(--rim) 65%);
+    box-shadow:
+      0 1px 0 var(--diamond-glint) inset,
+      0 0 0 1px color-mix(in oklab, var(--sea-ink) 18%, var(--rim) 82%),
+      0 10px 28px color-mix(in oklab, rgba(0, 0, 0, 0.55) 45%, var(--gem-ruby) 8%);
+  }
+}
+
 .luxe-inset-surface {
   background: var(--surface-3);
   border: 1px solid color-mix(in oklab, var(--rim) 62%, transparent 38%);

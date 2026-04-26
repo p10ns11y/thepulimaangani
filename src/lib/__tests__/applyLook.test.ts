@@ -23,7 +23,7 @@ describe('applyLook', () => {
     expect(document.documentElement.style.colorScheme).toBe('light')
   })
 
-  it('LOOK_STORAGE_KEY matches shell script and AppShellSync', () => {
+  it('LOOK_STORAGE_KEY matches shell script and AppActorProvider look sync', () => {
     expect(LOOK_STORAGE_KEY).toBe('look')
   })
 

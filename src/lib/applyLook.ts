@@ -1,6 +1,6 @@
 import type { AppLook } from '#/machines/app.machine'
 
-/** `localStorage` key for persisted look (FOUC script + `AppShellSync` must match). */
+/** `localStorage` key for persisted look (FOUC script + `AppActorProvider` look sync must match). */
 export const LOOK_STORAGE_KEY = 'look' as const
 
 /**
