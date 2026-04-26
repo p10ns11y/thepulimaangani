@@ -129,6 +129,13 @@ Thepulimaangani consists of:
 
 See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed technical documentation.
 
+## CI and deployment
+
+- **GitHub Actions** (`.github/workflows/ci.yml`) runs on pushes to `malar` and `main` and on all pull requests: full `pnpm run build` (WebAssembly + Vite), `pnpm run typecheck`, and `pnpm run test` (Rust + Vitest). Node version matches [`.nvmrc`](.nvmrc).
+- **Vercel:** [`vercel.json`](vercel.json) runs [`build/ensure-wasm-build-tools.sh`](build/ensure-wasm-build-tools.sh) before `pnpm install` so the Rust `wasm-pack` build can produce [`src/wasm/`](AGENTS.md) (gitignored) on a clean image. The build command is `pnpm run build`. TanStack Start produces **client and server** output under `dist/`; the Vercel project should use the [TanStack Start on Vercel](https://vercel.com/new/builds/templates/template/tanstack-start-on-vercel) style integration (or current TanStack deploy docs) so the server entry is not treated as a static site root only. First install may take longer while the toolchain is provisioned.
+  - **Production vs preview (configured in the Vercel dashboard, not in `vercel.json`):** In **Project → Settings → Git**, set **Production Branch** to `malar` so merges to `malar` get the **Production** deployment URL. **Pull requests** from any branch typically get a **Preview** deployment automatically for the connected GitHub repo; if previews are missing, check the same **Git** section and [deployment protection](https://vercel.com/docs/deployment-protection) / team policy so PR builds are not blocked.
+- **Trying Cloudflare Pages:** you can use the same build command, but a **static** publish directory of `dist` alone is often wrong for a Start server bundle—follow up-to-date **TanStack Start + Cloudflare** documentation if you go that route.
+
 ## Study Materials
 
 Reference materials and documentation are available in [.grok/study-materials/](./.grok/study-materials/) for development and research purposes.
