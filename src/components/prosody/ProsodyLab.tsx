@@ -13,12 +13,13 @@ import {
 } from '#/components/ui/select'
 import { Separator } from '#/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs'
-import { Textarea } from '#/components/ui/textarea'
 import { poemVariations } from '#/data/poemVariations'
 import { useDebouncedParsedPoem } from '#/hooks/useDebouncedParsedPoem'
 import { useWasmParser } from '#/hooks/useWasmParser'
 
 import { ParseResultPanel } from './ParseResultPanel'
+import { PoemEditDialog } from './PoemEditDialog'
+import { PoemFitPreview } from './PoemFitPreview'
 
 type VariationRow = { en: string; ta: string; example: string }
 
@@ -52,6 +53,8 @@ export function ProsodyLab() {
   const [metreKey, setMetreKey] = useState<MetreKey>('venpaa')
   const [selectedEn, setSelectedEn] = useState(defaultRow.en)
   const [poemText, setPoemText] = useState(defaultRow.example)
+  const [poemEditorOpen, setPoemEditorOpen] = useState(false)
+  const [poemDraft, setPoemDraft] = useState(defaultRow.example)
   const { parse, result, loading, validationError } = useWasmParser()
   const livePreview = useDebouncedParsedPoem(poemText)
 
@@ -73,13 +76,20 @@ export function ProsodyLab() {
 
   const handleMetreTab = (value: string) => {
     if (!METRE_ORDER.includes(value as MetreKey)) return
+    setPoemEditorOpen(false)
     setMetreKey(value as MetreKey)
   }
 
   const handleSampleChange = (en: string) => {
+    setPoemEditorOpen(false)
     setSelectedEn(en)
     const hit = flatRows.find((r) => r.en === en)
     if (hit) setPoemText(hit.example)
+  }
+
+  const openPoemEditor = () => {
+    setPoemDraft(poemText)
+    setPoemEditorOpen(true)
   }
 
   return (
@@ -93,12 +103,15 @@ export function ProsodyLab() {
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-3 px-4 pb-4 pt-0">
-              <Textarea
-                value={poemText}
-                onChange={(e) => setPoemText(e.target.value)}
-                placeholder="Enter Tamil poem here…"
-                className="font-tamil min-h-[6.5rem] resize-y rounded-lg text-[0.95rem] leading-relaxed sm:min-h-[7rem]"
-                spellCheck={false}
+              <PoemFitPreview text={poemText} onOpenEditor={openPoemEditor} />
+              <PoemEditDialog
+                open={poemEditorOpen}
+                onOpenChange={setPoemEditorOpen}
+                value={poemDraft}
+                onChange={setPoemDraft}
+                onApply={() => {
+                  setPoemText(poemDraft)
+                }}
               />
               {validationError ? (
                 <div className="border-destructive/35 bg-destructive/8 rounded-lg border px-3 py-2">
@@ -126,12 +139,12 @@ export function ProsodyLab() {
             </CardHeader>
             <CardContent className="flex flex-col gap-3 px-4 pb-4 pt-0">
               <Tabs value={metreKey} onValueChange={handleMetreTab}>
-                <TabsList className="bg-surface-3/75 border-rim/40 h-auto w-full flex-wrap justify-start gap-0.5 border p-1 sm:w-fit">
+                <TabsList className="prosody-metre-grid bg-surface-3/75 border-rim/40 grid w-full min-w-0 grid-cols-2 gap-0.5 border p-1 sm:grid-cols-4">
                   {METRE_ORDER.map((k) => (
                     <TabsTrigger
                       key={k}
                       value={k}
-                      className="font-tamil luxe-gem-focus px-2.5 py-1.5 text-xs data-active:border-rim/55 data-active:bg-surface-1/95 data-active:shadow-sm sm:text-sm"
+                      className="font-tamil luxe-gem-focus min-w-0 whitespace-normal text-center [text-wrap:balance] px-2 py-1.5 text-[0.7rem] data-active:border-rim/55 data-active:bg-surface-1/95 data-active:shadow-sm sm:px-2.5 sm:text-xs"
                     >
                       {METRE_TAB_LABEL[k]}
                     </TabsTrigger>
@@ -145,7 +158,10 @@ export function ProsodyLab() {
                     Variation
                   </label>
                   <Select value={selectedEn} onValueChange={handleSampleChange}>
-                    <SelectTrigger id="sample-select" className="font-tamil h-9 w-full text-sm">
+                    <SelectTrigger
+                      id="sample-select"
+                      className="font-tamil border-rim/50 bg-surface-2/60 h-9 w-full text-[0.8125rem] shadow-none"
+                    >
                       <SelectValue placeholder="Pick a sample" />
                     </SelectTrigger>
                     <SelectContent>

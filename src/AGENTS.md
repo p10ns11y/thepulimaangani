@@ -24,6 +24,9 @@ React/TypeScript frontend using TanStack Start/Router, Vite, Tailwind CSS. Focus
 - **Default branch:** `malar`. Name your branch using [trinity-and-native-agents/creators.md](../trinity-and-native-agents/creators.md) (pollinator table).
 - **After every PR merge:** run `./dx/syncagents.sh` from the repo root; see [dx/sync-branches-architecture-simple.md](../dx/sync-branches-architecture-simple.md).
 
+## Backlog / future UI
+- **Site-wide font size** (toolbar or settings) for Tamil body text and panels — accessibility and reading comfort.
+
 ## Rules
 - Dynamic import WASM modules for performance
 - Handle Tamil text input/output properly (Unicode support)

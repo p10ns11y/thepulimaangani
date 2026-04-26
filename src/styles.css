@@ -466,6 +466,175 @@ a {
   }
 }
 
+/* Prosody lab: metre tabs — 2×2 on narrow, 4 columns on sm+; no horizontal scroll */
+.prosody-metre-grid {
+  min-height: 0;
+}
+
+/* Poem editor: preserve physical lines; horizontal scroll for long lines */
+.prosody-poem-input {
+  tab-size: 4;
+  scrollbar-gutter: stable;
+}
+
+.prosody-poem-input::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.prosody-poem-input::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: color-mix(in oklab, var(--rim) 42%, transparent);
+}
+
+/* Native bottom sheet: soft backdrop; sheet slides in (keyframes: reliable when dialog gains [open]) */
+.poem-edit-dialog {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: auto;
+  margin: 0 auto;
+  max-width: 720px;
+}
+
+.poem-edit-dialog[open] {
+  animation: poem-sheet-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  pointer-events: auto;
+}
+
+@keyframes poem-sheet-in {
+  from {
+    transform: translate3d(0, 108%, 0);
+    opacity: 0.85;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+.poem-edit-dialog::backdrop {
+  background: color-mix(in oklab, var(--sea-ink) 22%, transparent 78%);
+  backdrop-filter: blur(5px) saturate(1.05);
+  -webkit-backdrop-filter: blur(5px) saturate(1.05);
+  cursor: default;
+  animation: poem-dialog-backdrop-in 0.35s ease-out both;
+}
+
+@keyframes poem-dialog-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .poem-edit-dialog[open] {
+    animation: none;
+  }
+
+  .poem-edit-dialog::backdrop {
+    animation: none;
+  }
+}
+
+/* Poem read-only “viewport”: frame + sheen + slow sparkle */
+.prosody-poem-preview-frame {
+  background:
+    linear-gradient(135deg, color-mix(in oklab, var(--diamond-ice) 15%, transparent) 0%, transparent 42%),
+    linear-gradient(225deg, color-mix(in oklab, var(--gem-yellow-sapphire) 12%, transparent) 0%, transparent 38%),
+    linear-gradient(90deg, color-mix(in oklab, var(--rim) 22%, transparent), color-mix(in oklab, var(--gem-diamond) 16%, transparent));
+  background-size: 200% 200%;
+  border-radius: inherit;
+  animation: prosody-poem-frame-shift 8s ease-in-out infinite;
+}
+
+.prosody-poem-sparkle-1 {
+  animation: prosody-poem-sheen-sweep 2.4s ease-in-out infinite;
+}
+
+@keyframes prosody-poem-frame-shift {
+  0%,
+  100% {
+    background-position: 0% 30%;
+  }
+  50% {
+    background-position: 100% 70%;
+  }
+}
+
+@keyframes prosody-poem-sheen-sweep {
+  0% {
+    transform: translateX(-20%) translateY(0) rotate(12deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.55;
+  }
+  45%,
+  100% {
+    transform: translateX(120%) translateY(4px) rotate(12deg);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prosody-poem-preview-frame,
+  .prosody-poem-sparkle-1 {
+    animation: none;
+  }
+}
+
+.prosody-poem-dialog-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.prosody-poem-dialog-shimmer::before {
+  content: "";
+  position: absolute;
+  inset: -40% 0 0 0;
+  left: -30%;
+  width: 45%;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    color-mix(in oklab, var(--sparkle) 45%, transparent) 48%,
+    color-mix(in oklab, var(--gem-diamond) 20%, transparent) 52%,
+    transparent 100%
+  );
+  opacity: 0.35;
+  transform: translateX(-100%) rotate(6deg);
+  pointer-events: none;
+  animation: prosody-textarea-glint 4.2s ease-in-out infinite;
+}
+
+@keyframes prosody-textarea-glint {
+  0%,
+  12% {
+    transform: translateX(-80%) rotate(6deg);
+    opacity: 0;
+  }
+  32% {
+    opacity: 0.45;
+  }
+  55%,
+  100% {
+    transform: translateX(220%) rotate(6deg);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prosody-poem-dialog-shimmer::before {
+    animation: none;
+    opacity: 0;
+  }
+}
+
 /* Live syllable preview: snappier chip entrance than default rise-in */
 .live-syllable-pop {
   animation: live-syllable-pop 0.52s cubic-bezier(0.2, 0.9, 0.2, 1) both;
