@@ -33,7 +33,7 @@ export function SyllableLivePreview({ poemText, live, variant = 'default' }: Syl
           <span>{compact ? 'Live' : 'Live syllables'}</span>
           {isRefreshing ? (
             <span
-              className="bg-muted-foreground/55 motion-safe:animate-pulse inline-block size-1.5 rounded-full"
+              className="luxe-live-pulse-dot motion-safe:animate-pulse inline-block size-1.5 rounded-full"
               aria-label="Updating layout"
               title="Updating layout"
             />
@@ -42,14 +42,14 @@ export function SyllableLivePreview({ poemText, live, variant = 'default' }: Syl
         <div className="text-muted-foreground flex flex-wrap items-center gap-2 text-[0.7rem] sm:gap-3">
           <span className="inline-flex items-center gap-1.5">
             <span
-              className="inline-block size-2 rounded-sm border border-[rgba(79,184,178,0.5)] bg-[rgba(79,184,178,0.22)]"
+              className="inline-block size-2 rounded-sm border [border-color:var(--syllable-ner-border)] [background-color:color-mix(in_oklab,var(--syllable-ner-swatch),transparent_35%)]"
               aria-hidden
             />
             நேர்
           </span>
           <span className="inline-flex items-center gap-1.5">
             <span
-              className="inline-block size-2 rounded-sm border border-[rgba(47,106,74,0.35)] bg-[rgba(47,106,74,0.14)]"
+              className="inline-block size-2 rounded-sm border [border-color:var(--syllable-nirai-border)] [background-color:color-mix(in_oklab,var(--syllable-nirai-swatch),transparent_40%)]"
               aria-hidden
             />
             நிரை
@@ -72,8 +72,8 @@ export function SyllableLivePreview({ poemText, live, variant = 'default' }: Syl
           className={cn(
             'max-w-full overflow-hidden rounded-xl border',
             compact
-              ? 'border-border bg-muted/20 shadow-none'
-              : 'max-w-3xl rounded-2xl border-[var(--line)]/70 bg-gradient-to-b from-[var(--foam)]/90 via-white/70 to-[var(--sand)]/35 shadow-[0_18px_48px_rgba(23,58,64,0.07)]',
+              ? 'border-rim/50 bg-surface-3/65 shadow-none'
+              : 'max-w-3xl rounded-2xl border-rim/55 bg-gradient-to-b from-surface-1/95 via-surface-2/80 to-surface-3/55 shadow-[0_18px_48px_color-mix(in_oklab,var(--foreground)_6%,transparent)]',
           )}
         >
           {physicalLines.map((lineText, lineIdx) => {
@@ -89,7 +89,7 @@ export function SyllableLivePreview({ poemText, live, variant = 'default' }: Syl
                 key={`live-block-${lineIdx}`}
                 className={cn(
                   'border-b border-border/80 last:border-b-0',
-                  compact ? 'px-3 py-2.5 sm:px-3.5' : 'border-[var(--line)]/50 px-4 py-4 sm:px-5 sm:py-5',
+                  compact ? 'px-3 py-2.5 sm:px-3.5' : 'border-rim/45 px-4 py-4 sm:px-5 sm:py-5',
                 )}
               >
                 <div
@@ -114,8 +114,8 @@ export function SyllableLivePreview({ poemText, live, variant = 'default' }: Syl
                       'flex flex-wrap items-end border-t',
                       'motion-safe:transition-[opacity,transform] motion-safe:duration-300 motion-safe:ease-out',
                       compact
-                        ? 'mt-2 gap-x-4 gap-y-1.5 border-border/60 pt-2'
-                        : 'mt-3 gap-x-6 gap-y-2.5 border-[var(--line)]/35 pt-3',
+                        ? 'mt-2 gap-x-4 gap-y-1.5 border-rim/45 pt-2'
+                        : 'mt-3 gap-x-6 gap-y-2.5 border-rim/35 pt-3',
                       isRefreshing && 'opacity-[0.72]',
                     )}
                     aria-busy={isRefreshing}
@@ -145,7 +145,7 @@ export function SyllableLivePreview({ poemText, live, variant = 'default' }: Syl
                     ))}
                   </div>
                 ) : (
-                  <p className="text-muted-foreground mt-3 border-t border-[var(--line)]/35 pt-3 text-xs">
+                  <p className="text-muted-foreground border-rim/35 mt-3 border-t pt-3 text-xs">
                     No syllables for this line.
                   </p>
                 )}

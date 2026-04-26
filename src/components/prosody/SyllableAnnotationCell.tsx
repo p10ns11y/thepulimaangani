@@ -26,10 +26,10 @@ export function SyllableAnnotationCell({
       className={cn(
         'font-tamil inline-flex min-w-[1.75rem] flex-col items-center rounded-lg px-2 py-1 text-center text-[0.95rem] leading-snug shadow-sm',
         motionClass,
-        'border border-[var(--line)]/60',
+        'border',
         isNer
-          ? 'bg-gradient-to-b from-[rgba(79,184,178,0.28)] to-[rgba(79,184,178,0.1)] text-[var(--lagoon-deep)]'
-          : 'bg-gradient-to-b from-[rgba(47,106,74,0.18)] to-[rgba(47,106,74,0.06)] text-[var(--palm)]',
+          ? '[border-color:color-mix(in_oklab,var(--syllable-ner-border),transparent_25%)] bg-gradient-to-b from-[color:var(--syllable-ner-bg)] to-[color:var(--syllable-ner-tint-to)] text-[color:var(--syllable-ner-text)]'
+          : '[border-color:color-mix(in_oklab,var(--syllable-nirai-border),transparent_22%)] bg-gradient-to-b from-[color:var(--syllable-nirai-bg)] to-[color:var(--syllable-nirai-tint-to)] text-[color:var(--syllable-nirai-text)]',
       )}
       style={{ animationDelay: `${staggerMs}ms` }}
     >
@@ -38,7 +38,7 @@ export function SyllableAnnotationCell({
         className={cn(
           'font-sans tracking-wide opacity-90',
           'text-[0.65rem]',
-          isNer ? 'text-[var(--lagoon-deep)]' : 'text-[var(--palm)]',
+          isNer ? 'text-[color:var(--syllable-ner-text)]' : 'text-[color:var(--syllable-nirai-text)]',
         )}
       >
         {isNer ? 'நேர்' : 'நிரை'}

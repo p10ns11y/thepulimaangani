@@ -20,14 +20,14 @@ type ParseResultPanelProps = {
   className?: string
 }
 
-const panelClass = 'border bg-card shadow-sm overflow-hidden rounded-xl'
+const panelClass = 'luxe-prosody-card luxe-sheen-hover overflow-hidden rounded-xl'
 
 function JsonActionsFooter({ jsonString }: { jsonString: string }) {
   return (
     <div
       className={cn(
-        'border-border/80 flex flex-wrap items-center justify-end gap-2 border-t px-4 py-3',
-        'bg-muted/25 supports-[backdrop-filter]:backdrop-blur-[2px]',
+        'border-rim/55 flex flex-wrap items-center justify-end gap-2 border-t px-4 py-3',
+        'bg-surface-2/88 supports-[backdrop-filter]:backdrop-blur-[3px]',
       )}
     >
       <Button
@@ -124,14 +124,23 @@ export function ParseResultPanel({ result, poemText, live, className }: ParseRes
       <CardContent className="flex flex-col gap-0 p-0">
         <div className="px-4 pt-4">
           <Tabs defaultValue="live">
-            <TabsList className="bg-muted/50 h-auto w-full justify-start gap-0.5 p-1 sm:w-fit">
-              <TabsTrigger value="live" className="text-xs sm:text-sm">
+            <TabsList className="bg-surface-3/75 border-rim/40 h-auto w-full justify-start gap-0.5 border p-1 sm:w-fit">
+              <TabsTrigger
+                value="live"
+                className="luxe-gem-focus text-xs data-active:border-rim/55 data-active:bg-surface-1/95 data-active:shadow-sm sm:text-sm"
+              >
                 Live
               </TabsTrigger>
-              <TabsTrigger value="structure" className="text-xs sm:text-sm">
+              <TabsTrigger
+                value="structure"
+                className="luxe-gem-focus text-xs data-active:border-rim/55 data-active:bg-surface-1/95 data-active:shadow-sm sm:text-sm"
+              >
                 Structure
               </TabsTrigger>
-              <TabsTrigger value="flow" className="text-xs sm:text-sm">
+              <TabsTrigger
+                value="flow"
+                className="luxe-gem-focus text-xs data-active:border-rim/55 data-active:bg-surface-1/95 data-active:shadow-sm sm:text-sm"
+              >
                 Text flow
               </TabsTrigger>
             </TabsList>
@@ -145,7 +154,7 @@ export function ParseResultPanel({ result, poemText, live, className }: ParseRes
               <p className="text-muted-foreground mb-2 text-balance text-xs leading-relaxed sm:text-sm">
                 Metre and counts — line wrapping for narrow columns. Source text is in the editor.
               </p>
-              <div className="bg-muted/20 rounded-lg border p-3 sm:p-4">
+              <div className="luxe-inset-surface rounded-lg p-3 sm:p-4">
                 <PretextLineViewport
                   text={flowTextResolved}
                   lineHeightPx={26}

@@ -12,18 +12,18 @@ export function StructuredParseResult({ data }: StructuredParseResultProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="bg-muted/15 rounded-lg border border-border p-3 shadow-none">
+      <div className="luxe-inset-surface rounded-lg p-3 shadow-none">
         <h3 className="text-foreground mb-2 text-sm font-medium">Analysis summary</h3>
         <div className="grid grid-cols-2 gap-2 text-sm md:grid-cols-4">
-          <div className="bg-muted/40 rounded-md px-2.5 py-2">
+          <div className="bg-surface-2/90 border-rim/35 rounded-md border px-2.5 py-2">
             <span className="text-muted-foreground text-xs">Lines</span>
             <span className="text-foreground ml-1.5 font-medium">{data.lines.length}</span>
           </div>
-          <div className="bg-muted/40 rounded-md px-2.5 py-2">
+          <div className="bg-surface-2/90 border-rim/35 rounded-md border px-2.5 py-2">
             <span className="text-muted-foreground text-xs">Feet</span>
             <span className="text-foreground ml-1.5 font-medium">{footTotal}</span>
           </div>
-          <div className="bg-muted/40 rounded-md px-2.5 py-2">
+          <div className="bg-surface-2/90 border-rim/35 rounded-md border px-2.5 py-2">
             <span className="text-muted-foreground text-xs">Syllables</span>
             <span className="text-foreground ml-1.5 font-medium">{data.syllables.length}</span>
           </div>
@@ -31,11 +31,11 @@ export function StructuredParseResult({ data }: StructuredParseResultProps) {
       </div>
 
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-        <div className="bg-muted/15 rounded-lg border border-border p-3 shadow-none">
+        <div className="luxe-inset-surface rounded-lg p-3 shadow-none">
           <h4 className="text-muted-foreground mb-0.5 text-xs font-medium">Metre type</h4>
           <p className="text-foreground text-sm font-medium">{data.metre_type}</p>
         </div>
-        <div className="bg-muted/15 rounded-lg border border-border p-3 shadow-none">
+        <div className="luxe-inset-surface rounded-lg p-3 shadow-none">
           <h4 className="text-muted-foreground mb-0.5 text-xs font-medium">Letter count</h4>
           <p className="text-foreground text-sm font-medium">
             {typeof data.letter_count === 'object'
@@ -43,7 +43,7 @@ export function StructuredParseResult({ data }: StructuredParseResultProps) {
               : String(data.letter_count)}
           </p>
         </div>
-        <div className="bg-muted/15 rounded-lg border border-border p-3 shadow-none">
+        <div className="luxe-inset-surface rounded-lg p-3 shadow-none">
           <h4 className="text-muted-foreground mb-0.5 text-xs font-medium">Vikalpa</h4>
           <p className="text-foreground text-sm font-medium">{String(data.vikalpa_count)}</p>
         </div>
@@ -55,7 +55,7 @@ export function StructuredParseResult({ data }: StructuredParseResultProps) {
           {data.lines.map((line, i) => (
             <div
               key={`line-${i}-${line.line_class}`}
-              className="bg-muted/15 rounded-lg border border-border p-3 shadow-none"
+              className="luxe-inset-surface rounded-lg p-3 shadow-none"
             >
               <h4 className="text-foreground mb-2 text-sm font-medium">
                 Line {i + 1}{' '}
@@ -67,7 +67,7 @@ export function StructuredParseResult({ data }: StructuredParseResultProps) {
                 {line.feet.map((foot, j) => (
                   <div
                     key={`foot-${i}-${j}-${foot.foot_type}`}
-                    className="bg-muted/35 ml-0 rounded-md border border-border/60 p-2.5 md:ml-3"
+                    className="bg-surface-2/80 border-rim/40 ml-0 rounded-md border p-2.5 md:ml-3"
                   >
                     <div className="text-foreground mb-1.5 text-xs font-medium sm:text-sm">
                       Foot {j + 1}{' '}

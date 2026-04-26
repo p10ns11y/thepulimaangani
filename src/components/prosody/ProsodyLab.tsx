@@ -46,7 +46,7 @@ const venFirst = getMetreBlock('venpaa')
 const defaultRow =
   venFirst.special_types.find((r) => r.en === 'kalivenpaa') ?? venFirst.special_types[0]!
 
-const cardClass = 'border bg-card shadow-sm overflow-hidden rounded-xl'
+const cardClass = 'luxe-prosody-card luxe-sheen-hover overflow-hidden rounded-xl'
 
 export function ProsodyLab() {
   const [metreKey, setMetreKey] = useState<MetreKey>('venpaa')
@@ -126,9 +126,13 @@ export function ProsodyLab() {
             </CardHeader>
             <CardContent className="flex flex-col gap-3 px-4 pb-4 pt-0">
               <Tabs value={metreKey} onValueChange={handleMetreTab}>
-                <TabsList className="bg-muted/50 h-auto w-full flex-wrap justify-start gap-0.5 p-1 sm:w-fit">
+                <TabsList className="bg-surface-3/75 border-rim/40 h-auto w-full flex-wrap justify-start gap-0.5 border p-1 sm:w-fit">
                   {METRE_ORDER.map((k) => (
-                    <TabsTrigger key={k} value={k} className="font-tamil px-2.5 py-1.5 text-xs sm:text-sm">
+                    <TabsTrigger
+                      key={k}
+                      value={k}
+                      className="font-tamil luxe-gem-focus px-2.5 py-1.5 text-xs data-active:border-rim/55 data-active:bg-surface-1/95 data-active:shadow-sm sm:text-sm"
+                    >
                       {METRE_TAB_LABEL[k]}
                     </TabsTrigger>
                   ))}
