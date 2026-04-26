@@ -5,6 +5,7 @@ dist-ssr
 *.local
 .env
 .nitro
+.vercel
 .tanstack
 .wrangler
 .output
