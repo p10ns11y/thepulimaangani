@@ -9,5 +9,12 @@ export const LOOK_STORAGE_KEY = 'look' as const
  */
 export function applyLook(look: AppLook, root: HTMLElement = document.documentElement): void {
   root.dataset.look = look
-  root.style.colorScheme = look === 'fantasy' ? 'dark' : 'light'
+  root.style.colorScheme = look === 'redfill' ? 'dark' : 'light'
+}
+
+/** Legacy `fantasy` in storage maps to `redfill` (renamed in UI, same palette). */
+export function normalizeStoredLookString(v: string | null): AppLook {
+  if (v === 'real' || v === 'redfill') return v
+  if (v === 'fantasy') return 'redfill'
+  return 'real'
 }

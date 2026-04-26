@@ -3,7 +3,7 @@
  */
 import { afterEach, describe, expect, it } from 'vitest'
 
-import { applyLook, LOOK_STORAGE_KEY } from '#/lib/applyLook'
+import { applyLook, LOOK_STORAGE_KEY, normalizeStoredLookString } from '#/lib/applyLook'
 
 describe('applyLook', () => {
   afterEach(() => {
@@ -11,9 +11,9 @@ describe('applyLook', () => {
     document.documentElement.style.colorScheme = ''
   })
 
-  it('sets data-look and color-scheme for fantasy', () => {
-    applyLook('fantasy')
-    expect(document.documentElement.dataset.look).toBe('fantasy')
+  it('sets data-look and color-scheme for redfill', () => {
+    applyLook('redfill')
+    expect(document.documentElement.dataset.look).toBe('redfill')
     expect(document.documentElement.style.colorScheme).toBe('dark')
   })
 
@@ -25,5 +25,9 @@ describe('applyLook', () => {
 
   it('LOOK_STORAGE_KEY matches shell script and AppShellSync', () => {
     expect(LOOK_STORAGE_KEY).toBe('look')
+  })
+
+  it('normalizes legacy fantasy storage to redfill', () => {
+    expect(normalizeStoredLookString('fantasy')).toBe('redfill')
   })
 })

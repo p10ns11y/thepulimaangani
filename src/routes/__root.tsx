@@ -8,8 +8,8 @@ import NotFound from '../components/NotFound'
 
 import appCss from '../styles.css?url'
 
-/** Sets `data-look` + `color-scheme` from localStorage before paint (`real` | `fantasy` only). */
-const SHELL_INIT_SCRIPT = `(function(){try{var r=document.documentElement;var l=localStorage.getItem('look');var v=(l==='real'||l==='fantasy')?l:'real';r.dataset.look=v;r.style.colorScheme=v==='fantasy'?'dark':'light';}catch(e){}})();`
+/** Sets `data-look` + `color-scheme` from localStorage before paint; migrates legacy `fantasy` → `redfill`. */
+const SHELL_INIT_SCRIPT = `(function(){try{var r=document.documentElement,l=localStorage.getItem('look'),v; if(l==='real')v='real';else if(l==='redfill'||l==='fantasy'){v=l==='fantasy'?'redfill':l; if(l==='fantasy') try{localStorage.setItem('look','redfill');}catch(e){}}else v='real'; r.dataset.look=v;r.style.colorScheme=v==='redfill'?'dark':'light';}catch(e){}})();`
 
 export const Route = createRootRoute({
   head: () => ({

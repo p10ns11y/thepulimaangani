@@ -2,7 +2,7 @@ import { assign, setup } from 'xstate'
 
 import { prosodyLabMachine } from '#/machines/prosodyLab.machine'
 
-export type AppLook = 'real' | 'fantasy'
+export type AppLook = 'real' | 'redfill'
 
 export type AppContext = {
   look: AppLook
@@ -11,7 +11,7 @@ export type AppContext = {
 export type AppEvent = { type: 'app.LOOK.TOGGLE' } | { type: 'app.LOOK.SET'; look: AppLook }
 
 /**
- * App shell: `ui.look` for future real/fantasy theming; `prosody` child is the prosody lab domain actor.
+ * App shell: `ui.look` (real / redfill); `prosody` child is the prosody lab domain actor.
  */
 export const appMachine = setup({
   types: {
@@ -36,7 +36,7 @@ export const appMachine = setup({
               on: {
                 'app.LOOK.TOGGLE': {
                   actions: assign({
-                    look: ({ context }) => (context.look === 'real' ? 'fantasy' : 'real'),
+                    look: ({ context }) => (context.look === 'real' ? 'redfill' : 'real'),
                   }),
                 },
                 'app.LOOK.SET': {

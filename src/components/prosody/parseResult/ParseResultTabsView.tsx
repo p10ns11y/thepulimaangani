@@ -66,7 +66,8 @@ export function ParseResultTabsView({
           </TabsContent>
           <TabsContent value="flow" className="mt-3 pb-1 outline-none">
             <p className="text-muted-foreground mb-2 text-balance text-xs leading-relaxed sm:text-sm">
-              Metre and counts — line wrapping for narrow columns. Source text is in the editor.
+              Metre and counts. Each editor line stays one row; scroll horizontally if a row is longer than
+              the panel.
             </p>
             <div className="luxe-inset-surface rounded-lg p-3 sm:p-4">
               <PretextLineViewport

@@ -1,27 +1,77 @@
 import { useAppActorRef, useAppSelector } from '#/components/AppActorProvider'
 import { cn } from '#/lib/utils'
+import type { AppLook } from '#/machines/app.machine'
 
-/** Toggles `data-look` (real / fantasy) via the app machine. */
-export function LookToggle() {
+const LOOKS: { id: AppLook; label: string }[] = [
+  { id: 'real', label: 'Real' },
+  { id: 'redfill', label: 'Redfill' },
+]
+
+type LookToggleProps = {
+  /**
+   * `compact`: no visible "Look" label, tighter padding (header toolbars).
+   * `default`: labeled control for footers or settings panels.
+   */
+  variant?: 'default' | 'compact'
+}
+
+/**
+ * Two-option look: the pressed segment is the **active** look.
+ * Uses `app.LOOK.SET` for explicit selection and stable a11y.
+ */
+export function LookToggle({ variant = 'default' }: LookToggleProps) {
   const look = useAppSelector((s) => s.context.look)
   const actor = useAppActorRef()
-  const label = look === 'real' ? 'Switch to fantasy look' : 'Switch to real look'
+  const compact = variant === 'compact'
 
   return (
-    <button
-      type="button"
-      onClick={() => {
-        actor.send({ type: 'app.LOOK.TOGGLE' })
-      }}
-      aria-pressed={look === 'fantasy'}
-      aria-label={label}
-      title={label}
-      className={cn(
-        'luxe-look-fantasy-press rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] px-3 py-1.5 text-sm font-semibold text-[var(--sea-ink)] shadow-[0_8px_22px_var(--brand-mark-glow)] transition hover:-translate-y-0.5 fantasy:transition-transform fantasy:duration-150',
-        look === 'fantasy' && 'luxe-look-fantasy-shine',
-      )}
-    >
-      {look === 'real' ? 'Real' : 'Fantasy'}
-    </button>
+    <div className={cn('flex items-center', compact ? 'gap-0.5' : 'gap-1 sm:gap-1.5')}>
+      <p
+        className={cn(
+          'text-muted-foreground m-0 font-semibold uppercase tracking-wider',
+          compact && 'sr-only',
+          !compact && 'shrink-0 text-[0.55rem] sm:text-[0.65rem]',
+        )}
+        id="look-toggle-heading"
+      >
+        Look
+      </p>
+      <div
+        className={cn(
+          'inline-flex min-w-0 items-center rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] p-0.5',
+          !compact && 'gap-0.5 shadow-[0_6px_18px_var(--brand-mark-glow)]',
+        )}
+        role="radiogroup"
+        aria-labelledby="look-toggle-heading"
+      >
+        {LOOKS.map(({ id, label }) => {
+          const active = look === id
+          return (
+            <button
+              key={id}
+              type="button"
+              role="radio"
+              aria-checked={active}
+              title={active ? `Active: ${label}` : `Use ${label} look`}
+              onClick={() => {
+                if (!active) actor.send({ type: 'app.LOOK.SET', look: id })
+              }}
+              className={cn(
+                'luxe-look-redfill-press font-semibold text-[var(--sea-ink)] transition redfill:transition-transform redfill:duration-150',
+                compact
+                  ? 'rounded-full px-2 py-1 text-[0.65rem] sm:px-2.5 sm:py-1.5 sm:text-xs'
+                  : 'rounded-full px-2 py-1.5 text-[0.7rem] sm:px-3 sm:text-sm',
+                active
+                  ? 'bg-[var(--surface-1)] text-[var(--sea-ink)] shadow-sm ring-1 ring-[var(--rim)]/50'
+                  : 'text-[var(--sea-ink)]/75 hover:text-[var(--sea-ink)]',
+                id === 'redfill' && active && 'luxe-look-redfill-shine',
+              )}
+            >
+              {label}
+            </button>
+          )
+        })}
+      </div>
+    </div>
   )
 }

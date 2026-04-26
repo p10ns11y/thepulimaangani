@@ -1,14 +1,23 @@
 import { useLayoutEffect, useRef } from 'react'
 
 import { useAppActorRef, useAppSelector } from '#/components/AppActorProvider'
-import { applyLook, LOOK_STORAGE_KEY } from '#/lib/applyLook'
+import { applyLook, LOOK_STORAGE_KEY, normalizeStoredLookString } from '#/lib/applyLook'
 import type { AppLook } from '#/machines/app.machine'
 
 function readStoredLook(): AppLook | null {
   if (typeof window === 'undefined') return null
   try {
-    const v = window.localStorage.getItem(LOOK_STORAGE_KEY)
-    if (v === 'real' || v === 'fantasy') return v
+    const raw = window.localStorage.getItem(LOOK_STORAGE_KEY)
+    if (raw === null) return null
+    const v = normalizeStoredLookString(raw)
+    if (raw === 'fantasy' && v === 'redfill') {
+      try {
+        window.localStorage.setItem(LOOK_STORAGE_KEY, 'redfill')
+      } catch {
+        /* ignore */
+      }
+    }
+    return v
   } catch {
     /* ignore */
   }
@@ -19,7 +28,7 @@ function readStoredLook(): AppLook | null {
  * Hydrates `look` from localStorage once, then syncs `data-look` + storage from the machine.
  *
  * Important: on the first client commit, `useAppSelector(look)` can still be the default `real`
- * while `localStorage` and the inline FOUC script already say `fantasy`. A plain `applyLook(look)`
+ * while `localStorage` and the inline FOUC script already say `redfill`. A plain `applyLook(look)`
  * would clobber the correct `documentElement.dataset` before the next render. Always apply
  * `actor.getSnapshot().context.look` after the optional rehydration send.
  */

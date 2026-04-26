@@ -63,7 +63,7 @@ export function SamplesCard({ metreKey, selectedEn, onMetreChange, onSampleSelec
                 <SelectGroup>
                   <SelectLabel>சிறப்பு வகை</SelectLabel>
                   {getMetreBlock(metreKey).special_types.map((row) => (
-                    <SelectItem key={row.en} value={row.en} className="font-tamil">
+                    <SelectItem key={`st:${row.en}`} value={row.en} className="font-tamil">
                       {row.ta}
                     </SelectItem>
                   ))}
@@ -71,7 +71,7 @@ export function SamplesCard({ metreKey, selectedEn, onMetreChange, onSampleSelec
                 <SelectGroup>
                   <SelectLabel>மாற்று வகை</SelectLabel>
                   {getMetreBlock(metreKey).variations.map((row) => (
-                    <SelectItem key={row.en} value={row.en} className="font-tamil">
+                    <SelectItem key={`var:${row.en}`} value={row.en} className="font-tamil">
                       {row.ta}
                     </SelectItem>
                   ))}

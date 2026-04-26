@@ -74,11 +74,11 @@ export function PoemFitPreview({
         <div className="flex items-start justify-between gap-2 px-3 py-2.5 pr-2 sm:px-3.5 sm:py-3">
           <div
             ref={boxRef}
-            className="font-tamil text-foreground min-h-[6.5rem] w-full min-w-0 max-w-full overflow-hidden sm:min-h-[7.5rem]"
+            className="font-tamil text-foreground min-h-[6.5rem] w-full min-w-0 max-w-full overflow-x-auto overflow-y-hidden sm:min-h-[7.5rem]"
           >
             {trimmed ? (
               <pre
-                className="m-0 max-w-full whitespace-pre-wrap break-words"
+                className="m-0 min-w-min max-w-none whitespace-pre [overflow-wrap:normal] [word-break:normal]"
                 style={{
                   fontSize: `${fontSize}px`,
                   lineHeight: `${lineHeight}px`,

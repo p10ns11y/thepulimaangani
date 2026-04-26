@@ -1,11 +1,11 @@
-/* Thepulimaangani — global styles. Real / fantasy via html[data-look]. */
+/* Thepulimaangani — global styles. Real / redfill via html[data-look]. */
 @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
 
-@custom-variant fantasy (&:is([data-look="fantasy"] *));
+@custom-variant redfill (&:is([data-look="redfill"] *));
 @plugin "@tailwindcss/typography";
 
 @theme {
@@ -128,8 +128,8 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-/* ——— Fantasy ——— */
-html[data-look="fantasy"] {
+/* ——— Redfill ——— */
+html[data-look="redfill"] {
   --motion-fast: 160ms;
   --motion-sheen: 2.8s;
 
@@ -293,7 +293,7 @@ html[data-look="real"] body {
   );
 }
 
-html[data-look="fantasy"] body {
+html[data-look="redfill"] body {
   /* Single vertical wash — ruby-leaning; lagoon/palm kept out of the canvas mix */
   background-color: var(--bg-base);
   background-image: linear-gradient(
@@ -334,7 +334,7 @@ html[data-look="real"] body::after {
   display: none;
 }
 
-html[data-look="fantasy"] body::before {
+html[data-look="redfill"] body::before {
   display: block;
   opacity: 0.2;
   background: radial-gradient(
@@ -348,7 +348,7 @@ html[data-look="fantasy"] body::before {
   );
 }
 
-html[data-look="fantasy"] body::after {
+html[data-look="redfill"] body::after {
   display: block;
   opacity: 0.06;
   background-image:
@@ -458,7 +458,7 @@ a {
   transform: scaleX(1);
 }
 
-html[data-look="fantasy"] .nav-link::after {
+html[data-look="redfill"] .nav-link::after {
   background: linear-gradient(
     90deg,
     var(--gem-ruby),
@@ -724,7 +724,7 @@ html[data-look="fantasy"] .nav-link::after {
     0 10px 32px color-mix(in oklab, var(--foreground) 3.5%, transparent);
 }
 
-html[data-look="fantasy"] .luxe-prosody-card {
+html[data-look="redfill"] .luxe-prosody-card {
   background: linear-gradient(
     160deg,
     color-mix(in oklab, var(--surface-1) 80%, var(--diamond-ice) 7%) 0%,
@@ -773,11 +773,11 @@ html[data-look="fantasy"] .luxe-prosody-card {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  html[data-look="fantasy"] .luxe-sheen-hover {
+  html[data-look="redfill"] .luxe-sheen-hover {
     transition: box-shadow 240ms ease, border-color 240ms ease, transform 200ms ease;
   }
 
-  html[data-look="fantasy"] .luxe-sheen-hover::after {
+  html[data-look="redfill"] .luxe-sheen-hover::after {
     background: linear-gradient(
       125deg,
       transparent 0%,
@@ -787,8 +787,8 @@ html[data-look="fantasy"] .luxe-prosody-card {
     );
   }
 
-  html[data-look="fantasy"] .luxe-sheen-hover:hover,
-  html[data-look="fantasy"] .luxe-sheen-hover:focus-within {
+  html[data-look="redfill"] .luxe-sheen-hover:hover,
+  html[data-look="redfill"] .luxe-sheen-hover:focus-within {
     box-shadow: 0 0 0 1px color-mix(in oklab, var(--gem-diamond) 22%, transparent);
   }
 }
@@ -814,7 +814,7 @@ html[data-look="fantasy"] .luxe-prosody-card {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  @keyframes luxe-look-fantasy-shimmer {
+  @keyframes luxe-look-redfill-shimmer {
     0%,
     100% {
       box-shadow: 0 0 0 0 color-mix(in oklab, var(--gem-diamond) 0%, transparent);
@@ -824,27 +824,27 @@ html[data-look="fantasy"] .luxe-prosody-card {
     }
   }
 
-  html[data-look="fantasy"] a.nav-link {
+  html[data-look="redfill"] a.nav-link {
     transition:
       color var(--motion-fast, 180ms) ease,
       transform var(--motion-fast, 180ms) ease;
   }
 
-  html[data-look="fantasy"] a.nav-link:active {
+  html[data-look="redfill"] a.nav-link:active {
     transform: scale(0.985);
   }
 
-  html[data-look="fantasy"] :where(.luxe-look-fantasy-press):not(:disabled):active {
+  html[data-look="redfill"] :where(.luxe-look-redfill-press):not(:disabled):active {
     transform: scale(0.985);
   }
 
-  html[data-look="fantasy"] .luxe-look-fantasy-shine {
-    animation: luxe-look-fantasy-shimmer var(--motion-sheen, 2.8s) ease-in-out infinite;
+  html[data-look="redfill"] .luxe-look-redfill-shine {
+    animation: luxe-look-redfill-shimmer var(--motion-sheen, 2.8s) ease-in-out infinite;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html[data-look="fantasy"] .luxe-look-fantasy-shine {
+  html[data-look="redfill"] .luxe-look-redfill-shine {
     animation: none;
   }
 }

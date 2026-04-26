@@ -7,6 +7,9 @@ import { TAMIL_PRETEXT_FONT } from './pretextConstants'
 /** Warm module so the first layout pass is not blocked on dynamic import. */
 const pretextModulePromise = import('@chenglou/pretext')
 
+const fallbackPreClass =
+  'font-tamil text-foreground m-0 w-max min-w-0 max-w-none whitespace-pre [overflow-wrap:normal] [word-break:normal]'
+
 type PretextLineViewportProps = {
   text: string
   className?: string
@@ -18,11 +21,17 @@ type PretextLineViewportProps = {
    * When false, uses `text` as-is for measurement (per-line slices). Default true trims whole string.
    */
   trimForMeasure?: boolean
+  /**
+   * When true (default), each newline in the source is a hard row: lines are not soft-wrapped to fit
+   * the column (matches poem / prosody layout). The container may scroll horizontally when a row is
+   * longer than the viewport.
+   */
+  atomicSourceLines?: boolean
 }
 
 /**
- * Client-side line breaking via [@chenglou/pretext](https://learn-pretext.com/).
- * SSR / first paint: falls back to a plain pre-wrap block with the same text.
+ * Client-side line layout via [@chenglou/pretext](https://learn-pretext.com/).
+ * SSR / first paint: falls back to a plain `pre` block with the same text (no soft-wrap when atomic).
  */
 export function PretextLineViewport({
   text,
@@ -30,6 +39,7 @@ export function PretextLineViewport({
   lineHeightPx = 28,
   font = TAMIL_PRETEXT_FONT,
   trimForMeasure = true,
+  atomicSourceLines = true,
 }: PretextLineViewportProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [width, setWidth] = useState(0)
@@ -53,14 +63,36 @@ export function PretextLineViewport({
       return
     }
     let cancelled = false
-    void pretextModulePromise.then(({ prepareWithSegments, layoutWithLines }) => {
+    void pretextModulePromise.then(({ prepareWithSegments, layoutWithLines, measureNaturalWidth }) => {
       if (cancelled) return
       try {
-        const prepared = prepareWithSegments(source, font, {
-          whiteSpace: 'pre-wrap',
-        })
-        const { lines: layoutLines } = layoutWithLines(prepared, width, lineHeightPx)
-        setLines(layoutLines.map((l) => l.text))
+        if (atomicSourceLines) {
+          const sourceRows = source.split('\n')
+          const out: string[] = []
+          for (const row of sourceRows) {
+            if (row.length === 0) {
+              out.push('')
+              continue
+            }
+            const prepared = prepareWithSegments(row, font, {
+              whiteSpace: 'pre-wrap',
+              wordBreak: 'keep-all',
+            })
+            const natural = measureNaturalWidth(prepared)
+            const maxW = Math.max(width, natural, 1)
+            const { lines: layoutLines } = layoutWithLines(prepared, maxW, lineHeightPx)
+            for (const ll of layoutLines) {
+              out.push(ll.text)
+            }
+          }
+          setLines(out)
+        } else {
+          const prepared = prepareWithSegments(source, font, {
+            whiteSpace: 'pre-wrap',
+          })
+          const { lines: layoutLines } = layoutWithLines(prepared, width, lineHeightPx)
+          setLines(layoutLines.map((l) => l.text))
+        }
       } catch {
         setLines(null)
       }
@@ -68,23 +100,20 @@ export function PretextLineViewport({
     return () => {
       cancelled = true
     }
-  }, [text, width, lineHeightPx, font, trimForMeasure])
+  }, [text, width, lineHeightPx, font, trimForMeasure, atomicSourceLines])
 
   return (
-    <div ref={containerRef} className={cn('w-full min-w-0', className)}>
+    <div ref={containerRef} className={cn('w-full min-w-0 overflow-x-auto', className)}>
       {lines === null ? (
-        <pre
-          className="font-tamil text-foreground m-0 max-w-none whitespace-pre-wrap break-words"
-          style={{ lineHeight: `${lineHeightPx}px` }}
-        >
+        <pre className={fallbackPreClass} style={{ lineHeight: `${lineHeightPx}px` }}>
           {text}
         </pre>
       ) : (
-        <div className="flex flex-col" style={{ lineHeight: `${lineHeightPx}px` }}>
+        <div className="flex w-max min-w-0 flex-col" style={{ lineHeight: `${lineHeightPx}px` }}>
           {lines.map((line, i) => (
             <div
               key={`${i}-${line.slice(0, 12)}`}
-              className="font-tamil text-foreground min-w-0"
+              className="font-tamil text-foreground max-w-none whitespace-nowrap"
               style={{ minHeight: lineHeightPx }}
             >
               {line}

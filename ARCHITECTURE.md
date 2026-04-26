@@ -35,7 +35,7 @@ src/
 ├── components/          # Reusable UI components
 │   ├── Header.tsx      # Site header with navigation
 │   ├── Footer.tsx      # Site footer
-│   └── LookToggle.tsx # Real / Fantasy look
+│   └── LookToggle.tsx # Real / Redfill look
 ├── routes/             # File-based routing
 │   ├── __root.tsx      # Root layout component
 │   ├── index.tsx       # Main application page

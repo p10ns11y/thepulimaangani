@@ -4,58 +4,70 @@ import { SocialLinks } from '#/components/SocialLinks'
 
 import { LookToggle } from './LookToggle'
 
+/**
+ * Shell header: one primary row — wordmark + subtitle (left), unified toolbar (right).
+ * No competing “center column”; the parser name reads as a subtitle under the site title.
+ */
 export default function Header() {
-  const tagline = (
-    <p className="text-muted-foreground m-0 text-center text-balance text-[0.7rem] leading-snug font-medium tracking-wide sm:text-xs md:text-sm">
-      <span className="text-foreground/90">Seiyul Alagi</span>
-      <span className="text-muted-foreground/60 px-1" aria-hidden>
-        —
-      </span>
-      <span>Tamil Prosody</span>
-    </p>
-  )
-
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--line)] bg-[var(--header-bg)]/95 px-3 backdrop-blur-lg sm:px-4">
-      <nav className="page-wrap grid grid-cols-2 grid-rows-[auto_auto] items-center gap-x-2 gap-y-2 py-2.5 sm:grid-cols-[1fr_auto_1fr] sm:grid-rows-1 sm:gap-x-4 sm:gap-y-0 sm:py-3.5">
-        <h2 className="col-start-1 row-start-1 m-0 min-w-0 self-center text-base font-semibold tracking-tight sm:justify-self-start">
+    <header className="border-b border-[var(--line)] bg-[var(--header-bg)]/90 backdrop-blur-md supports-backdrop-filter:bg-[var(--header-bg)]/80">
+      <nav className="page-wrap flex min-w-0 flex-col gap-2.5 py-2.5 sm:gap-3 sm:py-3 md:flex-row md:items-center md:justify-between md:gap-6">
+        {/* Brand: wordmark + one-line product subtitle (no third column) */}
+        <div className="min-w-0 flex-1">
           <Link
             to="/"
-            className="inline-flex max-w-full items-center gap-2 rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] px-2.5 py-1.5 text-sm text-[var(--sea-ink)] no-underline shadow-[0_6px_20px_var(--brand-mark-glow)] sm:px-4 sm:py-2"
+            className="group flex max-w-full flex-col gap-0.5 no-underline outline-none focus-visible:rounded-md focus-visible:ring-2 focus-visible:ring-[color:color-mix(in_oklab,var(--lagoon)_50%,transparent)]"
           >
-            <span
-              className="size-2 shrink-0 rounded-full bg-[linear-gradient(135deg,var(--brand-mark-a),var(--brand-mark-b))]"
-              aria-hidden
-            />
-            <span className="truncate">Thepulimaangani</span>
+            <span className="inline-flex min-w-0 items-center gap-2">
+              <span
+                className="size-2 shrink-0 rounded-full bg-[linear-gradient(135deg,var(--brand-mark-a),var(--brand-mark-b))] ring-1 ring-white/20"
+                aria-hidden
+              />
+              <span className="truncate text-base font-semibold tracking-tight text-[var(--sea-ink)] transition-colors group-hover:text-[var(--sea-ink)]/90 sm:text-lg">
+                Thepulimaangani
+              </span>
+            </span>
+            <span className="pl-0 text-[0.68rem] leading-snug text-[var(--sea-ink-soft)] sm:pl-4 sm:text-xs">
+              <span className="text-foreground/90">Seiyul Alagi</span>
+              <span className="text-muted-foreground/50 px-1.5" aria-hidden>
+                ·
+              </span>
+              <span className="text-muted-foreground">Tamil Prosody</span>
+            </span>
           </Link>
-        </h2>
-
-        <div className="col-span-2 row-start-2 justify-self-stretch sm:col-span-1 sm:col-start-2 sm:row-start-1 sm:max-w-[min(100%,22rem)] sm:justify-self-center sm:px-2">
-          {tagline}
         </div>
 
-        <div className="col-start-2 row-start-1 flex flex-wrap items-center justify-end gap-1 self-center sm:col-start-3 sm:gap-2 sm:justify-self-end">
-          <div className="flex items-center gap-0.5 rounded-full border border-transparent sm:border-[var(--chip-line)] sm:bg-[var(--chip-bg)]/60 sm:px-1">
+        {/* Right: nav + social + look — on sm+ one rounded “toolbar”; on small screens, simple row with clear separation */}
+        <div
+          className="flex w-full min-w-0 flex-wrap items-center justify-between gap-2 sm:w-auto sm:justify-end sm:gap-1 sm:rounded-2xl sm:border sm:border-[var(--chip-line)]/70 sm:bg-[var(--chip-bg)]/45 sm:p-0.5 sm:pl-2 sm:pr-1 sm:shadow-sm"
+          aria-label="Site and display controls"
+        >
+          <div className="flex min-w-0 items-center sm:pl-0.5">
             <Link
               to="/"
-              className="nav-link rounded-md px-2 py-1.5 text-sm font-semibold sm:px-2.5"
-              activeProps={{ className: 'nav-link is-active rounded-md px-2 py-1.5 text-sm font-semibold sm:px-2.5' }}
+              className="nav-link rounded-md px-2.5 py-1.5 text-sm font-medium sm:px-2.5"
+              activeProps={{
+                className: 'nav-link is-active rounded-md px-2.5 py-1.5 text-sm font-medium sm:px-2.5',
+              }}
             >
               Home
             </Link>
             <Link
               to="/about"
-              className="nav-link rounded-md px-2 py-1.5 text-sm font-semibold sm:px-2.5"
-              activeProps={{ className: 'nav-link is-active rounded-md px-2 py-1.5 text-sm font-semibold sm:px-2.5' }}
+              className="nav-link rounded-md px-2.5 py-1.5 text-sm font-medium sm:px-2.5"
+              activeProps={{
+                className: 'nav-link is-active rounded-md px-2.5 py-1.5 text-sm font-medium sm:px-2.5',
+              }}
             >
               About
             </Link>
           </div>
 
-          <div className="flex items-center gap-0.5 border-l border-[var(--line)] pl-1.5 sm:pl-3">
-            <SocialLinks iconSize={20} className="flex items-center" />
-            <LookToggle />
+          <div className="hidden h-5 w-px shrink-0 bg-[var(--line)] sm:block" aria-hidden />
+
+          <div className="flex min-w-0 items-center gap-1 sm:gap-1.5 sm:pr-0.5">
+            <SocialLinks iconSize={18} className="flex items-center [&_a]:p-1.5" />
+            <LookToggle variant="compact" />
           </div>
         </div>
       </nav>

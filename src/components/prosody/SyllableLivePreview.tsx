@@ -58,8 +58,9 @@ export function SyllableLivePreview({ poemText, live, variant = 'default' }: Syl
       </div>
       {!compact ? (
         <p className="text-muted-foreground m-0 max-w-xl text-xs leading-relaxed">
-          Pretext matches your line breaks; the row below colours each syllable (நேர் / நிரை) without extra
-          labels. Across several lines, grouping is still approximate until the engine emits line-scoped feet.
+          Each source line is one row (no column wrap); the row below colours each syllable (நேர் / நிரை)
+          without extra labels. Across several lines, grouping is still approximate until the engine emits
+          line-scoped feet.
         </p>
       ) : null}
 
