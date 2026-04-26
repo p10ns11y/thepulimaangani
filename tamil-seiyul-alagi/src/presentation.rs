@@ -83,8 +83,8 @@ fn to_display_talai(t: &Linkage) -> DisplayTalai {
         from: t.from_foot,
         to: t.to_foot,
         talai_type: match t.linkage_type {
-            crate::linkage::LinkageType::Ven => "வெண்டளை".to_string(),
-            crate::linkage::LinkageType::Asiriya => "ஆசிரியத்தளை".to_string(),
+            crate::linkage::LinkageType::VenTalai => "வெண்டளை".to_string(),
+            crate::linkage::LinkageType::AsiriyaTalai => "ஆசிரியத்தளை".to_string(),
             crate::linkage::LinkageType::Other(ref s) => s.clone(),
         },
         is_valid: t.is_valid,

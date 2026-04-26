@@ -187,3 +187,61 @@ impl SyllableBuilder {
         false
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::prosodic_unit::{Consonant, ProsodicUnit, Vowel};
+    use crate::syllable::SyllableType;
+
+    #[test]
+    fn returns_empty_for_empty_units() {
+        let out = SyllableBuilder::new(false).build(&[]);
+        assert!(out.is_empty());
+    }
+
+    #[test]
+    fn classifies_pair_as_nirai() {
+        let units = vec![
+            ProsodicUnit::VowelConsonant {
+                vowel: Vowel::A,
+                consonant: Consonant::K,
+            },
+            ProsodicUnit::VowelConsonant {
+                vowel: Vowel::U,
+                consonant: Consonant::K,
+            },
+        ];
+
+        let out = SyllableBuilder::new(false).build(&units);
+        assert_eq!(out.len(), 1);
+        assert_eq!(out[0].syllable_type, SyllableType::Nirai);
+    }
+
+    #[test]
+    fn propagates_alt_scansion_flag() {
+        let units = vec![ProsodicUnit::Vowel(Vowel::Aa)];
+        let out = SyllableBuilder::new(true).build(&units);
+
+        assert_eq!(out.len(), 1);
+        assert!(out[0].alt_split);
+    }
+
+    #[test]
+    fn adds_uyir_u_hint_on_last_syllable_when_pattern_matches() {
+        let units = vec![
+            ProsodicUnit::VowelConsonant {
+                vowel: Vowel::A,
+                consonant: Consonant::K,
+            },
+            ProsodicUnit::VowelConsonant {
+                vowel: Vowel::U,
+                consonant: Consonant::K,
+            },
+        ];
+
+        let out = SyllableBuilder::new(false).build(&units);
+        assert_eq!(out.len(), 1);
+        assert_eq!(out[0].split_hint.as_deref(), Some("uyir-U elision"));
+    }
+}

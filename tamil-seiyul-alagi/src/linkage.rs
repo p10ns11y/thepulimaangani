@@ -4,8 +4,8 @@ use crate::foot::Foot;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum LinkageType {
-    Ven,
-    Asiriya,
+    VenTalai,
+    AsiriyaTalai,
     Other(String),
 }
 
@@ -23,7 +23,7 @@ pub fn analyze_linkage(feet: &[Foot]) -> Vec<Linkage> {
         .map(|(i, _)| Linkage {
             from_foot: i,
             to_foot: i + 1,
-            linkage_type: LinkageType::Ven,
+            linkage_type: LinkageType::VenTalai,
             is_valid: true,
         })
         .collect()

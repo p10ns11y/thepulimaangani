@@ -56,3 +56,28 @@ impl ProsodicSequence {
         println!("================================\n");
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::prosodic_unit::{Consonant, ProsodicUnit};
+
+    #[test]
+    fn converts_units_to_numeric_sequence() {
+        let units = vec![
+            ProsodicUnit::Vowel(Vowel::A),                    // 1
+            ProsodicUnit::Vowel(Vowel::Aa),                   // 2
+            ProsodicUnit::Consonant(Consonant::K),            // 0
+            ProsodicUnit::VowelConsonant {
+                vowel: Vowel::I,
+                consonant: Consonant::Ng,
+            }, // 1
+        ];
+
+        // Keep test data culturally and linguistically valid.
+        // TODO(machine-first): surface a parser hint when non-Tamil input is dropped.
+        let seq = ProsodicSequence::from_units(units, "அஆக்ஙி".to_string());
+        assert_eq!(seq.sequence, vec![1, 2, 0, 1]);
+        assert_eq!(seq.as_string(), "1201");
+    }
+}

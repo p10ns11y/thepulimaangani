@@ -24,6 +24,7 @@ Two strict layers, no leaks:
 Naming policy:
 - Core module names use machine-first English: `linkage.rs` (not `talai.rs`), `foot.rs`, `metre.rs`, `syllable.rs`, etc.
 - Core type names use machine-first English: `LinkageClass`, `FootPattern`, `MetreHypothesis`. Classical names live in presentation only.
+- Exception for canonical grammar identifiers: when a concept is a standard classical-grammar term without a clean neutral replacement, keep the canonical term in English-Latin form (e.g., `VenTalai`, `AsiriyaTalai`) inside enum variants while preserving English container names (`LinkageType`).
 
 ---
 
@@ -99,7 +100,7 @@ Algorithm:
    - Append `violations` and supporting `rule_ids`.
 2. Emit `[LinkageCandidate]` for the path.
 
-Presentation maps `LinkageClass::Ven`, `LinkageClass::Asiriya`, etc., to Tamil labels.
+Presentation maps `LinkageType::VenTalai`, `LinkageType::AsiriyaTalai`, etc., to Tamil labels.
 
 ### 4.3 Metre Stage
 
@@ -150,7 +151,7 @@ Consumers may render only the winner; the lattice and top-k remain available for
 |---|---|---|
 | `src/talai.rs` | `src/linkage.rs` | machine-first naming |
 | `Talai` | `LinkageCandidate` | type rename |
-| `TalaiType` | `LinkageClass` | enum rename, presentation maps to Tamil |
+| `TalaiType` | `LinkageType` | enum rename, with canonical variants like `VenTalai` |
 | `Foot.foot_type: String` | `Foot.pattern: FootPattern` (enum) | typed signature |
 | `MetreType` | `MetreId` (enum) | wire-compatible Display impl in presentation |
 
@@ -181,3 +182,4 @@ Required guarantees before flipping defaults:
 ## 10. Change Log
 
 - v0.1 — initial draft on `thumpi` branch.
+- v0.2 — naming rule clarified: English container types with canonical grammar-specific variant names (e.g., `VenTalai`).
