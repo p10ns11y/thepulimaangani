@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 
 import { Button } from '#/components/ui/button'
 import { Card, CardContent } from '#/components/ui/card'
@@ -17,6 +17,8 @@ type ParseResultPanelProps = {
   result: string | null
   poemText: string
   live: LivePreviewState
+  /** When true, auto-scrolls the live preview to the end on updates only if the user is already at the end (intersection) — avoids fighting scroll when reading higher lines. */
+  pinLiveEndWhileEditing?: boolean
   className?: string
 }
 
@@ -60,7 +62,67 @@ function JsonActionsFooter({ jsonString }: { jsonString: string }) {
   )
 }
 
-export function ParseResultPanel({ result, poemText, live, className }: ParseResultPanelProps) {
+function LiveSyllableAndSentinel({
+  poemText,
+  live,
+  variant = 'compact',
+  pinEnd,
+}: {
+  poemText: string
+  live: LivePreviewState
+  variant?: 'default' | 'compact'
+  pinEnd: boolean
+}) {
+  const sentinelRef = useRef<HTMLDivElement>(null)
+  const canAutoScrollRef = useRef(true)
+  const prevPinEndRef = useRef(false)
+
+  useEffect(() => {
+    if (pinEnd && !prevPinEndRef.current) {
+      canAutoScrollRef.current = true
+    }
+    prevPinEndRef.current = pinEnd
+  }, [pinEnd])
+
+  useEffect(() => {
+    const el = sentinelRef.current
+    if (!el) return
+    const ob = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          canAutoScrollRef.current = e.isIntersecting
+        }
+      },
+      { root: null, rootMargin: '0px', threshold: 0 },
+    )
+    ob.observe(el)
+    return () => ob.disconnect()
+  }, [])
+
+  useLayoutEffect(() => {
+    if (!pinEnd) return
+    if (!canAutoScrollRef.current) return
+    const el = sentinelRef.current
+    if (!el) return
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    el.scrollIntoView({ block: 'end', behavior: reduced ? 'auto' : 'smooth' })
+  }, [pinEnd, live.layoutVersion, poemText])
+
+  return (
+    <>
+      <SyllableLivePreview poemText={poemText} live={live} variant={variant} />
+      <div ref={sentinelRef} className="pointer-events-none h-px w-full" aria-hidden />
+    </>
+  )
+}
+
+export function ParseResultPanel({
+  result,
+  poemText,
+  live,
+  pinLiveEndWhileEditing = false,
+  className,
+}: ParseResultPanelProps) {
   const parsed = useMemo(() => {
     if (!result) return null
     try {
@@ -87,7 +149,9 @@ export function ParseResultPanel({ result, poemText, live, className }: ParseRes
     return (
       <Card className={cn(panelClass, className)}>
         <CardContent className="space-y-4 px-4 py-4">
-          {hasText ? <SyllableLivePreview poemText={poemText} live={live} variant="compact" /> : null}
+          {hasText ? (
+            <LiveSyllableAndSentinel poemText={poemText} live={live} pinEnd={pinLiveEndWhileEditing} />
+          ) : null}
           <div className="border-destructive/40 bg-destructive/10 rounded-lg border p-3">
             <h4 className="text-destructive mb-1.5 text-sm font-medium">Parse error</h4>
             <pre className="text-destructive m-0 whitespace-pre-wrap break-words text-xs leading-relaxed">
@@ -100,7 +164,7 @@ export function ParseResultPanel({ result, poemText, live, className }: ParseRes
   }
 
   const liveBlock = hasText ? (
-    <SyllableLivePreview poemText={poemText} live={live} variant="compact" />
+    <LiveSyllableAndSentinel poemText={poemText} live={live} pinEnd={pinLiveEndWhileEditing} />
   ) : (
     <p className="text-muted-foreground m-0 text-sm">Add poem text to preview syllables.</p>
   )

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import { Button } from '#/components/ui/button'
+import { cn } from '#/lib/utils'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card'
 import {
   Select,
@@ -56,7 +57,8 @@ export function ProsodyLab() {
   const [poemEditorOpen, setPoemEditorOpen] = useState(false)
   const [poemDraft, setPoemDraft] = useState(defaultRow.example)
   const { parse, result, loading, validationError } = useWasmParser()
-  const livePreview = useDebouncedParsedPoem(poemText)
+  const previewSource = poemEditorOpen ? poemDraft : poemText
+  const livePreview = useDebouncedParsedPoem(previewSource, poemEditorOpen ? 300 : 420)
 
   const flatRows = useMemo(() => {
     const b = getMetreBlock(metreKey)
@@ -93,9 +95,14 @@ export function ProsodyLab() {
   }
 
   return (
-    <main className="page-wrap px-3 pb-8 pt-4 sm:px-4 sm:pt-5">
+    <main
+      className={cn(
+        'page-wrap px-3 pt-4 sm:px-4 sm:pt-5',
+        poemEditorOpen ? 'pb-[min(52vh,32rem)] sm:pb-[min(50vh,30rem)]' : 'pb-8',
+      )}
+    >
       <div className="mx-auto grid max-w-[min(1200px,100%)] gap-5 lg:grid-cols-[minmax(0,38.2fr)_minmax(0,61.8fr)] lg:items-start lg:gap-6">
-        <div className="flex min-w-0 flex-col gap-4">
+        <div className="flex min-h-0 min-w-0 flex-col gap-4">
           <Card className={cardClass}>
             <CardHeader className="px-4 py-3 pb-2">
               <CardTitle className="text-balance text-base font-semibold tracking-tight">
@@ -104,15 +111,6 @@ export function ProsodyLab() {
             </CardHeader>
             <CardContent className="flex flex-col gap-3 px-4 pb-4 pt-0">
               <PoemFitPreview text={poemText} onOpenEditor={openPoemEditor} />
-              <PoemEditDialog
-                open={poemEditorOpen}
-                onOpenChange={setPoemEditorOpen}
-                value={poemDraft}
-                onChange={setPoemDraft}
-                onApply={() => {
-                  setPoemText(poemDraft)
-                }}
-              />
               {validationError ? (
                 <div className="border-destructive/35 bg-destructive/8 rounded-lg border px-3 py-2">
                   <p className="text-destructive m-0 text-sm">{validationError}</p>
@@ -190,9 +188,23 @@ export function ProsodyLab() {
         </div>
 
         <div className="min-w-0 lg:self-start">
-          <ParseResultPanel result={result} poemText={poemText} live={livePreview} />
+          <ParseResultPanel
+            result={result}
+            poemText={previewSource}
+            live={livePreview}
+            pinLiveEndWhileEditing={poemEditorOpen}
+          />
         </div>
       </div>
+      <PoemEditDialog
+        open={poemEditorOpen}
+        onOpenChange={setPoemEditorOpen}
+        value={poemDraft}
+        onChange={setPoemDraft}
+        onApply={() => {
+          setPoemText(poemDraft)
+        }}
+      />
     </main>
   )
 }
