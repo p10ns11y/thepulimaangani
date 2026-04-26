@@ -33,8 +33,10 @@ pub fn parse_poem(text: &str, options: ParseOptions) -> Result<ParseResult, Pars
     }
 
     let normalized = normalize_text(text, options.uyir_u);
+
+    //  read: https://www.unicode.org/reports/tr29/#Grapheme_Cluster_Boundaries
     let graphemes: Vec<&str> = normalized.graphemes(true).collect();
-    let normalized_clone = normalized.clone(); // Fix borrow
+    let normalized_clone = normalized.clone();
 
     let units = letter::to_prosodic_units(&graphemes);
     let syllables = SyllableBuilder::new(options.alt_scansion).build(&units);
