@@ -2,7 +2,7 @@ import { Link } from '@tanstack/react-router'
 
 import { SocialLinks } from '#/components/SocialLinks'
 
-import ThemeToggle from './ThemeToggle'
+import { LookToggle } from './LookToggle'
 
 export default function Header() {
   const tagline = (
@@ -21,10 +21,10 @@ export default function Header() {
         <h2 className="col-start-1 row-start-1 m-0 min-w-0 self-center text-base font-semibold tracking-tight sm:justify-self-start">
           <Link
             to="/"
-            className="inline-flex max-w-full items-center gap-2 rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] px-2.5 py-1.5 text-sm text-[var(--sea-ink)] no-underline shadow-[0_6px_20px_rgba(30,90,72,0.06)] sm:px-4 sm:py-2"
+            className="inline-flex max-w-full items-center gap-2 rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] px-2.5 py-1.5 text-sm text-[var(--sea-ink)] no-underline shadow-[0_6px_20px_var(--brand-mark-glow)] sm:px-4 sm:py-2"
           >
             <span
-              className="size-2 shrink-0 rounded-full bg-[linear-gradient(135deg,#56c6be,#3d9a94)]"
+              className="size-2 shrink-0 rounded-full bg-[linear-gradient(135deg,var(--brand-mark-a),var(--brand-mark-b))]"
               aria-hidden
             />
             <span className="truncate">Thepulimaangani</span>
@@ -55,7 +55,7 @@ export default function Header() {
 
           <div className="flex items-center gap-0.5 border-l border-[var(--line)] pl-1.5 sm:pl-3">
             <SocialLinks iconSize={20} className="flex items-center" />
-            <ThemeToggle />
+            <LookToggle />
           </div>
         </div>
       </nav>

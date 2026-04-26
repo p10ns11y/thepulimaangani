@@ -4,7 +4,7 @@
 React/TypeScript frontend using TanStack Start/Router, Vite, Tailwind CSS. Focus on user interface for Tamil prosody analysis.
 
 ## Structure
-- `components/`: Reusable UI (Header, Footer, ThemeToggle)
+- `components/`: Reusable UI (Header, Footer, LookToggle)
 - `components/ui/`: shadcn/ui primitives (Button, Card, Tabs, Select, …)
 - `components/prosody/`: Prosody lab surface (samples, Pretext viewport, parse panels)
 - `routes/`: File-based routing (__root.tsx, index.tsx, about.tsx)

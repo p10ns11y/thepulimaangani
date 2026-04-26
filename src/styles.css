@@ -1,38 +1,26 @@
+/* Thepulimaangani — global styles. Real / fantasy via html[data-look]. */
 @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant fantasy (&:is([data-look="fantasy"] *));
 @plugin "@tailwindcss/typography";
 
 @theme {
   --font-sans: "Noto Sans Tamil", "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Geist Variable", "Manrope", ui-sans-serif, system-ui, sans-serif;
 }
 
+/* ——— Real (default) ——— */
 :root {
   --sea-ink: #173a40;
   --sea-ink-soft: #416166;
   --lagoon: #4fb8b2;
   --lagoon-deep: #328f97;
   --palm: #2f6a4a;
-  --sand: #e7f0e8;
-  --foam: #f3faf5;
-  --surface: rgba(255, 255, 255, 0.74);
-  --surface-strong: rgba(255, 255, 255, 0.9);
-  --line: rgba(23, 58, 64, 0.14);
-  --inset-glint: rgba(255, 255, 255, 0.82);
-  --kicker: rgba(47, 106, 74, 0.9);
-  --bg-base: #f0f2f5;
-  --header-bg: rgba(255, 255, 255, 0.92);
-  --chip-bg: rgba(255, 255, 255, 0.8);
-  --chip-line: rgba(47, 106, 74, 0.18);
-  --link-bg-hover: rgba(255, 255, 255, 0.9);
-  --hero-a: rgba(79, 184, 178, 0.36);
-  --hero-b: rgba(47, 106, 74, 0.2);
 
-  /* Luxe Gem — raw metal palette (light) */
   --metal-gold-50: #faf6ef;
   --metal-gold-200: #e8dcc4;
   --metal-gold-400: #c4a24a;
@@ -43,12 +31,10 @@
   --metal-bronze-200: #e5d2c2;
   --metal-bronze-500: #8b5e3c;
   --metal-bronze-700: #5c3d24;
-  /* Diamond: cool highlight / focus glints */
   --diamond-ice: #f4fbff;
   --diamond-glint: rgba(255, 255, 255, 0.85);
   --diamond-cool: rgba(186, 220, 255, 0.45);
   --diamond-bloom: rgba(200, 230, 255, 0.28);
-  /* Navaratna raw accents (restrained, not full-bleed backgrounds) */
   --gem-diamond: #7aa8d8;
   --gem-ruby: #c43b4b;
   --gem-pearl: #e8e4dc;
@@ -59,7 +45,23 @@
   --gem-hessonite: #8b4d2a;
   --gem-cats-eye: #5a5c4e;
 
-  /* Luxe Gem — semantic roles (light) */
+  --sand: color-mix(in oklab, #e7f0e8 93%, var(--gem-ruby) 2%);
+  --foam: color-mix(in oklab, #f3faf5 94%, var(--gem-ruby) 1.3%);
+  --surface: color-mix(in oklab, rgba(255, 255, 255, 0.74) 96%, var(--gem-ruby) 1.5%);
+  --surface-strong: color-mix(in oklab, rgba(255, 255, 255, 0.9) 95%, var(--metal-gold-50) 3%);
+  --line: color-mix(in oklab, rgba(23, 58, 64, 0.14) 90%, var(--gem-ruby) 1.1%);
+  --inset-glint: rgba(255, 255, 255, 0.82);
+  --kicker: rgba(47, 106, 74, 0.9);
+  --bg-base: color-mix(in oklab, #eef1ec 86%, var(--gem-ruby) 2.1%);
+  --header-bg: color-mix(in oklab, rgba(255, 255, 255, 0.92) 88%, var(--metal-gold-50) 9%);
+  --brand-mark-a: #56c6be;
+  --brand-mark-b: #3d9a94;
+  --brand-mark-glow: rgba(30, 90, 72, 0.07);
+  --island-shadow-deep: rgba(30, 90, 72, 0.1);
+  --island-shadow-mid: rgba(23, 58, 64, 0.08);
+  --chip-bg: color-mix(in oklab, rgba(255, 255, 255, 0.8) 92%, var(--metal-gold-50) 5%);
+  --chip-line: color-mix(in oklab, rgba(47, 106, 74, 0.18) 88%, var(--gem-ruby) 0.5%);
+  --link-bg-hover: color-mix(in oklab, rgba(255, 255, 255, 0.9) 94%, var(--metal-gold-50) 4%);
   --surface-1: color-mix(in oklab, var(--metal-silver-100) 88%, var(--metal-gold-50) 12%);
   --surface-2: color-mix(in oklab, white 76%, var(--metal-gold-200) 24%);
   --surface-3: color-mix(in oklab, var(--diamond-ice) 70%, var(--gem-pearl) 30%);
@@ -72,7 +74,7 @@
   --status-warning: var(--gem-coral);
   --status-success: var(--gem-emerald);
   --status-neutral: var(--gem-pearl);
-  /* Syllable: Ner = yellow-sapphire / cool gold line; Nirai = emerald foot */
+
   --syllable-ner-border: color-mix(in oklab, var(--gem-blue-sapphire) 42%, var(--lagoon-deep) 58%);
   --syllable-ner-bg: color-mix(in oklab, var(--lagoon) 18%, white 82%);
   --syllable-ner-text: color-mix(in oklab, var(--gem-blue-sapphire) 22%, var(--lagoon-deep) 78%);
@@ -81,28 +83,35 @@
   --syllable-nirai-bg: color-mix(in oklab, var(--palm) 14%, white 86%);
   --syllable-nirai-text: color-mix(in oklab, var(--palm) 92%, var(--gem-hessonite) 8%);
   --syllable-nirai-tint-to: color-mix(in oklab, var(--palm) 7%, white 93%);
-  /* Legend swatches (gem chips) */
   --syllable-ner-swatch: color-mix(in oklab, var(--gem-blue-sapphire) 32%, var(--lagoon) 68%);
   --syllable-nirai-swatch: color-mix(in oklab, var(--gem-emerald) 45%, var(--palm) 55%);
 
-  --background: oklch(1 0 0);
+  --background: color-mix(in oklab, white 94.5%, var(--gem-ruby) 2.2%);
   --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
+  --card: color-mix(
+    in oklab,
+    color-mix(in oklab, white 90%, var(--metal-gold-50) 8%) 97%,
+    var(--gem-ruby) 1.6%
+  );
   --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
+  --popover: color-mix(
+    in oklab,
+    color-mix(in oklab, white 91%, var(--metal-gold-50) 7%) 97.2%,
+    var(--gem-ruby) 1.2%
+  );
   --popover-foreground: oklch(0.145 0 0);
   --primary: oklch(0.205 0 0);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
+  --secondary: color-mix(in oklab, oklch(0.97 0 0) 96%, var(--metal-gold-50) 2.2%);
   --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
+  --muted: color-mix(in oklab, oklch(0.97 0 0) 97%, var(--gem-ruby) 0.45%);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
+  --accent: color-mix(in oklab, oklch(0.97 0 0) 96%, var(--metal-gold-200) 2.5%);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --border: color-mix(in oklab, oklch(0.922 0 0) 94%, var(--gem-ruby) 0.4%);
+  --input: color-mix(in oklab, oklch(0.922 0 0) 95%, var(--metal-gold-50) 1.5%);
+  --ring: color-mix(in oklab, oklch(0.708 0 0) 92%, var(--gem-yellow-sapphire) 1.2%);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -119,28 +128,19 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-:root[data-theme="dark"] {
-  --sea-ink: #d7ece8;
-  --sea-ink-soft: #afcdc8;
-  --lagoon: #60d7cf;
-  --lagoon-deep: #8de5db;
-  --palm: #6ec89a;
-  --sand: #0f1a1e;
-  --foam: #101d22;
-  --surface: rgba(16, 30, 34, 0.8);
-  --surface-strong: rgba(15, 27, 31, 0.92);
-  --line: rgba(141, 229, 219, 0.18);
-  --inset-glint: rgba(194, 247, 238, 0.14);
-  --kicker: #b8efe5;
-  --bg-base: #0a1418;
-  --header-bg: rgba(10, 20, 24, 0.8);
-  --chip-bg: rgba(13, 28, 32, 0.9);
-  --chip-line: rgba(141, 229, 219, 0.24);
-  --link-bg-hover: rgba(24, 44, 49, 0.8);
-  --hero-a: rgba(96, 215, 207, 0.18);
-  --hero-b: rgba(110, 200, 154, 0.12);
+/* ——— Fantasy ——— */
+html[data-look="fantasy"] {
+  --motion-fast: 160ms;
+  --motion-sheen: 2.8s;
 
-  /* Luxe Gem — raw metal palette (dark) */
+  --sea-ink: #f0e2df;
+  --sea-ink-soft: #b8a099;
+  /* UI accents (nav, links, focus) — rose / coral, not teal */
+  --lagoon: #c05568;
+  --lagoon-deep: #e8a8b0;
+  /* Secondary warm tone for hovers; syllable Nirai uses --gem-emerald, not this */
+  --palm: #8f6a60;
+
   --metal-gold-50: #1c1810;
   --metal-gold-200: #3a3220;
   --metal-gold-400: #9a8448;
@@ -151,11 +151,12 @@
   --metal-bronze-200: #3d2e24;
   --metal-bronze-500: #a67c5a;
   --metal-bronze-700: #d4a882;
-  --diamond-ice: #0f1822;
-  --diamond-glint: rgba(200, 230, 255, 0.12);
-  --diamond-cool: rgba(120, 190, 255, 0.2);
-  --diamond-bloom: rgba(100, 160, 220, 0.14);
-  --gem-diamond: #7eb3e8;
+  --diamond-ice: #1a0f12;
+  --diamond-glint: rgba(255, 200, 210, 0.12);
+  --diamond-cool: rgba(255, 170, 160, 0.22);
+  --diamond-bloom: rgba(220, 130, 150, 0.16);
+  /* Highlight / sheen — warm lavender, not sky cyan */
+  --gem-diamond: #a898c8;
   --gem-ruby: #e85a6a;
   --gem-pearl: #2a2824;
   --gem-coral: #e07a5a;
@@ -165,102 +166,102 @@
   --gem-hessonite: #c4916a;
   --gem-cats-eye: #a8a896;
 
-  /* Luxe Gem — semantic roles (dark) */
-  --surface-1: color-mix(in oklab, var(--metal-silver-100) 78%, var(--diamond-ice) 22%);
-  --surface-2: color-mix(in oklab, var(--surface-strong) 70%, var(--metal-gold-200) 30%);
+  --sand: color-mix(in oklab, #120a0c 86%, var(--gem-coral) 5%);
+  --foam: color-mix(in oklab, #140a0c 80%, var(--gem-ruby) 7%);
+  --surface: color-mix(in oklab, rgba(22, 10, 14, 0.9) 90%, var(--gem-ruby) 4%);
+  --surface-strong: color-mix(in oklab, rgba(18, 8, 12, 0.94) 88%, var(--gem-yellow-sapphire) 3.5%);
+  --line: rgba(232, 120, 135, 0.22);
+  --kicker: #d4a8a8;
+  --bg-base: color-mix(in oklab, #0c0508 70%, #140a0c 24%);
+  --header-bg: color-mix(in oklab, rgba(22, 6, 10, 0.94) 88%, var(--gem-ruby) 5%);
+  --chip-bg: color-mix(in oklab, rgba(20, 8, 12, 0.93) 88%, var(--diamond-ice) 5%);
+  --chip-line: rgba(240, 150, 160, 0.26);
+  --link-bg-hover: rgba(48, 20, 28, 0.88);
+  --brand-mark-a: #e85a6a;
+  --brand-mark-b: #8b3040;
+  --brand-mark-glow: rgba(50, 18, 26, 0.14);
+  --island-shadow-deep: rgba(40, 14, 20, 0.14);
+  --island-shadow-mid: rgba(30, 10, 14, 0.12);
+  --surface-1: color-mix(in oklab, var(--metal-silver-100) 74%, var(--diamond-ice) 26%);
+  --surface-2: color-mix(in oklab, var(--surface-strong) 65%, var(--metal-gold-200) 35%);
   --surface-3: color-mix(in oklab, var(--diamond-ice) 55%, var(--gem-pearl) 45%);
-  --rim: color-mix(in oklab, var(--metal-gold-400) 28%, var(--line) 72%);
+  --rim: color-mix(in oklab, var(--gem-yellow-sapphire) 22%, var(--line) 78%);
   --accent-primary: var(--gem-yellow-sapphire);
   --accent-secondary: var(--gem-blue-sapphire);
-  --sparkle: color-mix(in oklab, var(--diamond-cool) 50%, var(--diamond-bloom) 50%);
+  --sparkle: color-mix(in oklab, var(--diamond-bloom) 50%, var(--diamond-cool) 50%);
   --sparkle-veil: color-mix(in oklab, var(--foreground) 9%, transparent);
+  --inset-glint: color-mix(in oklab, rgba(255, 200, 190, 0.14) 70%, var(--gem-yellow-sapphire) 30%);
   --status-error: var(--gem-ruby);
   --status-warning: var(--gem-coral);
   --status-success: var(--gem-emerald);
   --status-neutral: var(--gem-pearl);
-  --syllable-ner-border: color-mix(in oklab, var(--gem-blue-sapphire) 55%, var(--lagoon) 45%);
-  --syllable-ner-bg: color-mix(in oklab, var(--lagoon) 16%, var(--surface-strong) 84%);
-  --syllable-ner-text: color-mix(in oklab, var(--lagoon-deep) 55%, var(--gem-blue-sapphire) 45%);
-  --syllable-ner-tint-to: color-mix(in oklab, var(--lagoon) 8%, var(--surface-strong) 92%);
-  --syllable-nirai-border: color-mix(in oklab, var(--gem-emerald) 38%, var(--palm) 62%);
-  --syllable-nirai-bg: color-mix(in oklab, var(--palm) 14%, var(--surface-strong) 86%);
-  --syllable-nirai-text: color-mix(in oklab, var(--palm) 80%, var(--gem-emerald) 20%);
-  --syllable-nirai-tint-to: color-mix(in oklab, var(--palm) 7%, var(--surface-strong) 93%);
-  --syllable-ner-swatch: color-mix(in oklab, var(--gem-blue-sapphire) 40%, var(--lagoon) 60%);
-  --syllable-nirai-swatch: color-mix(in oklab, var(--gem-emerald) 50%, var(--palm) 50%);
-}
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --sea-ink: #d7ece8;
-    --sea-ink-soft: #afcdc8;
-    --lagoon: #60d7cf;
-    --lagoon-deep: #8de5db;
-    --palm: #6ec89a;
-    --sand: #0f1a1e;
-    --foam: #101d22;
-    --surface: rgba(16, 30, 34, 0.8);
-    --surface-strong: rgba(15, 27, 31, 0.92);
-    --line: rgba(141, 229, 219, 0.18);
-    --inset-glint: rgba(194, 247, 238, 0.14);
-    --kicker: #b8efe5;
-    --bg-base: #0a1418;
-    --header-bg: rgba(10, 20, 24, 0.8);
-    --chip-bg: rgba(13, 28, 32, 0.9);
-    --chip-line: rgba(141, 229, 219, 0.24);
-    --link-bg-hover: rgba(24, 44, 49, 0.8);
-    --hero-a: rgba(96, 215, 207, 0.18);
-    --hero-b: rgba(110, 200, 154, 0.12);
+  --syllable-ner-border: color-mix(in oklab, var(--gem-blue-sapphire) 48%, #8ca8c4 52%);
+  --syllable-ner-bg: color-mix(in oklab, #6a8ab8 14%, var(--surface-strong) 86%);
+  --syllable-ner-text: color-mix(in oklab, #b0c0e0 50%, var(--gem-blue-sapphire) 50%);
+  --syllable-ner-tint-to: color-mix(in oklab, #7890b0 9%, var(--surface-strong) 91%);
+  --syllable-nirai-border: color-mix(in oklab, var(--gem-emerald) 40%, #3d5a48 60%);
+  --syllable-nirai-bg: color-mix(in oklab, var(--gem-emerald) 12%, var(--surface-strong) 88%);
+  --syllable-nirai-text: color-mix(in oklab, #7ad4b0 45%, var(--gem-emerald) 55%);
+  --syllable-nirai-tint-to: color-mix(in oklab, var(--gem-emerald) 8%, var(--surface-strong) 92%);
+  --syllable-ner-swatch: color-mix(in oklab, var(--gem-blue-sapphire) 45%, #88a0c0 55%);
+  --syllable-nirai-swatch: color-mix(in oklab, var(--gem-emerald) 52%, #4a6a58 48%);
 
-    /* Luxe Gem — raw metal palette (dark) */
-    --metal-gold-50: #1c1810;
-    --metal-gold-200: #3a3220;
-    --metal-gold-400: #9a8448;
-    --metal-gold-600: #c9b27a;
-    --metal-silver-100: #1a1d1f;
-    --metal-silver-300: #3d4246;
-    --metal-silver-500: #8b9095;
-    --metal-bronze-200: #3d2e24;
-    --metal-bronze-500: #a67c5a;
-    --metal-bronze-700: #d4a882;
-    --diamond-ice: #0f1822;
-    --diamond-glint: rgba(200, 230, 255, 0.12);
-    --diamond-cool: rgba(120, 190, 255, 0.2);
-    --diamond-bloom: rgba(100, 160, 220, 0.14);
-    --gem-diamond: #7eb3e8;
-    --gem-ruby: #e85a6a;
-    --gem-pearl: #2a2824;
-    --gem-coral: #e07a5a;
-    --gem-emerald: #4ecf9a;
-    --gem-yellow-sapphire: #e0c15a;
-    --gem-blue-sapphire: #6aa6e0;
-    --gem-hessonite: #c4916a;
-    --gem-cats-eye: #a8a896;
-
-    /* Luxe Gem — semantic roles (dark) */
-    --surface-1: color-mix(in oklab, var(--metal-silver-100) 78%, var(--diamond-ice) 22%);
-    --surface-2: color-mix(in oklab, var(--surface-strong) 70%, var(--metal-gold-200) 30%);
-    --surface-3: color-mix(in oklab, var(--diamond-ice) 55%, var(--gem-pearl) 45%);
-    --rim: color-mix(in oklab, var(--metal-gold-400) 28%, var(--line) 72%);
-    --accent-primary: var(--gem-yellow-sapphire);
-    --accent-secondary: var(--gem-blue-sapphire);
-    --sparkle: color-mix(in oklab, var(--diamond-cool) 50%, var(--diamond-bloom) 50%);
-    --sparkle-veil: color-mix(in oklab, var(--foreground) 9%, transparent);
-    --status-error: var(--gem-ruby);
-    --status-warning: var(--gem-coral);
-    --status-success: var(--gem-emerald);
-    --status-neutral: var(--gem-pearl);
-    --syllable-ner-border: color-mix(in oklab, var(--gem-blue-sapphire) 55%, var(--lagoon) 45%);
-    --syllable-ner-bg: color-mix(in oklab, var(--lagoon) 16%, var(--surface-strong) 84%);
-    --syllable-ner-text: color-mix(in oklab, var(--lagoon-deep) 55%, var(--gem-blue-sapphire) 45%);
-    --syllable-ner-tint-to: color-mix(in oklab, var(--lagoon) 8%, var(--surface-strong) 92%);
-    --syllable-nirai-border: color-mix(in oklab, var(--gem-emerald) 38%, var(--palm) 62%);
-    --syllable-nirai-bg: color-mix(in oklab, var(--palm) 14%, var(--surface-strong) 86%);
-    --syllable-nirai-text: color-mix(in oklab, var(--palm) 80%, var(--gem-emerald) 20%);
-    --syllable-nirai-tint-to: color-mix(in oklab, var(--palm) 7%, var(--surface-strong) 93%);
-    --syllable-ner-swatch: color-mix(in oklab, var(--gem-blue-sapphire) 40%, var(--lagoon) 60%);
-    --syllable-nirai-swatch: color-mix(in oklab, var(--gem-emerald) 50%, var(--palm) 50%);
-  }
+  --background: color-mix(
+    in oklab,
+    oklch(0.19 0.08 20) 70%,
+    color-mix(in oklab, var(--gem-ruby) 60%, #100507) 30%
+  );
+  --foreground: oklch(0.98 0.012 24);
+  --card: color-mix(
+    in oklab,
+    oklch(0.25 0.05 25) 86%,
+    color-mix(in oklab, var(--gem-yellow-sapphire) 18%, var(--diamond-ice) 6%) 14%
+  );
+  --card-foreground: oklch(0.98 0.008 24);
+  --popover: color-mix(
+    in oklab,
+    oklch(0.26 0.055 24) 78%,
+    color-mix(in oklab, var(--gem-ruby) 82%, var(--gem-coral) 18%) 22%
+  );
+  --popover-foreground: oklch(0.98 0.012 24);
+  --primary: color-mix(in oklab, oklch(0.93 0.02 24) 92%, var(--gem-yellow-sapphire) 8%);
+  --primary-foreground: oklch(0.22 0.045 26);
+  --secondary: color-mix(in oklab, oklch(0.3 0.055 26) 88%, var(--diamond-ice) 4%);
+  --secondary-foreground: oklch(0.98 0.012 24);
+  --muted: color-mix(in oklab, oklch(0.3 0.05 26) 88%, var(--gem-coral) 4%);
+  --muted-foreground: color-mix(in oklab, oklch(0.72 0.04 24) 85%, var(--gem-pearl) 6%);
+  --accent: color-mix(in oklab, oklch(0.32 0.07 24) 82%, var(--gem-diamond) 8%);
+  --accent-foreground: oklch(0.98 0.012 24);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: color-mix(in oklab, var(--line) 55%, var(--rim) 45%);
+  --input: color-mix(in oklab, oklch(0.3 0.05 25) 78%, var(--gem-ruby) 5%);
+  --ring: color-mix(
+    in oklab,
+    color-mix(in oklab, var(--gem-diamond) 45%, var(--gem-ruby) 22%) 72%,
+    var(--gem-yellow-sapphire) 20%
+  );
+  --chart-1: color-mix(
+    in oklab,
+    color-mix(in oklab, var(--gem-ruby) 55%, var(--gem-diamond) 45%) 78%,
+    var(--gem-yellow-sapphire) 22%
+  );
+  --chart-2: oklch(0.6 0.1 25);
+  --chart-3: oklch(0.5 0.09 28);
+  --chart-4: color-mix(in oklab, var(--gem-yellow-sapphire) 40%, oklch(0.4 0.08 24) 60%);
+  --chart-5: oklch(0.35 0.08 30);
+  --sidebar: color-mix(in oklab, oklch(0.24 0.06 24) 90%, var(--diamond-ice) 4%);
+  --sidebar-foreground: oklch(0.98 0.012 24);
+  --sidebar-primary: color-mix(
+    in oklab,
+    oklch(0.55 0.14 264) 70%,
+    var(--gem-blue-sapphire) 30%
+  );
+  --sidebar-primary-foreground: oklch(0.98 0.012 24);
+  --sidebar-accent: color-mix(in oklab, oklch(0.32 0.06 24) 86%, var(--gem-ruby) 4%);
+  --sidebar-accent-foreground: oklch(0.98 0.012 24);
+  --sidebar-border: color-mix(in oklab, var(--line) 60%, var(--rim) 40%);
+  --sidebar-ring: var(--ring);
 }
 
 * {
@@ -283,20 +284,36 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-html.dark body {
-  background-color: var(--bg-base);
-  background-image:
-    radial-gradient(900px 520px at -8% -8%, var(--hero-a), transparent 55%),
-    radial-gradient(880px 520px at 108% -10%, var(--hero-b), transparent 58%),
-    linear-gradient(180deg, var(--foam) 0%, var(--bg-base) 100%);
+html[data-look="real"] body {
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--foam) 100%, var(--gem-ruby) 0.2%) 0%,
+    var(--bg-base) 42%,
+    color-mix(in oklab, var(--bg-base) 91%, var(--metal-gold-200) 5%) 100%
+  );
 }
 
-body::before {
+html[data-look="fantasy"] body {
+  /* Single vertical wash — ruby-leaning; lagoon/palm kept out of the canvas mix */
+  background-color: var(--bg-base);
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--foam) 100%, var(--gem-ruby) 4%) 0%,
+    var(--bg-base) 52%,
+    var(--sand) 100%
+  );
+}
+
+body::before,
+body::after {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: -1;
+}
+
+body::before {
   opacity: 0.22;
   background:
     radial-gradient(circle at 22% 12%, rgba(96, 215, 207, 0.12), transparent 38%),
@@ -304,11 +321,6 @@ body::before {
 }
 
 body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
   opacity: 0.08;
   background-image:
     linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
@@ -317,20 +329,44 @@ body::after {
   mask-image: radial-gradient(circle at 50% 28%, black, transparent 78%);
 }
 
-html.light body::before,
-html.light body::after {
+html[data-look="real"] body::before,
+html[data-look="real"] body::after {
   display: none;
+}
+
+html[data-look="fantasy"] body::before {
+  display: block;
+  opacity: 0.2;
+  background: radial-gradient(
+    120% 80% at 50% 0%,
+    color-mix(
+      in oklab,
+      color-mix(in oklab, var(--gem-ruby) 82%, var(--gem-coral) 18%) 20%,
+      transparent
+    ),
+    transparent 60%
+  );
+}
+
+html[data-look="fantasy"] body::after {
+  display: block;
+  opacity: 0.06;
+  background-image:
+    linear-gradient(rgba(255, 210, 215, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 205, 210, 0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(ellipse 100% 80% at 50% 40%, black, transparent 85%);
 }
 
 a {
   color: var(--lagoon-deep);
-  text-decoration-color: rgba(50, 143, 151, 0.4);
+  text-decoration-color: color-mix(in oklab, var(--lagoon-deep) 50%, transparent);
   text-decoration-thickness: 1px;
   text-underline-offset: 2px;
 }
 
 a:hover {
-  color: #246f76;
+  color: color-mix(in oklab, var(--lagoon-deep) 90%, var(--palm) 10%);
 }
 
 code {
@@ -368,28 +404,18 @@ pre code {
   background: linear-gradient(165deg, var(--surface-strong), var(--surface));
   box-shadow:
     0 1px 0 var(--inset-glint) inset,
-    0 22px 44px rgba(30, 90, 72, 0.1),
-    0 6px 18px rgba(23, 58, 64, 0.08);
+    0 22px 44px var(--island-shadow-deep),
+    0 6px 18px var(--island-shadow-mid);
   backdrop-filter: blur(4px);
-}
-
-.feature-card {
-  background: linear-gradient(165deg, color-mix(in oklab, var(--surface-strong) 93%, white 7%), var(--surface));
-  box-shadow:
-    0 1px 0 var(--inset-glint) inset,
-    0 18px 34px rgba(30, 90, 72, 0.1),
-    0 4px 14px rgba(23, 58, 64, 0.06);
-}
-
-.feature-card:hover {
-  transform: translateY(-2px);
-  border-color: color-mix(in oklab, var(--lagoon-deep) 35%, var(--line));
 }
 
 button,
 .island-shell,
 a {
-  transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease,
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease,
     transform 180ms ease;
 }
 
@@ -418,7 +444,7 @@ a {
   height: 2px;
   transform: scaleX(0);
   transform-origin: left;
-  background: linear-gradient(90deg, var(--lagoon), #7ed3bf);
+  background: linear-gradient(90deg, var(--lagoon), color-mix(in oklab, var(--lagoon) 60%, #7ed3bf 40%));
   transition: transform 170ms ease;
 }
 
@@ -430,6 +456,14 @@ a {
 .nav-link:hover::after,
 .nav-link.is-active::after {
   transform: scaleX(1);
+}
+
+html[data-look="fantasy"] .nav-link::after {
+  background: linear-gradient(
+    90deg,
+    var(--gem-ruby),
+    color-mix(in oklab, var(--gem-coral) 55%, var(--gem-ruby) 45%)
+  );
 }
 
 @media (max-width: 640px) {
@@ -466,12 +500,12 @@ a {
   }
 }
 
-/* Prosody lab: metre tabs — 2×2 on narrow, 4 columns on sm+; no horizontal scroll */
 .prosody-metre-grid {
   min-height: 0;
+  align-items: stretch;
+  height: auto;
 }
 
-/* Poem editor: preserve physical lines; horizontal scroll for long lines */
 .prosody-poem-input {
   tab-size: 4;
   scrollbar-gutter: stable;
@@ -487,7 +521,6 @@ a {
   background: color-mix(in oklab, var(--rim) 42%, transparent);
 }
 
-/* Poem editor: full-viewport-width bottom bar; inner matches page `max-w-[min(1200px,100%)]`. */
 .prosody-poem-editor-dock-outer {
   position: fixed;
   left: 0;
@@ -526,7 +559,6 @@ a {
   }
 }
 
-/* Poem read-only “viewport”: frame + sheen + slow sparkle */
 .prosody-poem-preview-frame {
   background:
     linear-gradient(135deg, color-mix(in oklab, var(--diamond-ice) 15%, transparent) 0%, transparent 42%),
@@ -620,7 +652,6 @@ a {
   }
 }
 
-/* Live syllable preview: snappier chip entrance than default rise-in */
 .live-syllable-pop {
   animation: live-syllable-pop 0.52s cubic-bezier(0.2, 0.9, 0.2, 1) both;
 }
@@ -644,7 +675,6 @@ a {
   }
 }
 
-/* Subtle “typing / refresh” sweep over mirrored poem lines while WASM catches up */
 .live-line-shimmer {
   position: relative;
   isolation: isolate;
@@ -686,13 +716,26 @@ a {
   }
 }
 
-/* Luxe Gem — prosody / panel utilities */
 .luxe-prosody-card {
   background: linear-gradient(165deg, var(--surface-1) 0%, var(--surface-2) 100%);
   border: 1px solid var(--rim);
   box-shadow:
     0 1px 0 var(--diamond-glint) inset,
     0 10px 32px color-mix(in oklab, var(--foreground) 3.5%, transparent);
+}
+
+html[data-look="fantasy"] .luxe-prosody-card {
+  background: linear-gradient(
+    160deg,
+    color-mix(in oklab, var(--surface-1) 80%, var(--diamond-ice) 7%) 0%,
+    color-mix(in oklab, var(--surface-2) 75%, var(--gem-ruby) 5%) 48%,
+    color-mix(in oklab, var(--surface-1) 78%, var(--gem-yellow-sapphire) 6%) 100%
+  );
+  box-shadow:
+    0 1px 0 var(--diamond-glint) inset,
+    0 0 0 1px color-mix(in oklab, var(--rim) 45%, var(--gem-ruby) 16%),
+    0 12px 44px color-mix(in oklab, var(--gem-ruby) 12%, transparent),
+    0 4px 24px color-mix(in oklab, var(--gem-diamond) 8%, transparent);
 }
 
 .luxe-inset-surface {
@@ -703,9 +746,7 @@ a {
 .luxe-sheen-hover {
   position: relative;
   isolation: isolate;
-  transition:
-    box-shadow 220ms ease,
-    border-color 220ms ease;
+  transition: box-shadow 220ms ease, border-color 220ms ease;
 }
 
 .luxe-sheen-hover::after {
@@ -731,13 +772,32 @@ a {
   }
 }
 
-/* Navaratna micro-ring for focused controls (tabs, key chips) */
+@media (prefers-reduced-motion: no-preference) {
+  html[data-look="fantasy"] .luxe-sheen-hover {
+    transition: box-shadow 240ms ease, border-color 240ms ease, transform 200ms ease;
+  }
+
+  html[data-look="fantasy"] .luxe-sheen-hover::after {
+    background: linear-gradient(
+      125deg,
+      transparent 0%,
+      var(--sparkle) 48%,
+      color-mix(in oklab, var(--gem-diamond) 16%, transparent) 58%,
+      transparent 85%
+    );
+  }
+
+  html[data-look="fantasy"] .luxe-sheen-hover:hover,
+  html[data-look="fantasy"] .luxe-sheen-hover:focus-within {
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--gem-diamond) 22%, transparent);
+  }
+}
+
 .luxe-gem-focus:focus-visible {
   outline: 2px solid color-mix(in oklab, var(--gem-diamond) 45%, var(--rim) 55%);
   outline-offset: 2px;
 }
 
-/* Live preview: diamond-tinted pulse (replaces flat muted dot) */
 .luxe-live-pulse-dot {
   background: radial-gradient(
     circle at 35% 35%,
@@ -753,10 +813,43 @@ a {
   }
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes luxe-look-fantasy-shimmer {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 color-mix(in oklab, var(--gem-diamond) 0%, transparent);
+    }
+    50% {
+      box-shadow: 0 0 20px 0 color-mix(in oklab, var(--gem-diamond) 14%, transparent);
+    }
+  }
+
+  html[data-look="fantasy"] a.nav-link {
+    transition:
+      color var(--motion-fast, 180ms) ease,
+      transform var(--motion-fast, 180ms) ease;
+  }
+
+  html[data-look="fantasy"] a.nav-link:active {
+    transform: scale(0.985);
+  }
+
+  html[data-look="fantasy"] :where(.luxe-look-fantasy-press):not(:disabled):active {
+    transform: scale(0.985);
+  }
+
+  html[data-look="fantasy"] .luxe-look-fantasy-shine {
+    animation: luxe-look-fantasy-shimmer var(--motion-sheen, 2.8s) ease-in-out infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-look="fantasy"] .luxe-look-fantasy-shine {
+    animation: none;
+  }
+}
+
 @theme inline {
-  --font-heading: var(--font-sans);
-  --font-sans: 'Geist Variable', sans-serif;
-  /* Luxe Gem semantic colors for Tailwind: bg-surface-1, border-rim, text-accent-primary, etc. */
   --color-surface-1: var(--surface-1);
   --color-surface-2: var(--surface-2);
   --color-surface-3: var(--surface-3);
@@ -812,45 +905,10 @@ a {
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-}
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-  /* Page background comes from body rules above (light flat / dark layered) */
   body {
     @apply text-foreground;
   }

@@ -1,13 +1,15 @@
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanStackDevtools } from '@tanstack/react-devtools'
+import { AppActorProvider } from '#/components/AppActorProvider'
+import { AppShellSync } from '#/components/AppShellSync'
+
 import Footer from '../components/Footer'
 import Header from '../components/Header'
 import NotFound from '../components/NotFound'
 
 import appCss from '../styles.css?url'
 
-const THEME_INIT_SCRIPT = `(function(){try{var stored=window.localStorage.getItem('theme');var mode=(stored==='light'||stored==='dark'||stored==='auto')?stored:'light';var prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;var resolved=mode==='auto'?(prefersDark?'dark':'light'):mode;var root=document.documentElement;root.classList.remove('light','dark');root.classList.add(resolved);if(mode==='auto'){root.removeAttribute('data-theme')}else{root.setAttribute('data-theme',mode)}root.style.colorScheme=resolved;}catch(e){}})();`
+/** Sets `data-look` + `color-scheme` from localStorage before paint (`real` | `fantasy` only). */
+const SHELL_INIT_SCRIPT = `(function(){try{var r=document.documentElement;var l=localStorage.getItem('look');var v=(l==='real'||l==='fantasy')?l:'real';r.dataset.look=v;r.style.colorScheme=v==='fantasy'?'dark':'light';}catch(e){}})();`
 
 export const Route = createRootRoute({
   head: () => ({
@@ -38,27 +40,17 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: SHELL_INIT_SCRIPT }} />
         <HeadContent />
       </head>
       <body className="font-sans antialiased [overflow-wrap:anywhere] selection:bg-[rgba(79,184,178,0.24)]">
-        <Header />
-        {children}
-        <Footer />
-        {import.meta.env.DEV ? (
-          <TanStackDevtools
-            config={{
-              position: 'bottom-right',
-            }}
-            plugins={[
-              {
-                name: 'Tanstack Router',
-                render: <TanStackRouterDevtoolsPanel />,
-              },
-            ]}
-          />
-        ) : null}
-        <Scripts />
+        <AppActorProvider>
+          <AppShellSync />
+          <Header />
+          {children}
+          <Footer />
+          <Scripts />
+        </AppActorProvider>
       </body>
     </html>
   )

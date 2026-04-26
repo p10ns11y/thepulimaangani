@@ -1,17 +1,15 @@
-import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
+import { useMemo } from 'react'
 
-import { Button } from '#/components/ui/button'
 import { Card, CardContent } from '#/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs'
-import type { LivePreviewState } from '#/hooks/useDebouncedParsedPoem'
 import { adaptWasmJsonToParsedPoem } from '#/lib/adaptWasmParseJson'
 import { cn } from '#/lib/utils'
+import type { LivePreviewState } from '#/types/livePreview'
 
-import { PretextLineViewport } from './PretextLineViewport'
-import { TAMIL_PRETEXT_FONT_COMPACT } from './pretextConstants'
-import { buildParseFlowText } from './parseFlowText'
-import { StructuredParseResult } from './StructuredParseResult'
-import { SyllableLivePreview } from './SyllableLivePreview'
+import { PARSE_RESULT_PANEL_CLASS } from './parseResult/parseResultPanelClass'
+import { ParseResultEmptyState } from './parseResult/ParseResultEmptyState'
+import { ParseResultErrorState } from './parseResult/ParseResultErrorState'
+import { ParseResultLiveOnlyState } from './parseResult/ParseResultLiveOnlyState'
+import { ParseResultTabsView } from './parseResult/ParseResultTabsView'
 
 type ParseResultPanelProps = {
   result: string | null
@@ -22,100 +20,9 @@ type ParseResultPanelProps = {
   className?: string
 }
 
-const panelClass = 'luxe-prosody-card luxe-sheen-hover overflow-hidden rounded-xl'
-
-function JsonActionsFooter({ jsonString }: { jsonString: string }) {
-  return (
-    <div
-      className={cn(
-        'border-rim/55 flex flex-wrap items-center justify-end gap-2 border-t px-4 py-3',
-        'bg-surface-2/88 supports-[backdrop-filter]:backdrop-blur-[3px]',
-      )}
-    >
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        className="h-8 text-xs transition-[transform,box-shadow] duration-200 hover:shadow-sm active:scale-[0.98]"
-        onClick={() => void navigator.clipboard.writeText(jsonString)}
-      >
-        Copy JSON
-      </Button>
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        className="h-8 text-xs transition-[transform,box-shadow] duration-200 hover:shadow-sm active:scale-[0.98]"
-        onClick={() => {
-          const blob = new Blob([jsonString], { type: 'application/json' })
-          const url = URL.createObjectURL(blob)
-          const a = document.createElement('a')
-          a.href = url
-          a.download = 'tamil-prosody-analysis.json'
-          a.click()
-          URL.revokeObjectURL(url)
-        }}
-      >
-        Export JSON
-      </Button>
-    </div>
-  )
-}
-
-function LiveSyllableAndSentinel({
-  poemText,
-  live,
-  variant = 'compact',
-  pinEnd,
-}: {
-  poemText: string
-  live: LivePreviewState
-  variant?: 'default' | 'compact'
-  pinEnd: boolean
-}) {
-  const sentinelRef = useRef<HTMLDivElement>(null)
-  const canAutoScrollRef = useRef(true)
-  const prevPinEndRef = useRef(false)
-
-  useEffect(() => {
-    if (pinEnd && !prevPinEndRef.current) {
-      canAutoScrollRef.current = true
-    }
-    prevPinEndRef.current = pinEnd
-  }, [pinEnd])
-
-  useEffect(() => {
-    const el = sentinelRef.current
-    if (!el) return
-    const ob = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          canAutoScrollRef.current = e.isIntersecting
-        }
-      },
-      { root: null, rootMargin: '0px', threshold: 0 },
-    )
-    ob.observe(el)
-    return () => ob.disconnect()
-  }, [])
-
-  useLayoutEffect(() => {
-    if (!pinEnd) return
-    if (!canAutoScrollRef.current) return
-    const el = sentinelRef.current
-    if (!el) return
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    el.scrollIntoView({ block: 'end', behavior: reduced ? 'auto' : 'smooth' })
-  }, [pinEnd, live.layoutVersion, poemText])
-
-  return (
-    <>
-      <SyllableLivePreview poemText={poemText} live={live} variant={variant} />
-      <div ref={sentinelRef} className="pointer-events-none h-px w-full" aria-hidden />
-    </>
-  )
-}
-
+/**
+ * Picks a parse result view: empty, parse error, live-only, or full tabs + JSON actions.
+ */
 export function ParseResultPanel({
   result,
   poemText,
@@ -136,100 +43,53 @@ export function ParseResultPanel({
   const hasText = poemText.trim().length > 0
 
   if (!hasText && !result) {
-    return (
-      <Card className={cn(panelClass, className)}>
-        <CardContent className="text-muted-foreground px-4 py-8 text-center text-balance text-sm leading-relaxed">
-          Enter Tamil text for live syllables. Parse to unlock Structure and Text flow.
-        </CardContent>
-      </Card>
-    )
+    return <ParseResultEmptyState className={className} />
   }
 
   if (result && !parsed) {
     return (
-      <Card className={cn(panelClass, className)}>
-        <CardContent className="space-y-4 px-4 py-4">
-          {hasText ? (
-            <LiveSyllableAndSentinel poemText={poemText} live={live} pinEnd={pinLiveEndWhileEditing} />
-          ) : null}
-          <div className="border-destructive/40 bg-destructive/10 rounded-lg border p-3">
-            <h4 className="text-destructive mb-1.5 text-sm font-medium">Parse error</h4>
-            <pre className="text-destructive m-0 whitespace-pre-wrap break-words text-xs leading-relaxed">
-              {result}
-            </pre>
-          </div>
-        </CardContent>
-      </Card>
+      <ParseResultErrorState
+        result={result}
+        poemText={poemText}
+        live={live}
+        pinLiveEndWhileEditing={pinLiveEndWhileEditing}
+        hasText={hasText}
+        className={className}
+      />
     )
   }
 
-  const liveBlock = hasText ? (
-    <LiveSyllableAndSentinel poemText={poemText} live={live} pinEnd={pinLiveEndWhileEditing} />
-  ) : (
-    <p className="text-muted-foreground m-0 text-sm">Add poem text to preview syllables.</p>
-  )
-
   if (!parsed) {
     return (
-      <Card className={cn(panelClass, className)}>
-        <CardContent className="px-4 py-4">{liveBlock}</CardContent>
-      </Card>
+      <ParseResultLiveOnlyState
+        poemText={poemText}
+        live={live}
+        pinLiveEndWhileEditing={pinLiveEndWhileEditing}
+        hasText={hasText}
+        className={className}
+      />
     )
   }
 
   if (!result) {
     return null
   }
-  const jsonString = result
-  const flowTextResolved = buildParseFlowText(parsed)
 
   return (
-    <Card className={cn(panelClass, className)}>
+    <Card className={cn(PARSE_RESULT_PANEL_CLASS, className)}>
       <CardContent className="flex flex-col gap-0 p-0">
-        <div className="px-4 pt-4">
-          <Tabs defaultValue="live">
-            <TabsList className="bg-surface-3/75 border-rim/40 h-auto w-full justify-start gap-0.5 border p-1 sm:w-fit">
-              <TabsTrigger
-                value="live"
-                className="luxe-gem-focus text-xs data-active:border-rim/55 data-active:bg-surface-1/95 data-active:shadow-sm sm:text-sm"
-              >
-                Live
-              </TabsTrigger>
-              <TabsTrigger
-                value="structure"
-                className="luxe-gem-focus text-xs data-active:border-rim/55 data-active:bg-surface-1/95 data-active:shadow-sm sm:text-sm"
-              >
-                Structure
-              </TabsTrigger>
-              <TabsTrigger
-                value="flow"
-                className="luxe-gem-focus text-xs data-active:border-rim/55 data-active:bg-surface-1/95 data-active:shadow-sm sm:text-sm"
-              >
-                Text flow
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="live" className="mt-3 pb-1 outline-none">
-              {liveBlock}
-            </TabsContent>
-            <TabsContent value="structure" className="mt-3 pb-1 outline-none">
-              <StructuredParseResult data={parsed} />
-            </TabsContent>
-            <TabsContent value="flow" className="mt-3 pb-1 outline-none">
-              <p className="text-muted-foreground mb-2 text-balance text-xs leading-relaxed sm:text-sm">
-                Metre and counts — line wrapping for narrow columns. Source text is in the editor.
-              </p>
-              <div className="luxe-inset-surface rounded-lg p-3 sm:p-4">
-                <PretextLineViewport
-                  text={flowTextResolved}
-                  lineHeightPx={26}
-                  font={TAMIL_PRETEXT_FONT_COMPACT}
-                />
-              </div>
-            </TabsContent>
-          </Tabs>
-        </div>
-        <JsonActionsFooter jsonString={jsonString} />
+        <ParseResultTabsView
+          parsed={parsed}
+          resultJson={result}
+          poemText={poemText}
+          live={live}
+          pinLiveEndWhileEditing={pinLiveEndWhileEditing}
+          hasText={hasText}
+        />
       </CardContent>
     </Card>
   )
 }
+
+export { JsonActionsFooter } from './parseResult/JsonActionsFooter'
+export { LiveSyllableWithSentinel } from './parseResult/LiveSyllableWithSentinel'

@@ -1,4 +1,4 @@
-import type { LivePreviewState } from '#/hooks/useDebouncedParsedPoem'
+import type { LivePreviewState } from '#/types/livePreview'
 import { getChangedLineIndices, lineDiffOps, syllableCountsPerPhysicalLine } from '#/lib/poemLineDiff'
 import { cn } from '#/lib/utils'
 

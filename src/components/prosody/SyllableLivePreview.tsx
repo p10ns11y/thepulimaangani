@@ -1,4 +1,4 @@
-import type { LivePreviewState } from '#/hooks/useDebouncedParsedPoem'
+import type { LivePreviewState } from '#/types/livePreview'
 import { alignSyllablesToWords } from '#/lib/alignSyllablesToWords'
 import { mapFeetToPhysicalLines, physicalPoemLines } from '#/lib/mapFeetToPhysicalLines'
 import { cn } from '#/lib/utils'

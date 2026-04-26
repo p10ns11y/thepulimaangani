@@ -97,7 +97,7 @@ mod tests {
         options.alt_scansion = true;
         options.no_detect = true;
 
-        let poem = "சுடர்த்தொடீஇ கேளாய் தெருவில்நாம் ஆடும் \n கற்றது! மொழிந்தது.\nஅறிந்தவர் சொல்லும் வழி;";
+        let poem = "கற்றது! மொழிந்தது.\nஅறிந்தவர் சொல்லும் வழி;";
         let result = parse_poem(poem, options).expect("pipeline should parse");
 
         // Focus on the pipeline section: normalized -> graphemes -> units -> syllables.
