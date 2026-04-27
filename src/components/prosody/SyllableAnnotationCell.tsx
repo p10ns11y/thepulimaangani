@@ -24,7 +24,7 @@ export function SyllableAnnotationCell({
   return (
     <span
       className={cn(
-        'font-tamil inline-flex min-w-[1.75rem] flex-col items-center rounded-lg px-2 py-1 text-center text-[0.95rem] leading-snug shadow-sm',
+        'font-tamil inline-flex min-w-[1.5rem] flex-col items-center rounded-md px-1.5 py-0.5 text-center text-[0.82rem] leading-tight shadow-sm',
         motionClass,
         'border',
         isNer
@@ -33,11 +33,11 @@ export function SyllableAnnotationCell({
       )}
       style={{ animationDelay: `${staggerMs}ms` }}
     >
-      <span className="max-w-[7rem] break-words">{text}</span>
+      <span className="max-w-[6rem] break-words">{text}</span>
       <span
         className={cn(
           'font-sans tracking-wide opacity-90',
-          'text-[0.65rem]',
+          'text-[0.56rem]',
           isNer ? 'text-[color:var(--syllable-ner-text)]' : 'text-[color:var(--syllable-nirai-text)]',
         )}
       >
