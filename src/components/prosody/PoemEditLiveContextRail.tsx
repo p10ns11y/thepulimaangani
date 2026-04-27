@@ -1,3 +1,7 @@
+import { useCallback } from 'react'
+
+import { usePrefersReducedMotion } from '#/hooks/usePrefersReducedMotion'
+import { useTypewriterPaperPhysics, type TypewriterPhysicsCue } from '#/hooks/useTypewriterPaperPhysics'
 import { alignSyllablesToWords } from '#/lib/alignSyllablesToWords'
 import { mapFeetToPhysicalLines, physicalPoemLines } from '#/lib/mapFeetToPhysicalLines'
 import { cn } from '#/lib/utils'
@@ -9,6 +13,12 @@ type PoemEditLiveContextRailProps = {
   poemText: string
   live: LivePreviewState
   focusLine: number
+  editorOpen: boolean
+  physicsEnabled: boolean
+  /** When true, editor events emit typewriter cues even if `physicsEnabled` is false. */
+  soundCuesEnabled: boolean
+  /** From `useTypewriterSound` in parent; no-ops when sound off. */
+  onSoundCue: (cue: TypewriterPhysicsCue) => void
   className?: string
 }
 
@@ -17,7 +27,17 @@ function clampFocusLine(focusLine: number, lineCount: number): number {
   return Math.max(0, Math.min(focusLine, lineCount - 1))
 }
 
-export function PoemEditLiveContextRail({ poemText, live, focusLine, className }: PoemEditLiveContextRailProps) {
+export function PoemEditLiveContextRail({
+  poemText,
+  live,
+  focusLine,
+  editorOpen,
+  physicsEnabled,
+  soundCuesEnabled,
+  onSoundCue,
+  className,
+}: PoemEditLiveContextRailProps) {
+  const reducedMotion = usePrefersReducedMotion()
   const lines = physicalPoemLines(poemText)
   if (lines.length === 0) return null
 
@@ -28,6 +48,30 @@ export function PoemEditLiveContextRail({ poemText, live, focusLine, className }
 
   const parsed = live.parsed
   const feetByLine = parsed ? mapFeetToPhysicalLines(poemText, parsed.lines.flatMap((ln) => ln.feet)) : []
+  const lineFeetFocus = feetByLine[focus] ?? []
+  const activeLineSyllableCount = lineFeetFocus.flatMap((f) => f.syllables).length
+
+  const onCue = useCallback(
+    (cue: TypewriterPhysicsCue) => {
+      onSoundCue(cue)
+    },
+    [onSoundCue],
+  )
+
+  const physicsTransform = useTypewriterPaperPhysics({
+    enabled: physicsEnabled,
+    cuesEnabled: soundCuesEnabled,
+    reducedMotion,
+    editorOpen,
+    focusLine: focus,
+    layoutVersion: live.layoutVersion,
+    liveStatus: live.status,
+    activeLineSyllableCount,
+    onPhysicsCue: onCue,
+  })
+
+  const { translateY, rotateZ, scale } = physicsTransform
+
   const isBusy = live.status === 'syncing' || live.status === 'pending'
   const statusLabel =
     live.status === 'ready'
@@ -50,6 +94,9 @@ export function PoemEditLiveContextRail({ poemText, live, focusLine, className }
       style={{
         backgroundImage:
           'repeating-linear-gradient(to bottom, color-mix(in oklab, var(--rim) 18%, transparent) 0, color-mix(in oklab, var(--rim) 18%, transparent) 1px, transparent 1px, transparent 1.3rem)',
+        transform: `translate3d(0, ${translateY}px, 0) rotateZ(${rotateZ}deg) scale(${scale})`,
+        transformOrigin: 'top center',
+        willChange: physicsEnabled && !reducedMotion ? 'transform' : undefined,
       }}
     >
       <div className="mx-auto mb-1 h-1 w-10 rounded-full bg-[color:color-mix(in_oklab,var(--gem-gold)_45%,transparent)]" aria-hidden />

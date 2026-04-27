@@ -1,8 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from '@xstate/react'
 
 import { useProsodyActorRefFromApp } from '#/components/AppActorProvider'
 import { useLivePreviewBridge } from '#/hooks/useLivePreviewBridge'
+import { usePrefersReducedMotion } from '#/hooks/usePrefersReducedMotion'
+import type { TypewriterPhysicsCue } from '#/hooks/useTypewriterPaperPhysics'
+import { useTypewriterSound } from '#/hooks/useTypewriterSound'
+import {
+  readPaperPhysicsEnabled,
+  readTypewriterSoundEnabled,
+  writePaperPhysicsEnabled,
+  writeTypewriterSoundEnabled,
+} from '#/lib/typewriterEditorPreferences'
 import { cn } from '#/lib/utils'
 
 import { ParseResultPanel } from './ParseResultPanel'
@@ -21,11 +30,26 @@ function previewSource(editorOpen: boolean, poemText: string, poemDraft: string)
 
 export function ProsodyLab() {
   const [editorFocusLine, setEditorFocusLine] = useState(0)
+  const [paperPhysicsOn, setPaperPhysicsOn] = useState(() => readPaperPhysicsEnabled())
+  const [typewriterSoundOn, setTypewriterSoundOn] = useState(() => readTypewriterSoundEnabled())
+  const reducedMotion = usePrefersReducedMotion()
   const prosodyRef = useProsodyActorRefFromApp()
   const ctx = useSelector(prosodyRef, (s) => s?.context)
   const previewSrc = ctx ? previewSource(ctx.editorOpen, ctx.poemText, ctx.poemDraft) : ''
   const debounceMs = ctx ? previewDebounceMs(ctx.editorOpen) : 420
   const [frozenResultLive, setFrozenResultLive] = useState(ctx?.live ?? null)
+
+  const { playCue, resume } = useTypewriterSound(
+    typewriterSoundOn && !reducedMotion,
+    ctx?.editorOpen ?? false,
+  )
+
+  const onSoundCue = useCallback(
+    (cue: TypewriterPhysicsCue) => {
+      void playCue(cue)
+    },
+    [playCue],
+  )
 
   useLivePreviewBridge(prosodyRef, previewSrc, debounceMs)
 
@@ -36,6 +60,12 @@ export function ProsodyLab() {
       setFrozenResultLive(ctx.live)
     }
   }, [ctx])
+
+  useEffect(() => {
+    if (!ctx?.editorOpen) return
+    setPaperPhysicsOn(readPaperPhysicsEnabled())
+    setTypewriterSoundOn(readTypewriterSoundEnabled())
+  }, [ctx?.editorOpen])
 
   if (!prosodyRef || !ctx) {
     return null
@@ -107,9 +137,28 @@ export function ProsodyLab() {
           send({ type: 'prosody.EDITOR.APPLY' })
         }}
         onCursorLineChange={setEditorFocusLine}
+        paperPhysicsEnabled={paperPhysicsOn}
+        onPaperPhysicsEnabledChange={(on) => {
+          writePaperPhysicsEnabled(on)
+          setPaperPhysicsOn(on)
+        }}
+        typewriterSoundEnabled={typewriterSoundOn}
+        onTypewriterSoundEnabledChange={(on) => {
+          writeTypewriterSoundEnabled(on)
+          setTypewriterSoundOn(on)
+          if (on) void resume()
+        }}
         liveContextRail={
           ctx.editorOpen ? (
-            <PoemEditLiveContextRail poemText={ctx.poemDraft} live={ctx.live} focusLine={editorFocusLine} />
+            <PoemEditLiveContextRail
+              poemText={ctx.poemDraft}
+              live={ctx.live}
+              focusLine={editorFocusLine}
+              editorOpen={ctx.editorOpen}
+              physicsEnabled={paperPhysicsOn}
+              soundCuesEnabled={typewriterSoundOn && !reducedMotion}
+              onSoundCue={onSoundCue}
+            />
           ) : null
         }
       />

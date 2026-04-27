@@ -12,6 +12,10 @@ type PoemEditDialogProps = {
   onCursorLineChange: (lineIndex: number) => void
   /** focused current-line live preview shown above editor body */
   liveContextRail?: ReactNode
+  paperPhysicsEnabled: boolean
+  onPaperPhysicsEnabledChange: (enabled: boolean) => void
+  typewriterSoundEnabled: boolean
+  onTypewriterSoundEnabledChange: (enabled: boolean) => void
 }
 
 function lineIndexAtCursor(value: string, cursor: number): number {
@@ -31,6 +35,10 @@ export function PoemEditDialog({
   onApply,
   onCursorLineChange,
   liveContextRail,
+  paperPhysicsEnabled,
+  onPaperPhysicsEnabledChange,
+  typewriterSoundEnabled,
+  onTypewriterSoundEnabledChange,
 }: PoemEditDialogProps) {
   const taRef = useRef<HTMLTextAreaElement>(null)
   const titleId = useId()
@@ -97,9 +105,41 @@ export function PoemEditDialog({
             <h2 id={titleId} className="font-tamil m-0 shrink-0 text-sm font-semibold tracking-tight sm:text-base">
               Edit poem
             </h2>
-            <p className="text-muted-foreground m-0 text-[0.68rem] leading-snug sm:text-[0.72rem]">
-              Esc to close
-            </p>
+            <div className="flex min-w-0 flex-col items-end gap-1.5 text-right">
+              <p className="text-muted-foreground m-0 text-[0.68rem] leading-snug sm:text-[0.72rem]">
+                Esc to close
+              </p>
+              <div className="flex flex-wrap justify-end gap-1.5">
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={paperPhysicsEnabled}
+                  className={cn(
+                    'rounded-full border px-2 py-0.5 text-[0.62rem] font-semibold tracking-wide',
+                    paperPhysicsEnabled
+                      ? 'border-emerald-500/55 bg-[color:color-mix(in_oklab,var(--surface-2)_88%,var(--gem-emerald)_12%)] text-foreground'
+                      : 'border-rim/40 bg-[color:color-mix(in_oklab,var(--surface-3)_75%,var(--surface-1)_25%)] text-muted-foreground',
+                  )}
+                  onClick={() => onPaperPhysicsEnabledChange(!paperPhysicsEnabled)}
+                >
+                  Paper physics
+                </button>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={typewriterSoundEnabled}
+                  className={cn(
+                    'rounded-full border px-2 py-0.5 text-[0.62rem] font-semibold tracking-wide',
+                    typewriterSoundEnabled
+                      ? 'border-sky-500/55 bg-[color:color-mix(in_oklab,var(--surface-2)_88%,var(--gem-diamond)_12%)] text-foreground'
+                      : 'border-rim/40 bg-[color:color-mix(in_oklab,var(--surface-3)_75%,var(--surface-1)_25%)] text-muted-foreground',
+                  )}
+                  onClick={() => onTypewriterSoundEnabledChange(!typewriterSoundEnabled)}
+                >
+                  Typewriter sound
+                </button>
+              </div>
+            </div>
           </div>
         </div>
         <div className="prosody-poem-dialog-shimmer min-h-0 flex-1 overflow-y-auto px-3 pb-2 pt-3 sm:px-4">
