@@ -9,6 +9,7 @@ type ParseResultLiveOnlyStateProps = {
   poemText: string
   live: LivePreviewState
   pinLiveEndWhileEditing: boolean
+  autoFollowLivePreview: boolean
   hasText: boolean
   className?: string
 }
@@ -17,11 +18,18 @@ export function ParseResultLiveOnlyState({
   poemText,
   live,
   pinLiveEndWhileEditing,
+  autoFollowLivePreview,
   hasText,
   className,
 }: ParseResultLiveOnlyStateProps) {
   const liveBlock = hasText ? (
-    <LiveSyllableWithSentinel poemText={poemText} live={live} pinEnd={pinLiveEndWhileEditing} />
+    <LiveSyllableWithSentinel
+      poemText={poemText}
+      live={live}
+      pinEnd={pinLiveEndWhileEditing}
+      autoFollow={autoFollowLivePreview}
+      calmWhileEditing={pinLiveEndWhileEditing}
+    />
   ) : (
     <p className="text-muted-foreground m-0 text-sm">Add poem text to preview syllables.</p>
   )

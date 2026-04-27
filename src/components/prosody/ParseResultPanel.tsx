@@ -17,6 +17,8 @@ type ParseResultPanelProps = {
   live: LivePreviewState
   /** When true, auto-scrolls the live preview to the end on updates only if the user is already at the end (intersection) — avoids fighting scroll when reading higher lines. */
   pinLiveEndWhileEditing?: boolean
+  /** Explicit opt-in for follow mode; default keeps editing calm with no forced scrolling. */
+  autoFollowLivePreview?: boolean
   className?: string
 }
 
@@ -28,6 +30,7 @@ export function ParseResultPanel({
   poemText,
   live,
   pinLiveEndWhileEditing = false,
+  autoFollowLivePreview = false,
   className,
 }: ParseResultPanelProps) {
   const parsed = useMemo(() => {
@@ -53,6 +56,7 @@ export function ParseResultPanel({
         poemText={poemText}
         live={live}
         pinLiveEndWhileEditing={pinLiveEndWhileEditing}
+        autoFollowLivePreview={autoFollowLivePreview}
         hasText={hasText}
         className={className}
       />
@@ -65,6 +69,7 @@ export function ParseResultPanel({
         poemText={poemText}
         live={live}
         pinLiveEndWhileEditing={pinLiveEndWhileEditing}
+        autoFollowLivePreview={autoFollowLivePreview}
         hasText={hasText}
         className={className}
       />
@@ -84,6 +89,7 @@ export function ParseResultPanel({
           poemText={poemText}
           live={live}
           pinLiveEndWhileEditing={pinLiveEndWhileEditing}
+          autoFollowLivePreview={autoFollowLivePreview}
           hasText={hasText}
         />
       </CardContent>

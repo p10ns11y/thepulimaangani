@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { useSelector } from '@xstate/react'
 
 import { useProsodyActorRefFromApp } from '#/components/AppActorProvider'
@@ -6,8 +7,8 @@ import { cn } from '#/lib/utils'
 
 import { ParseResultPanel } from './ParseResultPanel'
 import { PoemAndParseCard } from './PoemAndParseCard'
-import { PoemEditChangeStrip } from './PoemEditChangeStrip'
 import { PoemEditDialog } from './PoemEditDialog'
+import { PoemEditLiveContextRail } from './PoemEditLiveContextRail'
 import { SamplesCard } from './SamplesCard'
 
 function previewDebounceMs(editorOpen: boolean) {
@@ -19,18 +20,30 @@ function previewSource(editorOpen: boolean, poemText: string, poemDraft: string)
 }
 
 export function ProsodyLab() {
+  const [editorFocusLine, setEditorFocusLine] = useState(0)
   const prosodyRef = useProsodyActorRefFromApp()
   const ctx = useSelector(prosodyRef, (s) => s?.context)
   const previewSrc = ctx ? previewSource(ctx.editorOpen, ctx.poemText, ctx.poemDraft) : ''
   const debounceMs = ctx ? previewDebounceMs(ctx.editorOpen) : 420
+  const [frozenResultLive, setFrozenResultLive] = useState(ctx?.live ?? null)
 
   useLivePreviewBridge(prosodyRef, previewSrc, debounceMs)
+
+  useEffect(() => {
+    if (!ctx) return
+    // Keep result panel stable while editing; refresh only when editor is closed.
+    if (!ctx.editorOpen) {
+      setFrozenResultLive(ctx.live)
+    }
+  }, [ctx])
 
   if (!prosodyRef || !ctx) {
     return null
   }
 
   const send = prosodyRef.send.bind(prosodyRef)
+  const resultPoemText = ctx.poemText
+  const resultLive = ctx.editorOpen ? (frozenResultLive ?? ctx.live) : ctx.live
 
   return (
     <main
@@ -66,11 +79,17 @@ export function ProsodyLab() {
           />
         </div>
 
-        <div className="min-w-0 lg:self-start">
+        <div
+          className={cn(
+            'min-w-0 lg:self-start',
+            'motion-safe:transition-[filter,opacity] motion-safe:duration-200',
+            ctx.editorOpen ? 'opacity-85 blur-[1.25px]' : null,
+          )}
+        >
           <ParseResultPanel
             result={ctx.parse.result}
-            poemText={previewSrc}
-            live={ctx.live}
+            poemText={resultPoemText}
+            live={resultLive}
             pinLiveEndWhileEditing={ctx.editorOpen}
           />
         </div>
@@ -87,9 +106,10 @@ export function ProsodyLab() {
         onApply={() => {
           send({ type: 'prosody.EDITOR.APPLY' })
         }}
-        changeStrip={
+        onCursorLineChange={setEditorFocusLine}
+        liveContextRail={
           ctx.editorOpen ? (
-            <PoemEditChangeStrip base={ctx.poemText} draft={ctx.poemDraft} live={ctx.live} />
+            <PoemEditLiveContextRail poemText={ctx.poemDraft} live={ctx.live} focusLine={editorFocusLine} />
           ) : null
         }
       />

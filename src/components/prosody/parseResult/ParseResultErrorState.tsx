@@ -10,6 +10,7 @@ type ParseResultErrorStateProps = {
   poemText: string
   live: LivePreviewState
   pinLiveEndWhileEditing: boolean
+  autoFollowLivePreview: boolean
   hasText: boolean
   className?: string
 }
@@ -19,6 +20,7 @@ export function ParseResultErrorState({
   poemText,
   live,
   pinLiveEndWhileEditing,
+  autoFollowLivePreview,
   hasText,
   className,
 }: ParseResultErrorStateProps) {
@@ -30,6 +32,8 @@ export function ParseResultErrorState({
             poemText={poemText}
             live={live}
             pinEnd={pinLiveEndWhileEditing}
+            autoFollow={autoFollowLivePreview}
+            calmWhileEditing={pinLiveEndWhileEditing}
           />
         ) : null}
         <div className="border-destructive/40 bg-destructive/10 rounded-lg border p-3">

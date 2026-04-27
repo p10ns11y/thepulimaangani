@@ -12,9 +12,16 @@ type SyllableLivePreviewProps = {
   live: LivePreviewState
   /** Tighter chrome for embedding inside the result panel */
   variant?: 'default' | 'compact'
+  /** When true, suppress pulse/shimmer motion for calm edit-focus mode. */
+  disableLiveAnimations?: boolean
 }
 
-export function SyllableLivePreview({ poemText, live, variant = 'default' }: SyllableLivePreviewProps) {
+export function SyllableLivePreview({
+  poemText,
+  live,
+  variant = 'default',
+  disableLiveAnimations = false,
+}: SyllableLivePreviewProps) {
   const compact = variant === 'compact'
   const trimmed = poemText.trim()
   if (!trimmed) return null
@@ -33,7 +40,10 @@ export function SyllableLivePreview({ poemText, live, variant = 'default' }: Syl
           <span>{compact ? 'Live' : 'Live syllables'}</span>
           {isRefreshing ? (
             <span
-              className="luxe-live-pulse-dot motion-safe:animate-pulse inline-block size-1.5 rounded-full"
+              className={cn(
+                'luxe-live-pulse-dot inline-block size-1.5 rounded-full',
+                !disableLiveAnimations && 'motion-safe:animate-pulse',
+              )}
               aria-label="Updating layout"
               title="Updating layout"
             />
@@ -96,7 +106,7 @@ export function SyllableLivePreview({ poemText, live, variant = 'default' }: Syl
                 <div
                   className={cn(
                     'text-foreground/90 rounded-md',
-                    isRefreshing && 'live-line-shimmer',
+                    isRefreshing && !disableLiveAnimations && 'live-line-shimmer',
                   )}
                 >
                   <PretextLineViewport
@@ -117,7 +127,7 @@ export function SyllableLivePreview({ poemText, live, variant = 'default' }: Syl
                       compact
                         ? 'mt-2 gap-x-4 gap-y-1.5 border-rim/45 pt-2'
                         : 'mt-3 gap-x-6 gap-y-2.5 border-rim/35 pt-3',
-                      isRefreshing && 'opacity-[0.72]',
+                      isRefreshing && !disableLiveAnimations && 'opacity-[0.72]',
                     )}
                     aria-busy={isRefreshing}
                     aria-label="Syllable preview for this line"

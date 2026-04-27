@@ -16,6 +16,7 @@ type ParseResultTabsViewProps = {
   poemText: string
   live: LivePreviewState
   pinLiveEndWhileEditing: boolean
+  autoFollowLivePreview: boolean
   hasText: boolean
 }
 
@@ -25,10 +26,17 @@ export function ParseResultTabsView({
   poemText,
   live,
   pinLiveEndWhileEditing,
+  autoFollowLivePreview,
   hasText,
 }: ParseResultTabsViewProps) {
   const liveBlock = hasText ? (
-    <LiveSyllableWithSentinel poemText={poemText} live={live} pinEnd={pinLiveEndWhileEditing} />
+    <LiveSyllableWithSentinel
+      poemText={poemText}
+      live={live}
+      pinEnd={pinLiveEndWhileEditing}
+      autoFollow={autoFollowLivePreview}
+      calmWhileEditing={pinLiveEndWhileEditing}
+    />
   ) : (
     <p className="text-muted-foreground m-0 text-sm">Add poem text to preview syllables.</p>
   )
