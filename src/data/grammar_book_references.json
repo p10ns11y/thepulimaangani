@@ -20,7 +20,7 @@
     "key": "ViracoliyamKovintarajaEdition",
     "type": "book",
     "author": "Kā. Ra. Kōvintarāja Mutaliyār (ed.)",
-    "title": "வீரசோழியம் மூலமும் பெருந்தேவனார் உரையும்",
+    "title": "Vīracōḻiyam Mūlamum Peruntēvaṉār Uraiyum (Critical Edition)",
     "year": "1942 / 1970 (reprint)",
     "publisher": "Pavāṉantar Kaḻakam, Chennai",
     "note": "Standard critical edition containing the full 184 verses of Vīracōḻiyam along with Peruntēvaṉār’s commentary. This is the most commonly referenced edition in modern scholarship."
@@ -113,22 +113,22 @@
     "key": "TamilProsodyWiki",
     "type": "online",
     "title": "Tamil Prosody",
-    "url": "https://en.wikipedia.org/wiki/Tamil_prosody",
-    "note": "Overview of Tamil metrical system and historical development."
+    "url": "https://grokipedia.com/page/Tamil_Prosody",
+    "note": "Grokipedia overview of Tamil metrical system and historical development."
   },
   {
     "key": "LatinProsodyWiki",
     "type": "online",
     "title": "Latin Prosody",
-    "url": "https://en.wikipedia.org/wiki/Latin_prosody",
-    "note": "Study of Latin poetic metre and its Greek origins."
+    "url": "https://grokipedia.com/page/Latin_prosody",
+    "note": "Grokipedia: Latin poetic metre and its Greek origins."
   },
   {
     "key": "GreekProsodyWiki",
     "type": "online",
     "title": "Greek Prosody",
-    "url": "https://en.wikipedia.org/wiki/Greek_prosody",
-    "note": "Classical Greek metrical system and terminology."
+    "url": "https://grokipedia.com/page/Greek_prosody",
+    "note": "Grokipedia: classical Greek metrical system and terminology."
   },
   {
     "key": "TamilVirtualAcademy",

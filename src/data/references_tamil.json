@@ -113,22 +113,22 @@
     "key": "TamilProsodyWiki",
     "type": "online",
     "title": "Tamil Prosody",
-    "url": "https://en.wikipedia.org/wiki/Tamil_prosody",
-    "note": "தமிழ் யாப்பு முறையின் அறிமுகம்."
+    "url": "https://grokipedia.com/page/Tamil_Prosody",
+    "note": "Grokipedia: தமிழ் யாப்பு முறையின் அறிமுகம்."
   },
   {
     "key": "LatinProsodyWiki",
     "type": "online",
     "title": "Latin Prosody",
-    "url": "https://en.wikipedia.org/wiki/Latin_prosody",
-    "note": "லத்தீன் கவிதை யாப்பு முறை."
+    "url": "https://grokipedia.com/page/Latin_prosody",
+    "note": "Grokipedia: லத்தீன் கவிதை யாப்பு முறை."
   },
   {
     "key": "GreekProsodyWiki",
     "type": "online",
     "title": "Greek Prosody",
-    "url": "https://en.wikipedia.org/wiki/Greek_prosody",
-    "note": "கிரேக்க யாப்பு முறை."
+    "url": "https://grokipedia.com/page/Greek_prosody",
+    "note": "Grokipedia: கிரேக்க யாப்பு முறை."
   },
   {
     "key": "TamilVirtualAcademy",
