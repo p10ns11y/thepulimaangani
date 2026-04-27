@@ -39,12 +39,12 @@ export function PoemEditLiveContextRail({
 }: PoemEditLiveContextRailProps) {
   const reducedMotion = usePrefersReducedMotion()
   const lines = physicalPoemLines(poemText)
-  if (lines.length === 0) return null
 
+  const hasLines = lines.length > 0
   const focus = clampFocusLine(focusLine, lines.length)
   const start = Math.max(0, focus - CONTEXT_RADIUS)
   const end = Math.min(lines.length - 1, focus + CONTEXT_RADIUS)
-  const visibleLines = lines.slice(start, end + 1)
+  const visibleLines = hasLines ? lines.slice(start, end + 1) : []
 
   const parsed = live.parsed
   const feetByLine = parsed ? mapFeetToPhysicalLines(poemText, parsed.lines.flatMap((ln) => ln.feet)) : []
@@ -81,6 +81,8 @@ export function PoemEditLiveContextRail({
         : live.status === 'error'
           ? 'பிழை'
           : 'புதுப்பிப்பு'
+
+  if (!hasLines) return null
 
   return (
     <section

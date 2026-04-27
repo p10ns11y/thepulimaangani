@@ -80,3 +80,4 @@ This removes reliance on `import.meta.url` path guessing and forces asset-pipeli
 3. Add release checklist item: when changing Vite plugins/runtime adapters, verify static asset modules (`.wasm`, fonts, workers).
 4. Preserve `test_parser.js` as Node-only parser correctness check, but do not treat it as browser asset-serving coverage.
 
+
