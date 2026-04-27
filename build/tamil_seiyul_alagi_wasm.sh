@@ -14,4 +14,4 @@ else
 fi
 
 echo ""
-echo "🎉 Build complete! WASM is ready in src/wasm/"
+echo "🎉 Build complete! WASM is ready in src/wasm/ and public/wasm/"

@@ -7,7 +7,8 @@ export async function runWasmParse(poemText: string): Promise<string> {
     throw new Error(inputError)
   }
   const wasm = await import('../wasm/thepulimaangani_parser.js')
-  await wasm.default()
+  // Nitro dev can intercept `/src/*`; serve wasm from stable public path instead.
+  await wasm.default({ module_or_path: '/wasm/thepulimaangani_parser_bg.wasm' })
   const parseResult = wasm.parse_poem_wasm(poemText)
   if (parseResult.includes('Error') || parseResult.trim() === '') {
     throw new Error(
