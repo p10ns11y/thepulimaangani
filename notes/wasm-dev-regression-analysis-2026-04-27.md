@@ -80,15 +80,4 @@ This removes reliance on `import.meta.url` path guessing and forces asset-pipeli
 3. Add release checklist item: when changing Vite plugins/runtime adapters, verify static asset modules (`.wasm`, fonts, workers).
 4. Preserve `test_parser.js` as Node-only parser correctness check, but do not treat it as browser asset-serving coverage.
 
-## Follow-up regression (2026-04-27 evening): hook-order crash in live context rail
-
-- Symptom: editor boundary crash with `Rendered fewer hooks than expected`.
-- Surface: `PoemEditLiveContextRail` while switching between empty and non-empty poem draft states.
-- Root cause: an early `return null` occurred before all hooks were called when no physical lines existed; later renders executed additional hooks, violating React hook order invariants.
-- Fix: moved the empty-state guard below hook initialization, introduced `hasLines`, and made `visibleLines` empty-safe without changing hook execution path.
-- Files:
-  - `src/components/prosody/PoemEditLiveContextRail.tsx`
-- Validation:
-  - `pnpm run typecheck`
-  - `pnpm run test:frontend`
 
