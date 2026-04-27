@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "period": "c. 300 BCE - 100 CE",
+    "title": "Tolkāppiyam",
+    "category": "Grammar",
+    "description": "The oldest surviving and most authoritative Tamil grammar. It establishes the five-fold grammar (ஐந்திலக்கணம்) including Eluttu, Col, Poruḷ, Yappu (Prosody), and Aṇi. It is largely indigenous with minimal external influence.",
+    "highlight": "Foundation of Tamil grammar"
+  },
+  {
+    "id": 2,
+    "period": "11th Century CE",
+    "title": "Vīracōḻiyam",
+    "category": "Grammar & Prosody",
+    "description": "Written by Buddhist scholar Puttamittiraṉ during the Chola period. First major grammar to systematically incorporate Sanskrit grammatical structures, terminology (kāraka, sandhi, dhātu, etc.), and poetics while describing Tamil. Contains a dedicated Yāppatikāram (Prosody chapter).",
+    "highlight": "Strong Sanskrit influence begins"
+  },
+  {
+    "id": 3,
+    "period": "11th - 12th Century CE",
+    "title": "Yapparuṅkalam & Yapparuṅkalakkārikai",
+    "category": "Prosody (Yappu)",
+    "description": "Authored by Jain scholar Amitasāgara. Dedicated treatises on Tamil prosody (Yappu). They represent the peak of indigenous Tamil metrical theory with some later Sanskrit influences in structure.",
+    "highlight": "Specialized Yappu works"
+  },
+  {
+    "id": 4,
+    "period": "12th Century CE",
+    "title": "Taṇṭiyalaṅkāram",
+    "category": "Poetics",
+    "description": "Tamil adaptation of Sanskrit Daṇḍin's Kāvyādarśa. Focuses on alaṅkāra (rhetoric and figures of speech). Reflects growing Sanskrit literary influence during the Chola period.",
+    "highlight": "Sanskrit literary theory"
+  },
+  {
+    "id": 5,
+    "period": "Early 13th Century CE",
+    "title": "Nannūl",
+    "category": "Grammar",
+    "description": "Authored by Pavaṇandi Munivar. The most widely used Tamil grammar after Tolkāppiyam. Clear five-fold structure with an excellent Yāppatikāram section. Less Sanskritized than Vīracōḻiyam and more accessible.",
+    "highlight": "Most influential classical grammar"
+  },
+  {
+    "id": 6,
+    "period": "Medieval Period (600 - 1300 CE)",
+    "title": "Sanskrit Chandas Influence on Tamil Yappu",
+    "category": "Influence & Comparison",
+    "description": "From around 600 CE, Sanskrit prosody (Chandas) began influencing Tamil Yappu. Key adoptions include syllable counting (akṣara), mora (mātrā), fixed line lengths, and metres like viruttam (from vṛtta). However, the core acai-based system remained uniquely Tamil and indigenous.",
+    "highlight": "Limited but significant influence"
+  },
+  {
+    "id": 7,
+    "period": "Classical Period",
+    "title": "Tamil Yappu vs Sanskrit Chandas, Latin & Greek Prosody",
+    "category": "Comparison",
+    "description": "Tamil Yappu uses a unique acai (metreme) system (nēr & nirai). Sanskrit Chandas is based on akṣara + gaṇa. Latin and Greek prosody are quantitative (long/short syllables) and heavily influenced each other. Tamil prosody developed independently with its own rhythmic logic and toṭai (alliteration) emphasis.",
+    "highlight": "Unique Dravidian metrical system"
+  }
+]

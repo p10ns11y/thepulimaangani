@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutTimelineRouteImport } from './routes/about.timeline'
+import { Route as AboutHistoryRouteImport } from './routes/about.history'
 
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
@@ -22,31 +24,47 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutTimelineRoute = AboutTimelineRouteImport.update({
+  id: '/timeline',
+  path: '/timeline',
+  getParentRoute: () => AboutRoute,
+} as any)
+const AboutHistoryRoute = AboutHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => AboutRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/about': typeof AboutRouteWithChildren
+  '/about/history': typeof AboutHistoryRoute
+  '/about/timeline': typeof AboutTimelineRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/about': typeof AboutRouteWithChildren
+  '/about/history': typeof AboutHistoryRoute
+  '/about/timeline': typeof AboutTimelineRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/about': typeof AboutRouteWithChildren
+  '/about/history': typeof AboutHistoryRoute
+  '/about/timeline': typeof AboutTimelineRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about'
+  fullPaths: '/' | '/about' | '/about/history' | '/about/timeline'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about'
-  id: '__root__' | '/' | '/about'
+  to: '/' | '/about' | '/about/history' | '/about/timeline'
+  id: '__root__' | '/' | '/about' | '/about/history' | '/about/timeline'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
+  AboutRoute: typeof AboutRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +83,38 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about/timeline': {
+      id: '/about/timeline'
+      path: '/timeline'
+      fullPath: '/about/timeline'
+      preLoaderRoute: typeof AboutTimelineRouteImport
+      parentRoute: typeof AboutRoute
+    }
+    '/about/history': {
+      id: '/about/history'
+      path: '/history'
+      fullPath: '/about/history'
+      preLoaderRoute: typeof AboutHistoryRouteImport
+      parentRoute: typeof AboutRoute
+    }
   }
 }
 
+interface AboutRouteChildren {
+  AboutHistoryRoute: typeof AboutHistoryRoute
+  AboutTimelineRoute: typeof AboutTimelineRoute
+}
+
+const AboutRouteChildren: AboutRouteChildren = {
+  AboutHistoryRoute: AboutHistoryRoute,
+  AboutTimelineRoute: AboutTimelineRoute,
+}
+
+const AboutRouteWithChildren = AboutRoute._addFileChildren(AboutRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
+  AboutRoute: AboutRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

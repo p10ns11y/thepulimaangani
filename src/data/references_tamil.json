@@ -1,0 +1,140 @@
+[
+  {
+    "key": "Tolkappiyam",
+    "type": "book",
+    "author": "தொல்காப்பியர்",
+    "title": "தொல்காப்பியம்",
+    "year": "கி.மு. 300 – கி.பி. 100",
+    "note": "தமிழின் மிகப் பழமையான இலக்கண நூல். ஐந்திலக்கண அமைப்பை நிறுவியது."
+  },
+  {
+    "key": "Viracoliyam",
+    "type": "book",
+    "author": "புத்தமித்திரன்",
+    "title": "வீரசோழியம்",
+    "year": "கி.பி. 11ஆம் நூற்றாண்டு",
+    "publisher": "பவாணந்தர் கழகம்",
+    "note": "சமஸ்கிருத இலக்கணக் கட்டமைப்புகளை முதன்முதலில் பெரிய அளவில் தழுவிய நூல். யாப்பதிகாரம் உட்பட ஐந்து அதிகாரங்கள்."
+  },
+  {
+    "key": "ViracoliyamKovintarajaEdition",
+    "type": "book",
+    "author": "கா. ரா. கோவிந்தராச முதலியார் (பதிப்பாசிரியர்)",
+    "title": "வீரசோழியம் மூலமும் பெருந்தேவனார் உரையும்",
+    "year": "1942 / 1970 (மறுபதிப்பு)",
+    "publisher": "பவாணந்தர் கழகம், சென்னை",
+    "note": "முழு 184 வசனங்களும் பெருந்தேவனார் உரையுடன் உள்ள நிலையான பதிப்பு. நவீன ஆய்வில் அதிகம் பயன்படுத்தப்படும் பதிப்பு."
+  },
+  {
+    "key": "PeruntevanarCommentary",
+    "type": "book",
+    "author": "பெருந்தேவனார்",
+    "title": "வீரசோழியம் உரை",
+    "year": "கி.பி. 12ஆம் நூற்றாண்டு",
+    "note": "வீரசோழியத்தின் முக்கிய இடைக்கால உரை. 1942/1970 பதிப்பில் கிடைக்கிறது."
+  },
+  {
+    "key": "Yapparunkalam",
+    "type": "book",
+    "author": "அமிதசாகரர்",
+    "title": "யாப்பருங்கலம்",
+    "year": "கி.பி. 11–12ஆம் நூற்றாண்டு",
+    "note": "தமிழ் யாப்பு (Prosody) மட்டுமே குறித்த முழு நூல்."
+  },
+  {
+    "key": "Yapparunkalakkarigai",
+    "type": "book",
+    "author": "அமிதசாகரர்",
+    "title": "யாப்பருங்கலக்காரிகை",
+    "year": "கி.பி. 11–12ஆம் நூற்றாண்டு",
+    "note": "யாப்பருங்கலத்தின் சுருக்க வடிவம். யாப்பு கற்பவர்களுக்கு எளிது."
+  },
+  {
+    "key": "Tantiyalankaram",
+    "type": "book",
+    "author": "தண்டி",
+    "title": "தண்டியலங்காரம்",
+    "year": "கி.பி. 12ஆம் நூற்றாண்டு",
+    "note": "சமஸ்கிருத தண்டியின் காவ்யாதர்சத்தின் தமிழ் தழுவல். அணி இலக்கணம்."
+  },
+  {
+    "key": "Nannul",
+    "type": "book",
+    "author": "பவணந்தி முனிவர்",
+    "title": "நன்னூல்",
+    "year": "கி.பி. 13ஆம் நூற்றாண்டு தொடக்கம்",
+    "note": "தொல்காப்பியத்திற்கு அடுத்தபடியாக மிகவும் பயன்படுத்தப்படும் இலக்கண நூல்."
+  },
+  {
+    "key": "MayilainatharCommentary",
+    "type": "book",
+    "author": "மயிலைநாதர்",
+    "title": "நன்னூல் உரை",
+    "year": "கி.பி. 14ஆம் நூற்றாண்டு",
+    "note": "நன்னூலின் மிகவும் பிரபலமான உரைகளில் ஒன்று."
+  },
+  {
+    "key": "PirayokaVivekam",
+    "type": "book",
+    "author": "அநாமதேய சமண அறிஞர்",
+    "title": "பிரயோக விவேகம்",
+    "year": "கி.பி. 11–12ஆம் நூற்றாண்டு",
+    "note": "சமஸ்கிருத செல்வாக்கு அதிகம் கொண்ட இலக்கண நூல்."
+  },
+  {
+    "key": "Niklas1988",
+    "type": "article",
+    "author": "Ulrike Niklas",
+    "title": "Introduction to Tamil Prosody",
+    "journal": "Bulletin de l'École française d'Extrême-Orient",
+    "year": "1988",
+    "volume": "77",
+    "pages": "165–226",
+    "note": "தமிழ் யாப்பு முறையின் விரிவான ஆய்வு."
+  },
+  {
+    "key": "Rajarathnam2022",
+    "type": "article",
+    "author": "K. Rajarathnam",
+    "title": "A Linguistic Study of Vīracōḻiyam",
+    "year": "2022",
+    "note": "வீரசோழியத்தின் நவீன மொழியியல் ஆய்வு. https://journals.kln.ac.lk இல் இலவசமாகக் கிடைக்கிறது."
+  },
+  {
+    "key": "DAvella2017",
+    "type": "article",
+    "author": "Victor B. D'Avella",
+    "title": "Kāraka Theory in the Vīracōḻiyam and its Sanskrit Antecedents",
+    "journal": "History of Linguistics",
+    "year": "2017",
+    "note": "வீரசோழியத்தில் சமஸ்கிருத இலக்கணக் கருத்துக்களின் தாக்கம்."
+  },
+  {
+    "key": "TamilProsodyWiki",
+    "type": "online",
+    "title": "Tamil Prosody",
+    "url": "https://en.wikipedia.org/wiki/Tamil_prosody",
+    "note": "தமிழ் யாப்பு முறையின் அறிமுகம்."
+  },
+  {
+    "key": "LatinProsodyWiki",
+    "type": "online",
+    "title": "Latin Prosody",
+    "url": "https://en.wikipedia.org/wiki/Latin_prosody",
+    "note": "லத்தீன் கவிதை யாப்பு முறை."
+  },
+  {
+    "key": "GreekProsodyWiki",
+    "type": "online",
+    "title": "Greek Prosody",
+    "url": "https://en.wikipedia.org/wiki/Greek_prosody",
+    "note": "கிரேக்க யாப்பு முறை."
+  },
+  {
+    "key": "TamilVirtualAcademy",
+    "type": "online",
+    "title": "Tamil Virtual Academy",
+    "url": "https://www.tamilvu.org",
+    "note": "தொல்காப்பியம், நன்னூல் உள்ளிட்ட பழம் தமிழ் நூல்களின் டிஜிட்டல் நூலகம்."
+  }
+]
