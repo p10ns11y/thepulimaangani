@@ -36,6 +36,24 @@ function normalizeFeet(raw: unknown[]): ParsedFoot[] {
   return out
 }
 
+function syllablesFromSyllableNodes(syllNodes: unknown[]): ParsedSyllable[] {
+  const syllables: ParsedSyllable[] = []
+  for (const sn of syllNodes) {
+    if (!sn || typeof sn !== 'object') continue
+    const node = sn as Record<string, unknown>
+    const inner = node.inner
+    const raw = inner !== undefined && inner !== null && typeof inner === 'object' ? inner : sn
+    const syl = normalizeSyllable(raw)
+    if (syl) syllables.push(syl)
+  }
+  return syllables
+}
+
+/** Matches Rust `foot_pattern`: hyphenated Ner/Nirai tokens for one linguistic word. */
+function machineFootPatternFromSyllables(syllables: ParsedSyllable[]): string {
+  return syllables.map((s) => (s.syllable_type === 'Ner' ? 'Ner' : 'Nirai')).join('-')
+}
+
 function normalizeLines(rawLines: unknown, feet: ParsedFoot[]): ParsedLine[] {
   if (!Array.isArray(rawLines) || rawLines.length === 0) {
     if (feet.length === 0) return []
@@ -57,9 +75,58 @@ function normalizeLines(rawLines: unknown, feet: ParsedFoot[]): ParsedLine[] {
   return lines
 }
 
+/** Build `ParsedLine[]` from Rust `ParseResult.poem` (WordNode feet mirror top-level `feet`). */
+function linesFromPoemNode(poem: unknown): ParsedLine[] | null {
+  if (!poem || typeof poem !== 'object') return null
+  const p = poem as Record<string, unknown>
+  const rawLines = p.lines
+  if (!Array.isArray(rawLines) || rawLines.length === 0) return null
+
+  const out: ParsedLine[] = []
+  for (const row of rawLines) {
+    if (!row || typeof row !== 'object') continue
+    const L = row as Record<string, unknown>
+    const line_class = typeof L.line_class === 'string' ? L.line_class : '—'
+    const words = L.words
+    const linguisticWords = L.linguistic_words
+
+    const lineFeet: ParsedFoot[] = []
+
+    if (Array.isArray(words) && words.length > 0) {
+      for (const w of words) {
+        if (!w || typeof w !== 'object') continue
+        const W = w as Record<string, unknown>
+        const foot_type = typeof W.foot_type === 'string' ? W.foot_type : ''
+        const syllNodes = W.syllables
+        if (!Array.isArray(syllNodes)) continue
+        const syllables = syllablesFromSyllableNodes(syllNodes)
+        if (syllables.length === 0 || !foot_type) continue
+        lineFeet.push({ foot_type, syllables })
+      }
+    } else if (Array.isArray(linguisticWords) && linguisticWords.length > 0) {
+      for (const lw of linguisticWords) {
+        if (!lw || typeof lw !== 'object') continue
+        const LW = lw as Record<string, unknown>
+        const syllNodes = LW.syllables
+        if (!Array.isArray(syllNodes)) continue
+        const syllables = syllablesFromSyllableNodes(syllNodes)
+        if (syllables.length === 0) continue
+        lineFeet.push({
+          foot_type: machineFootPatternFromSyllables(syllables),
+          syllables,
+        })
+      }
+    }
+
+    if (lineFeet.length === 0) continue
+    out.push({ line_class, feet: lineFeet })
+  }
+  return out.length > 0 ? out : null
+}
+
 /**
  * Maps Rust `ParseResult` JSON into {@link ParsedPoem}.
- * Rust currently leaves `lines` empty and puts prosody in top-level `feet`; we synthesize one line when needed.
+ * Prefers **`poem.lines[].words`** when present; falls back to **`poem.lines[].linguistic_words`** (same syllables, machine foot pattern); otherwise uses top-level `lines` or a single synthetic line from `feet`.
  */
 export function adaptWasmJsonToParsedPoem(data: unknown): ParsedPoem | null {
   if (!data || typeof data !== 'object') return null
@@ -67,7 +134,9 @@ export function adaptWasmJsonToParsedPoem(data: unknown): ParsedPoem | null {
   if (typeof o.original_text !== 'string' || !Array.isArray(o.syllables)) return null
 
   const feet = Array.isArray(o.feet) ? normalizeFeet(o.feet as unknown[]) : []
-  const lines = normalizeLines(o.lines, feet)
+  const fromPoem = linesFromPoemNode(o.poem)
+  const lines =
+    fromPoem && fromPoem.length > 0 ? fromPoem : normalizeLines(o.lines, feet)
 
   const metreRaw = o.metre_type
   const metre_type =
