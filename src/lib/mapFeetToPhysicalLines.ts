@@ -1,10 +1,16 @@
 import type { ParsedFoot } from '#/types/parsedPoem'
 
-/** Split editor text into physical lines (newlines preserved as structure). */
+/** Split editor text into physical lines — aligned with Rust `str::lines()` on normalized `\n` text. */
 export function physicalPoemLines(poemText: string): string[] {
   const t = poemText.replace(/\r\n/g, '\n')
   if (!t.trim()) return []
-  return t.split('\n')
+  const parts = t.split('\n')
+  // Rust `lines()` does not yield an extra empty line solely because the string ends with `\n`;
+  // JS `split('\n')` adds a trailing `''` in that case → off-by-one vs WASM `ParseResult.lines`.
+  if (parts.length > 1 && parts[parts.length - 1] === '') {
+    parts.pop()
+  }
+  return parts
 }
 
 /**

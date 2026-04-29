@@ -42,6 +42,20 @@ describe('feetPerPhysicalLine', () => {
     expect(buckets[0]![0]!.syllables[0]!.text).toBe('ab')
     expect(buckets[1]![0]!.syllables[0]!.text).toBe('cd')
   })
+
+  it('returns empty feet per line when parser line count mismatches (avoid wrong-row slices)', () => {
+    const p = poem([
+      {
+        line_class: '—',
+        feet: [{ foot_type: 'Ner', syllables: [{ text: 'only', syllable_type: 'Ner' }] }],
+      },
+    ])
+    const text = 'line one\nline two'
+    const buckets = feetPerPhysicalLine(p, text)
+    expect(buckets).toHaveLength(2)
+    expect(buckets[0]).toEqual([])
+    expect(buckets[1]).toEqual([])
+  })
 })
 
 describe('groupsFromFeet', () => {

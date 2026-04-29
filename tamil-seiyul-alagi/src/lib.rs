@@ -234,6 +234,43 @@ mod tests {
     }
 
     #[test]
+    fn legacy_flat_lines_include_feet_on_every_physical_line_when_tree_words_sparse() {
+        let mut options = ParseOptions::default();
+        options.alt_scansion = true;
+        options.no_detect = true;
+        options.uyir_u = true;
+
+        let poem = "சுடர்த்தொடீஇ கேளாய் தெருவில்நாம்\nமணற்சிற்றில் காலில் சிதையா அடை\nகோதை பரிந்து வரிப்பந்து கொண்டோ\n";
+        let result = parse_poem(poem, options).expect("parse");
+
+        assert_eq!(result.lines.len(), result.poem.lines.len());
+        for (i, ln) in result.lines.iter().enumerate() {
+            assert!(
+                !ln.feet.is_empty(),
+                "legacy Line {} must carry feet (was collapsing entire poem into line 0 when poem.lines[].words was empty)",
+                i
+            );
+        }
+        let syllables_line0: usize = result.lines[0].feet.iter().map(|f| f.syllables.len()).sum();
+        let total_in_lines: usize = result
+            .lines
+            .iter()
+            .map(|ln| ln.feet.iter().map(|f| f.syllables.len()).sum::<usize>())
+            .sum();
+        assert_eq!(
+            total_in_lines,
+            result.syllables.len(),
+            "legacy lines should account for all syllables once"
+        );
+        assert!(
+            syllables_line0 < result.syllables.len(),
+            "first line must not contain every syllable in the poem (line0={} total={})",
+            syllables_line0,
+            result.syllables.len()
+        );
+    }
+
+    #[test]
     fn empty_input_returns_expected_error() {
         let err = parse_poem("   ", ParseOptions::default()).expect_err("must reject empty input");
         assert!(matches!(err, ParseError::EmptyInput));
