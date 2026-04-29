@@ -1,10 +1,11 @@
 import type { ParsedFoot, ParsedPoem } from '#/types/parsedPoem'
 
-import { mapFeetToPhysicalLines, physicalPoemLines } from '#/lib/mapFeetToPhysicalLines'
+import { physicalPoemLines } from '#/lib/mapFeetToPhysicalLines'
 
 /**
- * Feet per physical editor line: prefer WASM `parsed.lines` when line counts match;
- * otherwise fall back to character-weighted {@link mapFeetToPhysicalLines}.
+ * Feet per physical editor line: use WASM `parsed.lines` only when line counts match.
+ * On mismatch (mid-edit before debounced parse returns), return **empty** feet per line so we never
+ * slice parser feet onto wrong rows (the old character-weight fallback caused bleed-over).
  */
 export function feetPerPhysicalLine(parsed: ParsedPoem | null, poemText: string): ParsedFoot[][] {
   const physical = physicalPoemLines(poemText)
@@ -15,8 +16,9 @@ export function feetPerPhysicalLine(parsed: ParsedPoem | null, poemText: string)
     return structured.map((ln) => ln.feet)
   }
 
-  const flat = structured.flatMap((ln) => ln.feet)
-  return mapFeetToPhysicalLines(poemText, flat.length > 0 ? flat : [])
+  // Editor line count ≠ parser snapshot (mid-edit debounce, trailing newline drift before fix, etc.).
+  // Do **not** use character-weight `mapFeetToPhysicalLines` — it slices feet across wrong rows.
+  return physical.map(() => [])
 }
 
 /** One UI group per **linguistic word** (one WASM foot). Syllables stay parser order. */
