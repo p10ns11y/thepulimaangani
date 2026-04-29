@@ -1,6 +1,7 @@
 mod error;
 mod foot;
 mod letter;
+mod line_scope;
 mod linkage;
 mod metre;
 mod presentation;
@@ -16,9 +17,9 @@ pub use prosodic_sequence::ProsodicSequence;
 use wasm_bindgen::prelude::*;
 
 pub use error::ParseError;
-pub use foot::Foot;
+pub use foot::{Foot, FootPlacement};
 pub use letter::Letter;
-pub use linkage::{Linkage, LinkageType, Talai, TalaiType};
+pub use linkage::{FootPosition, Linkage, LinkageType, Talai, TalaiType};
 pub use metre::MetreType;
 pub use prosodic_unit::{Consonant, ProsodicUnit, Vowel};
 pub use syllable::{Syllable, SyllableType};
@@ -40,8 +41,12 @@ pub fn parse_poem(text: &str, options: ParseOptions) -> Result<ParseResult, Pars
 
     let units = letter::to_prosodic_units(&graphemes);
     let syllables = SyllableBuilder::new(options.alt_scansion).build(&units);
-    let feet = foot::group_into_feet(&syllables);
-    let linkage = linkage::analyze_linkage(&feet);
+    let syllable_lines = line_scope::syllable_line_indices(&normalized_clone, &syllables)
+        .unwrap_or_else(|| vec![0; syllables.len()]);
+    let foot_placements = foot::group_into_feet_with_ranges(&syllables);
+    let feet: Vec<Foot> = foot_placements.iter().map(|p| p.foot.clone()).collect();
+    let foot_positions = linkage::foot_positions_for_poem(&foot_placements, &syllable_lines);
+    let linkage = linkage::analyze_linkage(&foot_positions);
     let metre_hypotheses = metre::detect_metre_hypotheses(&feet, &linkage, options.no_detect);
     let metre = metre_hypotheses.first().map(|h| h.metre_type.clone());
 
@@ -150,6 +155,44 @@ mod tests {
         assert!(json.get("syllables").and_then(|v| v.as_array()).is_some());
         assert!(json.get("feet").and_then(|v| v.as_array()).is_some());
         assert!(json.get("linkage").and_then(|v| v.as_array()).is_some());
+    }
+
+    #[test]
+    fn linkage_carries_line_and_word_position_across_lines() {
+        let mut options = ParseOptions::default();
+        options.alt_scansion = true;
+        options.no_detect = true;
+        let poem = "கற்றது! மொழிந்தது.\nஅறிந்தவர் சொல்லும் வழி;";
+        let result = parse_poem(poem, options).expect("parse");
+
+        assert!(
+            result.feet.len() >= 3,
+            "sample should yield multiple feet; got {}",
+            result.feet.len()
+        );
+        let boundary = result
+            .linkage
+            .iter()
+            .find(|l| l.from.line_index != l.to.line_index);
+        assert!(
+            boundary.is_some(),
+            "expected at least one linkage crossing lines; got {:?}",
+            result.linkage
+        );
+        let b = boundary.unwrap();
+        assert!(b.from.line_index < b.to.line_index);
+        // Destination foot is the first word on its physical line (starts after prior line text).
+        assert_eq!(b.to.word_index_in_line, 0);
+        let first = serde_json::to_value(&result.linkage[0]).expect("json");
+        assert!(json_has_foot_position_fields(&first));
+    }
+
+    fn json_has_foot_position_fields(linkage_json: &serde_json::Value) -> bool {
+        linkage_json.get("from").map_or(false, |from| {
+            from.get("line_index").is_some()
+                && from.get("word_index_in_line").is_some()
+                && from.get("foot_index").is_some()
+        })
     }
 
     #[test]

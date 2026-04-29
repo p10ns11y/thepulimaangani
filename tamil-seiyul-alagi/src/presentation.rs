@@ -31,6 +31,8 @@ pub struct DisplayFoot {
 pub struct DisplayTalai {
     pub from: usize,
     pub to: usize,
+    pub from_line: usize,
+    pub to_line: usize,
     pub talai_type: String, // "வெண்டளை", "ஆசிரியத்தளை"
     pub is_valid: bool,
 }
@@ -82,6 +84,8 @@ fn to_display_talai(t: &Linkage) -> DisplayTalai {
     DisplayTalai {
         from: t.from_foot,
         to: t.to_foot,
+        from_line: t.from.line_index,
+        to_line: t.to.line_index,
         talai_type: match t.linkage_type {
             crate::linkage::LinkageType::VenTalai => "வெண்டளை".to_string(),
             crate::linkage::LinkageType::AsiriyaTalai => "ஆசிரியத்தளை".to_string(),
