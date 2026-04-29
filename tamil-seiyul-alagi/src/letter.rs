@@ -1,6 +1,7 @@
 //! Letter classification and conversion to ProsodicUnit using the official Tamil character matrix.
 
 use serde::{Deserialize, Serialize};
+use unicode_segmentation::UnicodeSegmentation;
 
 use crate::prosodic_unit::{Consonant, ProsodicUnit, Vowel};
 use crate::tamil_chars::{generate_uyirmei_matrix, PURE_CONSONANTS, VOWELS};
@@ -92,18 +93,39 @@ impl Consonant {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub enum LetterType {
+    Uyir,
+    Mei,
+    Uyirmei,
+    Aaytham,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Letter {
     pub text: String,
     pub letter_type: LetterType,
     pub matra: u8,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub enum LetterType {
-    Uyir,
-    Mei,
-    Uyirmei,
-    Aaytham,
+/// Grapheme letters under one syllable's surface text (prosodic units in order).
+pub fn letters_from_syllable_text(text: &str) -> Vec<Letter> {
+    let graphemes: Vec<&str> = text.graphemes(true).collect();
+    let units = to_prosodic_units(&graphemes);
+    units.iter().map(letter_from_prosodic_unit).collect()
+}
+
+fn letter_from_prosodic_unit(unit: &ProsodicUnit) -> Letter {
+    Letter {
+        text: unit.text(),
+        letter_type: match unit {
+            ProsodicUnit::Vowel(_) => LetterType::Uyir,
+            ProsodicUnit::Consonant(_) => LetterType::Mei,
+            ProsodicUnit::VowelConsonant { .. } => LetterType::Uyirmei,
+            ProsodicUnit::Aaytham => LetterType::Aaytham,
+            ProsodicUnit::ConsonantCluster(_) => LetterType::Mei,
+        },
+        matra: unit.matra(),
+    }
 }
 
 #[cfg(test)]

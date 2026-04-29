@@ -9,10 +9,11 @@ Later, CI can compute and validate the same baseline automatically.
 
 ## Baseline Snapshot
 
-- Date: 2026-04-26
-- Scope: `tamil-seiyul-alagi/src/*` parser core
-- Baseline method: manual CRAP-style score
-- Total baseline score: 23
+- **Date:** 2026-04-29 _(updated; prior snapshot 2026-04-26 below)_
+- **Scope:** `tamil-seiyul-alagi/src/*` parser core
+- **Baseline method:** manual CRAP-style score
+- **Total baseline score (sum of hotspot rows):** 33  
+  _(Interpret as aggregate risk surface; not a single function CRAP metric.)_
 
 Scoring formula:
 
@@ -36,11 +37,27 @@ Interpretation:
 
 | Module / Function | Complexity Rank | Untested Rank | Score | Risk | Why |
 |---|---:|---:|---:|---|---|
-| `src/metre.rs::detect_metre` | 3 | 3 | 9 | critical | Current heuristic misclassifies known Aciriyappaa fixture. |
-| `src/syllable_builder.rs::build` | 3 | 2 | 6 | high | Ordered regex branching with boundary-sensitive behavior. |
-| `src/lib.rs::parse_poem` | 2 | 2 | 4 | moderate | Pipeline fan-out can silently break output structure. |
-| `src/linkage.rs::analyze_linkage` | 2 | 2 | 4 | moderate | Placeholder constant linkage classification and validity. |
-| `src/foot.rs::group_into_feet` | 2 | 2 | 4 | moderate | Placeholder chunking/cyclic naming not rule-driven yet. |
+| `src/metre.rs::detect_metre` | 3 | 3 | 9 | critical | Heuristic still misclassifies known Asiriyappaa fixture; metre hypotheses naive. |
+| `src/lib.rs::parse_poem` | 3 | 2 | 6 | high | Orchestrates word segmentation, feet, `PoemNode` tree, linkage; integration surface grew. |
+| `src/syllable_builder.rs::build_inner` | 2 | 2 | 4 | moderate | Ordered regex scan per **linguistic word**; unit tests cover common paths. |
+| `src/word_scope.rs::segment_syllables_from_normalized` | 2 | 2 | 4 | moderate | Line/word tokenization drives all downstream syllables; integration-heavy. |
+| `src/linkage.rs::foot_positions_for_poem` + `analyze_linkage` | 2 | 2 | 4 | moderate | Positions correct; `linkage_type` / validity still largely placeholder. |
+| `src/poem_tree.rs::build_poem_tree` + `linguistic_words_per_line` | 2 | 2 | 4 | moderate | Tree + parallel linguistic grouping; must stay aligned with `ParseResult.lines`. |
+| `src/foot.rs::group_into_feet_with_ranges` | 2 | 1 | 2 | low | One foot per linguistic word + `foot_pattern()` Ner-Nirai string; covered by foot tests. |
+
+**Dropped from prior table (superseded):**
+
+- `foot.rs` placeholder **chunks of 3** — replaced by linguistic-word grouping + pattern strings.
+- `syllable_builder.rs::build` as monolithic stream — replaced by per-word `build_word_segment` / `build_inner`.
+
+---
+
+## Changelog
+
+| Date | Note |
+|------|------|
+| 2026-04-26 | Initial baseline (chunk feet, flat syllable stream). Total hotspot sum was 27 if all rows summed (doc previously said 23). |
+| 2026-04-29 | Great refactor: `word_scope`, `poem_tree`, `FootPosition` linkage, Ner-Nirai `foot_type` patterns, per-word syllable segmentation. Hotspots and total refreshed. |
 
 ---
 
@@ -64,4 +81,3 @@ When CI is ready:
 3. Compute CRAP-style scores automatically.
 4. Compare CI scores against this baseline and report deltas.
 5. Start in report-only mode; enforce thresholds after stable baseline history.
-

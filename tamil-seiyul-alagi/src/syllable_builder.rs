@@ -27,7 +27,28 @@ impl SyllableBuilder {
         }
     }
 
-    pub fn build(mut self, units: &[ProsodicUnit]) -> Vec<Syllable> {
+    /// Segment **one linguistic word** (contiguous non-whitespace graphemes → prosodic units).
+    /// Must not be called with units spanning multiple whitespace-separated words — boundaries are lost when spaces are dropped upstream.
+    pub fn build_word_segment(
+        self,
+        units: &[ProsodicUnit],
+        line_index: usize,
+        word_index_in_line: usize,
+    ) -> Vec<Syllable> {
+        self.build_inner(units, line_index, word_index_in_line)
+    }
+
+    /// Whole-stream segmentation (crosses linguistic word boundaries if `units` spans multiple words).
+    pub fn build(self, units: &[ProsodicUnit]) -> Vec<Syllable> {
+        self.build_inner(units, 0, 0)
+    }
+
+    fn build_inner(
+        mut self,
+        units: &[ProsodicUnit],
+        line_index: usize,
+        word_index_in_line: usize,
+    ) -> Vec<Syllable> {
         if units.is_empty() {
             return self.result;
         }
@@ -63,7 +84,9 @@ impl SyllableBuilder {
                     len,
                     SyllableType::Nirai,
                     "Nirai (triplet)",
-                    is_last_syllable
+                    is_last_syllable,
+                    line_index,
+                    word_index_in_line,
                 );
 
                 pos += len;
@@ -93,7 +116,9 @@ impl SyllableBuilder {
                     len,
                     syllable_type,
                     "Nirai/Ner (pair)",
-                    is_last_syllable
+                    is_last_syllable,
+                    line_index,
+                    word_index_in_line,
                 );
                 pos += len;
                 continue;
@@ -116,7 +141,9 @@ impl SyllableBuilder {
                     len,
                     syllable_type,
                     "Nirai/Ner (pair)",
-                    is_last_syllable
+                    is_last_syllable,
+                    line_index,
+                    word_index_in_line,
                 );
                 pos += 1;
             } else {
@@ -134,7 +161,9 @@ impl SyllableBuilder {
         len: usize,
         syllable_type: SyllableType,
         rule: &str,
-        is_last_syllable: bool
+        is_last_syllable: bool,
+        line_index: usize,
+        word_index_in_line: usize,
     ) {
         let text: String = units[start..start + len].iter().map(|u| u.text()).collect();
 
@@ -148,12 +177,17 @@ impl SyllableBuilder {
             syllable_type,
             split_hint: hint,
             alt_split: self.alt_scansion,
-            rule_ref: Some(rule.to_string())
+            rule_ref: Some(rule.to_string()),
+            line_index,
+            word_index_in_line,
         });
     }
 
-    //  In the whole word, last characters decide the condition
+    // In the whole word, last characters decide the condition
     fn is_uyir_u(&self, units: &[ProsodicUnit]) -> bool {
+        if units.len() < 2 {
+            return false;
+        }
         let last_index = units.len() - 1;
         let last_char = &units[last_index];
 

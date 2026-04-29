@@ -2,8 +2,8 @@ import { useCallback } from 'react'
 
 import { usePrefersReducedMotion } from '#/hooks/usePrefersReducedMotion'
 import { useTypewriterPaperPhysics, type TypewriterPhysicsCue } from '#/hooks/useTypewriterPaperPhysics'
-import { alignSyllablesToWords } from '#/lib/alignSyllablesToWords'
-import { mapFeetToPhysicalLines, physicalPoemLines } from '#/lib/mapFeetToPhysicalLines'
+import { feetPerPhysicalLine, groupsFromFeet } from '#/lib/parserFeetLayout'
+import { physicalPoemLines } from '#/lib/mapFeetToPhysicalLines'
 import { cn } from '#/lib/utils'
 import type { LivePreviewState } from '#/types/livePreview'
 
@@ -47,7 +47,7 @@ export function PoemEditLiveContextRail({
   const visibleLines = hasLines ? lines.slice(start, end + 1) : []
 
   const parsed = live.parsed
-  const feetByLine = parsed ? mapFeetToPhysicalLines(poemText, parsed.lines.flatMap((ln) => ln.feet)) : []
+  const feetByLine = parsed ? feetPerPhysicalLine(parsed, poemText) : []
   const lineFeetFocus = feetByLine[focus] ?? []
   const activeLineSyllableCount = lineFeetFocus.flatMap((f) => f.syllables).length
 
@@ -130,8 +130,7 @@ export function PoemEditLiveContextRail({
         {visibleLines.map((lineText, localIdx) => {
           const lineIdx = start + localIdx
           const lineFeet = feetByLine[lineIdx] ?? []
-          const syllables = lineFeet.flatMap((f) => f.syllables)
-          const groups = alignSyllablesToWords(lineText, syllables)
+          const groups = groupsFromFeet(lineFeet)
           const active = lineIdx === focus
 
           return (

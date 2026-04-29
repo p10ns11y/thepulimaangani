@@ -12,7 +12,15 @@ function normalizeSyllable(raw: unknown): ParsedSyllable | null {
   if (typeof s.text !== 'string') return null
   const st = s.syllable_type
   const syllable_type = typeof st === 'string' ? st : 'Nirai'
-  return { text: s.text, syllable_type }
+  const line_index = typeof s.line_index === 'number' ? s.line_index : undefined
+  const word_index_in_line =
+    typeof s.word_index_in_line === 'number' ? s.word_index_in_line : undefined
+  return {
+    text: s.text,
+    syllable_type,
+    ...(line_index !== undefined ? { line_index } : {}),
+    ...(word_index_in_line !== undefined ? { word_index_in_line } : {}),
+  }
 }
 
 function normalizeFeet(raw: unknown[]): ParsedFoot[] {
