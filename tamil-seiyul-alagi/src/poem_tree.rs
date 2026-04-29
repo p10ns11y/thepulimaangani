@@ -46,6 +46,13 @@ impl SyllableLayer for SyllableNode {
     }
 }
 
+/// Syllables belonging to one **linguistic** word (whitespace-separated token).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LinguisticWordNode {
+    pub word_index_in_line: usize,
+    pub syllables: Vec<SyllableNode>,
+}
+
 /// Word (foot / seer): syllables grouped by foot rule.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WordNode {
@@ -80,6 +87,8 @@ impl WordLayer for WordNode {
 pub struct PoemLineNode {
     pub line_index: usize,
     pub line_class: String,
+    /// Linguistic words on this line (Ner/Nirai per word; does not merge across spaces).
+    pub linguistic_words: Vec<LinguisticWordNode>,
     pub words: Vec<WordNode>,
 }
 
@@ -155,6 +164,48 @@ pub trait PoemLayer {
     fn normalized_source(&self) -> &str;
 }
 
+fn linguistic_words_per_line(syllables: &[Syllable]) -> Vec<Vec<LinguisticWordNode>> {
+    if syllables.is_empty() {
+        return vec![];
+    }
+    let max_li = syllables.iter().map(|s| s.line_index).max().unwrap_or(0);
+    let mut per_line: Vec<std::collections::BTreeMap<usize, Vec<(usize, Syllable)>>> =
+        vec![std::collections::BTreeMap::new(); max_li.saturating_add(1)];
+    for (gi, s) in syllables.iter().enumerate() {
+        let li = s.line_index;
+        if li >= per_line.len() {
+            per_line.resize(li + 1, std::collections::BTreeMap::new());
+        }
+        per_line[li]
+            .entry(s.word_index_in_line)
+            .or_default()
+            .push((gi, s.clone()));
+    }
+    let mut out: Vec<Vec<LinguisticWordNode>> = Vec::with_capacity(per_line.len());
+    for line_map in per_line {
+        let mut words: Vec<LinguisticWordNode> = Vec::new();
+        for (wi, pairs) in line_map {
+            let syllables: Vec<SyllableNode> = pairs
+                .into_iter()
+                .map(|(global_index, syl)| SyllableNode {
+                    inner: syl.clone(),
+                    letters: letters_from_syllable_text(&syl.text)
+                        .into_iter()
+                        .map(|inner| LetterNode { inner })
+                        .collect(),
+                    global_index,
+                })
+                .collect();
+            words.push(LinguisticWordNode {
+                word_index_in_line: wi,
+                syllables,
+            });
+        }
+        out.push(words);
+    }
+    out
+}
+
 /// Build the hierarchical tree from poem-wide syllables, foot placements, positions, and linkage.
 pub fn build_poem_tree(
     normalized_text: String,
@@ -164,6 +215,7 @@ pub fn build_poem_tree(
     linkage: Vec<Linkage>,
 ) -> PoemNode {
     let syllables_flat: Vec<Syllable> = syllables.to_vec();
+    let linguistic_by_line = linguistic_words_per_line(&syllables_flat);
 
     let mut lines_map: std::collections::BTreeMap<usize, Vec<WordNode>> =
         std::collections::BTreeMap::new();
@@ -197,13 +249,23 @@ pub fn build_poem_tree(
         lines_map.entry(line_index).or_default().push(word);
     }
 
-    let max_line = lines_map.keys().next_back().copied().unwrap_or(0);
+    let max_line = lines_map
+        .keys()
+        .next_back()
+        .copied()
+        .unwrap_or(0)
+        .max(linguistic_by_line.len().saturating_sub(1));
     let mut lines: Vec<PoemLineNode> = Vec::with_capacity(max_line + 1);
     for li in 0..=max_line {
         let words = lines_map.remove(&li).unwrap_or_default();
+        let linguistic_words = linguistic_by_line
+            .get(li)
+            .cloned()
+            .unwrap_or_default();
         lines.push(PoemLineNode {
             line_index: li,
             line_class: "—".to_string(),
+            linguistic_words,
             words,
         });
     }

@@ -12,6 +12,7 @@ mod syllable;
 mod syllable_builder;
 mod tamil_chars;
 mod types;
+mod word_scope;
 
 pub use prosodic_sequence::ProsodicSequence;
 
@@ -23,8 +24,8 @@ pub use letter::Letter;
 pub use linkage::{FootPosition, Linkage, LinkageType, Talai, TalaiType};
 pub use metre::MetreType;
 pub use poem_tree::{
-    LetterLayer, LetterNode, LineLayer, PoemLayer, PoemLineNode, PoemNode, SyllableLayer,
-    SyllableNode, WordLayer, WordNode,
+    LetterLayer, LetterNode, LinguisticWordNode, LineLayer, PoemLayer, PoemLineNode, PoemNode,
+    SyllableLayer, SyllableNode, WordLayer, WordNode,
 };
 pub use prosodic_unit::{Consonant, ProsodicUnit, Vowel};
 pub use syllable::{Syllable, SyllableType};
@@ -44,8 +45,7 @@ pub fn parse_poem(text: &str, options: ParseOptions) -> Result<ParseResult, Pars
     let graphemes: Vec<&str> = normalized.graphemes(true).collect();
     let normalized_clone = normalized.clone();
 
-    let units = letter::to_prosodic_units(&graphemes);
-    let syllables = SyllableBuilder::new(options.alt_scansion).build(&units);
+    let syllables = word_scope::segment_syllables_from_normalized(&normalized_clone, options.alt_scansion);
     let syllable_lines = line_scope::syllable_line_indices(&normalized_clone, &syllables)
         .unwrap_or_else(|| vec![0; syllables.len()]);
     let foot_placements = foot::group_into_feet_with_ranges(&syllables);
@@ -181,6 +181,16 @@ mod tests {
             .count();
         assert_eq!(tree_syllable_count, result.syllables.len());
         assert_eq!(result.lines.len(), poem.lines.len());
+
+        let lw0 = &poem.lines[0].linguistic_words;
+        assert!(
+            lw0.len() >= 2,
+            "first line should have multiple linguistic words from spaces"
+        );
+        assert!(
+            lw0.iter().all(|w| !w.syllables.is_empty()),
+            "each linguistic word should have syllables"
+        );
     }
 
     #[test]

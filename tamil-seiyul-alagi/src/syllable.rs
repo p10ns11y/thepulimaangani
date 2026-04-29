@@ -15,6 +15,12 @@ pub struct Syllable {
     pub split_hint: Option<String>,
     pub alt_split: bool,
     pub rule_ref: Option<String>,
+    /// Physical line in normalized poem (0-based); linguistic word boundary used during segmentation.
+    #[serde(default)]
+    pub line_index: usize,
+    /// Index of the linguistic word within `line_index` (whitespace-separated).
+    #[serde(default)]
+    pub word_index_in_line: usize,
 }
 
 #[cfg(test)]
@@ -29,6 +35,8 @@ mod tests {
             split_hint: Some("hint".to_string()),
             alt_split: true,
             rule_ref: Some("SYL-TEST-01".to_string()),
+            line_index: 0,
+            word_index_in_line: 0,
         };
 
         assert_eq!(s.text, "கா");

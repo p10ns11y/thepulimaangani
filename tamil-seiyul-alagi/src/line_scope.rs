@@ -89,6 +89,8 @@ mod tests {
                 split_hint: None,
                 alt_split: false,
                 rule_ref: None,
+                line_index: 0,
+                word_index_in_line: 0,
             },
             Syllable {
                 text: "றது".into(),
@@ -96,6 +98,8 @@ mod tests {
                 split_hint: None,
                 alt_split: false,
                 rule_ref: None,
+                line_index: 0,
+                word_index_in_line: 0,
             },
             Syllable {
                 text: "மொழிந்".into(),
@@ -103,6 +107,8 @@ mod tests {
                 split_hint: None,
                 alt_split: false,
                 rule_ref: None,
+                line_index: 0,
+                word_index_in_line: 1,
             },
             Syllable {
                 text: "தது".into(),
@@ -110,6 +116,8 @@ mod tests {
                 split_hint: None,
                 alt_split: false,
                 rule_ref: None,
+                line_index: 0,
+                word_index_in_line: 1,
             },
             Syllable {
                 text: "அறிந்".into(),
@@ -117,6 +125,8 @@ mod tests {
                 split_hint: None,
                 alt_split: false,
                 rule_ref: None,
+                line_index: 1,
+                word_index_in_line: 0,
             },
             Syllable {
                 text: "தவர்".into(),
@@ -124,6 +134,8 @@ mod tests {
                 split_hint: None,
                 alt_split: false,
                 rule_ref: None,
+                line_index: 1,
+                word_index_in_line: 0,
             },
             Syllable {
                 text: "சொல்".into(),
@@ -131,6 +143,8 @@ mod tests {
                 split_hint: None,
                 alt_split: false,
                 rule_ref: None,
+                line_index: 1,
+                word_index_in_line: 1,
             },
             Syllable {
                 text: "லும்".into(),
@@ -138,6 +152,8 @@ mod tests {
                 split_hint: None,
                 alt_split: false,
                 rule_ref: None,
+                line_index: 1,
+                word_index_in_line: 1,
             },
             Syllable {
                 text: "வழி".into(),
@@ -145,6 +161,8 @@ mod tests {
                 split_hint: None,
                 alt_split: false,
                 rule_ref: None,
+                line_index: 1,
+                word_index_in_line: 2,
             },
         ];
         let lines = syllable_line_indices(normalized, &syllables).expect("mapping");
