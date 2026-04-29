@@ -4,7 +4,7 @@ import { mapFeetToPhysicalLines, physicalPoemLines } from '#/lib/mapFeetToPhysic
 import type { ParsedFoot } from '#/types/parsedPoem'
 
 const mkFoot = (id: string): ParsedFoot => ({
-  foot_type: 'tEmA',
+  foot_type: 'Ner-Ner',
   syllables: [{ text: id, syllable_type: 'Ner' }],
 })
 

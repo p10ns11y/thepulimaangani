@@ -1,5 +1,6 @@
-import { mapFeetToPhysicalLines, physicalPoemLines } from '#/lib/mapFeetToPhysicalLines'
-import type { ParsedFoot, ParsedPoem } from '#/types/parsedPoem'
+import { feetPerPhysicalLine } from '#/lib/parserFeetLayout'
+import { physicalPoemLines } from '#/lib/mapFeetToPhysicalLines'
+import type { ParsedPoem } from '#/types/parsedPoem'
 
 /** Raw newline split (preserves structure even when a line is empty). */
 export function normLines(s: string): string[] {
@@ -66,15 +67,9 @@ export function getChangedLineIndices(base: string, draft: string): number[] {
   return out
 }
 
-function allFeet(parsed: ParsedPoem): ParsedFoot[] {
-  return parsed.lines.flatMap((l) => l.feet)
-}
-
-/** Syllable count per physical line (matches live preview / WASM layout heuristic). */
 export function syllableCountsPerPhysicalLine(poemText: string, parsed: ParsedPoem): number[] {
   const lines = physicalPoemLines(poemText)
   if (lines.length === 0) return []
-  const feet = allFeet(parsed)
-  const perLine = mapFeetToPhysicalLines(poemText, feet)
+  const perLine = feetPerPhysicalLine(parsed, poemText)
   return perLine.map((lineFeet) => lineFeet.reduce((n, f) => n + f.syllables.length, 0))
 }

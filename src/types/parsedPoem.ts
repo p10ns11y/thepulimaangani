@@ -1,6 +1,10 @@
 export interface ParsedSyllable {
   text: string
   syllable_type: string
+  /** From WASM when present: physical line index for this syllable. */
+  line_index?: number
+  /** From WASM when present: linguistic word index within that line. */
+  word_index_in_line?: number
 }
 
 export interface ParsedFoot {
