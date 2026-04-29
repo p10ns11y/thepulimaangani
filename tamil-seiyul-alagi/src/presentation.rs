@@ -76,7 +76,45 @@ fn to_display_foot(f: &Foot) -> DisplayFoot {
             .iter()
             .map(|s| s.text.as_str())
             .collect::<String>(),
-        foot_type: f.foot_type.clone(), // Already contains traditional name
+        foot_type: tamil_foot_label(&f.foot_type),
+    }
+}
+
+/// Tamil mnemonic for machine-first foot codes (`tEmA`, `tEmA_GkA_y`, …).
+pub fn tamil_foot_label(machine_code: &str) -> String {
+    match machine_code {
+        "mA" => "மா".to_string(),
+        "viLa_m" => "விளம்".to_string(),
+        "tEmA" => "தேமா".to_string(),
+        "puLimA" => "புளிமா".to_string(),
+        "kUviLa_m" => "கூவிளம்".to_string(),
+        "karuviLa_m" => "கருவிளம்".to_string(),
+        "tEmA_GkA_y" => "தேமாங்காய்".to_string(),
+        "puLimA_GkA_y" => "புளிமாங்காய்".to_string(),
+        "kUviLa_GkA_y" => "கூவிளங்காய்".to_string(),
+        "karuviLa_GkA_y" => "கருவிளங்காய்".to_string(),
+        "tEmA_GkaVi" => "தேமாகவி".to_string(),
+        "puLimA_GkaVi" => "புளிமாகவி".to_string(),
+        "kUviLa_GkaVi" => "கூவிளகவி".to_string(),
+        "karuviLa_GkaVi" => "கருவிளகவி".to_string(),
+        "tEmA_nta_NpU" => "தேமாந்தப்பூ".to_string(),
+        "puLimA_nta_NpU" => "புளிமாந்தப்பூ".to_string(),
+        "kUviLa_nta_NpU" => "கூவிளந்தப்பூ".to_string(),
+        "karuviLa_nta_NpU" => "கருவிளந்தப்பூ".to_string(),
+        "tEmAnaRu_mpU" => "தேமாரும்பூ".to_string(),
+        "puLimAnaRu_mpU" => "புளிமாரும்பூ".to_string(),
+        "kUviLanaRu_mpU" => "கூவிளரும்பூ".to_string(),
+        "karuviLanaRu_mpU" => "கருவிளரும்பூ".to_string(),
+        "tEmAnaRuniZa_l" => "தேமாருநிழல்".to_string(),
+        "puLimAnaRuniZa_l" => "புளிமாருநிழல்".to_string(),
+        "kUviLanaRuniZa_l" => "கூவிளருநிழல்".to_string(),
+        "karuviLanaRuniZa_l" => "கருவிளருநிழல்".to_string(),
+        "tEmA_nta_NNiZa_l" => "தேமாந்தநிழல்".to_string(),
+        "puLimA_nta_NNiZa_l" => "புளிமாந்தநிழல்".to_string(),
+        "kUviLa_nta_NNiZa_l" => "கூவிளந்தநிழல்".to_string(),
+        "karuviLa_nta_NNiZa_l" => "கருவிளந்தநிழல்".to_string(),
+        "unknown" => "அறியப்படாத சீர்".to_string(),
+        other => other.to_string(),
     }
 }
 

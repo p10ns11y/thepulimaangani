@@ -1,5 +1,6 @@
 mod error;
 mod foot;
+mod foot_pattern;
 mod letter;
 mod line_scope;
 mod linkage;
@@ -20,6 +21,7 @@ use wasm_bindgen::prelude::*;
 
 pub use error::ParseError;
 pub use foot::{Foot, FootPlacement};
+pub use foot_pattern::foot_pattern_code;
 pub use letter::Letter;
 pub use linkage::{FootPosition, Linkage, LinkageType, Talai, TalaiType};
 pub use metre::MetreType;

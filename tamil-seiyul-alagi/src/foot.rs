@@ -2,6 +2,7 @@ use std::ops::Range;
 
 use serde::{Deserialize, Serialize};
 
+use crate::foot_pattern::foot_pattern_code;
 use crate::syllable::Syllable;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -24,15 +25,6 @@ pub fn group_into_feet(syllables: &[Syllable]) -> Vec<Foot> {
         .collect()
 }
 
-fn foot_type_placeholder(foot_index: usize) -> String {
-    match foot_index % 4 {
-        0 => "tEmA".to_string(),
-        1 => "puLimA".to_string(),
-        2 => "kUviLa_m".to_string(),
-        _ => "karuviLa_m".to_string(),
-    }
-}
-
 /// One **foot** per **linguistic word** (same `line_index` + `word_index_in_line` on syllables).
 /// Syllables must appear in poem order from [`crate::word_scope::segment_syllables_from_normalized`].
 pub fn group_into_feet_with_ranges(syllables: &[Syllable]) -> Vec<FootPlacement> {
@@ -50,11 +42,12 @@ pub fn group_into_feet_with_ranges(syllables: &[Syllable]) -> Vec<FootPlacement>
 
         if flush {
             let chunk = &syllables[run_start..i];
-            let foot_index = placements.len();
             placements.push(FootPlacement {
                 foot: Foot {
                     syllables: chunk.to_vec(),
-                    foot_type: foot_type_placeholder(foot_index),
+                    foot_type: foot_pattern_code(chunk)
+                        .unwrap_or("unknown")
+                        .to_string(),
                 },
                 syllable_range: run_start..i,
             });
@@ -92,6 +85,17 @@ mod tests {
             line_index,
             word_index_in_line,
         }
+    }
+
+    #[test]
+    fn ner_ner_word_is_tema() {
+        let syllables = vec![
+            s("a", SyllableType::Ner, 0, 0),
+            s("b", SyllableType::Ner, 0, 0),
+        ];
+        let p = group_into_feet_with_ranges(&syllables);
+        assert_eq!(p.len(), 1);
+        assert_eq!(p[0].foot.foot_type, "tEmA");
     }
 
     #[test]
