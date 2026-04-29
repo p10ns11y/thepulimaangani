@@ -1,6 +1,6 @@
 import type { LivePreviewState } from '#/types/livePreview'
-import { alignSyllablesToWords } from '#/lib/alignSyllablesToWords'
-import { mapFeetToPhysicalLines, physicalPoemLines } from '#/lib/mapFeetToPhysicalLines'
+import { feetPerPhysicalLine, groupsFromFeet } from '#/lib/parserFeetLayout'
+import { physicalPoemLines } from '#/lib/mapFeetToPhysicalLines'
 import { cn } from '#/lib/utils'
 
 import { PretextLineViewport } from './PretextLineViewport'
@@ -29,9 +29,8 @@ export function SyllableLivePreview({
   const parsed = live.parsed
   const isRefreshing = live.status === 'syncing' || live.status === 'pending'
 
-  const feet = parsed ? parsed.lines.flatMap((ln) => ln.feet) : []
   const physicalLines = physicalPoemLines(poemText)
-  const feetByLine = parsed ? mapFeetToPhysicalLines(poemText, feet) : []
+  const feetByLine = parsed ? feetPerPhysicalLine(parsed, poemText) : []
 
   return (
     <div className={cn(compact ? 'space-y-2' : 'space-y-3')}>
@@ -68,9 +67,7 @@ export function SyllableLivePreview({
       </div>
       {!compact ? (
         <p className="text-muted-foreground m-0 max-w-xl text-xs leading-relaxed">
-          Each source line is one row (no column wrap); the row below colours each syllable (நேர் / நிரை)
-          without extra labels. Across several lines, grouping is still approximate until the engine emits
-          line-scoped feet.
+          Each source line is one row; syllables are grouped by **linguistic word** (same grouping as the WASM parser).
         </p>
       ) : null}
 
@@ -89,8 +86,7 @@ export function SyllableLivePreview({
         >
           {physicalLines.map((lineText, lineIdx) => {
             const lineFeet = feetByLine[lineIdx] ?? []
-            const syllables = lineFeet.flatMap((f) => f.syllables)
-            const groups = alignSyllablesToWords(lineText, syllables)
+            const groups = groupsFromFeet(lineFeet)
             const pretextSource = lineText.length === 0 ? '\u00a0' : lineText
 
             let stagger = 0
