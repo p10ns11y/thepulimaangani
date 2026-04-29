@@ -4,6 +4,7 @@ mod letter;
 mod line_scope;
 mod linkage;
 mod metre;
+mod poem_tree;
 mod presentation;
 mod prosodic_sequence;
 mod prosodic_unit;
@@ -21,10 +22,14 @@ pub use foot::{Foot, FootPlacement};
 pub use letter::Letter;
 pub use linkage::{FootPosition, Linkage, LinkageType, Talai, TalaiType};
 pub use metre::MetreType;
+pub use poem_tree::{
+    LetterLayer, LetterNode, LineLayer, PoemLayer, PoemLineNode, PoemNode, SyllableLayer,
+    SyllableNode, WordLayer, WordNode,
+};
 pub use prosodic_unit::{Consonant, ProsodicUnit, Vowel};
 pub use syllable::{Syllable, SyllableType};
 pub use syllable_builder::SyllableBuilder;
-pub use types::{MetreHypothesis, ParseOptions, ParseResult, RuleId};
+pub use types::{flat_lines_from_poem, MetreHypothesis, ParseOptions, ParseResult, RuleId};
 
 use unicode_segmentation::UnicodeSegmentation;
 
@@ -47,6 +52,14 @@ pub fn parse_poem(text: &str, options: ParseOptions) -> Result<ParseResult, Pars
     let feet: Vec<Foot> = foot_placements.iter().map(|p| p.foot.clone()).collect();
     let foot_positions = linkage::foot_positions_for_poem(&foot_placements, &syllable_lines);
     let linkage = linkage::analyze_linkage(&foot_positions);
+    let poem = poem_tree::build_poem_tree(
+        normalized_clone.clone(),
+        &syllables,
+        &foot_positions,
+        &foot_placements,
+        linkage.clone(),
+    );
+    let lines = types::flat_lines_from_poem(&poem);
     let metre_hypotheses = metre::detect_metre_hypotheses(&feet, &linkage, options.no_detect);
     let metre = metre_hypotheses.first().map(|h| h.metre_type.clone());
 
@@ -55,11 +68,12 @@ pub fn parse_poem(text: &str, options: ParseOptions) -> Result<ParseResult, Pars
         normalized_text: normalized_clone,
         letter_count: graphemes.len(),
         vikalpa_count: if options.alt_scansion { 1 } else { 0 },
+        poem,
         syllables,
         feet,
         talai: linkage.clone(),
         linkage,
-        lines: vec![],
+        lines,
         metre_type: metre,
         confidence: metre_hypotheses.first().map_or(0, |h| h.aggregate_score),
         provenance: metre_hypotheses
@@ -155,6 +169,18 @@ mod tests {
         assert!(json.get("syllables").and_then(|v| v.as_array()).is_some());
         assert!(json.get("feet").and_then(|v| v.as_array()).is_some());
         assert!(json.get("linkage").and_then(|v| v.as_array()).is_some());
+        assert!(json.get("poem").is_some());
+
+        let poem = &result.poem;
+        assert!(!poem.lines.is_empty(), "hierarchical poem should have at least one line");
+        let tree_syllable_count: usize = poem
+            .lines
+            .iter()
+            .flat_map(|ln| ln.words.iter())
+            .flat_map(|w| w.syllables.iter())
+            .count();
+        assert_eq!(tree_syllable_count, result.syllables.len());
+        assert_eq!(result.lines.len(), poem.lines.len());
     }
 
     #[test]
