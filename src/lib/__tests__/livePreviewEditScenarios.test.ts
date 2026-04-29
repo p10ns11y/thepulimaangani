@@ -38,6 +38,26 @@ function totalSyllablesFromBuckets(buckets: ReturnType<typeof feetPerPhysicalLin
   )
 }
 
+function flattenFootSyllableTexts(lineFeet: ReturnType<typeof feetPerPhysicalLine>[number]): string[] {
+  return lineFeet.flatMap((ft) => ft.syllables.map((s) => s.text))
+}
+
+/**
+ * When legacy `lines` collapses the whole poem into `lines[0]`, the first row has chips and later rows are empty
+ * (mobile bug: "first line shows entire poem"). Multi-line + non-empty first row + empty rest + many syllables only on row0.
+ */
+function isFirstRowOnlyEntirePoemLayout(
+  buckets: ReturnType<typeof feetPerPhysicalLine>,
+  totalSyllablesInParse: number,
+): boolean {
+  if (buckets.length < 2) return false
+  const s0 = flattenFootSyllableTexts(buckets[0] ?? []).length
+  const sRest = buckets
+    .slice(1)
+    .reduce((n, row) => n + flattenFootSyllableTexts(row).length, 0)
+  return s0 > 0 && sRest === 0 && s0 === totalSyllablesInParse && totalSyllablesInParse > 4
+}
+
 describe('live preview layout (no WASM)', () => {
   it('physicalPoemLines count matches structured.lines → feet buckets get syllables', () => {
     const poemText = 'ஒன்று இரண்டு\nமூன்று நான்கு\n'
@@ -140,6 +160,14 @@ describe.skipIf(!isWasmPkgBuilt())('live preview + WASM integration', () => {
     expect(totalFeet(buckets)).toBeGreaterThan(0)
     expect(totalSyllablesFromBuckets(buckets)).toBeGreaterThan(0)
 
+    const s0 = flattenFootSyllableTexts(buckets[0] ?? []).length
+    expect(
+      s0 < p.syllables.length,
+      'first physical row must not show every syllable of the poem (regression: collapsed legacy lines)',
+    ).toBe(true)
+    expect(isFirstRowOnlyEntirePoemLayout(buckets, p.syllables.length)).toBe(false)
+    expect(totalSyllablesFromBuckets(buckets)).toBe(p.syllables.length)
+
     for (let i = 0; i < buckets.length; i++) {
       const groups = groupsFromFeet(buckets[i] ?? [])
       expect(
@@ -184,6 +212,39 @@ describe.skipIf(!isWasmPkgBuilt())('live preview + WASM integration', () => {
           `step ${step}: mismatched counts should avoid placing feet on wrong rows`,
         ).toBe(true)
       }
+    }
+  })
+
+  it('multi-line sample: total syllables partition across rows (not collapsed into row 0)', async () => {
+    const text = SAMPLE_POEM_THREE_LINES
+    const parsed = await parsePoem(text)
+    expect(parsed).not.toBeNull()
+    const buckets = feetPerPhysicalLine(parsed!, text)
+    const tot = totalSyllablesFromBuckets(buckets)
+    expect(tot).toBe(parsed!.syllables.length)
+    const maxSingleRow = Math.max(
+      ...buckets.map((row) => flattenFootSyllableTexts(row).length),
+      0,
+    )
+    expect(maxSingleRow).toBeLessThan(parsed!.syllables.length)
+  })
+
+  it('edit simulations: deleting lines / fragments never stacks entire poem on physical row 0 when counts align', async () => {
+    const variants = [
+      SAMPLE_POEM_THREE_LINES.split('\n').slice(0, 2).join('\n') + '\n',
+      SAMPLE_POEM_THREE_LINES.replace(/\n.+$/s, ''),
+      SAMPLE_POEM_THREE_LINES.trim(),
+      SAMPLE_POEM_THREE_LINES.replace(/கோதை\s*/, ''),
+    ]
+    for (let i = 0; i < variants.length; i++) {
+      const text = variants[i]!
+      const parsed = await parsePoem(text)
+      if (!parsed) continue
+      const phys = physicalPoemLines(text)
+      if (phys.length < 2 || phys.length !== parsed.lines.length) continue
+      const buckets = feetPerPhysicalLine(parsed, text)
+      expect(isFirstRowOnlyEntirePoemLayout(buckets, parsed.syllables.length)).toBe(false)
+      expect(totalSyllablesFromBuckets(buckets)).toBe(parsed.syllables.length)
     }
   })
 

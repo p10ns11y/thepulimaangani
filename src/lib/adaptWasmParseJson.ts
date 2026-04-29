@@ -92,18 +92,7 @@ function linesFromPoemNode(poem: unknown): ParsedLine[] | null {
 
     const lineFeet: ParsedFoot[] = []
 
-    if (Array.isArray(words) && words.length > 0) {
-      for (const w of words) {
-        if (!w || typeof w !== 'object') continue
-        const W = w as Record<string, unknown>
-        const foot_type = typeof W.foot_type === 'string' ? W.foot_type : ''
-        const syllNodes = W.syllables
-        if (!Array.isArray(syllNodes)) continue
-        const syllables = syllablesFromSyllableNodes(syllNodes)
-        if (syllables.length === 0 || !foot_type) continue
-        lineFeet.push({ foot_type, syllables })
-      }
-    } else if (Array.isArray(linguisticWords) && linguisticWords.length > 0) {
+    if (Array.isArray(linguisticWords) && linguisticWords.length > 0) {
       for (const lw of linguisticWords) {
         if (!lw || typeof lw !== 'object') continue
         const LW = lw as Record<string, unknown>
@@ -116,6 +105,17 @@ function linesFromPoemNode(poem: unknown): ParsedLine[] | null {
           syllables,
         })
       }
+    } else if (Array.isArray(words) && words.length > 0) {
+      for (const w of words) {
+        if (!w || typeof w !== 'object') continue
+        const W = w as Record<string, unknown>
+        const foot_type = typeof W.foot_type === 'string' ? W.foot_type : ''
+        const syllNodes = W.syllables
+        if (!Array.isArray(syllNodes)) continue
+        const syllables = syllablesFromSyllableNodes(syllNodes)
+        if (syllables.length === 0 || !foot_type) continue
+        lineFeet.push({ foot_type, syllables })
+      }
     }
 
     if (lineFeet.length === 0) continue
@@ -126,7 +126,7 @@ function linesFromPoemNode(poem: unknown): ParsedLine[] | null {
 
 /**
  * Maps Rust `ParseResult` JSON into {@link ParsedPoem}.
- * Prefers **`poem.lines[].words`** when present; falls back to **`poem.lines[].linguistic_words`** (same syllables, machine foot pattern); otherwise uses top-level `lines` or a single synthetic line from `feet`.
+ * Prefers **`poem.lines[].linguistic_words`** when present (aligned with physical lines); otherwise **`words`**; then top-level `lines` or feet fallback.
  */
 export function adaptWasmJsonToParsedPoem(data: unknown): ParsedPoem | null {
   if (!data || typeof data !== 'object') return null

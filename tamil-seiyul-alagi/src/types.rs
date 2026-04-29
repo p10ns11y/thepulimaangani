@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 
-use crate::poem_tree::PoemNode;
+use crate::foot_pattern::foot_pattern;
+use crate::poem_tree::{LinguisticWordNode, PoemNode};
 use crate::{Foot, Linkage, MetreType, Syllable, Talai};
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -57,20 +58,51 @@ pub struct MetreHypothesis {
     pub rule_ids: Vec<RuleId>,
 }
 
+/// Feet for legacy `ParseResult.lines` when `PoemLineNode.words` is empty but
+/// `linguistic_words` holds the same syllables (some lines only populate the linguistic layer).
+fn feet_from_linguistic_words(lws: &[LinguisticWordNode]) -> Vec<Foot> {
+    let mut out = Vec::new();
+    for lw in lws {
+        let syllables: Vec<Syllable> = lw.syllables.iter().map(|s| s.inner.clone()).collect();
+        if syllables.is_empty() {
+            continue;
+        }
+        let foot_type = foot_pattern(&syllables);
+        out.push(Foot {
+            syllables,
+            foot_type,
+        });
+    }
+    out
+}
+
 /// Legacy `Line` rows (`feet` per physical line) derived from the hierarchical `PoemNode`.
+///
+/// Prefer **`linguistic_words`** when present: one foot per whitespace-separated word on that
+/// physical line (matches editor rows). `PoemLineNode.words` can still mis-place feet on line 0
+/// when linkage placement disagrees with line breaks; using words alone collapsed the whole poem
+/// into the first legacy row.
 pub fn flat_lines_from_poem(poem: &PoemNode) -> Vec<Line> {
     poem.lines
         .iter()
-        .map(|ln| Line {
-            line_class: ln.line_class.clone(),
-            feet: ln
-                .words
-                .iter()
-                .map(|w| Foot {
-                    syllables: w.syllables.iter().map(|s| s.inner.clone()).collect(),
-                    foot_type: w.foot_type.clone(),
-                })
-                .collect(),
+        .map(|ln| {
+            let feet = if !ln.linguistic_words.is_empty() {
+                feet_from_linguistic_words(&ln.linguistic_words)
+            } else if !ln.words.is_empty() {
+                ln.words
+                    .iter()
+                    .map(|w| Foot {
+                        syllables: w.syllables.iter().map(|s| s.inner.clone()).collect(),
+                        foot_type: w.foot_type.clone(),
+                    })
+                    .collect()
+            } else {
+                Vec::new()
+            };
+            Line {
+                line_class: ln.line_class.clone(),
+                feet,
+            }
         })
         .collect()
 }

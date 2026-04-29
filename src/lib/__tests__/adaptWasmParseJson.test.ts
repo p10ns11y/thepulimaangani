@@ -33,6 +33,49 @@ describe('adaptWasmJsonToParsedPoem', () => {
     expect(out!.lines[0]!.feet[0]!.syllables[0]!.syllable_type).toBe('Ner')
   })
 
+  it('prefers linguistic_words over words when both present (misplaced tree feet)', () => {
+    const wasm = {
+      original_text: 'a\nb',
+      syllables: [],
+      feet: [],
+      lines: [],
+      poem: {
+        lines: [
+          {
+            line_class: '—',
+            line_index: 0,
+            words: [
+              {
+                foot_type: 'Ner-Ner',
+                foot_index_global: 0,
+                word_index_in_line: 0,
+                syllables: [
+                  { inner: { text: 'whole', syllable_type: 'Ner', alt_split: false } },
+                  { inner: { text: 'poem', syllable_type: 'Ner', alt_split: false } },
+                ],
+              },
+            ],
+            linguistic_words: [
+              {
+                word_index_in_line: 0,
+                syllables: [{ inner: { text: 'only', syllable_type: 'Ner', alt_split: false } }],
+              },
+            ],
+          },
+        ],
+      },
+      metre_type: null,
+      letter_count: 0,
+      vikalpa_count: 0,
+      errors: [],
+    }
+
+    const out = adaptWasmJsonToParsedPoem(wasm)
+    expect(out).not.toBeNull()
+    expect(out!.lines[0]!.feet).toHaveLength(1)
+    expect(out!.lines[0]!.feet[0]!.syllables[0]!.text).toBe('only')
+  })
+
   it('extracts per-line feet from nested poem.words when top-level lines is empty', () => {
     const wasm = {
       original_text: 'a\nb',
