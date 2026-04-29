@@ -8,6 +8,13 @@ const mkFoot = (id: string): ParsedFoot => ({
   syllables: [{ text: id, syllable_type: 'Ner' }],
 })
 
+describe('physicalPoemLines', () => {
+  it('matches Rust str::lines length when poem ends with newline (no phantom 4th line)', () => {
+    expect(physicalPoemLines('a\nb\nc\n')).toEqual(['a', 'b', 'c'])
+    expect(physicalPoemLines('a\nb\nc')).toEqual(['a', 'b', 'c'])
+  })
+})
+
 describe('mapFeetToPhysicalLines', () => {
   it('returns one bucket for a single physical line', () => {
     const feet = [mkFoot('a'), mkFoot('b')]
