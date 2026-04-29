@@ -12,7 +12,7 @@ describe('adaptWasmJsonToParsedPoem', () => {
       syllables: [{ text: 'அஃ', syllable_type: 'Ner' }],
       feet: [
         {
-          foot_type: 'tEmA',
+          foot_type: 'Ner-Ner',
           syllables: [
             { text: 'அஃ', syllable_type: 'Ner' },
             { text: 'கு', syllable_type: 'Nirai' },

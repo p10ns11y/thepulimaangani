@@ -6,6 +6,9 @@
 //! - Generating educational explanations
 //!
 //! IMPORTANT: This layer should NEVER be used inside the core calculation logic.
+//!
+//! Logic layer uses readable foot **patterns** like `Ner-Ner`, `Nirai-Nirai-Nirai`.
+//! Here we map those to Tamil mnemonics (தேமா, …) plus simple Latin (thema, …).
 
 use crate::{Foot, Linkage, MetreType, ParseResult, Syllable};
 
@@ -25,7 +28,8 @@ pub struct DisplaySyllable {
 
 pub struct DisplayFoot {
     pub text: String,
-    pub foot_type: String, // "தேமா", "புளிமா", etc.
+    /// Tamil mnemonic · simple Latin when known; otherwise raw `Ner-Nirai` pattern from logic.
+    pub foot_type: String,
 }
 
 pub struct DisplayTalai {
@@ -76,44 +80,48 @@ fn to_display_foot(f: &Foot) -> DisplayFoot {
             .iter()
             .map(|s| s.text.as_str())
             .collect::<String>(),
-        foot_type: tamil_foot_label(&f.foot_type),
+        foot_type: foot_pattern_display(&f.foot_type),
     }
 }
 
-/// Tamil mnemonic for machine-first foot codes (`tEmA`, `tEmA_GkA_y`, …).
-pub fn tamil_foot_label(machine_code: &str) -> String {
-    match machine_code {
-        "mA" => "மா".to_string(),
-        "viLa_m" => "விளம்".to_string(),
-        "tEmA" => "தேமா".to_string(),
-        "puLimA" => "புளிமா".to_string(),
-        "kUviLa_m" => "கூவிளம்".to_string(),
-        "karuviLa_m" => "கருவிளம்".to_string(),
-        "tEmA_GkA_y" => "தேமாங்காய்".to_string(),
-        "puLimA_GkA_y" => "புளிமாங்காய்".to_string(),
-        "kUviLa_GkA_y" => "கூவிளங்காய்".to_string(),
-        "karuviLa_GkA_y" => "கருவிளங்காய்".to_string(),
-        "tEmA_GkaVi" => "தேமாகவி".to_string(),
-        "puLimA_GkaVi" => "புளிமாகவி".to_string(),
-        "kUviLa_GkaVi" => "கூவிளகவி".to_string(),
-        "karuviLa_GkaVi" => "கருவிளகவி".to_string(),
-        "tEmA_nta_NpU" => "தேமாந்தப்பூ".to_string(),
-        "puLimA_nta_NpU" => "புளிமாந்தப்பூ".to_string(),
-        "kUviLa_nta_NpU" => "கூவிளந்தப்பூ".to_string(),
-        "karuviLa_nta_NpU" => "கருவிளந்தப்பூ".to_string(),
-        "tEmAnaRu_mpU" => "தேமாரும்பூ".to_string(),
-        "puLimAnaRu_mpU" => "புளிமாரும்பூ".to_string(),
-        "kUviLanaRu_mpU" => "கூவிளரும்பூ".to_string(),
-        "karuviLanaRu_mpU" => "கருவிளரும்பூ".to_string(),
-        "tEmAnaRuniZa_l" => "தேமாருநிழல்".to_string(),
-        "puLimAnaRuniZa_l" => "புளிமாருநிழல்".to_string(),
-        "kUviLanaRuniZa_l" => "கூவிளருநிழல்".to_string(),
-        "karuviLanaRuniZa_l" => "கருவிளருநிழல்".to_string(),
-        "tEmA_nta_NNiZa_l" => "தேமாந்தநிழல்".to_string(),
-        "puLimA_nta_NNiZa_l" => "புளிமாந்தநிழல்".to_string(),
-        "kUviLa_nta_NNiZa_l" => "கூவிளந்தநிழல்".to_string(),
-        "karuviLa_nta_NNiZa_l" => "கருவிளந்தநிழல்".to_string(),
-        "unknown" => "அறியப்படாத சீர்".to_string(),
+/// Tamil + simple Latin for classical feet; unknown patterns pass through as-is.
+pub fn foot_pattern_display(pattern: &str) -> String {
+    match pattern {
+        // 1 acai
+        "Ner" => "மா (ma)".to_string(),
+        "Nirai" => "விளம் (vilam)".to_string(),
+        // 2 acai
+        "Ner-Ner" => "தேமா (thema)".to_string(),
+        "Ner-Nirai" => "கூவிளம் (ku vilam)".to_string(),
+        "Nirai-Ner" => "புளிமா (pulima)".to_string(),
+        "Nirai-Nirai" => "கருவிளம் (karuvilam)".to_string(),
+        // 3 acai — kayak / kavi (order MSB = first syllable)
+        "Ner-Ner-Ner" => "தேமாங்காய் (thema kangay)".to_string(),
+        "Ner-Ner-Nirai" => "தேமாகவி (thema kavi)".to_string(),
+        "Ner-Nirai-Ner" => "கூவிளங்காய் (ku vilam kangay)".to_string(),
+        "Ner-Nirai-Nirai" => "கூவிளகவி (ku vilam kavi)".to_string(),
+        "Nirai-Ner-Ner" => "புளிமாங்காய் (pulima kangay)".to_string(),
+        "Nirai-Ner-Nirai" => "புளிமாகவி (pulima kavi)".to_string(),
+        "Nirai-Nirai-Ner" => "கருவிளங்காய் (karuvilam kangay)".to_string(),
+        "Nirai-Nirai-Nirai" => "கருவிளகவி (karuvilam kavi)".to_string(),
+        // 4 acai — classical catalogue (same bit order as logic / prototype)
+        "Ner-Ner-Ner-Ner" => "தேமாந்தப்பூ (thema thanthapuu)".to_string(),
+        "Ner-Ner-Ner-Nirai" => "தேமாந்தநிழல் (thema thanth nizhal)".to_string(),
+        "Ner-Ner-Nirai-Ner" => "தேமாரும்பூ (thema arumpuu)".to_string(),
+        "Ner-Ner-Nirai-Nirai" => "தேமாருநிழல் (thema aru nizhal)".to_string(),
+        "Ner-Nirai-Ner-Ner" => "கூவிளந்தப்பூ (ku vilam thanthapuu)".to_string(),
+        "Ner-Nirai-Ner-Nirai" => "கூவிளந்தநிழல் (ku vilam thanth nizhal)".to_string(),
+        "Ner-Nirai-Nirai-Ner" => "கூவிளரும்பூ (ku vilam arumpuu)".to_string(),
+        "Ner-Nirai-Nirai-Nirai" => "கூவிளருநிழல் (ku vilam aru nizhal)".to_string(),
+        "Nirai-Ner-Ner-Ner" => "புளிமாந்தப்பூ (pulima thanthapuu)".to_string(),
+        "Nirai-Ner-Ner-Nirai" => "புளிமாந்தநிழல் (pulima thanth nizhal)".to_string(),
+        "Nirai-Ner-Nirai-Ner" => "புளிமாரும்பூ (pulima arumpuu)".to_string(),
+        "Nirai-Ner-Nirai-Nirai" => "புளிமாருநிழல் (pulima aru nizhal)".to_string(),
+        "Nirai-Nirai-Ner-Ner" => "கருவிளந்தப்பூ (karuvilam thanthapuu)".to_string(),
+        "Nirai-Nirai-Ner-Nirai" => "கருவிளந்தநிழல் (karuvilam thanth nizhal)".to_string(),
+        "Nirai-Nirai-Nirai-Ner" => "கருவிளரும்பூ (karuvilam arumpuu)".to_string(),
+        "Nirai-Nirai-Nirai-Nirai" => "கருவிளருநிழல் (karuvilam aru nizhal)".to_string(),
+        "" => "—".to_string(),
         other => other.to_string(),
     }
 }

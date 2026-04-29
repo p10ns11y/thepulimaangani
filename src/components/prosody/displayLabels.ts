@@ -6,42 +6,42 @@ const lineClassMap: Record<string, string> = {
   neTilaTi: 'நெடிலடி',
 }
 
+/** Logic layer `foot_type` = hyphenated Ner/Nirai pattern; values = Tamil · simple Latin. */
 const footTypeMap: Record<string, string> = {
   // 1 acai
-  mA: 'மா',
-  viLa_m: 'விளம்',
-  // 2 acai (Ner=நேர், Nirai=நிரை permutations)
-  tEmA: 'தேமா',
-  puLimA: 'புளிமா',
-  kUviLa_m: 'கூவிளம்',
-  karuviLa_m: 'கருவிளம்',
-  // 3 acai — காய் / கவி families (machine-first codes → Tamil labels for UI)
-  tEmA_GkA_y: 'தேமாங்காய்',
-  puLimA_GkA_y: 'புளிமாங்காய்',
-  kUviLa_GkA_y: 'கூவிளங்காய்',
-  karuviLa_GkA_y: 'கருவிளங்காய்',
-  tEmA_GkaVi: 'தேமாகவி',
-  puLimA_GkaVi: 'புளிமாகவி',
-  kUviLa_GkaVi: 'கூவிளகவி',
-  karuviLa_GkaVi: 'கருவிளகவி',
-  // 4 acai — தந்தப்பூ / அரும்பூ / நிழல் / தந்தநிழல் families
-  tEmA_nta_NpU: 'தேமாந்தப்பூ',
-  puLimA_nta_NpU: 'புளிமாந்தப்பூ',
-  kUviLa_nta_NpU: 'கூவிளந்தப்பூ',
-  karuviLa_nta_NpU: 'கருவிளந்தப்பூ',
-  tEmAnaRu_mpU: 'தேமாரும்பூ',
-  puLimAnaRu_mpU: 'புளிமாரும்பூ',
-  kUviLanaRu_mpU: 'கூவிளரும்பூ',
-  karuviLanaRu_mpU: 'கருவிளரும்பூ',
-  tEmAnaRuniZa_l: 'தேமாருநிழல்',
-  puLimAnaRuniZa_l: 'புளிமாருநிழல்',
-  kUviLanaRuniZa_l: 'கூவிளருநிழல்',
-  karuviLanaRuniZa_l: 'கருவிளருநிழல்',
-  tEmA_nta_NNiZa_l: 'தேமாந்தநிழல்',
-  puLimA_nta_NNiZa_l: 'புளிமாந்தநிழல்',
-  kUviLa_nta_NNiZa_l: 'கூவிளந்தநிழல்',
-  karuviLa_nta_NNiZa_l: 'கருவிளந்தநிழல்',
-  unknown: 'அறியப்படாத சீர்',
+  Ner: 'மா (ma)',
+  Nirai: 'விளம் (vilam)',
+  // 2 acai
+  'Ner-Ner': 'தேமா (thema)',
+  'Ner-Nirai': 'கூவிளம் (ku vilam)',
+  'Nirai-Ner': 'புளிமா (pulima)',
+  'Nirai-Nirai': 'கருவிளம் (karuvilam)',
+  // 3 acai
+  'Ner-Ner-Ner': 'தேமாங்காய் (thema kangay)',
+  'Ner-Ner-Nirai': 'தேமாகவி (thema kavi)',
+  'Ner-Nirai-Ner': 'கூவிளங்காய் (ku vilam kangay)',
+  'Ner-Nirai-Nirai': 'கூவிளகவி (ku vilam kavi)',
+  'Nirai-Ner-Ner': 'புளிமாங்காய் (pulima kangay)',
+  'Nirai-Ner-Nirai': 'புளிமாகவி (pulima kavi)',
+  'Nirai-Nirai-Ner': 'கருவிளங்காய் (karuvilam kangay)',
+  'Nirai-Nirai-Nirai': 'கருவிளகவி (karuvilam kavi)',
+  // 4 acai
+  'Ner-Ner-Ner-Ner': 'தேமாந்தப்பூ (thema thanthapuu)',
+  'Ner-Ner-Ner-Nirai': 'தேமாந்தநிழல் (thema thanth nizhal)',
+  'Ner-Ner-Nirai-Ner': 'தேமாரும்பூ (thema arumpuu)',
+  'Ner-Ner-Nirai-Nirai': 'தேமாருநிழல் (thema aru nizhal)',
+  'Ner-Nirai-Ner-Ner': 'கூவிளந்தப்பூ (ku vilam thanthapuu)',
+  'Ner-Nirai-Ner-Nirai': 'கூவிளந்தநிழல் (ku vilam thanth nizhal)',
+  'Ner-Nirai-Nirai-Ner': 'கூவிளரும்பூ (ku vilam arumpuu)',
+  'Ner-Nirai-Nirai-Nirai': 'கூவிளருநிழல் (ku vilam aru nizhal)',
+  'Nirai-Ner-Ner-Ner': 'புளிமாந்தப்பூ (pulima thanthapuu)',
+  'Nirai-Ner-Ner-Nirai': 'புளிமாந்தநிழல் (pulima thanth nizhal)',
+  'Nirai-Ner-Nirai-Ner': 'புளிமாரும்பூ (pulima arumpuu)',
+  'Nirai-Ner-Nirai-Nirai': 'புளிமாருநிழல் (pulima aru nizhal)',
+  'Nirai-Nirai-Ner-Ner': 'கருவிளந்தப்பூ (karuvilam thanthapuu)',
+  'Nirai-Nirai-Ner-Nirai': 'கருவிளந்தநிழல் (karuvilam thanth nizhal)',
+  'Nirai-Nirai-Nirai-Ner': 'கருவிளரும்பூ (karuvilam arumpuu)',
+  'Nirai-Nirai-Nirai-Nirai': 'கருவிளருநிழல் (karuvilam aru nizhal)',
 }
 
 export function getLineClassDisplay(lineClass: string): string {

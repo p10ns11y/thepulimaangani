@@ -2,7 +2,7 @@ use std::ops::Range;
 
 use serde::{Deserialize, Serialize};
 
-use crate::foot_pattern::foot_pattern_code;
+use crate::foot_pattern::foot_pattern;
 use crate::syllable::Syllable;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -45,9 +45,7 @@ pub fn group_into_feet_with_ranges(syllables: &[Syllable]) -> Vec<FootPlacement>
             placements.push(FootPlacement {
                 foot: Foot {
                     syllables: chunk.to_vec(),
-                    foot_type: foot_pattern_code(chunk)
-                        .unwrap_or("unknown")
-                        .to_string(),
+                    foot_type: foot_pattern(chunk),
                 },
                 syllable_range: run_start..i,
             });
@@ -95,7 +93,7 @@ mod tests {
         ];
         let p = group_into_feet_with_ranges(&syllables);
         assert_eq!(p.len(), 1);
-        assert_eq!(p[0].foot.foot_type, "tEmA");
+        assert_eq!(p[0].foot.foot_type, "Ner-Ner");
     }
 
     #[test]
