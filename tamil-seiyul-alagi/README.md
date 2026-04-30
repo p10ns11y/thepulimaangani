@@ -27,24 +27,19 @@ We maintain a **strict separation** between:
 - Educational explanations
 - UI strings
 
-**Output**: Structured data only (`ParseResult` with enums and rich annotations)
+**Output**: Machine-first fields on `ParseResult` plus a sibling **`presentation`** object (Tamil labels from `presentation.rs`), not mixed into core enums.
 
 ---
 
 ## 2. Display / Presentation Layer (Human-facing)
 
-**Location**: React app — `src/components/prosody/displayLabels.ts` and the Prosody lab Structure tab (maps `foot_type`, `linkage_type`, `linkage_special_type` to Tamil).
+**Location**: `tamil-seiyul-alagi/src/presentation.rs` — output is embedded in **`ParseResult.presentation`** on every successful parse (same JSON as `parse_poem_wasm`).
 
 **Responsibilities**:
-- Convert machine JSON into human-readable labels for the UI
-- Map `Foot` / `foot_type` → traditional name (தேமா, …)
-- Map linkage → தளை family + special type labels
-- (Later) richer educational copy and tooltips
+- Tamil metre name, foot mnemonics, and full தளை line strings for clients
+- Optional: richer educational copy later
 
-**This layer is allowed to use**:
-- Traditional tables and formulas
-- Tamil labels
-- Educational content
+**Web UI**: `src/components/prosody/displayLabels.ts` remains a **fallback** when consuming older JSON without `presentation`, and for purely client-side mocks.
 
 ---
 
@@ -62,8 +57,8 @@ We maintain a **strict separation** between:
 
 ## Implementation status
 
-1. `ParseResult` from the calculation layer is the structured JSON/WASM output.
-2. Human-facing foot and தளை labels are implemented in the **frontend** (`displayLabels.ts`); WASM stays machine-first.
+1. `ParseResult` from the calculation layer is the structured JSON/WASM output (logic + **`presentation`** labels).
+2. Non-web clients should read **`presentation`** directly; the TanStack app prefers it when present.
 3. Metre detection in Rust remains heuristic vs full classical rules in `MACHINE_FIRST_SPEC.md`.
 
 See also `QUALITY_CRAP_BASELINE.md` and [issue #49](https://github.com/p10ns11y/thepulimaangani/issues/49) for doc/code alignment.

@@ -18,6 +18,8 @@ export interface ParsedLinkageEdge {
 
 export interface ParsedFoot {
   foot_type: string
+  /** Tamil classical label from WASM `presentation.feet` when present. */
+  display_foot_type?: string
   syllables: ParsedSyllable[]
   /** Poem-wide foot index when known (from WASM `poem` tree); used for தளை lookup. */
   foot_index_global?: number
@@ -26,6 +28,29 @@ export interface ParsedFoot {
 export interface ParsedLine {
   line_class: string
   feet: ParsedFoot[]
+}
+
+/** WASM `presentation.feet[]` — Tamil foot labels aligned with poem-wide foot order. */
+export interface ParsedPresentationFoot {
+  text: string
+  foot_type: string
+}
+
+/** WASM `presentation.talai[]` — human தளை line (from / to indices match linkage). */
+export interface ParsedPresentationTalai {
+  from: number
+  to: number
+  from_line: number
+  to_line: number
+  talai_type: string
+  is_valid: boolean
+}
+
+/** Optional block from Rust `ParseResult.presentation` (WASM JSON). */
+export interface ParsedPresentation {
+  metre_type?: string | null
+  feet: ParsedPresentationFoot[]
+  talai: ParsedPresentationTalai[]
 }
 
 export interface ParsedPoem {
@@ -37,6 +62,8 @@ export interface ParsedPoem {
   lines: ParsedLine[]
   /** Consecutive-foot bonds from WASM (`linkage` / `talai`); empty when absent. */
   linkage?: ParsedLinkageEdge[]
+  /** Rust presentation layer: Tamil labels for metre, feet, தளை (same JSON as other clients). */
+  presentation?: ParsedPresentation
   errors?: string[]
 }
 

@@ -187,6 +187,87 @@ describe('adaptWasmJsonToParsedPoem', () => {
     expect(out!.linkage![0]!.linkage_special_type).toBe('IyarcirVenthalai')
   })
 
+  it('prefers WASM presentation metre and foot labels when present', () => {
+    const wasm = wasmParseJsonFixture({
+      original_text: 'ab',
+      syllables: [],
+      feet: [],
+      lines: [],
+      metre_type: 'Venpaa',
+      poem: wasmPoem([
+        wasmPoemLine({
+          line_index: 0,
+          words: [
+            wasmWordFoot({
+              foot_type: 'Ner',
+              syllableNodes: [wasmSyllableNode('a', 'Ner')],
+              foot_index_global: 0,
+            }),
+          ],
+        }),
+      ]),
+      presentation: {
+        metre_type: 'வெண்பா',
+        feet: [{ text: 'a', foot_type: 'மா (ma) — from Rust' }],
+        talai: [],
+      },
+    })
+
+    const out = adaptWasmJsonToParsedPoem(wasm)
+    expect(out).not.toBeNull()
+    expect(out!.metre_type).toBe('வெண்பா')
+    expect(out!.presentation?.feet[0]?.foot_type).toBe('மா (ma) — from Rust')
+    expect(out!.lines[0]!.feet[0]!.display_foot_type).toBe('மா (ma) — from Rust')
+  })
+
+  it('uses presentation.talai for bond when linkage is absent', () => {
+    const wasm = wasmParseJsonFixture({
+      original_text: 'ab',
+      syllables: [],
+      feet: [],
+      lines: [],
+      poem: wasmPoem([
+        wasmPoemLine({
+          line_index: 0,
+          words: [
+            wasmWordFoot({
+              foot_type: 'Ner',
+              syllableNodes: [wasmSyllableNode('a', 'Ner')],
+              foot_index_global: 0,
+            }),
+            wasmWordFoot({
+              foot_type: 'Ner',
+              syllableNodes: [wasmSyllableNode('b', 'Ner')],
+              foot_index_global: 1,
+            }),
+          ],
+        }),
+      ]),
+      linkage: [],
+      presentation: {
+        feet: [
+          { text: 'a', foot_type: 'மா' },
+          { text: 'b', foot_type: 'மா' },
+        ],
+        talai: [
+          {
+            from: 0,
+            to: 1,
+            from_line: 0,
+            to_line: 0,
+            talai_type: 'இயற்சீர் வெண்டளை',
+            is_valid: true,
+          },
+        ],
+      },
+    })
+
+    const out = adaptWasmJsonToParsedPoem(wasm)
+    expect(out).not.toBeNull()
+    expect(out!.linkage).toBeUndefined()
+    expect(out!.presentation?.talai).toHaveLength(1)
+  })
+
   it('maps null metre_type from Rust to em dash', () => {
     const wasm = wasmParseJsonFixture({
       original_text: 'ab',

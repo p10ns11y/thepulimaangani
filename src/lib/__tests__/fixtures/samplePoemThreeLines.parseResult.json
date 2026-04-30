@@ -3058,5 +3058,264 @@
     "MetreLength01",
     "LinkageAdjacency01"
   ],
-  "errors": []
+  "errors": [],
+  "presentation": {
+    "original_text": "சுடர்த்தொடீஇ கேளாய் தெருவில்நாம்\nமணற்சிற்றில் காலில் சிதையா அடை\nகோதை பரிந்து வரிப்பந்து கொண்டோ\n",
+    "metre_type": "வெண்பா",
+    "syllables": [
+      {
+        "text": "சுடர்",
+        "syllable_type": "நிரை",
+        "hint": null
+      },
+      {
+        "text": "தொடீ",
+        "syllable_type": "நிரை",
+        "hint": null
+      },
+      {
+        "text": "இ",
+        "syllable_type": "நேர்",
+        "hint": null
+      },
+      {
+        "text": "கே",
+        "syllable_type": "நேர்",
+        "hint": null
+      },
+      {
+        "text": "ளாய்",
+        "syllable_type": "நேர்",
+        "hint": null
+      },
+      {
+        "text": "தெரு",
+        "syllable_type": "நிரை",
+        "hint": null
+      },
+      {
+        "text": "வில்",
+        "syllable_type": "நேர்",
+        "hint": null
+      },
+      {
+        "text": "நாம்",
+        "syllable_type": "நேர்",
+        "hint": null
+      },
+      {
+        "text": "மணற்",
+        "syllable_type": "நிரை",
+        "hint": null
+      },
+      {
+        "text": "சிற்",
+        "syllable_type": "நேர்",
+        "hint": null
+      },
+      {
+        "text": "றில்",
+        "syllable_type": "நேர்",
+        "hint": null
+      },
+      {
+        "text": "கா",
+        "syllable_type": "நேர்",
+        "hint": null
+      },
+      {
+        "text": "லில்",
+        "syllable_type": "நேர்",
+        "hint": null
+      },
+      {
+        "text": "சிதை",
+        "syllable_type": "நிரை",
+        "hint": null
+      },
+      {
+        "text": "யா",
+        "syllable_type": "நேர்",
+        "hint": null
+      },
+      {
+        "text": "அடை",
+        "syllable_type": "நிரை",
+        "hint": null
+      },
+      {
+        "text": "கோ",
+        "syllable_type": "நேர்",
+        "hint": null
+      },
+      {
+        "text": "தை",
+        "syllable_type": "நேர்",
+        "hint": null
+      },
+      {
+        "text": "பரிந்",
+        "syllable_type": "நிரை",
+        "hint": null
+      },
+      {
+        "text": "து",
+        "syllable_type": "நேர்",
+        "hint": null
+      },
+      {
+        "text": "வரிப்",
+        "syllable_type": "நிரை",
+        "hint": null
+      },
+      {
+        "text": "பந்",
+        "syllable_type": "நேர்",
+        "hint": null
+      },
+      {
+        "text": "து",
+        "syllable_type": "நேர்",
+        "hint": null
+      },
+      {
+        "text": "கொண்",
+        "syllable_type": "நேர்",
+        "hint": null
+      },
+      {
+        "text": "டோ",
+        "syllable_type": "நேர்",
+        "hint": null
+      }
+    ],
+    "feet": [
+      {
+        "text": "சுடர்தொடீஇ",
+        "foot_type": "கருவிளங்காய் (karuvilam kangay)"
+      },
+      {
+        "text": "கேளாய்",
+        "foot_type": "தேமா (thema)"
+      },
+      {
+        "text": "தெருவில்நாம்",
+        "foot_type": "புளிமாங்காய் (pulima kangay)"
+      },
+      {
+        "text": "மணற்சிற்றில்",
+        "foot_type": "புளிமாங்காய் (pulima kangay)"
+      },
+      {
+        "text": "காலில்",
+        "foot_type": "தேமா (thema)"
+      },
+      {
+        "text": "சிதையா",
+        "foot_type": "புளிமா (pulima)"
+      },
+      {
+        "text": "அடை",
+        "foot_type": "விளம் (vilam)"
+      },
+      {
+        "text": "கோதை",
+        "foot_type": "தேமா (thema)"
+      },
+      {
+        "text": "பரிந்து",
+        "foot_type": "புளிமா (pulima)"
+      },
+      {
+        "text": "வரிப்பந்து",
+        "foot_type": "புளிமாங்காய் (pulima kangay)"
+      },
+      {
+        "text": "கொண்டோ",
+        "foot_type": "தேமா (thema)"
+      }
+    ],
+    "talai": [
+      {
+        "from": 0,
+        "to": 1,
+        "from_line": 0,
+        "to_line": 0,
+        "talai_type": "வெஞ்சீர் வெண்டளை",
+        "is_valid": true
+      },
+      {
+        "from": 1,
+        "to": 2,
+        "from_line": 0,
+        "to_line": 0,
+        "talai_type": "இயற்சீர் வெண்டளை",
+        "is_valid": true
+      },
+      {
+        "from": 2,
+        "to": 3,
+        "from_line": 0,
+        "to_line": 0,
+        "talai_type": "கலித்தளை",
+        "is_valid": true
+      },
+      {
+        "from": 3,
+        "to": 4,
+        "from_line": 0,
+        "to_line": 0,
+        "talai_type": "வெஞ்சீர் வெண்டளை",
+        "is_valid": true
+      },
+      {
+        "from": 4,
+        "to": 5,
+        "from_line": 0,
+        "to_line": 0,
+        "talai_type": "இயற்சீர் வெண்டளை",
+        "is_valid": true
+      },
+      {
+        "from": 5,
+        "to": 6,
+        "from_line": 0,
+        "to_line": 0,
+        "talai_type": "இயற்சீர் வெண்டளை",
+        "is_valid": true
+      },
+      {
+        "from": 6,
+        "to": 7,
+        "from_line": 0,
+        "to_line": 0,
+        "talai_type": "இயற்சீர் வெண்டளை",
+        "is_valid": true
+      },
+      {
+        "from": 7,
+        "to": 8,
+        "from_line": 0,
+        "to_line": 0,
+        "talai_type": "இயற்சீர் வெண்டளை",
+        "is_valid": true
+      },
+      {
+        "from": 8,
+        "to": 9,
+        "from_line": 0,
+        "to_line": 0,
+        "talai_type": "இயற்சீர் வெண்டளை",
+        "is_valid": true
+      },
+      {
+        "from": 9,
+        "to": 10,
+        "from_line": 0,
+        "to_line": 0,
+        "talai_type": "வெஞ்சீர் வெண்டளை",
+        "is_valid": true
+      }
+    ]
+  }
 }

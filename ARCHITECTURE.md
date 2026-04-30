@@ -61,7 +61,7 @@ tamil-seiyul-alagi/
 │   ├── linkage.rs          # Consecutive-foot edges; table-driven talai (issue #36)
 │   ├── metre.rs            # Metre hypotheses (heuristic)
 │   ├── poem_tree.rs        # Structured poem tree
-│   └── (human labels: React `displayLabels.ts`, not Rust)
+│   ├── presentation.rs     # Human labels; embedded in `ParseResult.presentation` (WASM JSON)
 ├── pkg/                # Generated WebAssembly bindings
 ├── Cargo.toml          # Rust dependencies
 └── target/             # Build artifacts
@@ -99,7 +99,7 @@ The WebAssembly parser is built separately and its artifacts are copied to `src/
    - **Metre:** ranked hypotheses; simple heuristics, not full classical rule engines yet
    - **Linkage:** consecutive feet with line/word positions; **`linkage_type`** = coarse family (Venthalai, Aasiriyathalai, Kalithalai, Vanjithalai) and **`linkage_special_type`** = issue #36 row (e.g. `VencirVenthalai`); `VenTalai` / `Unknown` only for malformed/empty feet
 4. **Result Serialization**: `ParseResult` to JSON in the browser
-5. **Display**: React reads JSON via TypeScript adapters (`adaptWasmJsonToParsedPoem`, etc.); classical foot and தளை Tamil strings are mapped in `src/components/prosody/displayLabels.ts` (Structure tab).
+5. **Display**: React reads JSON via `adaptWasmJsonToParsedPoem`; **`presentation`** from WASM carries Tamil metre / foot / தளை labels (canonical). The app may still map enums locally when `presentation` is absent (older builds).
 
 ## Core Algorithms
 
@@ -112,7 +112,7 @@ The parser implements traditional Tamil prosody rules:
 
 ### Foot grouping (current)
 
-The engine groups syllables into **one foot per linguistic word** and sets `foot_type` to a machine-readable **Ner/Nirai sequence** (for example `Ner-Ner`). Mapping those patterns to classical names (தேமா, புளிமா, …) is done in the **frontend** (`displayLabels.ts`), not in Rust.
+The engine groups syllables into **one foot per linguistic word** and sets `foot_type` to a machine-readable **Ner/Nirai sequence** (for example `Ner-Ner`). **`ParseResult.presentation.feet`** carries the classical Tamil foot label for each foot in poem order; the web app prefers that field when present.
 
 ### Metre detection (current)
 
@@ -120,7 +120,7 @@ The engine groups syllables into **one foot per linguistic word** and sets `foot
 
 ### Linkage / talai (current)
 
-Consecutive feet get a linkage record with **positions** plus **`linkage_type`** (coarse family for metre hints) and **`linkage_special_type`** (nuanced classification: Nerondriya Aasiriyathalai, Iyarcir Venthalai, …). The table uses the **last acai** of the left foot mapped to cir class **Maa / Vilam** (1–2 acai; Vilam = விளம்) / **Kaai / Kani** (3+) and the **first acai** of the right foot, per [issue #36](https://github.com/p10ns11y/thepulimaangani/issues/36). Tamil labels for the Structure tab live in **`src/components/prosody/displayLabels.ts`**.
+Consecutive feet get a linkage record with **positions** plus **`linkage_type`** / **`linkage_special_type`**. **`ParseResult.presentation.talai`** carries the full Tamil தளை string per bond (same indices as `linkage`). The Structure tab prefers **`presentation.talai`** when present.
 
 ## Performance Considerations
 

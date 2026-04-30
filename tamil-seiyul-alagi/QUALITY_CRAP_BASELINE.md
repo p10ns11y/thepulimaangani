@@ -62,7 +62,7 @@ Interpretation:
 | 2026-04-26 | Initial baseline (chunk feet, flat syllable stream). Total hotspot sum was 27 if all rows summed (doc previously said 23). |
 | 2026-04-29 | Great refactor: `word_scope`, `poem_tree`, `FootPosition` linkage, Ner-Nirai `foot_type` patterns, per-word syllable segmentation. Hotspots and total refreshed. |
 | 2026-04-30 | Hotspot sum **33 → 29 (−4)**. Raised confidence (untested_rank 2→1) on `linkage` and `poem_tree` rows after targeted tests + `flat_lines_from_poem` coverage in `types.rs`; `parse_poem` note updated (score unchanged at 6). Presentation `foot_pattern_display` test + dead_code hygiene. Frontend Vitest improvements noted outside sum. |
-| 2026-04-30 | Rust `presentation.rs` removed; foot + தளை Tamil labels consolidated in React `displayLabels.ts`; Structure tab shows `linkage_type` / `linkage_special_type`. |
+| 2026-04-30 | Rust `presentation.rs` restored; **`ParseResult.presentation`** in WASM JSON; web adapter prefers it for metre / foot / தளை display. |
 
 ---
 

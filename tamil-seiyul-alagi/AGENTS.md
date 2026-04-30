@@ -5,7 +5,7 @@ Rust WebAssembly parser for high-performance Tamil prosody analysis. Implements 
 
 ## Structure
 - `src/lib.rs`: `parse_poem`, WASM entry `parse_poem_wasm`
-- `src/`: Pipeline modules (`word_scope`, `syllable_builder`, `foot`, `foot_pattern`, `linkage`, `metre`, `poem_tree`, …)
+- `src/`: Pipeline modules (`word_scope`, `syllable_builder`, `foot`, `foot_pattern`, `linkage`, `metre`, `poem_tree`, `presentation`, …)
 - `pkg/`: Generated WebAssembly bindings (generated, gitignored)
 - `Cargo.toml`: Dependencies
 
@@ -18,7 +18,7 @@ Rust WebAssembly parser for high-performance Tamil prosody analysis. Implements 
 ## Algorithms (shipped vs roadmap)
 
 - **Syllable classification (Ner/Nirai):** Implemented (`syllable_builder`, `syllable`).
-- **Feet:** One foot per **linguistic word**; `foot_type` is a **Ner/Nirai pattern string** (see `foot_pattern.rs`). Classical foot **labels** for the web UI live in the frontend (`src/components/prosody/displayLabels.ts`), not in the Rust crate.
+- **Feet:** One foot per **linguistic word**; `foot_type` is a **Ner/Nirai pattern string** (see `foot_pattern.rs`). Tamil classical foot names and தளை strings are built in **`presentation.rs`** and serialized on each **`ParseResult.presentation`** for WASM and other clients.
 - **Linkage (talai):** Consecutive foot pairs with positions; **`linkage_type`** is the coarse family (`Venthalai`, `Aasiriyathalai`, `Kalithalai`, `Vanjithalai`) for metre-facing logic, and **`linkage_special_type`** is the nuanced bond from the issue #36 table (e.g. `VencirVenthalai`). Cir classes use **Maa / Vilam** (1–2 acai) and **Kaai / Kani** (3+). `VenTalai` + `Unknown` special only when a foot has no syllables.
 - **Metre:** Heuristic hypotheses (`metre.rs`); not full classical constraint sets yet.
 

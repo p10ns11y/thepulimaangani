@@ -3,6 +3,7 @@ import type {
   ParsedLine,
   ParsedLinkageEdge,
   ParsedPoem,
+  ParsedPresentation,
   ParsedSyllable,
 } from '#/types/parsedPoem'
 
@@ -106,6 +107,77 @@ function normalizeLinkage(raw: unknown): ParsedLinkageEdge[] {
   return out
 }
 
+function normalizePresentation(raw: unknown): ParsedPresentation | undefined {
+  if (!raw || typeof raw !== 'object') return undefined
+  const p = raw as Record<string, unknown>
+  const feetRaw = p.feet
+  const talaiRaw = p.talai
+  if (!Array.isArray(feetRaw) || !Array.isArray(talaiRaw)) return undefined
+
+  const feet: ParsedPresentation['feet'] = []
+  for (const item of feetRaw) {
+    if (!item || typeof item !== 'object') continue
+    const f = item as Record<string, unknown>
+    if (typeof f.text !== 'string' || typeof f.foot_type !== 'string') continue
+    feet.push({ text: f.text, foot_type: f.foot_type })
+  }
+
+  const talai: ParsedPresentation['talai'] = []
+  for (const item of talaiRaw) {
+    if (!item || typeof item !== 'object') continue
+    const t = item as Record<string, unknown>
+    const from = t.from
+    const to = t.to
+    const from_line = t.from_line
+    const to_line = t.to_line
+    const talai_type = t.talai_type
+    if (
+      typeof from !== 'number' ||
+      typeof to !== 'number' ||
+      typeof from_line !== 'number' ||
+      typeof to_line !== 'number' ||
+      typeof talai_type !== 'string'
+    ) {
+      continue
+    }
+    talai.push({
+      from,
+      to,
+      from_line,
+      to_line,
+      talai_type,
+      is_valid: typeof t.is_valid === 'boolean' ? t.is_valid : true,
+    })
+  }
+
+  const metre_type = p.metre_type
+  const metreStr =
+    typeof metre_type === 'string'
+      ? metre_type
+      : metre_type === null || metre_type === undefined
+        ? undefined
+        : String(metre_type)
+
+  return { metre_type: metreStr, feet, talai }
+}
+
+function mergePresentationFeet(
+  lines: ParsedLine[],
+  presentation: ParsedPresentation | undefined,
+): ParsedLine[] {
+  if (!presentation || presentation.feet.length === 0) return lines
+  return lines.map((line) => ({
+    ...line,
+    feet: line.feet.map((foot) => {
+      const g = foot.foot_index_global
+      if (typeof g !== 'number' || g < 0 || g >= presentation.feet.length) return foot
+      const label = presentation.feet[g]?.foot_type
+      if (typeof label !== 'string' || label.length === 0) return foot
+      return { ...foot, display_foot_type: label }
+    }),
+  }))
+}
+
 function normalizeLines(rawLines: unknown, feet: ParsedFoot[]): ParsedLine[] {
   if (!Array.isArray(rawLines) || rawLines.length === 0) {
     if (feet.length === 0) return []
@@ -203,17 +275,28 @@ export function adaptWasmJsonToParsedPoem(data: unknown): ParsedPoem | null {
   const linkageRaw = normalizeLinkage(o.linkage)
   const linkage = linkageRaw.length > 0 ? linkageRaw : normalizeLinkage(o.talai)
 
+  const presentation = normalizePresentation(o.presentation)
+
   const metreRaw = o.metre_type
+  const metreFromPres =
+    presentation?.metre_type != null &&
+    typeof presentation.metre_type === 'string' &&
+    presentation.metre_type.length > 0
+      ? presentation.metre_type
+      : null
   const metre_type =
-    typeof metreRaw === 'string'
+    metreFromPres ??
+    (typeof metreRaw === 'string'
       ? metreRaw
       : metreRaw === null || metreRaw === undefined
         ? '—'
-        : JSON.stringify(metreRaw)
+        : JSON.stringify(metreRaw))
 
   const letter_count = (o.letter_count ?? 0) as ParsedPoem['letter_count']
   const vikalpa_count = (o.vikalpa_count ?? 0) as ParsedPoem['vikalpa_count']
   const errors = Array.isArray(o.errors) ? (o.errors as string[]).filter((e) => typeof e === 'string') : undefined
+
+  const linesWithPresFeet = mergePresentationFeet(lines, presentation)
 
   return {
     original_text: o.original_text,
@@ -221,8 +304,11 @@ export function adaptWasmJsonToParsedPoem(data: unknown): ParsedPoem | null {
     letter_count,
     vikalpa_count,
     syllables: o.syllables,
-    lines,
+    lines: linesWithPresFeet,
     ...(linkage.length > 0 ? { linkage } : {}),
+    ...(presentation && (presentation.feet.length > 0 || presentation.talai.length > 0)
+      ? { presentation }
+      : {}),
     ...(errors && errors.length > 0 ? { errors } : {}),
   }
 }

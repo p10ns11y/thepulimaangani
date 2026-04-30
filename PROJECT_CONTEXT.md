@@ -27,7 +27,7 @@
 
 ### 2.2 Layer Separation
 - **Calculation Layer** (`src/`): Pure logic, no UI strings, no traditional names
-- **Display Layer** (`src/components/prosody/displayLabels.ts`): Converts machine JSON to human-readable Tamil labels in the Structure tab
+- **Display Layer** (`tamil-seiyul-alagi/src/presentation.rs` → `ParseResult.presentation`): Tamil labels shipped with WASM JSON
 
 ### 2.3 ProsodicUnit Model (Matrix-Based)
 - 12 Vowels × 18 Pure Consonants = 216 Uyirmei
@@ -88,7 +88,7 @@
 | `src/foot.rs` | Foot grouping (currently naive) | Needs full WordType |
 | `src/talai.rs` | Talai analysis | Basic |
 | `src/metre.rs` | Metre detection | Too naive |
-| `src/components/prosody/displayLabels.ts` | Display layer (Tamil labels) | In use (Structure tab) |
+| `tamil-seiyul-alagi/src/presentation.rs` | Display layer (Tamil labels in JSON) | Shipped on `ParseResult.presentation` |
 | `src/types.rs` | ParseOptions, ParseResult | Needs serde derives |
 | `src/error.rs` | Error types | Good |
 
