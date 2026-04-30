@@ -65,18 +65,38 @@ def load_rust_llvm_cov_summary(path: Path) -> dict[str, float]:
     data = json.loads(path.read_text(encoding="utf-8"))
     out: dict[str, float] = {}
 
-    files = data.get("files") if isinstance(data, dict) else None
-    if isinstance(files, list):
-        for item in files:
-            if not isinstance(item, dict):
-                continue
-            fname = item.get("filename") or item.get("file")
-            summ = item.get("summary") or item.get("lines") or {}
-            if not fname or not isinstance(summ, dict):
-                continue
+    files: list | None = None
+    if isinstance(data, dict):
+        if isinstance(data.get("files"), list):
+            files = data["files"]
+        elif isinstance(data.get("data"), list) and data["data"]:
+            first = data["data"][0]
+            if isinstance(first, dict) and isinstance(first.get("files"), list):
+                files = first["files"]
+
+    if not isinstance(files, list):
+        return out
+
+    for item in files:
+        if not isinstance(item, dict):
+            continue
+        fname = item.get("filename") or item.get("file")
+        summ = item.get("summary") if isinstance(item.get("summary"), dict) else {}
+        lines = summ.get("lines") if isinstance(summ.get("lines"), dict) else {}
+        frac: float | None = None
+        if isinstance(lines, dict):
+            count = lines.get("count")
+            covered = lines.get("covered")
+            if isinstance(count, (int, float)) and count and isinstance(covered, (int, float)):
+                frac = float(covered) / float(count)
+            elif "percent" in lines:
+                try:
+                    frac = float(lines["percent"]) / 100.0
+                except (TypeError, ValueError):
+                    pass
+        if frac is None and isinstance(summ, dict):
             count = summ.get("count")
             covered = summ.get("covered")
-            frac: float | None = None
             if isinstance(count, (int, float)) and count and isinstance(covered, (int, float)):
                 frac = float(covered) / float(count)
             elif "percent" in summ:
@@ -84,12 +104,12 @@ def load_rust_llvm_cov_summary(path: Path) -> dict[str, float]:
                     frac = float(summ["percent"]) / 100.0
                 except (TypeError, ValueError):
                     pass
-            if frac is None:
-                continue
-            nk = norm_path(str(fname))
-            out[nk] = frac
-            if "tamil-seiyul-alagi/" in nk:
-                out[norm_path(nk.split("tamil-seiyul-alagi/", 1)[1])] = frac
+        if frac is None:
+            continue
+        nk = norm_path(str(fname))
+        out[nk] = frac
+        if "tamil-seiyul-alagi/" in nk:
+            out[norm_path(nk.split("tamil-seiyul-alagi/", 1)[1])] = frac
     return out
 
 
