@@ -19,6 +19,8 @@
     "test": "pnpm run test:rust && pnpm run test:frontend",
     "test:rust": "cd tamil-seiyul-alagi  && cargo test",
     "test:frontend": "vitest run",
+    "test:frontend:coverage": "vitest run --coverage",
+    "crap:report": "python3 dx/crap_report.py --lizard-xml lizard-report.xml --rust-cov tamil-seiyul-alagi/llvm-cov-summary.json --vitest-summary coverage/coverage-summary.json --out-md crap-report.md",
     "test:watch": "vitest",
     "lint": "echo 'No linter configured yet'",
     "typecheck": "tsc --noEmit"
@@ -57,6 +59,7 @@
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^6.0.1",
+    "@vitest/coverage-v8": "^3.2.4",
     "jsdom": "^28.1.0",
     "typescript": "^5.7.2",
     "vite": "^8.0.0",

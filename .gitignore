@@ -34,6 +34,11 @@ pids
 coverage
 *.lcov
 
+# Local CRAP / complexity CI artifacts
+/lizard-report.xml
+/crap-report.md
+/tamil-seiyul-alagi/llvm-cov-summary.json
+
 # nyc test coverage
 .nyc_output
 

@@ -81,3 +81,5 @@ When CI is ready:
 3. Compute CRAP-style scores automatically.
 4. Compare CI scores against this baseline and report deltas.
 5. Start in report-only mode; enforce thresholds after stable baseline history.
+
+**Implemented (2026-04-30):** GitHub Actions job `crap_analysis` runs `cargo llvm-cov`, Vitest `--coverage`, Lizard XML, and `dx/crap_report.py`; uploads `crap-report.md` as an artifact (report-only; optional `--max-mean` gate in the script).
