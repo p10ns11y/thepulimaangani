@@ -19,6 +19,8 @@ const linkageSpecialMap: Record<string, string> = {
   OndrathaVanchithalai: 'ஒன்றாத வஞ்சித்தளை',
   Unknown: '—',
 }
+
+const lineClassMap: Record<string, string> = {
   kuRaLaTi: 'குறளடி',
   ci_ntaTi: 'சிந்தடி',
   taVi_cco_l: 'தவிச்சொல்',
