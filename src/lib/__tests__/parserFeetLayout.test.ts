@@ -21,7 +21,7 @@ describe('feetPerPhysicalLine', () => {
         line_class: '—',
         feet: [
           {
-            foot_type: 'Ner-Ner',
+            foot_type: 'Ner',
             syllables: [{ text: 'ab', syllable_type: 'Ner' }],
           },
         ],
@@ -59,25 +59,26 @@ describe('feetPerPhysicalLine', () => {
 })
 
 describe('groupsFromFeet', () => {
-  it('one group per foot with concatenated word label', () => {
+  it('one UI group per foot; word label is syllable texts joined (not a prosody assertion)', () => {
+    // Abstract parts — avoids implying real Tamil Ner/Nirai splits (e.g. இரண்டு is not one Nirai acai).
     const g = groupsFromFeet([
       {
         foot_type: 'Ner-Nirai',
         syllables: [
-          { text: 'நண்', syllable_type: 'Ner' },
-          { text: 'ணு', syllable_type: 'Nirai' },
+          { text: 'w1a', syllable_type: 'Ner' },
+          { text: 'w1b', syllable_type: 'Nirai' },
         ],
       },
       {
         foot_type: 'Ner-Nirai',
         syllables: [
-          { text: 'வார்', syllable_type: 'Ner' },
-          { text: 'வினை', syllable_type: 'Nirai' },
+          { text: 'w2a', syllable_type: 'Ner' },
+          { text: 'w2b', syllable_type: 'Nirai' },
         ],
       },
     ])
     expect(g).toHaveLength(2)
-    expect(g[0]!.word).toBe('நண்ணு')
-    expect(g[1]!.word).toBe('வார்வினை')
+    expect(g[0]!.word).toBe('w1aw1b')
+    expect(g[1]!.word).toBe('w2aw2b')
   })
 })

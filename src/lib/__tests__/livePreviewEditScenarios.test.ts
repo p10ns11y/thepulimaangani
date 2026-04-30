@@ -62,8 +62,9 @@ function isFirstRowOnlyEntirePoemLayout(
 }
 
 describe('live preview layout (no WASM)', () => {
-  it('physicalPoemLines count matches structured.lines → feet buckets get syllables', () => {
-    const poemText = 'ஒன்று இரண்டு\nமூன்று நான்கு\n'
+  it('when physical line count matches parsed.lines, feet buckets and chip groups are populated', () => {
+    // Tokens + syllable_type values are arbitrary: this file tests line/chip layout only, not acai truth.
+    const poemText = 'row1-A row1-B\nrow2-A row2-B\n'
     const parsed: ParsedPoem = {
       original_text: poemText,
       metre_type: '—',
@@ -75,12 +76,12 @@ describe('live preview layout (no WASM)', () => {
           line_class: '—',
           feet: [
             {
-              foot_type: 'Ner-Ner',
-              syllables: [{ text: 'ஒன்று', syllable_type: 'Ner' }],
+              foot_type: 'Ner',
+              syllables: [{ text: 'row1-A', syllable_type: 'Ner' }],
             },
             {
-              foot_type: 'Nirai',
-              syllables: [{ text: 'இரண்டு', syllable_type: 'Nirai' }],
+              foot_type: 'Ner',
+              syllables: [{ text: 'row1-B', syllable_type: 'Ner' }],
             },
           ],
         },
@@ -89,11 +90,11 @@ describe('live preview layout (no WASM)', () => {
           feet: [
             {
               foot_type: 'Ner',
-              syllables: [{ text: 'மூன்று', syllable_type: 'Ner' }],
+              syllables: [{ text: 'row2-A', syllable_type: 'Ner' }],
             },
             {
               foot_type: 'Ner',
-              syllables: [{ text: 'நான்கு', syllable_type: 'Ner' }],
+              syllables: [{ text: 'row2-B', syllable_type: 'Ner' }],
             },
           ],
         },
