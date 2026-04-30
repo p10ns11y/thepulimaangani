@@ -66,6 +66,9 @@ type WasmJsonFixtureInput = {
   letter_count?: number
   vikalpa_count?: number
   errors?: unknown[]
+  linkage?: unknown[]
+  talai?: unknown[]
+  presentation?: unknown
 }
 
 /**
@@ -78,13 +81,14 @@ export function wasmParseJsonFixture(input: WasmJsonFixtureInput): unknown {
     syllables: input.syllables ?? [],
     feet: input.feet ?? [],
     lines: input.lines ?? [],
-    linkage: [],
-    talai: [],
+    linkage: input.linkage ?? [],
+    talai: input.talai ?? [],
     metre_type: input.metre_type ?? null,
     letter_count: input.letter_count ?? 0,
     vikalpa_count: input.vikalpa_count ?? 0,
     errors: input.errors ?? [],
     ...(input.poem !== undefined ? { poem: input.poem } : {}),
+    ...(input.presentation !== undefined ? { presentation: input.presentation } : {}),
   }
 }
 

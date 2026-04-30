@@ -1,6 +1,8 @@
-import type { ParsedPoem } from '#/types/parsedPoem'
+import { useMemo } from 'react'
 
-import { getFootTypeDisplay, getLineClassDisplay } from './displayLabels'
+import type { ParsedPoem, ParsedPresentationTalai } from '#/types/parsedPoem'
+
+import { getFootTypeDisplay, getLineClassDisplay, getLinkageSpecialDisplay, getLinkageTypeDisplay } from './displayLabels'
 import { SyllableChip } from './SyllableChip'
 
 type StructuredParseResultProps = {
@@ -9,6 +11,24 @@ type StructuredParseResultProps = {
 
 export function StructuredParseResult({ data }: StructuredParseResultProps) {
   const footTotal = data.lines.reduce((sum, line) => sum + line.feet.length, 0)
+
+  const presentationTalaiByFrom = useMemo(() => {
+    const rows = data.presentation?.talai ?? []
+    const m = new Map<number, ParsedPresentationTalai>()
+    for (const t of rows) {
+      if (!m.has(t.from)) m.set(t.from, t)
+    }
+    return m
+  }, [data.presentation?.talai])
+
+  const linkageByFrom = useMemo(() => {
+    const edges = data.linkage ?? []
+    const m = new Map<number, (typeof edges)[0]>()
+    for (const e of edges) {
+      if (!m.has(e.from_foot)) m.set(e.from_foot, e)
+    }
+    return m
+  }, [data.linkage])
 
   return (
     <div className="flex flex-col gap-4">
@@ -64,16 +84,24 @@ export function StructuredParseResult({ data }: StructuredParseResultProps) {
                 </span>
               </h4>
               <div className="flex flex-col gap-2">
-                {line.feet.map((foot, j) => (
+                {line.feet.map((foot, j) => {
+                  const fig = foot.foot_index_global
+                  const presTalai =
+                    typeof fig === 'number' ? presentationTalaiByFrom.get(fig) : undefined
+                  const bond =
+                    typeof fig === 'number' ? linkageByFrom.get(fig) : undefined
+                  const footLabel =
+                    foot.display_foot_type != null && foot.display_foot_type.length > 0
+                      ? foot.display_foot_type
+                      : getFootTypeDisplay(foot.foot_type)
+                  return (
                   <div
                     key={`foot-${i}-${j}-${foot.foot_type}`}
                     className="bg-surface-2/80 border-rim/40 ml-0 rounded-md border p-2.5 md:ml-3"
                   >
                     <div className="text-foreground mb-1.5 text-xs font-medium sm:text-sm">
                       Foot {j + 1}{' '}
-                      <span className="text-muted-foreground text-sm">
-                        ({getFootTypeDisplay(foot.foot_type)})
-                      </span>
+                      <span className="text-muted-foreground text-sm">({footLabel})</span>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {foot.syllables.map((syl, k) => (
@@ -85,8 +113,36 @@ export function StructuredParseResult({ data }: StructuredParseResultProps) {
                         />
                       ))}
                     </div>
+                    {presTalai || bond ? (
+                      <div className="text-muted-foreground mt-2 border-t border-rim/25 pt-2 text-xs leading-snug">
+                        <span className="text-foreground/90 font-medium">தளை →</span>{' '}
+                        {presTalai ? (
+                          <span className="text-foreground">{presTalai.talai_type}</span>
+                        ) : bond ? (
+                          <>
+                            <span className="text-foreground">
+                              {getLinkageTypeDisplay(bond.linkage_type)}
+                            </span>
+                            {bond.linkage_special_type &&
+                            bond.linkage_special_type !== 'Unknown' ? (
+                              <>
+                                {' '}
+                                <span className="text-muted-foreground">·</span>{' '}
+                                <span>
+                                  {getLinkageSpecialDisplay(bond.linkage_special_type)}
+                                </span>
+                              </>
+                            ) : null}
+                          </>
+                        ) : null}
+                        {(presTalai && !presTalai.is_valid) || (bond && !bond.is_valid) ? (
+                          <span className="text-destructive ml-1">(invalid)</span>
+                        ) : null}
+                      </div>
+                    ) : null}
                   </div>
-                ))}
+                  )
+                })}
               </div>
             </div>
           ))}

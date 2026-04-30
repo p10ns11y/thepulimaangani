@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::foot_pattern::foot_pattern;
 use crate::poem_tree::{LinguisticWordNode, PoemNode};
+use crate::presentation::DisplayResult;
 use crate::{Foot, Linkage, MetreType, Syllable, Talai};
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -35,6 +36,9 @@ pub struct ParseResult {
     #[serde(default)]
     pub provenance: Vec<RuleId>,
     pub errors: Vec<String>,
+    /// Human-facing labels (Tamil metre name, foot mnemonics, தளை strings). Same for all WASM clients.
+    #[serde(default)]
+    pub presentation: DisplayResult,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

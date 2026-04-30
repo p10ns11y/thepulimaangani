@@ -1,4 +1,11 @@
-import type { ParsedFoot, ParsedLine, ParsedPoem, ParsedSyllable } from '#/types/parsedPoem'
+import type {
+  ParsedFoot,
+  ParsedLine,
+  ParsedLinkageEdge,
+  ParsedPoem,
+  ParsedPresentation,
+  ParsedSyllable,
+} from '#/types/parsedPoem'
 
 function isFootish(value: unknown): value is ParsedFoot {
   if (!value || typeof value !== 'object') return false
@@ -54,6 +61,123 @@ function machineFootPatternFromSyllables(syllables: ParsedSyllable[]): string {
   return syllables.map((s) => (s.syllable_type === 'Ner' ? 'Ner' : 'Nirai')).join('-')
 }
 
+/** Assign poem-wide `foot_index_global` in traversal order (line order, then foot order). */
+function assignGlobalFootIndices(lines: ParsedLine[]): ParsedLine[] {
+  let g = 0
+  return lines.map((line) => ({
+    ...line,
+    feet: line.feet.map((foot) => {
+      const next =
+        foot.foot_index_global === undefined
+          ? { ...foot, foot_index_global: g }
+          : foot
+      g += 1
+      return next
+    }),
+  }))
+}
+
+function normalizeLinkage(raw: unknown): ParsedLinkageEdge[] {
+  if (!Array.isArray(raw)) return []
+  const out: ParsedLinkageEdge[] = []
+  for (const item of raw) {
+    if (!item || typeof item !== 'object') continue
+    const e = item as Record<string, unknown>
+    const from_foot = e.from_foot
+    const to_foot = e.to_foot
+    const linkage_type =
+      typeof e.linkage_type === 'string'
+        ? e.linkage_type
+        : typeof e.talai_type === 'string'
+          ? e.talai_type
+          : null
+    if (typeof from_foot !== 'number' || typeof to_foot !== 'number' || linkage_type == null) {
+      continue
+    }
+    const linkage_special_type =
+      typeof e.linkage_special_type === 'string' ? e.linkage_special_type : 'Unknown'
+    out.push({
+      from_foot,
+      to_foot,
+      linkage_type,
+      linkage_special_type,
+      is_valid: typeof e.is_valid === 'boolean' ? e.is_valid : true,
+    })
+  }
+  return out
+}
+
+function normalizePresentation(raw: unknown): ParsedPresentation | undefined {
+  if (!raw || typeof raw !== 'object') return undefined
+  const p = raw as Record<string, unknown>
+  const feetRaw = p.feet
+  const talaiRaw = p.talai
+  if (!Array.isArray(feetRaw) || !Array.isArray(talaiRaw)) return undefined
+
+  const feet: ParsedPresentation['feet'] = []
+  for (const item of feetRaw) {
+    if (!item || typeof item !== 'object') continue
+    const f = item as Record<string, unknown>
+    if (typeof f.text !== 'string' || typeof f.foot_type !== 'string') continue
+    feet.push({ text: f.text, foot_type: f.foot_type })
+  }
+
+  const talai: ParsedPresentation['talai'] = []
+  for (const item of talaiRaw) {
+    if (!item || typeof item !== 'object') continue
+    const t = item as Record<string, unknown>
+    const from = t.from
+    const to = t.to
+    const from_line = t.from_line
+    const to_line = t.to_line
+    const talai_type = t.talai_type
+    if (
+      typeof from !== 'number' ||
+      typeof to !== 'number' ||
+      typeof from_line !== 'number' ||
+      typeof to_line !== 'number' ||
+      typeof talai_type !== 'string'
+    ) {
+      continue
+    }
+    talai.push({
+      from,
+      to,
+      from_line,
+      to_line,
+      talai_type,
+      is_valid: typeof t.is_valid === 'boolean' ? t.is_valid : true,
+    })
+  }
+
+  const metre_type = p.metre_type
+  const metreStr =
+    typeof metre_type === 'string'
+      ? metre_type
+      : metre_type === null || metre_type === undefined
+        ? undefined
+        : String(metre_type)
+
+  return { metre_type: metreStr, feet, talai }
+}
+
+function mergePresentationFeet(
+  lines: ParsedLine[],
+  presentation: ParsedPresentation | undefined,
+): ParsedLine[] {
+  if (!presentation || presentation.feet.length === 0) return lines
+  return lines.map((line) => ({
+    ...line,
+    feet: line.feet.map((foot) => {
+      const g = foot.foot_index_global
+      if (typeof g !== 'number' || g < 0 || g >= presentation.feet.length) return foot
+      const label = presentation.feet[g]?.foot_type
+      if (typeof label !== 'string' || label.length === 0) return foot
+      return { ...foot, display_foot_type: label }
+    }),
+  }))
+}
+
 function normalizeLines(rawLines: unknown, feet: ParsedFoot[]): ParsedLine[] {
   if (!Array.isArray(rawLines) || rawLines.length === 0) {
     if (feet.length === 0) return []
@@ -100,9 +224,12 @@ function linesFromPoemNode(poem: unknown): ParsedLine[] | null {
         if (!Array.isArray(syllNodes)) continue
         const syllables = syllablesFromSyllableNodes(syllNodes)
         if (syllables.length === 0) continue
+        const fig =
+          typeof LW.word_index_in_line === 'number' ? LW.word_index_in_line : undefined
         lineFeet.push({
           foot_type: machineFootPatternFromSyllables(syllables),
           syllables,
+          ...(fig !== undefined ? { foot_index_global: fig } : {}),
         })
       }
     } else if (Array.isArray(words) && words.length > 0) {
@@ -114,7 +241,13 @@ function linesFromPoemNode(poem: unknown): ParsedLine[] | null {
         if (!Array.isArray(syllNodes)) continue
         const syllables = syllablesFromSyllableNodes(syllNodes)
         if (syllables.length === 0 || !foot_type) continue
-        lineFeet.push({ foot_type, syllables })
+        const fig =
+          typeof W.foot_index_global === 'number' ? W.foot_index_global : undefined
+        lineFeet.push({
+          foot_type,
+          syllables,
+          ...(fig !== undefined ? { foot_index_global: fig } : {}),
+        })
       }
     }
 
@@ -135,20 +268,35 @@ export function adaptWasmJsonToParsedPoem(data: unknown): ParsedPoem | null {
 
   const feet = Array.isArray(o.feet) ? normalizeFeet(o.feet as unknown[]) : []
   const fromPoem = linesFromPoemNode(o.poem)
-  const lines =
+  const linesRaw =
     fromPoem && fromPoem.length > 0 ? fromPoem : normalizeLines(o.lines, feet)
+  const lines = assignGlobalFootIndices(linesRaw)
+
+  const linkageRaw = normalizeLinkage(o.linkage)
+  const linkage = linkageRaw.length > 0 ? linkageRaw : normalizeLinkage(o.talai)
+
+  const presentation = normalizePresentation(o.presentation)
 
   const metreRaw = o.metre_type
+  const metreFromPres =
+    presentation?.metre_type != null &&
+    typeof presentation.metre_type === 'string' &&
+    presentation.metre_type.length > 0
+      ? presentation.metre_type
+      : null
   const metre_type =
-    typeof metreRaw === 'string'
+    metreFromPres ??
+    (typeof metreRaw === 'string'
       ? metreRaw
       : metreRaw === null || metreRaw === undefined
         ? '—'
-        : JSON.stringify(metreRaw)
+        : JSON.stringify(metreRaw))
 
   const letter_count = (o.letter_count ?? 0) as ParsedPoem['letter_count']
   const vikalpa_count = (o.vikalpa_count ?? 0) as ParsedPoem['vikalpa_count']
   const errors = Array.isArray(o.errors) ? (o.errors as string[]).filter((e) => typeof e === 'string') : undefined
+
+  const linesWithPresFeet = mergePresentationFeet(lines, presentation)
 
   return {
     original_text: o.original_text,
@@ -156,7 +304,11 @@ export function adaptWasmJsonToParsedPoem(data: unknown): ParsedPoem | null {
     letter_count,
     vikalpa_count,
     syllables: o.syllables,
-    lines,
+    lines: linesWithPresFeet,
+    ...(linkage.length > 0 ? { linkage } : {}),
+    ...(presentation && (presentation.feet.length > 0 || presentation.talai.length > 0)
+      ? { presentation }
+      : {}),
     ...(errors && errors.length > 0 ? { errors } : {}),
   }
 }

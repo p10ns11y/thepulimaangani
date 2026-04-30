@@ -14,16 +14,16 @@ Two strict layers, no leaks:
 
 - **Core (machine-first)**
   - Pure logic. Typed enums. Integer scoring. No Tamil display strings.
-  - Lives under `tamil-seiyul-alagi/src/` (excluding `presentation.rs`).
+  - Lives under `tamil-seiyul-alagi/src/`.
   - Outputs structured hypotheses with rule-IDs, scores, violations.
 - **Presentation (human-first)**
   - Maps core IDs/enums to Tamil names, classical narrative, educational text.
-  - Lives under `tamil-seiyul-alagi/src/presentation.rs`.
-  - The only place where strings like `தேமா`, `வெண்டளை`, `வெண்பா` appear.
+  - **`presentation.rs`** builds `ParseResult.presentation` (serialized with WASM JSON) so every client gets the same foot and தளை labels without reimplementing tables.
+  - The web app may duplicate small maps for offline fallbacks only when `presentation` is missing (older artifacts).
 
 Naming policy:
 - Core module names use machine-first English: `linkage.rs` (not `talai.rs`), `foot.rs`, `metre.rs`, `syllable.rs`, etc.
-- Core type names use machine-first English: `LinkageClass`, `FootPattern`, `MetreHypothesis`. Classical names live in presentation only.
+- Core type names use machine-first English: `LinkageClass`, `FootPattern`, `MetreHypothesis`. Tamil **prose** labels for feet and தளை are **not** in core logic; they are emitted only inside **`ParseResult.presentation`** (see `presentation.rs`).
 - Exception for canonical grammar identifiers: when a concept is a standard classical-grammar term without a clean neutral replacement, keep the canonical term in English-Latin form (e.g., `VenTalai`, `AsiriyaTalai`) inside enum variants while preserving English container names (`LinkageType`).
 
 ---
@@ -83,13 +83,13 @@ Algorithm (lattice-based segmentation):
 4. Build a directed lattice over span boundaries.
 5. Return all candidates plus best-path projection (used by metre stage).
 
-Out-of-scope here: classical foot naming. That mapping lives in presentation.
+Out-of-scope here: classical foot naming. That mapping lives in `presentation.rs` (serialized as `ParseResult.presentation`).
 
 ### 4.2 Linkage Stage (renamed from `talai`)
 
 Module: [`src/linkage.rs`](src/linkage.rs) (successor to the historical `talai` naming).
 
-**Current shipped code** emits `LinkageType::VenTalai` with `is_valid = true` for every consecutive foot pair; the table-driven flow below is the **target**.
+**Current shipped code** (`linkage.rs`) classifies each consecutive pair using the **previous foot’s last acai** (Maa/Vilam for 1–2 acai per foot, Kaai/Kani for 3+) and the **next foot’s first acai** (Ner/Nirai). JSON exposes **`linkage_type`** (coarse: `Venthalai`, `Aasiriyathalai`, `Kalithalai`, `Vanjithalai`) and **`linkage_special_type`** (e.g. `VencirVenthalai`, `NerondriyaAasiriyathalai`). The lattice wording below remains the **target** once `FootCandidate` paths exist.
 
 Algorithm:
 
@@ -100,7 +100,7 @@ Algorithm:
    - Append `violations` and supporting `rule_ids`.
 2. Emit `[LinkageCandidate]` for the path.
 
-Presentation maps `LinkageType::VenTalai`, `LinkageType::AsiriyaTalai`, etc., to Tamil labels.
+`presentation.rs` maps `LinkageSpecialType` (and coarse `LinkageType` when special is `Unknown`) to Tamil strings on each `DisplayTalai`.
 
 ### 4.3 Metre Stage
 
@@ -151,9 +151,9 @@ Consumers may render only the winner; the lattice and top-k remain available for
 |---|---|---|
 | `src/talai.rs` | `src/linkage.rs` | machine-first naming |
 | `Talai` | `LinkageCandidate` | type rename |
-| `TalaiType` | `LinkageType` | enum rename, with canonical variants like `VenTalai` |
+| `TalaiType` | `LinkageType` (coarse) + `LinkageSpecialType` | metre vs nuanced bond |
 | `Foot.foot_type: String` | `Foot.pattern: FootPattern` (enum) | typed signature |
-| `MetreType` | `MetreId` (enum) | wire-compatible Display impl in presentation |
+| `MetreType` | `MetreId` (enum) | wire-compatible Display impl in UI layer |
 
 Old top-level fields stay for compatibility during phased rollout; new fields are additive.
 
@@ -183,3 +183,5 @@ Required guarantees before flipping defaults:
 
 - v0.1 — initial draft on `thumpi` branch.
 - v0.2 — naming rule clarified: English container types with canonical grammar-specific variant names (e.g., `VenTalai`).
+- v0.3 — §4.2: shipped one-foot-per-word path uses the eight-way transition table ([issue #36](https://github.com/p10ns11y/thepulimaangani/issues/36)); lattice `FootCandidate` linkage remains future work.
+- v0.4 — §4.2: split **coarse** `LinkageType` vs **nuanced** `LinkageSpecialType`; cir **Vilam** (விளம்) replaces Vilai in code/docs.

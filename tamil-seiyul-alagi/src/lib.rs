@@ -23,8 +23,13 @@ pub use error::ParseError;
 pub use foot::{Foot, FootPlacement};
 pub use foot_pattern::foot_pattern;
 pub use letter::Letter;
-pub use linkage::{FootPosition, Linkage, LinkageType, Talai, TalaiType};
+pub use linkage::{
+    CirAcaiClass, FootPosition, Linkage, LinkageSpecialType, LinkageType, Talai, TalaiType,
+};
 pub use metre::MetreType;
+pub use presentation::{
+    foot_pattern_display, DisplayFoot, DisplayResult, DisplaySyllable, DisplayTalai,
+};
 pub use poem_tree::{
     LetterLayer, LetterNode, LinguisticWordNode, LineLayer, PoemLayer, PoemLineNode, PoemNode,
     SyllableLayer, SyllableNode, WordLayer, WordNode,
@@ -53,7 +58,7 @@ pub fn parse_poem(text: &str, options: ParseOptions) -> Result<ParseResult, Pars
     let foot_placements = foot::group_into_feet_with_ranges(&syllables);
     let feet: Vec<Foot> = foot_placements.iter().map(|p| p.foot.clone()).collect();
     let foot_positions = linkage::foot_positions_for_poem(&foot_placements, &syllable_lines);
-    let linkage = linkage::analyze_linkage(&foot_positions);
+    let linkage = linkage::analyze_linkage(&foot_positions, &feet);
     let poem = poem_tree::build_poem_tree(
         normalized_clone.clone(),
         &syllables,
@@ -71,17 +76,18 @@ pub fn parse_poem(text: &str, options: ParseOptions) -> Result<ParseResult, Pars
         letter_count: graphemes.len(),
         vikalpa_count: if options.alt_scansion { 1 } else { 0 },
         poem,
-        syllables,
-        feet,
+        syllables: syllables.clone(),
+        feet: feet.clone(),
         talai: linkage.clone(),
-        linkage,
+        linkage: linkage.clone(),
         lines,
-        metre_type: metre,
+        metre_type: metre.clone(),
         confidence: metre_hypotheses.first().map_or(0, |h| h.aggregate_score),
         provenance: metre_hypotheses
             .first()
             .map_or_else(Vec::new, |h| h.rule_ids.clone()),
         top_k_metre_hypotheses: metre_hypotheses,
+        presentation: presentation::to_display(text, &metre, &syllables, &feet, &linkage),
         errors: vec![],
     })
 }
@@ -171,6 +177,7 @@ mod tests {
         assert!(json.get("syllables").and_then(|v| v.as_array()).is_some());
         assert!(json.get("feet").and_then(|v| v.as_array()).is_some());
         assert!(json.get("linkage").and_then(|v| v.as_array()).is_some());
+        assert!(json.get("presentation").is_some());
         assert!(json.get("poem").is_some());
 
         let poem = &result.poem;

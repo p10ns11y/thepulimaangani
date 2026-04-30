@@ -14,7 +14,7 @@ Later, CI can compute and validate the same baseline automatically.
 - **Baseline method:** manual CRAP-style score
 - **Total baseline score (sum of hotspot rows):** 29  
   _(Interpret as aggregate risk surface; not a single function CRAP metric.)_
-- **Change vs 2026-04-29:** **−4** (was 33). Higher test confidence on legacy line flattening (`flat_lines_from_poem` tests in `types.rs`), linkage consecutive-pair wiring, and poem/tree ↔ `ParseResult.lines` alignment; `presentation` smoke-tested; dead-code noise cleared on foot/linkage/tamil_chars/presentation.
+- **Change vs 2026-04-29:** **−4** (was 33). Higher test confidence on legacy line flattening (`flat_lines_from_poem` tests in `types.rs`), linkage consecutive-pair wiring, and poem/tree ↔ `ParseResult.lines` alignment; dead-code noise cleared on foot/linkage/tamil_chars. Rust `presentation.rs` removed — labels live in the React `displayLabels` layer.
 
 Scoring formula:
 
@@ -42,7 +42,7 @@ Interpretation:
 | `src/lib.rs::parse_poem` | 3 | 2 | 6 | high | Main integration seam. **Mitigated:** direct unit tests for `types::flat_lines_from_poem` (linguistic_words vs words vs empty) reduce untested surface between tree and legacy `lines`. |
 | `src/syllable_builder.rs::build_inner` | 2 | 2 | 4 | moderate | Ordered regex scan per **linguistic word**; unit tests cover common paths. |
 | `src/word_scope.rs::segment_syllables_from_normalized` | 2 | 2 | 4 | moderate | Line/word tokenization drives all downstream syllables; integration-heavy. |
-| `src/linkage.rs::foot_positions_for_poem` + `analyze_linkage` | 2 | 1 | 2 | low | Positions covered by integration; consecutive-foot linkage is mechanical with **placeholder** `linkage_type` / validity (lower untested surface for CRAP purposes). |
+| `src/linkage.rs::foot_positions_for_poem` + `analyze_linkage` | 2 | 1 | 2 | low | Positions + **`linkage_type`** (coarse) + **`linkage_special_type`** (issue #36); `VenTalai`/`Unknown` only on empty-foot fallback. |
 | `src/poem_tree.rs::build_poem_tree` + `linguistic_words_per_line` | 2 | 1 | 2 | low | Tree build still dense; **legacy `ParseResult.lines`** alignment is pinned by `flat_lines_from_poem` tests + existing multiline / sparse-word integration. |
 | `src/foot.rs::group_into_feet_with_ranges` | 2 | 1 | 2 | low | One foot per linguistic word + `foot_pattern()` Ner-Nirai string; covered by foot tests. |
 
@@ -62,6 +62,7 @@ Interpretation:
 | 2026-04-26 | Initial baseline (chunk feet, flat syllable stream). Total hotspot sum was 27 if all rows summed (doc previously said 23). |
 | 2026-04-29 | Great refactor: `word_scope`, `poem_tree`, `FootPosition` linkage, Ner-Nirai `foot_type` patterns, per-word syllable segmentation. Hotspots and total refreshed. |
 | 2026-04-30 | Hotspot sum **33 → 29 (−4)**. Raised confidence (untested_rank 2→1) on `linkage` and `poem_tree` rows after targeted tests + `flat_lines_from_poem` coverage in `types.rs`; `parse_poem` note updated (score unchanged at 6). Presentation `foot_pattern_display` test + dead_code hygiene. Frontend Vitest improvements noted outside sum. |
+| 2026-04-30 | Rust `presentation.rs` restored; **`ParseResult.presentation`** in WASM JSON; web adapter prefers it for metre / foot / தளை display. |
 
 ---
 
