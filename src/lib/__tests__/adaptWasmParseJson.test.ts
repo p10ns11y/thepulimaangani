@@ -1,14 +1,19 @@
 import { describe, expect, it } from 'vitest'
 
 import { adaptWasmJsonToParsedPoem } from '#/lib/adaptWasmParseJson'
+import {
+  wasmLinguisticWord,
+  wasmParseJsonFixture,
+  wasmPoem,
+  wasmPoemLine,
+  wasmSyllableNode,
+  wasmWordFoot,
+} from '#/lib/__tests__/fixtures/wasmParseJsonBuilders'
 
 describe('adaptWasmJsonToParsedPoem', () => {
-  it('synthesizes a line from top-level feet when lines is empty', () => {
-    const wasm = {
+  it('synthesizes one legacy line from top-level feet when lines is empty', () => {
+    const wasm = wasmParseJsonFixture({
       original_text: 'அஃகு',
-      normalized_text: 'அஃகு',
-      letter_count: 3,
-      vikalpa_count: 0,
       syllables: [{ text: 'அஃ', syllable_type: 'Ner' }],
       feet: [
         {
@@ -19,11 +24,10 @@ describe('adaptWasmJsonToParsedPoem', () => {
           ],
         },
       ],
-      linkage: [],
       lines: [],
       metre_type: 'Venpaa',
       errors: [],
-    }
+    })
 
     const out = adaptWasmJsonToParsedPoem(wasm)
     expect(out).not.toBeNull()
@@ -33,42 +37,33 @@ describe('adaptWasmJsonToParsedPoem', () => {
     expect(out!.lines[0]!.feet[0]!.syllables[0]!.syllable_type).toBe('Ner')
   })
 
-  it('prefers linguistic_words over words when both present (misplaced tree feet)', () => {
-    const wasm = {
+  it('prefers poem.lines[].linguistic_words over words when both are present', () => {
+    const wasm = wasmParseJsonFixture({
       original_text: 'a\nb',
       syllables: [],
       feet: [],
       lines: [],
-      poem: {
-        lines: [
-          {
-            line_class: '—',
-            line_index: 0,
-            words: [
-              {
-                foot_type: 'Ner-Ner',
-                foot_index_global: 0,
-                word_index_in_line: 0,
-                syllables: [
-                  { inner: { text: 'whole', syllable_type: 'Ner', alt_split: false } },
-                  { inner: { text: 'poem', syllable_type: 'Ner', alt_split: false } },
-                ],
-              },
-            ],
-            linguistic_words: [
-              {
-                word_index_in_line: 0,
-                syllables: [{ inner: { text: 'only', syllable_type: 'Ner', alt_split: false } }],
-              },
-            ],
-          },
-        ],
-      },
-      metre_type: null,
-      letter_count: 0,
-      vikalpa_count: 0,
-      errors: [],
-    }
+      poem: wasmPoem([
+        wasmPoemLine({
+          line_index: 0,
+          words: [
+            wasmWordFoot({
+              foot_type: 'Ner-Ner',
+              syllableNodes: [
+                wasmSyllableNode('whole', 'Ner'),
+                wasmSyllableNode('poem', 'Ner'),
+              ],
+            }),
+          ],
+          linguistic_words: [
+            wasmLinguisticWord({
+              word_index_in_line: 0,
+              syllableNodes: [wasmSyllableNode('only', 'Ner')],
+            }),
+          ],
+        }),
+      ]),
+    })
 
     const out = adaptWasmJsonToParsedPoem(wasm)
     expect(out).not.toBeNull()
@@ -76,45 +71,35 @@ describe('adaptWasmJsonToParsedPoem', () => {
     expect(out!.lines[0]!.feet[0]!.syllables[0]!.text).toBe('only')
   })
 
-  it('extracts per-line feet from nested poem.words when top-level lines is empty', () => {
-    const wasm = {
+  it('builds one ParsedLine per poem.lines[] row from words when linguistic_words absent', () => {
+    const wasm = wasmParseJsonFixture({
       original_text: 'a\nb',
       syllables: [],
       feet: [],
       lines: [],
-      poem: {
-        lines: [
-          {
-            line_class: '—',
-            line_index: 0,
-            words: [
-              {
-                foot_type: 'Ner',
-                foot_index_global: 0,
-                word_index_in_line: 0,
-                syllables: [{ inner: { text: 'x', syllable_type: 'Ner', alt_split: false } }],
-              },
-            ],
-          },
-          {
-            line_class: '—',
-            line_index: 1,
-            words: [
-              {
-                foot_type: 'Nirai',
-                foot_index_global: 1,
-                word_index_in_line: 0,
-                syllables: [{ inner: { text: 'y', syllable_type: 'Nirai', alt_split: false } }],
-              },
-            ],
-          },
-        ],
-      },
-      metre_type: null,
-      letter_count: 0,
-      vikalpa_count: 0,
-      errors: [],
-    }
+      poem: wasmPoem([
+        wasmPoemLine({
+          line_index: 0,
+          words: [
+            wasmWordFoot({
+              foot_type: 'Ner',
+              syllableNodes: [wasmSyllableNode('x', 'Ner')],
+              foot_index_global: 0,
+            }),
+          ],
+        }),
+        wasmPoemLine({
+          line_index: 1,
+          words: [
+            wasmWordFoot({
+              foot_type: 'Nirai',
+              syllableNodes: [wasmSyllableNode('y', 'Nirai')],
+              foot_index_global: 1,
+            }),
+          ],
+        }),
+      ]),
+    })
 
     const out = adaptWasmJsonToParsedPoem(wasm)
     expect(out).not.toBeNull()
@@ -123,47 +108,34 @@ describe('adaptWasmJsonToParsedPoem', () => {
     expect(out!.lines[1]!.feet[0]!.syllables[0]!.text).toBe('y')
   })
 
-  it('uses linguistic_words when words is empty (mirrors WASM lines 2+)', () => {
-    const wasm = {
+  it('uses linguistic_words on a row when words is empty (WASM lines 2+)', () => {
+    const wasm = wasmParseJsonFixture({
       original_text: 'a\nb',
       syllables: [],
       feet: [],
       lines: [],
-      poem: {
-        lines: [
-          {
-            line_class: '—',
-            line_index: 0,
-            words: [
-              {
-                foot_type: 'Ner',
-                foot_index_global: 0,
-                word_index_in_line: 0,
-                syllables: [{ inner: { text: 'x', syllable_type: 'Ner', alt_split: false } }],
-              },
-            ],
-          },
-          {
-            line_class: '—',
-            line_index: 1,
-            words: [],
-            linguistic_words: [
-              {
-                word_index_in_line: 0,
-                syllables: [
-                  { inner: { text: 'அ', syllable_type: 'Ner', alt_split: false } },
-                  { inner: { text: 'ஆ', syllable_type: 'Nirai', alt_split: false } },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-      metre_type: null,
-      letter_count: 0,
-      vikalpa_count: 0,
-      errors: [],
-    }
+      poem: wasmPoem([
+        wasmPoemLine({
+          line_index: 0,
+          words: [
+            wasmWordFoot({
+              foot_type: 'Ner',
+              syllableNodes: [wasmSyllableNode('x', 'Ner')],
+            }),
+          ],
+        }),
+        wasmPoemLine({
+          line_index: 1,
+          words: [],
+          linguistic_words: [
+            wasmLinguisticWord({
+              word_index_in_line: 0,
+              syllableNodes: [wasmSyllableNode('அ', 'Ner'), wasmSyllableNode('ஆ', 'Nirai')],
+            }),
+          ],
+        }),
+      ]),
+    })
 
     const out = adaptWasmJsonToParsedPoem(wasm)
     expect(out).not.toBeNull()
@@ -172,17 +144,15 @@ describe('adaptWasmJsonToParsedPoem', () => {
     expect(out!.lines[1]!.feet[0]!.syllables).toHaveLength(2)
   })
 
-  it('accepts null metre_type from Rust Option::None', () => {
-    const wasm = {
+  it('maps null metre_type from Rust to em dash', () => {
+    const wasm = wasmParseJsonFixture({
       original_text: 'ab',
-      letter_count: 2,
-      vikalpa_count: 0,
       syllables: [],
       feet: [],
       lines: [],
       metre_type: null,
-      errors: [],
-    }
+      letter_count: 2,
+    })
 
     const out = adaptWasmJsonToParsedPoem(wasm)
     expect(out).not.toBeNull()

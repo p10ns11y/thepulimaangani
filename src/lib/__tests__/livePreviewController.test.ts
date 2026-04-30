@@ -5,27 +5,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { LivePreviewController } from '#/lib/livePreviewController'
 import { normalizePoemText } from '#/lib/poemTextNormalize'
+import { wasmLivePreviewControllerStub } from '#/lib/__tests__/fixtures/wasmParseJsonBuilders'
 import type { LivePreviewState } from '#/types/livePreview'
 
 vi.mock('#/lib/wasmParse', () => ({
   runWasmParse: vi.fn(async (text: string) => {
-    const norm = text.replace(/\r\n/g, '\n')
-    return JSON.stringify({
-      original_text: norm,
-      normalized_text: norm,
-      letter_count: 0,
-      vikalpa_count: 0,
-      syllables: [{ text: 'a', syllable_type: 'Ner' }],
-      feet: [{ foot_type: 'Ner', syllables: [{ text: 'a', syllable_type: 'Ner' }] }],
-      lines: [
-        { line_class: '—', feet: [{ foot_type: 'Ner', syllables: [{ text: 'a', syllable_type: 'Ner' }] }] },
-      ],
-      poem: { lines: [], syllables_flat: [], normalized_text: norm, linkage: [] },
-      linkage: [],
-      talai: [],
-      metre_type: null,
-      errors: [],
-    })
+    const canon = text.replace(/\r\n/g, '\n')
+    return JSON.stringify(wasmLivePreviewControllerStub(canon))
   }),
 }))
 
@@ -39,7 +25,7 @@ describe('LivePreviewController', () => {
     vi.useRealTimers()
   })
 
-  it('uses normalizePoemText for cache; trailing newline vs none are different parses', async () => {
+  it('cache key: trailing newline vs none yields different normalizePoemText(parsed.original_text)', async () => {
     const states: LivePreviewState[] = []
     const c = new LivePreviewController(0, (s) => {
       states.push(structuredClone(s))

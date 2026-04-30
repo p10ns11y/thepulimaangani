@@ -1,57 +1,38 @@
 import { describe, expect, it } from 'vitest'
 
 import { feetPerPhysicalLine, groupsFromFeet } from '#/lib/parserFeetLayout'
-import type { ParsedPoem } from '#/types/parsedPoem'
-
-function poem(lines: ParsedPoem['lines']): ParsedPoem {
-  return {
-    original_text: '',
-    metre_type: '—',
-    letter_count: 0,
-    vikalpa_count: 0,
-    syllables: [],
-    lines,
-  }
-}
+import {
+  parsedFoot,
+  parsedLine,
+  parsedPoem,
+  parsedSyllable,
+} from '#/lib/__tests__/fixtures/parsedPoemBuilders'
 
 describe('feetPerPhysicalLine', () => {
-  it('uses structured lines when count matches physical lines', () => {
-    const p = poem([
-      {
-        line_class: '—',
-        feet: [
-          {
-            foot_type: 'Ner-Ner',
-            syllables: [{ text: 'ab', syllable_type: 'Ner' }],
-          },
-        ],
-      },
-      {
-        line_class: '—',
-        feet: [
-          {
-            foot_type: 'Nirai',
-            syllables: [{ text: 'cd', syllable_type: 'Nirai' }],
-          },
-        ],
-      },
-    ])
-    const text = 'first line\nsecond'
-    const buckets = feetPerPhysicalLine(p, text)
+  it('uses structured lines when physical line count matches parsed.lines', () => {
+    const p = parsedPoem({
+      lines: [
+        parsedLine([
+          parsedFoot('Ner-Ner', [parsedSyllable('ab', 'Ner')]),
+        ]),
+        parsedLine([
+          parsedFoot('Nirai', [parsedSyllable('cd', 'Nirai')]),
+        ]),
+      ],
+    })
+    const poemText = 'first line\nsecond'
+    const buckets = feetPerPhysicalLine(p, poemText)
     expect(buckets).toHaveLength(2)
     expect(buckets[0]![0]!.syllables[0]!.text).toBe('ab')
     expect(buckets[1]![0]!.syllables[0]!.text).toBe('cd')
   })
 
-  it('returns empty feet per line when parser line count mismatches (avoid wrong-row slices)', () => {
-    const p = poem([
-      {
-        line_class: '—',
-        feet: [{ foot_type: 'Ner', syllables: [{ text: 'only', syllable_type: 'Ner' }] }],
-      },
-    ])
-    const text = 'line one\nline two'
-    const buckets = feetPerPhysicalLine(p, text)
+  it('returns empty feet per line when counts differ (no wrong-row slices)', () => {
+    const p = parsedPoem({
+      lines: [parsedLine([parsedFoot('Ner', [parsedSyllable('only', 'Ner')])])],
+    })
+    const poemText = 'line one\nline two'
+    const buckets = feetPerPhysicalLine(p, poemText)
     expect(buckets).toHaveLength(2)
     expect(buckets[0]).toEqual([])
     expect(buckets[1]).toEqual([])
@@ -59,22 +40,10 @@ describe('feetPerPhysicalLine', () => {
 })
 
 describe('groupsFromFeet', () => {
-  it('one group per foot with concatenated word label', () => {
+  it('emits one UI group per foot; word label is syllable texts concatenated', () => {
     const g = groupsFromFeet([
-      {
-        foot_type: 'Ner-Nirai',
-        syllables: [
-          { text: 'நண்', syllable_type: 'Ner' },
-          { text: 'ணு', syllable_type: 'Nirai' },
-        ],
-      },
-      {
-        foot_type: 'Ner-Nirai',
-        syllables: [
-          { text: 'வார்', syllable_type: 'Ner' },
-          { text: 'வினை', syllable_type: 'Nirai' },
-        ],
-      },
+      parsedFoot('Ner-Nirai', [parsedSyllable('நண்', 'Ner'), parsedSyllable('ணு', 'Nirai')]),
+      parsedFoot('Ner-Nirai', [parsedSyllable('வார்', 'Ner'), parsedSyllable('வினை', 'Nirai')]),
     ])
     expect(g).toHaveLength(2)
     expect(g[0]!.word).toBe('நண்ணு')
