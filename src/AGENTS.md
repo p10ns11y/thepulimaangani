@@ -21,7 +21,7 @@ React/TypeScript frontend using TanStack Start/Router, Vite, Tailwind CSS. Focus
 
 ## Branches and post-merge sync
 
-- **Default branch:** `malar`. Name your branch using [trinity-and-native-agents/creators.md](../trinity-and-native-agents/creators.md) (pollinator table).
+- **Default branch:** `malar`. Name your branch using [trinity-and-native-agents/AGENT_ROLES.md](../trinity-and-native-agents/AGENT_ROLES.md) first; full detail in [creators.md](../trinity-and-native-agents/creators.md).
 - **After every PR merge:** run `./dx/syncagents.sh` from the repo root; see [dx/sync-branches-architecture-simple.md](../dx/sync-branches-architecture-simple.md).
 
 ## Backlog / future UI
