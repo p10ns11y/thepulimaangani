@@ -70,7 +70,7 @@ Conceptual shape (final Rust types refined later):
 
 ### 4.1 Foot Stage
 
-Replaces the placeholder logic in [`src/foot.rs`](src/foot.rs) which currently chunks syllables in pairs and cycles names by index.
+**Current shipped code** (interim): [`src/foot.rs`](src/foot.rs) groups syllables into **one foot per linguistic word** (same line + word index); [`src/foot_pattern.rs`](src/foot_pattern.rs) sets `foot_type` to a hyphenated **Ner/Nirai** pattern (for example `Ner-Ner`), not classical தேமா names. The lattice algorithm below is the **target** once the machine-first foot stage lands.
 
 Algorithm (lattice-based segmentation):
 
@@ -87,9 +87,9 @@ Out-of-scope here: classical foot naming. That mapping lives in presentation.
 
 ### 4.2 Linkage Stage (renamed from `talai`)
 
-Module: `src/linkage.rs` (rename from current `src/talai.rs`).
+Module: [`src/linkage.rs`](src/linkage.rs) (successor to the historical `talai` naming).
 
-Replaces current logic which emits constant `VenTalai` and `is_valid = true` for every adjacency.
+**Current shipped code** emits `LinkageType::VenTalai` with `is_valid = true` for every consecutive foot pair; the table-driven flow below is the **target**.
 
 Algorithm:
 
