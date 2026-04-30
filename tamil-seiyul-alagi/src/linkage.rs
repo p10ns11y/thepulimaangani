@@ -26,6 +26,12 @@ pub enum LinkageCategory {
     Vanjithalai,
 }
 
+impl Default for LinkageCategory {
+    fn default() -> Self {
+        LinkageCategory::Venthalai
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum LinkageType {
     /// Reserved when the previous foot’s last cir cannot be classified (e.g. empty foot).
@@ -59,6 +65,7 @@ pub struct Linkage {
     pub from: FootPosition,
     pub to: FootPosition,
     pub linkage_type: LinkageType,
+    #[serde(default)]
     pub linkage_category: LinkageCategory,
     pub is_valid: bool,
 }
