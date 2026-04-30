@@ -1,31 +1,34 @@
 /**
- * Live preview / layout contracts under aggressive poem edits.
+ * Live preview layout: editor physical lines ↔ `parsed.lines` ↔ `feetPerPhysicalLine`.
  *
- * **Goals**
- * - Document expected behaviour: editor physical lines ↔ WASM `parsed.lines` ↔ `feetPerPhysicalLine`.
- * - Integration tests run **only** when a WASM bundle exists (`pnpm run build:wasm` → `public/wasm/` or `src/wasm/`).
+ * The multi-line sample uses **committed real parser output** (`samplePoemThreeLines.parseResult.json`)
+ * so tests never hand-invent Ner/Nirai on Tamil surface forms.
  *
- * **Failures here are learning signals** — fix implementation until these pass in CI (after WASM build step).
+ * WASM integration tests run only when a bundle exists (`pnpm run build:wasm`).
  */
 
-import { describe, expect, it, beforeAll } from 'vitest'
+import { beforeAll, describe, expect, it } from 'vitest'
 
 import { feetPerPhysicalLine, groupsFromFeet } from '#/lib/parserFeetLayout'
 import { normalizePoemText } from '#/lib/poemTextNormalize'
 import { physicalPoemLines } from '#/lib/mapFeetToPhysicalLines'
-import type { ParsedPoem } from '#/types/parsedPoem'
 
 import {
+  assertSamplePhysicalLineCount,
+  parsedSampleFirstTwoLines,
+  parsedSampleThreeLines,
+  SAMPLE_POEM_THREE_LINES,
+} from '#/lib/__tests__/fixtures/samplePoemThreeLines.fixture'
+import {
   createWasmParsePoem,
+  createWasmParseRaw,
   isWasmPkgBuilt,
   type WasmParseFn,
+  type WasmParseRawFn,
 } from '#/lib/__tests__/wasmParseHarness'
+import { adaptWasmJsonToParsedPoem } from '#/lib/adaptWasmParseJson'
 
-/** Same poem shape as mobile repro — multi-line Tamil with spaces & newline endings */
-export const SAMPLE_POEM_THREE_LINES = `சுடர்த்தொடீஇ கேளாய் தெருவில்நாம்
-மணற்சிற்றில் காலில் சிதையா அடை
-கோதை பரிந்து வரிப்பந்து கொண்டோ
-`
+export { SAMPLE_POEM_THREE_LINES }
 
 function totalFeet(buckets: ReturnType<typeof feetPerPhysicalLine>): number {
   return buckets.reduce((n, row) => n + row.length, 0)
@@ -42,10 +45,6 @@ function flattenFootSyllableTexts(lineFeet: ReturnType<typeof feetPerPhysicalLin
   return lineFeet.flatMap((ft) => ft.syllables.map((s) => s.text))
 }
 
-/**
- * When legacy `lines` collapses the whole poem into `lines[0]`, the first row has chips and later rows are empty
- * (mobile bug: "first line shows entire poem"). Multi-line + non-empty first row + empty rest + many syllables only on row0.
- */
 function isFirstRowOnlyEntirePoemLayout(
   buckets: ReturnType<typeof feetPerPhysicalLine>,
   totalSyllablesInParse: number,
@@ -59,43 +58,10 @@ function isFirstRowOnlyEntirePoemLayout(
 }
 
 describe('live preview layout (no WASM)', () => {
-  it('physicalPoemLines count matches structured.lines → feet buckets get syllables', () => {
-    const poemText = 'ஒன்று இரண்டு\nமூன்று நான்கு\n'
-    const parsed: ParsedPoem = {
-      original_text: poemText,
-      metre_type: '—',
-      letter_count: 0,
-      vikalpa_count: 0,
-      syllables: [],
-      lines: [
-        {
-          line_class: '—',
-          feet: [
-            {
-              foot_type: 'Ner-Ner',
-              syllables: [{ text: 'ஒன்று', syllable_type: 'Ner' }],
-            },
-            {
-              foot_type: 'Nirai',
-              syllables: [{ text: 'இரண்டு', syllable_type: 'Nirai' }],
-            },
-          ],
-        },
-        {
-          line_class: '—',
-          feet: [
-            {
-              foot_type: 'Ner',
-              syllables: [{ text: 'மூன்று', syllable_type: 'Ner' }],
-            },
-            {
-              foot_type: 'Ner',
-              syllables: [{ text: 'நான்கு', syllable_type: 'Ner' }],
-            },
-          ],
-        },
-      ],
-    }
+  it('first two lines of the sample poem: real parser feet align with physical lines', () => {
+    assertSamplePhysicalLineCount()
+    const parsed = parsedSampleFirstTwoLines()
+    const poemText = parsed.original_text
 
     expect(physicalPoemLines(poemText).length).toBe(parsed.lines.length)
 
@@ -111,23 +77,12 @@ describe('live preview layout (no WASM)', () => {
 
   it('when editor lines ≠ structured.lines, buckets are empty (no wrong-row bleed)', () => {
     const poemText = 'a\nb\n'
-    const parsed: ParsedPoem = {
-      original_text: poemText,
-      metre_type: '—',
-      letter_count: 0,
-      vikalpa_count: 0,
-      syllables: [],
-      lines: [
-        {
-          line_class: '—',
-          feet: [{ foot_type: 'Ner', syllables: [{ text: 'x', syllable_type: 'Ner' }] }],
-        },
-      ],
-    }
+    const parsed = parsedSampleThreeLines()
+    const oneLine = { ...parsed, lines: [parsed.lines[0]!] }
     expect(physicalPoemLines(poemText).length).toBe(2)
-    expect(parsed.lines.length).toBe(1)
+    expect(oneLine.lines.length).toBe(1)
 
-    const buckets = feetPerPhysicalLine(parsed, poemText)
+    const buckets = feetPerPhysicalLine(oneLine, poemText)
     expect(buckets.every((row) => row.length === 0)).toBe(true)
   })
 
@@ -138,9 +93,10 @@ describe('live preview layout (no WASM)', () => {
 
 describe.skipIf(!isWasmPkgBuilt())('live preview + WASM integration', () => {
   let parsePoem: WasmParseFn
+  let parseRaw: WasmParseRawFn
 
   beforeAll(async () => {
-    parsePoem = await createWasmParsePoem()
+    ;[parsePoem, parseRaw] = await Promise.all([createWasmParsePoem(), createWasmParseRaw()])
   })
 
   it('parses sample poem and returns structured lines count matching physicalPoemLines', async () => {
@@ -220,8 +176,7 @@ describe.skipIf(!isWasmPkgBuilt())('live preview + WASM integration', () => {
     const parsed = await parsePoem(text)
     expect(parsed).not.toBeNull()
     const buckets = feetPerPhysicalLine(parsed!, text)
-    const tot = totalSyllablesFromBuckets(buckets)
-    expect(tot).toBe(parsed!.syllables.length)
+    expect(totalSyllablesFromBuckets(buckets)).toBe(parsed!.syllables.length)
     const maxSingleRow = Math.max(
       ...buckets.map((row) => flattenFootSyllableTexts(row).length),
       0,
@@ -229,7 +184,7 @@ describe.skipIf(!isWasmPkgBuilt())('live preview + WASM integration', () => {
     expect(maxSingleRow).toBeLessThan(parsed!.syllables.length)
   })
 
-  it('edit simulations: deleting lines / fragments never stacks entire poem on physical row 0 when counts align', async () => {
+  it('deleting lines or fragments: no “whole poem on row 0” when counts stay aligned', async () => {
     const variants = [
       SAMPLE_POEM_THREE_LINES.split('\n').slice(0, 2).join('\n') + '\n',
       SAMPLE_POEM_THREE_LINES.replace(/\n.+$/s, ''),
@@ -248,19 +203,16 @@ describe.skipIf(!isWasmPkgBuilt())('live preview + WASM integration', () => {
     }
   })
 
-  it('adaptWasmJsonToParsedPoem round-trip matches parse_poem_wasm JSON shape', async () => {
+  it('WASM output matches committed fixture (adapter parity)', async () => {
     const text = SAMPLE_POEM_THREE_LINES
-    const parsed = await parsePoem(text)
-    expect(parsed).not.toBeNull()
-    expect(parsed!.original_text).toBeTruthy()
-    expect(Array.isArray(parsed!.lines)).toBe(true)
-  })
-})
-
-describe('live preview controller cache key contract (documented behaviour)', () => {
-  it('same normalizePoemText(editor) === normalizePoemText(parsed.original_text) implies cache hit path', () => {
-    const editor = 'அஃ கு '
-    const parsedNorm = normalizePoemText(editor)
-    expect(parsedNorm).toBe(normalizePoemText(editor))
+    const raw = await parseRaw(text)
+    expect(raw).not.toBeNull()
+    const viaAdapter = adaptWasmJsonToParsedPoem(raw!)
+    const fixture = parsedSampleThreeLines()
+    expect(viaAdapter).not.toBeNull()
+    expect(viaAdapter!.lines.length).toBe(fixture.lines.length)
+    expect(viaAdapter!.lines.map((ln) => ln.feet.length)).toEqual(fixture.lines.map((ln) => ln.feet.length))
+    const viaHarness = await parsePoem(text)
+    expect(viaHarness!.lines.map((ln) => ln.feet.length)).toEqual(fixture.lines.map((ln) => ln.feet.length))
   })
 })
