@@ -20,7 +20,7 @@ Tamil prosody (யாப்பு) analysis in the browser: **React / TanStack S
 
 ## Testing and coverage
 
-**CI** ([`.github/workflows/ci.yml`](../.github/workflows/ci.yml)): `pnpm run build`, `pnpm run typecheck`, `pnpm run test` (Rust + Vitest). Node version: [`.nvmrc`](../.nvmrc).
+**CI** ([`.github/workflows/ci.yml`](../.github/workflows/ci.yml)): `pnpm run build`, `pnpm run typecheck`, `pnpm run test` (Rust + Vitest). Node version: [`.nvmrc`](../.nvmrc) (currently **22**; `package.json` `engines.node` is `>=22`).
 
 ```bash
 pnpm run test           # Rust + frontend

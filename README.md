@@ -13,7 +13,7 @@ Do these steps **in order** the first time you work on the repo.
 | Tool | Why |
 |------|-----|
 | **Git** | Clone this repository |
-| **Node.js 20+** | Matches [`package.json`](package.json) `engines` and [`.nvmrc`](.nvmrc) |
+| **Node.js 22+** | Matches [`package.json`](package.json) `engines` and [`.nvmrc`](.nvmrc) |
 | **pnpm** | Package manager (`corepack enable` then `corepack prepare pnpm@10.33.0 --activate`, or install pnpm per [pnpm.io](https://pnpm.io/installation)) |
 | **Rust (stable)** + **rustup** | Builds the WASM parser |
 | **wasm-pack** | `cargo install wasm-pack` |
