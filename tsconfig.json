@@ -1,5 +1,5 @@
 {
-  "include": ["**/*.ts", "**/*.tsx", "data/poem_variations.js"],
+  "include": ["**/*.ts", "**/*.tsx", "**/*.d.ts", "data/poem_variations.js"],
   "compilerOptions": {
     "allowJs": true,
     "target": "ES2022",
@@ -18,6 +18,7 @@
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,
+    "resolveJsonModule": true,
 
     /* Linting */
     "skipLibCheck": true,

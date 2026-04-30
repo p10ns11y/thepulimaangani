@@ -18,6 +18,7 @@
     "preview": "vite preview",
     "test": "pnpm run test:rust && pnpm run test:frontend",
     "test:rust": "cd tamil-seiyul-alagi  && cargo test",
+    "dump:test-fixture": "cd tamil-seiyul-alagi && cargo run --example dump_live_preview_fixture",
     "test:frontend": "vitest run",
     "test:frontend:coverage": "vitest run --coverage",
     "crap:report": "python3 dx/crap_report.py --lizard-xml lizard-report.xml --rust-cov tamil-seiyul-alagi/llvm-cov-summary.json --vitest-summary coverage/coverage-summary.json --out-md crap-report.md",

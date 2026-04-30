@@ -114,7 +114,7 @@ jobs:
         run: |
           lizard tamil-seiyul-alagi/src src \
             --exclude tamil-seiyul-alagi/src/wasm \
-            -o lizard-report.xml
+            -X -o lizard-report.xml
 
       - name: Merge CRAP report
         run: |

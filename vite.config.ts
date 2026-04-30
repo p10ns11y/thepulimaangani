@@ -12,20 +12,6 @@ import tailwindcss from '@tailwindcss/vite'
 const config = defineConfig({
   resolve: { tsconfigPaths: true },
   plugins: [devtools(), tailwindcss(), tanstackStart(), nitro(), viteReact()],
-  test: {
-    coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json-summary'],
-      reportsDirectory: './coverage',
-      include: ['src/**/*.{ts,tsx}'],
-      exclude: [
-        'src/**/*.test.{ts,tsx}',
-        'src/**/__tests__/**',
-        'src/routeTree.gen.ts',
-        'src/wasm/**',
-      ],
-    },
-  },
 })
 
 export default config
