@@ -35,7 +35,7 @@ coverage
 *.lcov
 
 # Local CRAP / complexity CI artifacts
-/lizard-report.xml
+/lizard-rust.xml
 /crap-report.md
 /tamil-seiyul-alagi/llvm-cov-summary.json
 

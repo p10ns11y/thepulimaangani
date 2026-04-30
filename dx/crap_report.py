@@ -132,7 +132,13 @@ def pick_coverage(path: str, rust: dict[str, float], ts: dict[str, float]) -> fl
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--lizard-xml", type=Path, required=True)
+    ap.add_argument(
+        "--lizard-xml",
+        type=Path,
+        nargs="+",
+        required=True,
+        help="One or more Lizard XML reports (e.g. Rust dir + TS dir separately — mixed trees break -X).",
+    )
     ap.add_argument("--rust-cov", type=Path, help="cargo-llvm-cov JSON summary")
     ap.add_argument("--vitest-summary", type=Path, help="Vitest coverage-summary.json")
     ap.add_argument("--out-md", type=Path, default=Path("crap-report.md"))
@@ -140,7 +146,15 @@ def main() -> int:
     ap.add_argument("--top", type=int, default=25)
     args = ap.parse_args()
 
-    file_cc = load_lizard_xml(args.lizard_xml)
+    file_cc: list[tuple[str, float]] = []
+    for lx in args.lizard_xml:
+        if not lx.exists():
+            print(f"WARN: Lizard XML missing, skip: {lx}", file=sys.stderr)
+            continue
+        try:
+            file_cc.extend(load_lizard_xml(lx))
+        except ET.ParseError as e:
+            print(f"WARN: Invalid Lizard XML {lx}: {e}", file=sys.stderr)
     rust_cov = load_rust_llvm_cov_summary(args.rust_cov) if args.rust_cov and args.rust_cov.exists() else {}
     ts_cov = load_vitest_json_summary(args.vitest_summary) if args.vitest_summary and args.vitest_summary.exists() else {}
 

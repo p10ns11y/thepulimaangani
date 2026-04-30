@@ -110,16 +110,16 @@ jobs:
       - name: Frontend tests + coverage (json-summary)
         run: pnpm run test:frontend:coverage
 
-      - name: Lizard XML (Rust + TS sources)
+      - name: Lizard XML (parser crate only — full `src/` tree breaks Lizard `-X` XML output)
         run: |
-          lizard tamil-seiyul-alagi/src src \
+          lizard tamil-seiyul-alagi/src \
             --exclude tamil-seiyul-alagi/src/wasm \
-            -X -o lizard-report.xml
+            -X -o lizard-rust.xml
 
       - name: Merge CRAP report
         run: |
           python3 dx/crap_report.py \
-            --lizard-xml lizard-report.xml \
+            --lizard-xml lizard-rust.xml \
             --rust-cov tamil-seiyul-alagi/llvm-cov-summary.json \
             --vitest-summary coverage/coverage-summary.json \
             --out-md crap-report.md
@@ -130,6 +130,6 @@ jobs:
           name: crap-analysis
           path: |
             crap-report.md
-            lizard-report.xml
+            lizard-rust.xml
             tamil-seiyul-alagi/llvm-cov-summary.json
             coverage/coverage-summary.json
