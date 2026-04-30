@@ -5,7 +5,7 @@ Language and grammar tools
 
 ## Tamil Prosody Parser
 
-A modern web application for analyzing Tamil poetry prosody, built with React, Rust WebAssembly, and TanStack Start. thepulimaangani provides detailed analysis of Tamil verses including syllable classification (நேர்/நிரை), foot types, metre identification, and prosodic structure.
+A modern web application for analyzing Tamil poetry prosody, built with React, Rust WebAssembly, and TanStack Start. thepulimaangani provides syllable classification (நேர்/நிரை), word-level feet as **Ner/Nirai patterns**, metre **hypotheses**, consecutive-foot **linkage** (with classical talai names still a roadmap item), and structured JSON for the UI. See [ARCHITECTURE.md](./ARCHITECTURE.md), `tamil-seiyul-alagi/MACHINE_FIRST_SPEC.md`, and [issue #49](https://github.com/p10ns11y/thepulimaangani/issues/49) for shipped vs planned behaviour.
 
 ## Project History
 
@@ -14,11 +14,10 @@ This project is a complete rewrite of the original [Avalokitam](https://github.c
 ## Features
 
 - **Syllable Analysis**: Classifies syllables as நேர் (Ner) or நிரை (Nirai)
-- **Foot Classification**: Identifies traditional Tamil prosodic feet (தேமா, புளிமா, கூவிளம், etc.)
-- **Metre Detection**: Recognizes metre types like வெண்பா, வெண்கலிப்பா, ஆசிரியப்பா, and கலிப்பா
-- **Letter Counting**: Counts vowels, consonants, and special Tamil characters
-- **Foot Group Calculation**: Analyzes and calculates foot groups based on traditional rules
-- **Bond Analysis**: Analyzes talai (prosodic linkages) between feet
+- **Foot grouping**: One foot per linguistic word; machine-readable **Ner/Nirai pattern** strings (classical foot names are a presentation/UI follow-up)
+- **Metre hypotheses**: Ranked metre candidates from the parser (heuristic; full classical rules are roadmap — see `tamil-seiyul-alagi/src/metre.rs` and `tamil-seiyul-alagi/MACHINE_FIRST_SPEC.md`)
+- **Letter counting**: Grapheme-based count in `ParseResult`
+- **Linkage structure**: Consecutive feet with line/word positions; **`VenTalai` placeholder** on every edge until transition-table linkage lands
 - **Real-time Parsing**: Instant analysis of Tamil text input
 - **Export Functionality**: Export analysis results as JSON for further processing
 
@@ -26,7 +25,7 @@ This project is a complete rewrite of the original [Avalokitam](https://github.c
 
 ### Prerequisites
 
-- Node.js 18 or higher
+- Node.js 20 or higher (see `package.json` `engines` and [`.nvmrc`](.nvmrc))
 - Rust 1.70 or higher (for building the WebAssembly parser)
 - wasm-pack (for WebAssembly compilation)
 - `rsync` (optional but recommended for local dev) to sync `wasm-pack` output into `src/wasm/` — see [`build/rsync_rust_wasm_to_web.sh`](build/rsync_rust_wasm_to_web.sh). **Production** (Vercel, minimal CI) uses [`build/copy_wasm_to_src.sh`](build/copy_wasm_to_src.sh) with `cp` when `rsync` is not installed ([`build/tamil_seiyul_alagi_wasm.sh`](build/tamil_seiyul_alagi_wasm.sh) picks automatically).
@@ -66,35 +65,9 @@ The build process automatically builds the WebAssembly parser and bundles it wit
 
 ## Testing
 
-The project includes comprehensive tests for both the Rust WebAssembly parser and the React frontend.
+CI (see [`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs `pnpm run build`, `pnpm run typecheck`, and `pnpm run test` (Rust `cargo test` + Vitest).
 
-### Coverage Results
-- **Rust Code**: 90.08% line coverage (336/373 lines covered)
-- **Frontend**: 4 comprehensive tests covering input validation, Tamil text recognition, and component behavior
-- **Total Tests**: 29 tests across both Rust and frontend
-
-### Test Coverage
-
-- **Rust Tests**: 21 unit and integration tests covering core parsing functions, metre detection, bond analysis, and error handling
-- **Frontend Tests**: 4 tests covering input validation, Tamil Unicode recognition, and component behavior
-
-### Test Categories
-
-- **Core Function Tests**: Syllable detection, letter counting, foot classification
-- **Metre Detection Tests**: Venpaa, Venkalippaa, Asiriyappaa, Kalippaa validation
-- **Integration Tests**: Full pipeline testing with real poem examples from external data sources
-- **Error Handling**: Invalid input, Unicode edge cases, performance validation
-- **Frontend Tests**: Input validation, Tamil Unicode recognition, component behavior
-- **Performance Tests**: Response time validation and efficiency checks
-
-### Testing Infrastructure
-
-- **Rust**: Built-in test framework with 25 comprehensive unit and integration tests
-- **Frontend**: Vitest + React Testing Library with jsdom environment
-- **Coverage**: cargo-tarpaulin for Rust, configured for future frontend coverage reporting
-- **CI/CD**: Configured test scripts ready for automated pipelines
-
-### Running Tests (In Progress)
+### Commands
 
 ```bash
 # Run all tests (Rust + Frontend)
@@ -105,14 +78,21 @@ pnpm run test:rust
 
 # Run only frontend tests
 pnpm run test:frontend
+```
 
-# Run Rust tests with coverage (requires cargo-tarpaulin)
-# Total rethink, machine-first approach prosody
-cd tamil-seiyul-alagi && cargo tarpaulin
+### Optional: Rust line coverage (local)
 
-# Main prosody parser implementation
+Requires [cargo-tarpaulin](https://github.com/xd009642/tarpaulin):
+
+```bash
 cd tamil-seiyul-alagi && cargo tarpaulin
 ```
+
+For a combined complexity + coverage report matching CI inputs, see **`pnpm run crap:local`** and [README § CI and deployment](README.md#ci-and-deployment).
+
+### Coverage targets
+
+Project guideline: maintain **high coverage** in both Rust and frontend (see root `AGENTS.md`). Exact line percentages change with the tree; use tarpaulin / `crap-report.md` for current numbers.
 
 `rust-parser-prototype/` contains a quick prototype build based on original Avalokitam. It is archived for reference and is not meant to be extended.
 

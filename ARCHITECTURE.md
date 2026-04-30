@@ -54,11 +54,20 @@ The Rust parser handles all Tamil prosody analysis:
 ```
 tamil-seiyul-alagi/
 ├── src/
-│   └── lib.rs          # Main parser implementation
+│   ├── lib.rs              # parse_poem, parse_poem_wasm, ParseResult
+│   ├── word_scope.rs       # Linguistic words → syllables
+│   ├── syllable_builder.rs # Ner/Nirai syllables
+│   ├── foot.rs / foot_pattern.rs  # One foot per word; Ner-Nirai pattern string
+│   ├── linkage.rs          # Consecutive-foot edges (placeholder linkage type)
+│   ├── metre.rs            # Metre hypotheses (heuristic)
+│   ├── poem_tree.rs        # Structured poem tree
+│   └── presentation.rs     # Human-facing labels (not wired through WASM yet)
 ├── pkg/                # Generated WebAssembly bindings
 ├── Cargo.toml          # Rust dependencies
 └── target/             # Build artifacts
 ```
+
+**Accuracy note:** User-facing copy sometimes describes classical feet and full talai sets; the shipped WASM JSON uses **Ner/Nirai foot patterns**, **VenTalai-only** linkage types until the transition table lands, and **heuristic** metre ranking. See `tamil-seiyul-alagi/MACHINE_FIRST_SPEC.md`, `QUALITY_CRAP_BASELINE.md`, and [issue #49](https://github.com/p10ns11y/thepulimaangani/issues/49).
 
 ### 3. Build Configuration
 
@@ -82,15 +91,15 @@ The WebAssembly parser is built separately and its artifacts are copied to `src/
 ## Data Flow
 
 1. **User Input**: Tamil text entered in React component
-2. **WASM Call**: Frontend calls `parse_poem()` function via WebAssembly
-3. **Parsing Pipeline**:
-   - Text preprocessing and cleaning
-   - Syllable detection (நேர்/நிரை classification)
-   - Foot identification (தேமா, புளிமா, கூவிளம், கருவிளம், etc.)
-   - Metre analysis (வெண்பா, வெண்கலிப்பா, ஆசிரியப்பா, கலிப்பா, etc.)
-   - Complete bond/linkage calculation (கலித்தளை, வெண்டளை, ஆசிரியத்தளை, etc.)
-4. **Result Serialization**: Analysis results serialized to JSON
-5. **Display**: React component renders structured analysis
+2. **WASM Call**: Frontend calls `parse_poem_wasm(text)` (Rust `parse_poem` with default options: `uyir_u` normalization on)
+3. **Parsing Pipeline** (current implementation):
+   - Text preprocessing and normalization
+   - Syllable detection (நேர் / நிரை) per linguistic word
+   - **Feet:** one foot per word; `foot_type` is a hyphenated **Ner/Nirai** pattern (not classical தேமா names in JSON)
+   - **Metre:** ranked hypotheses; simple heuristics, not full classical rule engines yet
+   - **Linkage:** consecutive feet with line/word positions; **`VenTalai` placeholder** on every edge until table-driven classification exists
+4. **Result Serialization**: `ParseResult` to JSON in the browser
+5. **Display**: React reads JSON via TypeScript adapters (`adaptWasmJsonToParsedPoem`, etc.); classical labels are a **presentation-layer** follow-up
 
 ## Core Algorithms
 
@@ -101,33 +110,17 @@ The parser implements traditional Tamil prosody rules:
 - **நேர் (Ner)**: Simple syllables with consonant-vowel patterns
 - **நிரை (Nirai)**: Complex syllables with consonant-vowel-consonant patterns
 
-### Foot Types
+### Foot grouping (current)
 
-Recognizes traditional Tamil prosodic feet:
+The engine groups syllables into **one foot per linguistic word** and sets `foot_type` to a machine-readable **Ner/Nirai sequence** (for example `Ner-Ner`). Mapping those patterns to classical names (தேமா, புளிமா, கூவிளம், கருவிளம்) is intended for **`presentation.rs`** / UI, not for the raw WASM JSON today.
 
-- தேமா (tEmA): நேர்-நேர் pattern
-- புளிமா (puLimA): நிரை-நேர் pattern
-- கூவிளம் (kUviLa_m): நேர்-நிரை pattern
-- கருவிளம் (karuviLa_m): நிரை-நிரை pattern
+### Metre detection (current)
 
-### Metre Detection
+`metre.rs` produces **hypotheses** with scores; it does **not** yet encode full classical constraints for வெண்பா, வெண்கலிப்பா, ஆசிரியப்பா, கலிப்பா, etc. Treat catalogue metres as **targets** for `MACHINE_FIRST_SPEC.md`, not guarantees from the current build.
 
-Implements rules for major Tamil metres:
+### Linkage / talai (current)
 
-- **வெண்பா (Venpaa)**: 4-foot lines with specific foot type restrictions
-- **வெண்கலிப்பா (VenkaliPpaa)**: Multi-line poems with 4+3 foot structure and bond requirements
-- **ஆசிரியப்பா (Asiriyappaa)**: 4-line poems with 4-foot lines and strict bonding rules
-- **கலிப்பா (Kalippaa)**: Flexible multi-line poems with various foot count patterns (4-3-4-3, etc.)
-
-### Bond Analysis (Talai)
-
-Complete talai calculation system with traditional Tamil prosodic linkages:
-
-- **கலித்தளை (Kali Talai)**: Specific linkage patterns requiring kali bonds
-- **வெண்டளை (Ven Talai)**: Other linkage types including ven bonds
-- **ஆசிரியத்தளை (Asiriya Talai)**: Scholarly bonds with strict requirements
-- **இயற்சீர் வெண்டளை (Iyar Seer Ven Talai)**: Natural flow linkages
-- **நேரொன்றிய ஆசிரியத்தளை (Ner Ondriya Asiriya Talai)**: Direct scholarly connections
+Consecutive feet get a linkage record with **positions**; **`linkage_type` is `VenTalai` for every pair** with `is_valid: true` until the transition-table linkage stage is implemented. Classical talai names (கலித்தளை, ஆசிரியத்தளை, …) describe the **intended** system, not current per-edge classification in JSON.
 
 ## Performance Considerations
 
@@ -190,8 +183,8 @@ Vite automatically handles serving the `.wasm` files with the correct `applicati
 ### Type Safety
 
 - **Rust**: Strong typing with serde serialization
-- **TypeScript**: Interface definitions for WASM bindings
-- **Runtime Validation**: JSON schema validation for results
+- **TypeScript**: Typed adapters and tests for WASM JSON shapes (`adaptWasmJsonToParsedPoem`, Vitest)
+- **Runtime validation:** not via a separate JSON Schema pipeline; invalid shapes surface as TypeScript/test failures. Add explicit schema validation only if the project adopts it.
 
 ## Future Enhancements
 

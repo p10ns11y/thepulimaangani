@@ -11,7 +11,7 @@ We maintain a **strict separation** between:
 
 ## 1. Calculation Layer (Core)
 
-**Location**: `src/` (parser modules)
+**Location**: `tamil-seiyul-alagi/src/` (parser modules; crate root `src/` below)
 
 **Responsibilities**:
 - Convert text → `ProsodicUnit[]`
@@ -33,7 +33,7 @@ We maintain a **strict separation** between:
 
 ## 2. Display / Presentation Layer (Human-facing)
 
-**Location**: `src/presentation/` (or `src/formatter/`)
+**Location**: `tamil-seiyul-alagi/src/presentation.rs` (single module today; not consumed on the WASM path until wired from the app)
 
 **Responsibilities**:
 - Convert machine data into human-readable form
@@ -61,11 +61,13 @@ We maintain a **strict separation** between:
 
 ---
 
-## Implementation Plan
+## Implementation status
 
-1. Keep `ParseResult` as the **single source of truth** from the calculation layer
-2. Create a `Presentation` module that transforms `ParseResult` into display-friendly structures
-3. Move all traditional foot name logic, talai labels, and educational text into the presentation layer
+1. `ParseResult` from the calculation layer is the structured JSON/WASM output.
+2. `presentation.rs` exists for human-facing labels (foot pattern display, etc.); **wire it** from TS/WASM when the UI should show classical names.
+3. Classical foot names and full talai labels in the UI remain a **follow-up** once linkage/metre match `MACHINE_FIRST_SPEC.md` more closely.
+
+See also `QUALITY_CRAP_BASELINE.md` and [issue #49](https://github.com/p10ns11y/thepulimaangani/issues/49) for doc/code alignment.
 
 ---
 
