@@ -3,6 +3,15 @@
 # sync-branches.sh — Simple One-Color-Per-Phase Version
 # Clean, consistent, and beautiful
 #
+# ---------------------------------------------------------------------------
+# DANGER / HANDOVER (especially for autonomous agents)
+#
+# This script can DESTROY local git state at scale: every local branch except
+# the default branch and `legacy` is `git reset --hard` to origin/<default>.
+# It may also `git push --force-with-lease` every such branch when PUSH=1.
+# See dx/sync-branches-architecture-simple.md § "Autonomous agents & safety".
+# ---------------------------------------------------------------------------
+#
 
 set -euo pipefail
 
