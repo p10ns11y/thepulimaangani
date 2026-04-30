@@ -18,6 +18,8 @@ pub struct FootPlacement {
     pub syllable_range: Range<usize>,
 }
 
+/// Feet without syllable index ranges (same grouping as [`group_into_feet_with_ranges`]).
+#[allow(dead_code)] // Public helper for tooling / future batch APIs; pipeline uses `with_ranges`.
 pub fn group_into_feet(syllables: &[Syllable]) -> Vec<Foot> {
     group_into_feet_with_ranges(syllables)
         .into_iter()

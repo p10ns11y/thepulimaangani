@@ -22,11 +22,16 @@ import {
   parsedSyllable,
 } from '#/lib/__tests__/fixtures/parsedPoemBuilders'
 import { SAMPLE_POEM_THREE_LINES } from '#/lib/__tests__/fixtures/sampleTamilPoems'
+import { adaptWasmJsonToParsedPoem } from '#/lib/adaptWasmParseJson'
 import {
   createWasmParsePoem,
+  createWasmParseRaw,
   isWasmPkgBuilt,
   type WasmParseFn,
+  type WasmParseRawFn,
 } from '#/lib/__tests__/wasmParseHarness'
+
+export { SAMPLE_POEM_THREE_LINES }
 
 describe('live preview layout (no WASM)', () => {
   it('when physical line count equals parsed.lines, feet and groups are populated', () => {
@@ -77,9 +82,10 @@ describe('live preview layout (no WASM)', () => {
 
 describe.skipIf(!isWasmPkgBuilt())('live preview + WASM integration', () => {
   let parsePoem: WasmParseFn
+  let parseRaw: WasmParseRawFn
 
   beforeAll(async () => {
-    parsePoem = await createWasmParsePoem()
+    ;[parsePoem, parseRaw] = await Promise.all([createWasmParsePoem(), createWasmParseRaw()])
   })
 
   it('sample poem: physical lines match WASM lines; syllables not collapsed to row 0', async () => {
@@ -181,11 +187,17 @@ describe.skipIf(!isWasmPkgBuilt())('live preview + WASM integration', () => {
     }
   })
 
-  it('WASM JSON round-trips through adaptWasmJsonToParsedPoem (harness contract)', async () => {
+  it('adaptWasmJsonToParsedPoem on raw WASM JSON matches harness ParsedPoem', async () => {
     const text = SAMPLE_POEM_THREE_LINES
-    const parsed = await parsePoem(text)
-    expect(parsed).not.toBeNull()
-    expect(parsed!.original_text).toBeTruthy()
-    expect(Array.isArray(parsed!.lines)).toBe(true)
+    const raw = await parseRaw(text)
+    expect(raw).not.toBeNull()
+    const viaAdapter = adaptWasmJsonToParsedPoem(raw!)
+    const viaHarness = await parsePoem(text)
+    expect(viaAdapter).not.toBeNull()
+    expect(viaHarness).not.toBeNull()
+    expect(viaAdapter!.lines.length).toBe(viaHarness!.lines.length)
+    expect(viaAdapter!.lines.map((ln) => ln.feet.length)).toEqual(
+      viaHarness!.lines.map((ln) => ln.feet.length),
+    )
   })
 })
