@@ -131,31 +131,35 @@ pub fn foot_pattern_display(pattern: &str) -> String {
 }
 
 fn to_display_talai(t: &Linkage) -> DisplayTalai {
+    use crate::linkage::{LinkageSpecialType, LinkageType};
+    let talai_type = match t.linkage_special_type {
+        LinkageSpecialType::NerondriyaAasiriyathalai => {
+            "நேரொன்றிய ஆசிரியத்தளை".to_string()
+        }
+        LinkageSpecialType::NiraiondriyaAasiriyathalai => {
+            "நிரையொன்றிய ஆசிரியத்தளை".to_string()
+        }
+        LinkageSpecialType::IyarcirVenthalai => "இயற்சீர் வெண்டளை".to_string(),
+        LinkageSpecialType::VencirVenthalai => "வெஞ்சீர் வெண்டளை".to_string(),
+        LinkageSpecialType::Kalithalai => "கலித்தளை".to_string(),
+        LinkageSpecialType::OndriyaVanchithalai => "ஒன்றிய வஞ்சித்தளை".to_string(),
+        LinkageSpecialType::OndrathaVanchithalai => "ஒன்றாத வஞ்சித்தளை".to_string(),
+        LinkageSpecialType::Unknown => match &t.linkage_type {
+            LinkageType::VenTalai => "வெண்டளை".to_string(),
+            LinkageType::AsiriyaTalai => "ஆசிரியத்தளை".to_string(),
+            LinkageType::Venthalai => "வெண்டளை".to_string(),
+            LinkageType::Aasiriyathalai => "ஆசிரியத்தளை".to_string(),
+            LinkageType::Kalithalai => "கலித்தளை".to_string(),
+            LinkageType::Vanjithalai => "வஞ்சித்தளை".to_string(),
+            LinkageType::Other(s) => s.clone(),
+        },
+    };
     DisplayTalai {
         from: t.from_foot,
         to: t.to_foot,
         from_line: t.from.line_index,
         to_line: t.to.line_index,
-        talai_type: match t.linkage_type {
-            crate::linkage::LinkageType::VenTalai => "வெண்டளை".to_string(),
-            crate::linkage::LinkageType::AsiriyaTalai => "ஆசிரியத்தளை".to_string(),
-            crate::linkage::LinkageType::NerondriyaAasiriyathalai => {
-                "நேரொன்றிய ஆசிரியத்தளை".to_string()
-            }
-            crate::linkage::LinkageType::NiraiondriyaAasiriyathalai => {
-                "நிரையொன்றிய ஆசிரியத்தளை".to_string()
-            }
-            crate::linkage::LinkageType::IyarcirVenthalai => "இயற்சீர் வெண்டளை".to_string(),
-            crate::linkage::LinkageType::VencirVenthalai => "வெஞ்சீர் வெண்டளை".to_string(),
-            crate::linkage::LinkageType::Kalithalai => "கலித்தளை".to_string(),
-            crate::linkage::LinkageType::OndriyaVanchithalai => {
-                "ஒன்றிய வஞ்சித்தளை".to_string()
-            }
-            crate::linkage::LinkageType::OndrathaVanchithalai => {
-                "ஒன்றாத வஞ்சித்தளை".to_string()
-            }
-            crate::linkage::LinkageType::Other(ref s) => s.clone(),
-        },
+        talai_type,
         is_valid: t.is_valid,
     }
 }

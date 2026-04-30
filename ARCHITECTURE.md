@@ -97,7 +97,7 @@ The WebAssembly parser is built separately and its artifacts are copied to `src/
    - Syllable detection (நேர் / நிரை) per linguistic word
    - **Feet:** one foot per word; `foot_type` is a hyphenated **Ner/Nirai** pattern (not classical தேமா names in JSON)
    - **Metre:** ranked hypotheses; simple heuristics, not full classical rule engines yet
-   - **Linkage:** consecutive feet with line/word positions; `linkage_type` + `linkage_category` from the eight-way transition table ([issue #36](https://github.com/p10ns11y/thepulimaangani/issues/36)); `VenTalai` is reserved for malformed/empty feet only
+   - **Linkage:** consecutive feet with line/word positions; **`linkage_type`** = coarse family (Venthalai, Aasiriyathalai, Kalithalai, Vanjithalai) and **`linkage_special_type`** = issue #36 row (e.g. `VencirVenthalai`); `VenTalai` / `Unknown` only for malformed/empty feet
 4. **Result Serialization**: `ParseResult` to JSON in the browser
 5. **Display**: React reads JSON via TypeScript adapters (`adaptWasmJsonToParsedPoem`, etc.); classical labels are a **presentation-layer** follow-up
 
@@ -120,7 +120,7 @@ The engine groups syllables into **one foot per linguistic word** and sets `foot
 
 ### Linkage / talai (current)
 
-Consecutive feet get a linkage record with **positions** plus **`linkage_type`** and **`linkage_category`**. Classification uses the **last acai** of the left foot mapped to cir class **Maa / Vilai / Kaai / Kani** (1–2 acai feet use Maa/Vilai by last Ner/Nirai; 3+ acai feet use Kaai/Kani) and the **first acai** (Ner/Nirai) of the right foot, per [issue #36](https://github.com/p10ns11y/thepulimaangani/issues/36). Tamil display strings for those types live in **`presentation.rs`** when wired to the UI.
+Consecutive feet get a linkage record with **positions** plus **`linkage_type`** (coarse family for metre hints) and **`linkage_special_type`** (nuanced classification: Nerondriya Aasiriyathalai, Iyarcir Venthalai, …). The table uses the **last acai** of the left foot mapped to cir class **Maa / Vilam** (1–2 acai; Vilam = விளம்) / **Kaai / Kani** (3+) and the **first acai** of the right foot, per [issue #36](https://github.com/p10ns11y/thepulimaangani/issues/36). Tamil display strings use **`presentation.rs`** when wired to the UI.
 
 ## Performance Considerations
 

@@ -24,7 +24,7 @@ pub use foot::{Foot, FootPlacement};
 pub use foot_pattern::foot_pattern;
 pub use letter::Letter;
 pub use linkage::{
-    CirAcaiClass, FootPosition, Linkage, LinkageCategory, LinkageType, Talai, TalaiType,
+    CirAcaiClass, FootPosition, Linkage, LinkageSpecialType, LinkageType, Talai, TalaiType,
 };
 pub use metre::MetreType;
 pub use poem_tree::{
