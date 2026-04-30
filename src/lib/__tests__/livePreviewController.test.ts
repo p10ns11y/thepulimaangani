@@ -5,27 +5,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { LivePreviewController } from '#/lib/livePreviewController'
 import { normalizePoemText } from '#/lib/poemTextNormalize'
+import { wasmLivePreviewControllerStub } from '#/lib/__tests__/fixtures/wasmParseJsonBuilders'
+import { runWasmParse } from '#/lib/wasmParse'
 import type { LivePreviewState } from '#/types/livePreview'
 
 vi.mock('#/lib/wasmParse', () => ({
   runWasmParse: vi.fn(async (text: string) => {
-    const norm = text.replace(/\r\n/g, '\n')
-    return JSON.stringify({
-      original_text: norm,
-      normalized_text: norm,
-      letter_count: 0,
-      vikalpa_count: 0,
-      syllables: [{ text: 'a', syllable_type: 'Ner' }],
-      feet: [{ foot_type: 'Ner', syllables: [{ text: 'a', syllable_type: 'Ner' }] }],
-      lines: [
-        { line_class: '—', feet: [{ foot_type: 'Ner', syllables: [{ text: 'a', syllable_type: 'Ner' }] }] },
-      ],
-      poem: { lines: [], syllables_flat: [], normalized_text: norm, linkage: [] },
-      linkage: [],
-      talai: [],
-      metre_type: null,
-      errors: [],
-    })
+    const canon = text.replace(/\r\n/g, '\n')
+    return JSON.stringify(wasmLivePreviewControllerStub(canon))
   }),
 }))
 
@@ -39,7 +26,7 @@ describe('LivePreviewController', () => {
     vi.useRealTimers()
   })
 
-  it('uses normalizePoemText for cache; trailing newline vs none are different parses', async () => {
+  it('cache key: trailing newline vs none yields different normalizePoemText(parsed.original_text)', async () => {
     const states: LivePreviewState[] = []
     const c = new LivePreviewController(0, (s) => {
       states.push(structuredClone(s))
@@ -59,6 +46,28 @@ describe('LivePreviewController', () => {
     const last = readyAfterSecond[readyAfterSecond.length - 1]!
     const normSecond = normalizePoemText(last.parsed!.original_text)
     expect(normFirst).not.toBe(normSecond)
+
+    c.dispose()
+  })
+
+  it('does not call WASM when normalized editor text matches the last ready parse (cache hit)', async () => {
+    const wasmSpy = vi.mocked(runWasmParse)
+
+    const states: LivePreviewState[] = []
+    const c = new LivePreviewController(0, (s) => {
+      states.push(structuredClone(s))
+    })
+
+    c.setSource('அ')
+    await vi.runAllTimersAsync()
+    expect(wasmSpy.mock.calls.length).toBe(1)
+    expect(states.some((s) => s.status === 'ready' && s.parsed != null)).toBe(true)
+
+    wasmSpy.mockClear()
+
+    c.setSource('அ')
+    await vi.runAllTimersAsync()
+    expect(wasmSpy.mock.calls.length).toBe(0)
 
     c.dispose()
   })

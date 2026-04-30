@@ -79,6 +79,8 @@ pub fn analyze_linkage(foot_positions: &[FootPosition]) -> Vec<Linkage> {
 pub type Talai = Linkage;
 pub type TalaiType = LinkageType;
 
+/// Traditional name for [`analyze_linkage`] (talai = bond between consecutive feet).
+#[allow(dead_code)] // Kept for API symmetry with `Talai` / migration call sites.
 pub fn analyze_talai(foot_positions: &[FootPosition]) -> Vec<Talai> {
     analyze_linkage(foot_positions)
 }

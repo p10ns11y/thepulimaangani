@@ -9,6 +9,10 @@
 //!
 //! Logic layer uses readable foot **patterns** like `Ner-Ner`, `Nirai-Nirai-Nirai`.
 //! Here we map those to Tamil mnemonics (தேமா, …) plus simple Latin (thema, …).
+//!
+//! Much of this module is unused in the WASM path today; suppress `dead_code` until a UI consumer wires it in.
+
+#![allow(dead_code)]
 
 use crate::{Foot, Linkage, MetreType, ParseResult, Syllable};
 
@@ -138,5 +142,15 @@ fn to_display_talai(t: &Linkage) -> DisplayTalai {
             crate::linkage::LinkageType::Other(ref s) => s.clone(),
         },
         is_valid: t.is_valid,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn foot_pattern_display_maps_known_pattern() {
+        assert_eq!(foot_pattern_display("Ner-Ner"), "தேமா (thema)".to_string());
     }
 }

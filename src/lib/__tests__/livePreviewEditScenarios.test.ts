@@ -15,10 +15,13 @@ import { normalizePoemText } from '#/lib/poemTextNormalize'
 import { physicalPoemLines } from '#/lib/mapFeetToPhysicalLines'
 import type { ParsedPoem } from '#/types/parsedPoem'
 
+import { adaptWasmJsonToParsedPoem } from '#/lib/adaptWasmParseJson'
 import {
   createWasmParsePoem,
+  createWasmParseRaw,
   isWasmPkgBuilt,
   type WasmParseFn,
+  type WasmParseRawFn,
 } from '#/lib/__tests__/wasmParseHarness'
 
 /** Same poem shape as mobile repro — multi-line Tamil with spaces & newline endings */
@@ -138,9 +141,10 @@ describe('live preview layout (no WASM)', () => {
 
 describe.skipIf(!isWasmPkgBuilt())('live preview + WASM integration', () => {
   let parsePoem: WasmParseFn
+  let parseRaw: WasmParseRawFn
 
   beforeAll(async () => {
-    parsePoem = await createWasmParsePoem()
+    ;[parsePoem, parseRaw] = await Promise.all([createWasmParsePoem(), createWasmParseRaw()])
   })
 
   it('parses sample poem and returns structured lines count matching physicalPoemLines', async () => {
@@ -248,19 +252,17 @@ describe.skipIf(!isWasmPkgBuilt())('live preview + WASM integration', () => {
     }
   })
 
-  it('adaptWasmJsonToParsedPoem round-trip matches parse_poem_wasm JSON shape', async () => {
+  it('adaptWasmJsonToParsedPoem on raw WASM JSON matches harness ParsedPoem', async () => {
     const text = SAMPLE_POEM_THREE_LINES
-    const parsed = await parsePoem(text)
-    expect(parsed).not.toBeNull()
-    expect(parsed!.original_text).toBeTruthy()
-    expect(Array.isArray(parsed!.lines)).toBe(true)
-  })
-})
-
-describe('live preview controller cache key contract (documented behaviour)', () => {
-  it('same normalizePoemText(editor) === normalizePoemText(parsed.original_text) implies cache hit path', () => {
-    const editor = 'அஃ கு '
-    const parsedNorm = normalizePoemText(editor)
-    expect(parsedNorm).toBe(normalizePoemText(editor))
+    const raw = await parseRaw(text)
+    expect(raw).not.toBeNull()
+    const viaAdapter = adaptWasmJsonToParsedPoem(raw!)
+    const viaHarness = await parsePoem(text)
+    expect(viaAdapter).not.toBeNull()
+    expect(viaHarness).not.toBeNull()
+    expect(viaAdapter!.lines.length).toBe(viaHarness!.lines.length)
+    expect(viaAdapter!.lines.map((ln) => ln.feet.length)).toEqual(
+      viaHarness!.lines.map((ln) => ln.feet.length),
+    )
   })
 })

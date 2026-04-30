@@ -41,8 +41,19 @@ export function isWasmPkgBuilt(): boolean {
 
 export type WasmParseFn = (poemText: string) => Promise<ParsedPoem | null>
 
+export type WasmParseRawFn = (poemText: string) => Promise<unknown | null>
+
 /** Throws if bundle missing — callers should guard with `isWasmPkgBuilt()`. */
 export async function createWasmParsePoem(): Promise<WasmParseFn> {
+  const parseRaw = await createWasmParseRaw()
+  return async (poemText: string) => {
+    const json = await parseRaw(poemText)
+    return json == null ? null : adaptWasmJsonToParsedPoem(json)
+  }
+}
+
+/** Raw JSON from `parse_poem_wasm` (before {@link adaptWasmJsonToParsedPoem}). */
+export async function createWasmParseRaw(): Promise<WasmParseRawFn> {
   const bundle = resolveWasmBundle()
   if (!bundle) {
     throw new Error(
@@ -59,8 +70,7 @@ export async function createWasmParsePoem(): Promise<WasmParseFn> {
     const raw = parse_poem_wasm(poemText)
     if (typeof raw !== 'string' || raw.includes('Error:')) return null
     try {
-      const json: unknown = JSON.parse(raw)
-      return adaptWasmJsonToParsedPoem(json)
+      return JSON.parse(raw) as unknown
     } catch {
       return null
     }
