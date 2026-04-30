@@ -39,7 +39,7 @@ Thepulimaangani is a Tamil prosody analysis web application with React/TypeScrip
 
 - **Default branch:** `malar` (stable integration target on remote).
 
-- **Feature branch names:** pick a pollinator branch by the kind of work — see [trinity-and-native-agents/creators.md](trinity-and-native-agents/creators.md) (full table). Examples: `pattampoochi` for general frontend/UI, `thithali` for short UI prototypes, `vannathupoochi` for tokens/themes, `thumpi` for AI-heavy or deep architecture/parser work.
+- **Feature branch names:** pick by responsibility — start with [trinity-and-native-agents/AGENT_ROLES.md](trinity-and-native-agents/AGENT_ROLES.md) (one-page quick pick). Full pollinator table: [trinity-and-native-agents/creators.md](trinity-and-native-agents/creators.md). Examples: `pattampoochi` for general frontend/UI, `thithali` for short UI prototypes, `vannathupoochi` for tokens/themes, `thumpi` for AI-heavy or deep architecture, `theni` for parser/core logic.
 
 - **After every PR merge:** from the repo root, run `./dx/syncagents.sh` so local branches stay aligned with `origin/malar` (skips open PR heads and `legacy`). Use `PUSH=1` only when you intend to push updated tips. Details: [dx/sync-branches-architecture-simple.md](dx/sync-branches-architecture-simple.md).
 

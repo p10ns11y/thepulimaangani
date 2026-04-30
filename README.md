@@ -186,7 +186,7 @@ Reference materials and documentation are available in [.grok/study-materials/](
 
 ## Contribution
 
-**Git workflow:** default branch is `malar`. Pick a branch name from the pollinator table in [trinity-and-native-agents/creators.md](trinity-and-native-agents/creators.md). After merging a PR, run `./dx/syncagents.sh` from the repo root (see [dx/sync-branches-architecture-simple.md](dx/sync-branches-architecture-simple.md)).
+**Git workflow:** default branch is `malar`. Pick a role/branch using [trinity-and-native-agents/AGENT_ROLES.md](trinity-and-native-agents/AGENT_ROLES.md) (quick pick); full table in [trinity-and-native-agents/creators.md](trinity-and-native-agents/creators.md). After merging a PR, run `./dx/syncagents.sh` from the repo root (see [dx/sync-branches-architecture-simple.md](dx/sync-branches-architecture-simple.md)).
 
 Contributions are welcome! The project embraces a cosmic AI collaboration model:
 
