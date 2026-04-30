@@ -144,6 +144,49 @@ describe('adaptWasmJsonToParsedPoem', () => {
     expect(out!.lines[1]!.feet[0]!.syllables).toHaveLength(2)
   })
 
+  it('normalizes linkage edges and assigns global foot indices from poem tree', () => {
+    const wasm = wasmParseJsonFixture({
+      original_text: 'ab',
+      syllables: [],
+      feet: [],
+      lines: [],
+      poem: wasmPoem([
+        wasmPoemLine({
+          line_index: 0,
+          words: [
+            wasmWordFoot({
+              foot_type: 'Ner',
+              syllableNodes: [wasmSyllableNode('a', 'Ner')],
+              foot_index_global: 0,
+            }),
+            wasmWordFoot({
+              foot_type: 'Ner',
+              syllableNodes: [wasmSyllableNode('b', 'Ner')],
+              foot_index_global: 1,
+            }),
+          ],
+        }),
+      ]),
+      linkage: [
+        {
+          from_foot: 0,
+          to_foot: 1,
+          linkage_type: 'Venthalai',
+          linkage_special_type: 'IyarcirVenthalai',
+          is_valid: true,
+        },
+      ],
+    })
+
+    const out = adaptWasmJsonToParsedPoem(wasm)
+    expect(out).not.toBeNull()
+    expect(out!.lines[0]!.feet[0]!.foot_index_global).toBe(0)
+    expect(out!.lines[0]!.feet[1]!.foot_index_global).toBe(1)
+    expect(out!.linkage).toHaveLength(1)
+    expect(out!.linkage![0]!.linkage_type).toBe('Venthalai')
+    expect(out!.linkage![0]!.linkage_special_type).toBe('IyarcirVenthalai')
+  })
+
   it('maps null metre_type from Rust to em dash', () => {
     const wasm = wasmParseJsonFixture({
       original_text: 'ab',

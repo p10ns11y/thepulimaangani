@@ -1,4 +1,24 @@
-const lineClassMap: Record<string, string> = {
+/** Coarse `linkage_type` from WASM (metre-facing family). */
+const linkageTypeMap: Record<string, string> = {
+  Venthalai: 'வெண்டளை',
+  Aasiriyathalai: 'ஆசிரியத்தளை',
+  Kalithalai: 'கலித்தளை',
+  Vanjithalai: 'வஞ்சித்தளை',
+  VenTalai: 'வெண்டளை',
+  AsiriyaTalai: 'ஆசிரியத்தளை',
+}
+
+/** Fine `linkage_special_type` from WASM (issue #36 rows). */
+const linkageSpecialMap: Record<string, string> = {
+  NerondriyaAasiriyathalai: 'நேரொன்றிய ஆசிரியத்தளை',
+  NiraiondriyaAasiriyathalai: 'நிரையொன்றிய ஆசிரியத்தளை',
+  IyarcirVenthalai: 'இயற்சீர் வெண்டளை',
+  VencirVenthalai: 'வெஞ்சீர் வெண்டளை',
+  Kalithalai: 'கலித்தளை',
+  OndriyaVanchithalai: 'ஒன்றிய வஞ்சித்தளை',
+  OndrathaVanchithalai: 'ஒன்றாத வஞ்சித்தளை',
+  Unknown: '—',
+}
   kuRaLaTi: 'குறளடி',
   ci_ntaTi: 'சிந்தடி',
   taVi_cco_l: 'தவிச்சொல்',
@@ -50,4 +70,12 @@ export function getLineClassDisplay(lineClass: string): string {
 
 export function getFootTypeDisplay(footType: string): string {
   return footTypeMap[footType] ?? footType
+}
+
+export function getLinkageTypeDisplay(linkageType: string): string {
+  return linkageTypeMap[linkageType] ?? linkageType
+}
+
+export function getLinkageSpecialDisplay(special: string): string {
+  return linkageSpecialMap[special] ?? special
 }

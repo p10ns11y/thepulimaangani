@@ -7,9 +7,20 @@ export interface ParsedSyllable {
   word_index_in_line?: number
 }
 
+/** One bond after `from_foot` (same indices as Rust `ParseResult.linkage`). */
+export interface ParsedLinkageEdge {
+  from_foot: number
+  to_foot: number
+  linkage_type: string
+  linkage_special_type: string
+  is_valid: boolean
+}
+
 export interface ParsedFoot {
   foot_type: string
   syllables: ParsedSyllable[]
+  /** Poem-wide foot index when known (from WASM `poem` tree); used for தளை lookup. */
+  foot_index_global?: number
 }
 
 export interface ParsedLine {
@@ -24,6 +35,8 @@ export interface ParsedPoem {
   vikalpa_count: string | number
   syllables: unknown[]
   lines: ParsedLine[]
+  /** Consecutive-foot bonds from WASM (`linkage` / `talai`); empty when absent. */
+  linkage?: ParsedLinkageEdge[]
   errors?: string[]
 }
 

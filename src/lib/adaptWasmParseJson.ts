@@ -1,4 +1,10 @@
-import type { ParsedFoot, ParsedLine, ParsedPoem, ParsedSyllable } from '#/types/parsedPoem'
+import type {
+  ParsedFoot,
+  ParsedLine,
+  ParsedLinkageEdge,
+  ParsedPoem,
+  ParsedSyllable,
+} from '#/types/parsedPoem'
 
 function isFootish(value: unknown): value is ParsedFoot {
   if (!value || typeof value !== 'object') return false
@@ -54,6 +60,52 @@ function machineFootPatternFromSyllables(syllables: ParsedSyllable[]): string {
   return syllables.map((s) => (s.syllable_type === 'Ner' ? 'Ner' : 'Nirai')).join('-')
 }
 
+/** Assign poem-wide `foot_index_global` in traversal order (line order, then foot order). */
+function assignGlobalFootIndices(lines: ParsedLine[]): ParsedLine[] {
+  let g = 0
+  return lines.map((line) => ({
+    ...line,
+    feet: line.feet.map((foot) => {
+      const next =
+        foot.foot_index_global === undefined
+          ? { ...foot, foot_index_global: g }
+          : foot
+      g += 1
+      return next
+    }),
+  }))
+}
+
+function normalizeLinkage(raw: unknown): ParsedLinkageEdge[] {
+  if (!Array.isArray(raw)) return []
+  const out: ParsedLinkageEdge[] = []
+  for (const item of raw) {
+    if (!item || typeof item !== 'object') continue
+    const e = item as Record<string, unknown>
+    const from_foot = e.from_foot
+    const to_foot = e.to_foot
+    const linkage_type =
+      typeof e.linkage_type === 'string'
+        ? e.linkage_type
+        : typeof e.talai_type === 'string'
+          ? e.talai_type
+          : null
+    if (typeof from_foot !== 'number' || typeof to_foot !== 'number' || linkage_type == null) {
+      continue
+    }
+    const linkage_special_type =
+      typeof e.linkage_special_type === 'string' ? e.linkage_special_type : 'Unknown'
+    out.push({
+      from_foot,
+      to_foot,
+      linkage_type,
+      linkage_special_type,
+      is_valid: typeof e.is_valid === 'boolean' ? e.is_valid : true,
+    })
+  }
+  return out
+}
+
 function normalizeLines(rawLines: unknown, feet: ParsedFoot[]): ParsedLine[] {
   if (!Array.isArray(rawLines) || rawLines.length === 0) {
     if (feet.length === 0) return []
@@ -100,9 +152,12 @@ function linesFromPoemNode(poem: unknown): ParsedLine[] | null {
         if (!Array.isArray(syllNodes)) continue
         const syllables = syllablesFromSyllableNodes(syllNodes)
         if (syllables.length === 0) continue
+        const fig =
+          typeof LW.word_index_in_line === 'number' ? LW.word_index_in_line : undefined
         lineFeet.push({
           foot_type: machineFootPatternFromSyllables(syllables),
           syllables,
+          ...(fig !== undefined ? { foot_index_global: fig } : {}),
         })
       }
     } else if (Array.isArray(words) && words.length > 0) {
@@ -114,7 +169,13 @@ function linesFromPoemNode(poem: unknown): ParsedLine[] | null {
         if (!Array.isArray(syllNodes)) continue
         const syllables = syllablesFromSyllableNodes(syllNodes)
         if (syllables.length === 0 || !foot_type) continue
-        lineFeet.push({ foot_type, syllables })
+        const fig =
+          typeof W.foot_index_global === 'number' ? W.foot_index_global : undefined
+        lineFeet.push({
+          foot_type,
+          syllables,
+          ...(fig !== undefined ? { foot_index_global: fig } : {}),
+        })
       }
     }
 
@@ -135,8 +196,12 @@ export function adaptWasmJsonToParsedPoem(data: unknown): ParsedPoem | null {
 
   const feet = Array.isArray(o.feet) ? normalizeFeet(o.feet as unknown[]) : []
   const fromPoem = linesFromPoemNode(o.poem)
-  const lines =
+  const linesRaw =
     fromPoem && fromPoem.length > 0 ? fromPoem : normalizeLines(o.lines, feet)
+  const lines = assignGlobalFootIndices(linesRaw)
+
+  const linkageRaw = normalizeLinkage(o.linkage)
+  const linkage = linkageRaw.length > 0 ? linkageRaw : normalizeLinkage(o.talai)
 
   const metreRaw = o.metre_type
   const metre_type =
@@ -157,6 +222,7 @@ export function adaptWasmJsonToParsedPoem(data: unknown): ParsedPoem | null {
     vikalpa_count,
     syllables: o.syllables,
     lines,
+    ...(linkage.length > 0 ? { linkage } : {}),
     ...(errors && errors.length > 0 ? { errors } : {}),
   }
 }

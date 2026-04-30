@@ -14,16 +14,16 @@ Two strict layers, no leaks:
 
 - **Core (machine-first)**
   - Pure logic. Typed enums. Integer scoring. No Tamil display strings.
-  - Lives under `tamil-seiyul-alagi/src/` (excluding `presentation.rs`).
+  - Lives under `tamil-seiyul-alagi/src/`.
   - Outputs structured hypotheses with rule-IDs, scores, violations.
 - **Presentation (human-first)**
   - Maps core IDs/enums to Tamil names, classical narrative, educational text.
-  - Lives under `tamil-seiyul-alagi/src/presentation.rs`.
-  - The only place where strings like `தேமா`, `வெண்டளை`, `வெண்பா` appear.
+  - **Shipped UI:** `src/components/prosody/displayLabels.ts` + Structure tab (TanStack app), consuming WASM JSON.
+  - The only place where strings like `தேமா`, `வெண்டளை`, `வெண்பா` appear in the product UI.
 
 Naming policy:
 - Core module names use machine-first English: `linkage.rs` (not `talai.rs`), `foot.rs`, `metre.rs`, `syllable.rs`, etc.
-- Core type names use machine-first English: `LinkageClass`, `FootPattern`, `MetreHypothesis`. Classical names live in presentation only.
+- Core type names use machine-first English: `LinkageClass`, `FootPattern`, `MetreHypothesis`. Classical **display** names live only in the UI layer (`displayLabels.ts`), not in Rust core.
 - Exception for canonical grammar identifiers: when a concept is a standard classical-grammar term without a clean neutral replacement, keep the canonical term in English-Latin form (e.g., `VenTalai`, `AsiriyaTalai`) inside enum variants while preserving English container names (`LinkageType`).
 
 ---
@@ -83,7 +83,7 @@ Algorithm (lattice-based segmentation):
 4. Build a directed lattice over span boundaries.
 5. Return all candidates plus best-path projection (used by metre stage).
 
-Out-of-scope here: classical foot naming. That mapping lives in presentation.
+Out-of-scope here: classical foot naming. That mapping lives in the frontend (`displayLabels.ts`).
 
 ### 4.2 Linkage Stage (renamed from `talai`)
 
@@ -100,7 +100,7 @@ Algorithm:
    - Append `violations` and supporting `rule_ids`.
 2. Emit `[LinkageCandidate]` for the path.
 
-Presentation maps `LinkageSpecialType` (and coarse `LinkageType` when special is `Unknown`) to Tamil labels.
+The React app maps `LinkageSpecialType` (and coarse `LinkageType` when special is `Unknown`) to Tamil labels (`displayLabels.ts`).
 
 ### 4.3 Metre Stage
 
@@ -153,7 +153,7 @@ Consumers may render only the winner; the lattice and top-k remain available for
 | `Talai` | `LinkageCandidate` | type rename |
 | `TalaiType` | `LinkageType` (coarse) + `LinkageSpecialType` | metre vs nuanced bond |
 | `Foot.foot_type: String` | `Foot.pattern: FootPattern` (enum) | typed signature |
-| `MetreType` | `MetreId` (enum) | wire-compatible Display impl in presentation |
+| `MetreType` | `MetreId` (enum) | wire-compatible Display impl in UI layer |
 
 Old top-level fields stay for compatibility during phased rollout; new fields are additive.
 

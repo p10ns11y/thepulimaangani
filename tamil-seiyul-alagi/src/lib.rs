@@ -6,7 +6,6 @@ mod line_scope;
 mod linkage;
 mod metre;
 mod poem_tree;
-mod presentation;
 mod prosodic_sequence;
 mod prosodic_unit;
 mod syllable;
