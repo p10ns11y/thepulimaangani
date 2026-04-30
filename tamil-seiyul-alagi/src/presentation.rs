@@ -139,6 +139,21 @@ fn to_display_talai(t: &Linkage) -> DisplayTalai {
         talai_type: match t.linkage_type {
             crate::linkage::LinkageType::VenTalai => "வெண்டளை".to_string(),
             crate::linkage::LinkageType::AsiriyaTalai => "ஆசிரியத்தளை".to_string(),
+            crate::linkage::LinkageType::NerondriyaAasiriyathalai => {
+                "நேரொன்றிய ஆசிரியத்தளை".to_string()
+            }
+            crate::linkage::LinkageType::NiraiondriyaAasiriyathalai => {
+                "நிரையொன்றிய ஆசிரியத்தளை".to_string()
+            }
+            crate::linkage::LinkageType::IyarcirVenthalai => "இயற்சீர் வெண்டளை".to_string(),
+            crate::linkage::LinkageType::VencirVenthalai => "வெஞ்சீர் வெண்டளை".to_string(),
+            crate::linkage::LinkageType::Kalithalai => "கலித்தளை".to_string(),
+            crate::linkage::LinkageType::OndriyaVanchithalai => {
+                "ஒன்றிய வஞ்சித்தளை".to_string()
+            }
+            crate::linkage::LinkageType::OndrathaVanchithalai => {
+                "ஒன்றாத வஞ்சித்தளை".to_string()
+            }
             crate::linkage::LinkageType::Other(ref s) => s.clone(),
         },
         is_valid: t.is_valid,

@@ -89,7 +89,7 @@ Out-of-scope here: classical foot naming. That mapping lives in presentation.
 
 Module: [`src/linkage.rs`](src/linkage.rs) (successor to the historical `talai` naming).
 
-**Current shipped code** emits `LinkageType::VenTalai` with `is_valid = true` for every consecutive foot pair; the table-driven flow below is the **target**.
+**Current shipped code** (`linkage.rs`) classifies each consecutive pair using the **previous foot’s last acai** (mapped to cir class Maa/Vilai for 1–2 acai per foot, Kaai/Kani for 3+) and the **next foot’s first acai** (Ner/Nirai), emitting `LinkageType` variants such as `NerondriyaAasiriyathalai`, `IyarcirVenthalai`, `Kalithalai`, etc., plus `linkage_category`. The lattice wording below remains the **target** once `FootCandidate` paths exist.
 
 Algorithm:
 
@@ -100,7 +100,7 @@ Algorithm:
    - Append `violations` and supporting `rule_ids`.
 2. Emit `[LinkageCandidate]` for the path.
 
-Presentation maps `LinkageType::VenTalai`, `LinkageType::AsiriyaTalai`, etc., to Tamil labels.
+Presentation maps `LinkageType` variants (including `NerondriyaAasiriyathalai`, `IyarcirVenthalai`, `VenTalai` fallback, etc.) to Tamil labels.
 
 ### 4.3 Metre Stage
 
@@ -183,3 +183,4 @@ Required guarantees before flipping defaults:
 
 - v0.1 — initial draft on `thumpi` branch.
 - v0.2 — naming rule clarified: English container types with canonical grammar-specific variant names (e.g., `VenTalai`).
+- v0.3 — §4.2: shipped one-foot-per-word path now uses the eight-way transition table ([issue #36](https://github.com/p10ns11y/thepulimaangani/issues/36)); lattice `FootCandidate` linkage remains future work.

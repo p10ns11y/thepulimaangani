@@ -58,7 +58,7 @@ tamil-seiyul-alagi/
 │   ├── word_scope.rs       # Linguistic words → syllables
 │   ├── syllable_builder.rs # Ner/Nirai syllables
 │   ├── foot.rs / foot_pattern.rs  # One foot per word; Ner-Nirai pattern string
-│   ├── linkage.rs          # Consecutive-foot edges (placeholder linkage type)
+│   ├── linkage.rs          # Consecutive-foot edges; table-driven talai (issue #36)
 │   ├── metre.rs            # Metre hypotheses (heuristic)
 │   ├── poem_tree.rs        # Structured poem tree
 │   └── presentation.rs     # Human-facing labels (not wired through WASM yet)
@@ -67,7 +67,7 @@ tamil-seiyul-alagi/
 └── target/             # Build artifacts
 ```
 
-**Accuracy note:** User-facing copy sometimes describes classical feet and full talai sets; the shipped WASM JSON uses **Ner/Nirai foot patterns**, **VenTalai-only** linkage types until the transition table lands, and **heuristic** metre ranking. See `tamil-seiyul-alagi/MACHINE_FIRST_SPEC.md`, `QUALITY_CRAP_BASELINE.md`, and [issue #49](https://github.com/p10ns11y/thepulimaangani/issues/49).
+**Accuracy note:** User-facing copy sometimes describes classical feet and full talai sets; the shipped WASM JSON uses **Ner/Nirai foot patterns**, **table-driven linkage** from the previous foot’s last acai and the next foot’s first acai ([issue #36](https://github.com/p10ns11y/thepulimaangani/issues/36)), and **heuristic** metre ranking. See `tamil-seiyul-alagi/MACHINE_FIRST_SPEC.md` and `QUALITY_CRAP_BASELINE.md`.
 
 ### 3. Build Configuration
 
@@ -97,7 +97,7 @@ The WebAssembly parser is built separately and its artifacts are copied to `src/
    - Syllable detection (நேர் / நிரை) per linguistic word
    - **Feet:** one foot per word; `foot_type` is a hyphenated **Ner/Nirai** pattern (not classical தேமா names in JSON)
    - **Metre:** ranked hypotheses; simple heuristics, not full classical rule engines yet
-   - **Linkage:** consecutive feet with line/word positions; **`VenTalai` placeholder** on every edge until table-driven classification exists
+   - **Linkage:** consecutive feet with line/word positions; `linkage_type` + `linkage_category` from the eight-way transition table ([issue #36](https://github.com/p10ns11y/thepulimaangani/issues/36)); `VenTalai` is reserved for malformed/empty feet only
 4. **Result Serialization**: `ParseResult` to JSON in the browser
 5. **Display**: React reads JSON via TypeScript adapters (`adaptWasmJsonToParsedPoem`, etc.); classical labels are a **presentation-layer** follow-up
 
@@ -120,7 +120,7 @@ The engine groups syllables into **one foot per linguistic word** and sets `foot
 
 ### Linkage / talai (current)
 
-Consecutive feet get a linkage record with **positions**; **`linkage_type` is `VenTalai` for every pair** with `is_valid: true` until the transition-table linkage stage is implemented. Classical talai names (கலித்தளை, ஆசிரியத்தளை, …) describe the **intended** system, not current per-edge classification in JSON.
+Consecutive feet get a linkage record with **positions** plus **`linkage_type`** and **`linkage_category`**. Classification uses the **last acai** of the left foot mapped to cir class **Maa / Vilai / Kaai / Kani** (1–2 acai feet use Maa/Vilai by last Ner/Nirai; 3+ acai feet use Kaai/Kani) and the **first acai** (Ner/Nirai) of the right foot, per [issue #36](https://github.com/p10ns11y/thepulimaangani/issues/36). Tamil display strings for those types live in **`presentation.rs`** when wired to the UI.
 
 ## Performance Considerations
 

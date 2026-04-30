@@ -23,7 +23,9 @@ pub use error::ParseError;
 pub use foot::{Foot, FootPlacement};
 pub use foot_pattern::foot_pattern;
 pub use letter::Letter;
-pub use linkage::{FootPosition, Linkage, LinkageType, Talai, TalaiType};
+pub use linkage::{
+    CirAcaiClass, FootPosition, Linkage, LinkageCategory, LinkageType, Talai, TalaiType,
+};
 pub use metre::MetreType;
 pub use poem_tree::{
     LetterLayer, LetterNode, LinguisticWordNode, LineLayer, PoemLayer, PoemLineNode, PoemNode,
@@ -53,7 +55,7 @@ pub fn parse_poem(text: &str, options: ParseOptions) -> Result<ParseResult, Pars
     let foot_placements = foot::group_into_feet_with_ranges(&syllables);
     let feet: Vec<Foot> = foot_placements.iter().map(|p| p.foot.clone()).collect();
     let foot_positions = linkage::foot_positions_for_poem(&foot_placements, &syllable_lines);
-    let linkage = linkage::analyze_linkage(&foot_positions);
+    let linkage = linkage::analyze_linkage(&foot_positions, &feet);
     let poem = poem_tree::build_poem_tree(
         normalized_clone.clone(),
         &syllables,

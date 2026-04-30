@@ -1,12 +1,43 @@
 use serde::{Deserialize, Serialize};
 
-use crate::foot::FootPlacement;
+use crate::foot::{Foot, FootPlacement};
 use crate::line_scope::foot_line_index;
+use crate::syllable::SyllableType;
+
+/// Classical **cir** class of a foot’s **last acai**, used at a bond with the next foot.
+///
+/// For 1–2 acai per foot: last acai maps to **Maa** (Ner) / **Vilai** (Nirai).  
+/// For 3+ acai: last acai maps to **Kaai** (Ner) / **Kani** (Nirai).  
+/// This matches the transition table in [GitHub issue #36](https://github.com/p10ns11y/thepulimaangani/issues/36).
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+pub enum CirAcaiClass {
+    Maa,
+    Vilai,
+    Kaai,
+    Kani,
+}
+
+/// High-level grouping for [`LinkageType`] (ஆசிரியத்தளை / வெண்டளை / … families).
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+pub enum LinkageCategory {
+    Aasiriyathalai,
+    Venthalai,
+    Kalithalai,
+    Vanjithalai,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum LinkageType {
+    /// Reserved when the previous foot’s last cir cannot be classified (e.g. empty foot).
     VenTalai,
     AsiriyaTalai,
+    NerondriyaAasiriyathalai,
+    NiraiondriyaAasiriyathalai,
+    IyarcirVenthalai,
+    VencirVenthalai,
+    Kalithalai,
+    OndriyaVanchithalai,
+    OndrathaVanchithalai,
     Other(String),
 }
 
@@ -28,6 +59,7 @@ pub struct Linkage {
     pub from: FootPosition,
     pub to: FootPosition,
     pub linkage_type: LinkageType,
+    pub linkage_category: LinkageCategory,
     pub is_valid: bool,
 }
 
@@ -56,20 +88,101 @@ pub fn foot_positions_for_poem(
         .collect()
 }
 
+/// Last **cir** class from a foot’s **last acai** (see [`CirAcaiClass`]).
+pub fn cir_class_for_foot(foot: &Foot) -> Option<CirAcaiClass> {
+    let syls = foot.syllables.as_slice();
+    let last = syls.last()?.syllable_type;
+    let n = syls.len();
+    Some(if n <= 2 {
+        match last {
+            SyllableType::Ner => CirAcaiClass::Maa,
+            SyllableType::Nirai => CirAcaiClass::Vilai,
+        }
+    } else {
+        match last {
+            SyllableType::Ner => CirAcaiClass::Kaai,
+            SyllableType::Nirai => CirAcaiClass::Kani,
+        }
+    })
+}
+
+fn classify_edge(prev_cir: CirAcaiClass, next_first: SyllableType) -> (LinkageType, LinkageCategory) {
+    match (prev_cir, next_first) {
+        (CirAcaiClass::Maa, SyllableType::Ner) => (
+            LinkageType::NerondriyaAasiriyathalai,
+            LinkageCategory::Aasiriyathalai,
+        ),
+        (CirAcaiClass::Vilai, SyllableType::Nirai) => (
+            LinkageType::NiraiondriyaAasiriyathalai,
+            LinkageCategory::Aasiriyathalai,
+        ),
+        (CirAcaiClass::Maa, SyllableType::Nirai) => (
+            LinkageType::IyarcirVenthalai,
+            LinkageCategory::Venthalai,
+        ),
+        (CirAcaiClass::Vilai, SyllableType::Ner) => (
+            LinkageType::IyarcirVenthalai,
+            LinkageCategory::Venthalai,
+        ),
+        (CirAcaiClass::Kaai, SyllableType::Ner) => (
+            LinkageType::VencirVenthalai,
+            LinkageCategory::Venthalai,
+        ),
+        (CirAcaiClass::Kaai, SyllableType::Nirai) => (
+            LinkageType::Kalithalai,
+            LinkageCategory::Kalithalai,
+        ),
+        (CirAcaiClass::Kani, SyllableType::Nirai) => (
+            LinkageType::OndriyaVanchithalai,
+            LinkageCategory::Vanjithalai,
+        ),
+        (CirAcaiClass::Kani, SyllableType::Ner) => (
+            LinkageType::OndrathaVanchithalai,
+            LinkageCategory::Vanjithalai,
+        ),
+    }
+}
+
 /// Linkage between each consecutive pair of feet in poem order (may cross line boundaries).
-pub fn analyze_linkage(foot_positions: &[FootPosition]) -> Vec<Linkage> {
+///
+/// `feet` must align with `foot_positions` on `foot_index` (same order as [`crate::foot::group_into_feet_with_ranges`]).
+pub fn analyze_linkage(foot_positions: &[FootPosition], feet: &[Foot]) -> Vec<Linkage> {
     foot_positions
         .windows(2)
         .map(|w| {
             let from = w[0].clone();
             let to = w[1].clone();
+            let from_foot = feet.get(from.foot_index);
+            let to_foot = feet.get(to.foot_index);
+            let (linkage_type, linkage_category, is_valid) = match (from_foot, to_foot) {
+                (Some(a), Some(b)) => {
+                    if let (Some(prev_cir), Some(next_first)) =
+                        (cir_class_for_foot(a), b.syllables.first().map(|s| s.syllable_type))
+                    {
+                        let (lt, lc) = classify_edge(prev_cir, next_first);
+                        (lt, lc, true)
+                    } else {
+                        (
+                            LinkageType::VenTalai,
+                            LinkageCategory::Venthalai,
+                            false,
+                        )
+                    }
+                }
+                _ => (
+                    LinkageType::VenTalai,
+                    LinkageCategory::Venthalai,
+                    false,
+                ),
+            };
             Linkage {
                 from_foot: from.foot_index,
                 to_foot: to.foot_index,
                 from,
                 to,
-                linkage_type: LinkageType::VenTalai,
-                is_valid: true,
+                linkage_type,
+                linkage_category,
+                is_valid,
             }
         })
         .collect()
@@ -81,6 +194,168 @@ pub type TalaiType = LinkageType;
 
 /// Traditional name for [`analyze_linkage`] (talai = bond between consecutive feet).
 #[allow(dead_code)] // Kept for API symmetry with `Talai` / migration call sites.
-pub fn analyze_talai(foot_positions: &[FootPosition]) -> Vec<Talai> {
-    analyze_linkage(foot_positions)
+pub fn analyze_talai(foot_positions: &[FootPosition], feet: &[Foot]) -> Vec<Talai> {
+    analyze_linkage(foot_positions, feet)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::syllable::Syllable;
+
+    fn foot_with(syllable_types: &[SyllableType]) -> Foot {
+        Foot {
+            syllables: syllable_types
+                .iter()
+                .enumerate()
+                .map(|(i, st)| Syllable {
+                    text: format!("s{i}"),
+                    syllable_type: *st,
+                    split_hint: None,
+                    alt_split: false,
+                    rule_ref: None,
+                    line_index: 0,
+                    word_index_in_line: 0,
+                })
+                .collect(),
+            foot_type: String::new(),
+        }
+    }
+
+    fn positions(n: usize) -> Vec<FootPosition> {
+        (0..n)
+            .map(|i| FootPosition {
+                foot_index: i,
+                line_index: 0,
+                word_index_in_line: i,
+            })
+            .collect()
+    }
+
+    #[test]
+    fn table_maa_ner_is_nerondriya_aasiriyathalai() {
+        let feet = vec![foot_with(&[SyllableType::Ner]), foot_with(&[SyllableType::Ner])];
+        let pos = positions(2);
+        let l = analyze_linkage(&pos, &feet);
+        assert_eq!(l.len(), 1);
+        assert!(matches!(
+            l[0].linkage_type,
+            LinkageType::NerondriyaAasiriyathalai
+        ));
+        assert_eq!(l[0].linkage_category, LinkageCategory::Aasiriyathalai);
+        assert!(l[0].is_valid);
+    }
+
+    #[test]
+    fn table_vilai_nirai_is_niraiondriya_aasiriyathalai() {
+        let feet = vec![foot_with(&[SyllableType::Nirai]), foot_with(&[SyllableType::Nirai])];
+        let pos = positions(2);
+        let l = analyze_linkage(&pos, &feet);
+        assert!(matches!(
+            l[0].linkage_type,
+            LinkageType::NiraiondriyaAasiriyathalai
+        ));
+        assert_eq!(l[0].linkage_category, LinkageCategory::Aasiriyathalai);
+    }
+
+    #[test]
+    fn table_maa_nirai_is_iyarcir_venthalai() {
+        let feet = vec![foot_with(&[SyllableType::Ner]), foot_with(&[SyllableType::Nirai])];
+        let pos = positions(2);
+        let l = analyze_linkage(&pos, &feet);
+        assert!(matches!(l[0].linkage_type, LinkageType::IyarcirVenthalai));
+        assert_eq!(l[0].linkage_category, LinkageCategory::Venthalai);
+    }
+
+    #[test]
+    fn table_vilai_ner_is_iyarcir_venthalai() {
+        let feet = vec![foot_with(&[SyllableType::Nirai]), foot_with(&[SyllableType::Ner])];
+        let pos = positions(2);
+        let l = analyze_linkage(&pos, &feet);
+        assert!(matches!(l[0].linkage_type, LinkageType::IyarcirVenthalai));
+    }
+
+    #[test]
+    fn table_kaai_ner_is_vencir_venthalai() {
+        let feet = vec![
+            foot_with(&[
+                SyllableType::Ner,
+                SyllableType::Ner,
+                SyllableType::Ner,
+            ]),
+            foot_with(&[SyllableType::Ner]),
+        ];
+        let pos = positions(2);
+        let l = analyze_linkage(&pos, &feet);
+        assert!(matches!(l[0].linkage_type, LinkageType::VencirVenthalai));
+        assert_eq!(l[0].linkage_category, LinkageCategory::Venthalai);
+    }
+
+    #[test]
+    fn table_kaai_nirai_is_kalithalai() {
+        let feet = vec![
+            foot_with(&[
+                SyllableType::Ner,
+                SyllableType::Ner,
+                SyllableType::Ner,
+            ]),
+            foot_with(&[SyllableType::Nirai]),
+        ];
+        let pos = positions(2);
+        let l = analyze_linkage(&pos, &feet);
+        assert!(matches!(l[0].linkage_type, LinkageType::Kalithalai));
+        assert_eq!(l[0].linkage_category, LinkageCategory::Kalithalai);
+    }
+
+    #[test]
+    fn table_kani_nirai_is_ondriya_vanchithalai() {
+        let feet = vec![
+            foot_with(&[
+                SyllableType::Ner,
+                SyllableType::Ner,
+                SyllableType::Nirai,
+            ]),
+            foot_with(&[SyllableType::Nirai]),
+        ];
+        let pos = positions(2);
+        let l = analyze_linkage(&pos, &feet);
+        assert!(matches!(
+            l[0].linkage_type,
+            LinkageType::OndriyaVanchithalai
+        ));
+        assert_eq!(l[0].linkage_category, LinkageCategory::Vanjithalai);
+    }
+
+    #[test]
+    fn table_kani_ner_is_ondratha_vanchithalai() {
+        let feet = vec![
+            foot_with(&[
+                SyllableType::Ner,
+                SyllableType::Ner,
+                SyllableType::Nirai,
+            ]),
+            foot_with(&[SyllableType::Ner]),
+        ];
+        let pos = positions(2);
+        let l = analyze_linkage(&pos, &feet);
+        assert!(matches!(
+            l[0].linkage_type,
+            LinkageType::OndrathaVanchithalai
+        ));
+        assert_eq!(l[0].linkage_category, LinkageCategory::Vanjithalai);
+    }
+
+    #[test]
+    fn two_acai_foot_ends_nirai_is_vilai_not_kani() {
+        let feet = vec![
+            foot_with(&[SyllableType::Ner, SyllableType::Nirai]),
+            foot_with(&[SyllableType::Ner]),
+        ];
+        let pos = positions(2);
+        let l = analyze_linkage(&pos, &feet);
+        assert!(matches!(
+            l[0].linkage_type,
+            LinkageType::IyarcirVenthalai
+        ));
+    }
 }
