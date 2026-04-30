@@ -20,10 +20,17 @@ const linkageSpecialMap: Record<string, string> = {
   Unknown: '—',
 }
 
+/** Machine `line_class` → Tamil label. Prefer simple transliteration keys; legacy Avalokitam-style keys kept as aliases. */
 const lineClassMap: Record<string, string> = {
+  Kuraladi: 'குறளடி',
+  Cinthadi: 'சிந்தடி',
+  Thanichol: 'தனிச்சொல்',
+  Alavadi: 'அளவடி',
+  Nediladi: 'நெடிலடி',
+  // Legacy keys (same labels)
   kuRaLaTi: 'குறளடி',
   ci_ntaTi: 'சிந்தடி',
-  taVi_cco_l: 'தவிச்சொல்',
+  taVi_cco_l: 'தனிச்சொல்',
   _aLavaTi: 'அளவடி',
   neTilaTi: 'நெடிலடி',
 }
