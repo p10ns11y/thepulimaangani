@@ -39,6 +39,8 @@ coverage
 /crap-report.md
 /tamil-seiyul-alagi/llvm-cov-summary.json
 
+**/__pycache__/
+
 # nyc test coverage
 .nyc_output
 
