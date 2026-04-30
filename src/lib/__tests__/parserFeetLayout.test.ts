@@ -3,6 +3,11 @@ import { describe, expect, it } from 'vitest'
 import { feetPerPhysicalLine, groupsFromFeet } from '#/lib/parserFeetLayout'
 import type { ParsedPoem } from '#/types/parsedPoem'
 
+import {
+  parsedSampleFirstTwoLines,
+  parsedSampleThreeLines,
+} from '#/lib/__tests__/fixtures/samplePoemThreeLines.fixture'
+
 function poem(lines: ParsedPoem['lines']): ParsedPoem {
   return {
     original_text: '',
@@ -15,32 +20,14 @@ function poem(lines: ParsedPoem['lines']): ParsedPoem {
 }
 
 describe('feetPerPhysicalLine', () => {
-  it('uses structured lines when count matches physical lines', () => {
-    const p = poem([
-      {
-        line_class: '—',
-        feet: [
-          {
-            foot_type: 'Ner-Ner',
-            syllables: [{ text: 'ab', syllable_type: 'Ner' }],
-          },
-        ],
-      },
-      {
-        line_class: '—',
-        feet: [
-          {
-            foot_type: 'Nirai',
-            syllables: [{ text: 'cd', syllable_type: 'Nirai' }],
-          },
-        ],
-      },
-    ])
-    const text = 'first line\nsecond'
-    const buckets = feetPerPhysicalLine(p, text)
+  it('uses structured lines when physical line count matches parsed.lines', () => {
+    const { original_text, lines } = parsedSampleFirstTwoLines()
+    const full = parsedSampleThreeLines()
+    const buckets = feetPerPhysicalLine({ ...full, original_text, lines }, original_text)
     expect(buckets).toHaveLength(2)
-    expect(buckets[0]![0]!.syllables[0]!.text).toBe('ab')
-    expect(buckets[1]![0]!.syllables[0]!.text).toBe('cd')
+    expect(buckets[0]!.length).toBe(lines[0]!.feet.length)
+    expect(buckets[1]!.length).toBe(lines[1]!.feet.length)
+    expect(buckets[0]![0]!.syllables[0]!.text).toBe(lines[0]!.feet[0]!.syllables[0]!.text)
   })
 
   it('returns empty feet per line when parser line count mismatches (avoid wrong-row slices)', () => {
@@ -59,25 +46,12 @@ describe('feetPerPhysicalLine', () => {
 })
 
 describe('groupsFromFeet', () => {
-  it('one group per foot with concatenated word label', () => {
-    const g = groupsFromFeet([
-      {
-        foot_type: 'Ner-Nirai',
-        syllables: [
-          { text: 'நண்', syllable_type: 'Ner' },
-          { text: 'ணு', syllable_type: 'Nirai' },
-        ],
-      },
-      {
-        foot_type: 'Ner-Nirai',
-        syllables: [
-          { text: 'வார்', syllable_type: 'Ner' },
-          { text: 'வினை', syllable_type: 'Nirai' },
-        ],
-      },
-    ])
+  it('one UI group per foot; word label is syllable texts joined (real parser feet)', () => {
+    const sample = parsedSampleThreeLines()
+    const feet = sample.lines[0]!.feet.slice(0, 2)
+    const g = groupsFromFeet(feet)
     expect(g).toHaveLength(2)
-    expect(g[0]!.word).toBe('நண்ணு')
-    expect(g[1]!.word).toBe('வார்வினை')
+    expect(g[0]!.word).toBe(feet[0]!.syllables.map((s) => s.text).join(''))
+    expect(g[1]!.word).toBe(feet[1]!.syllables.map((s) => s.text).join(''))
   })
 })

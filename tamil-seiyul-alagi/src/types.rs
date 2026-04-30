@@ -106,3 +106,123 @@ pub fn flat_lines_from_poem(poem: &PoemNode) -> Vec<Line> {
         })
         .collect()
 }
+
+#[cfg(test)]
+mod flat_lines_from_poem_tests {
+    use super::*;
+    use crate::poem_tree::{LinguisticWordNode, PoemLineNode, PoemNode, SyllableNode, WordNode};
+    use crate::syllable::{Syllable, SyllableType};
+
+    fn ner(text: &str, line_index: usize, word_index_in_line: usize) -> Syllable {
+        Syllable {
+            text: text.into(),
+            syllable_type: SyllableType::Ner,
+            split_hint: None,
+            alt_split: false,
+            rule_ref: None,
+            line_index,
+            word_index_in_line,
+        }
+    }
+
+    fn syllable_node(inner: Syllable, global_index: usize) -> SyllableNode {
+        SyllableNode {
+            inner,
+            letters: vec![],
+            global_index,
+        }
+    }
+
+    fn poem_line(
+        line_index: usize,
+        linguistic_words: Vec<LinguisticWordNode>,
+        words: Vec<WordNode>,
+    ) -> PoemLineNode {
+        PoemLineNode {
+            line_index,
+            line_class: "—".into(),
+            linguistic_words,
+            words,
+        }
+    }
+
+    #[test]
+    fn prefers_linguistic_words_and_ignores_misplaced_words() {
+        let s_a = ner("a", 0, 0);
+        let s_b = ner("b", 1, 0);
+        let poem = PoemNode {
+            normalized_text: "a\nb".into(),
+            syllables_flat: vec![s_a.clone(), s_b.clone()],
+            linkage: vec![],
+            lines: vec![
+                poem_line(
+                    0,
+                    vec![LinguisticWordNode {
+                        word_index_in_line: 0,
+                        syllables: vec![syllable_node(s_a, 0)],
+                    }],
+                    vec![WordNode {
+                        foot_type: "WRONG".into(),
+                        syllables: vec![],
+                        word_index_in_line: 0,
+                        foot_index_global: 99,
+                    }],
+                ),
+                poem_line(
+                    1,
+                    vec![LinguisticWordNode {
+                        word_index_in_line: 0,
+                        syllables: vec![syllable_node(s_b, 1)],
+                    }],
+                    vec![],
+                ),
+            ],
+        };
+
+        let lines = flat_lines_from_poem(&poem);
+        assert_eq!(lines.len(), 2);
+        assert_eq!(lines[0].feet.len(), 1);
+        assert_eq!(lines[0].feet[0].syllables[0].text, "a");
+        assert_eq!(lines[0].feet[0].foot_type, "Ner");
+        assert_eq!(lines[1].feet[0].syllables[0].text, "b");
+    }
+
+    #[test]
+    fn uses_words_when_linguistic_words_empty() {
+        let s0 = ner("x", 0, 0);
+        let poem = PoemNode {
+            normalized_text: "x".into(),
+            syllables_flat: vec![s0.clone()],
+            linkage: vec![],
+            lines: vec![poem_line(
+                0,
+                vec![],
+                vec![WordNode {
+                    foot_type: "custom".into(),
+                    syllables: vec![syllable_node(s0, 0)],
+                    word_index_in_line: 0,
+                    foot_index_global: 0,
+                }],
+            )],
+        };
+
+        let lines = flat_lines_from_poem(&poem);
+        assert_eq!(lines[0].feet.len(), 1);
+        assert_eq!(lines[0].feet[0].foot_type, "custom");
+        assert_eq!(lines[0].feet[0].syllables[0].text, "x");
+    }
+
+    #[test]
+    fn empty_both_layers_yields_no_feet_on_line() {
+        let poem = PoemNode {
+            normalized_text: "\n".into(),
+            syllables_flat: vec![],
+            linkage: vec![],
+            lines: vec![poem_line(0, vec![], vec![])],
+        };
+
+        let lines = flat_lines_from_poem(&poem);
+        assert_eq!(lines.len(), 1);
+        assert!(lines[0].feet.is_empty());
+    }
+}

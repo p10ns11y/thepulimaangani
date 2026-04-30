@@ -7,6 +7,7 @@ pub const PURE_CONSONANTS: [&str; 18] = [
     "க்", "ங்", "ச்", "ஞ்", "ட்", "ண்", "த்", "ந்", "ப்", "ம்", "ய்", "ர்", "ல்", "வ்", "ழ்", "ள்", "ற்", "ன்",
 ];
 
+#[allow(dead_code)]
 pub const AYTHAM: &str = "ஃ";
 
 /// Vowel signs corresponding to each vowel index
@@ -37,6 +38,7 @@ pub fn generate_uyirmei_matrix() -> Vec<Vec<String>> {
 }
 
 /// Returns all 247 Tamil characters
+#[allow(dead_code)]
 pub fn get_all_tamil_chars() -> Vec<String> {
     let mut all = Vec::with_capacity(247);
 

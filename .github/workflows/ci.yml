@@ -54,3 +54,82 @@ jobs:
 
       - name: Test
         run: pnpm run test
+
+  # CRAP-style report: cyclomatic complexity (Lizard) × line coverage (Rust llvm-cov + Vitest v8).
+  # Report-only — does not fail the workflow (see `dx/crap_report.py --max-mean` to enforce later).
+  crap_analysis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Rust (llvm-cov)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
+
+      - name: Rust dependency cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: tamil-seiyul-alagi
+
+      - name: wasm-pack
+        uses: taiki-e/install-action@v2
+        with:
+          tool: wasm-pack@0.13.1
+
+      - name: cargo-llvm-cov
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-llvm-cov
+
+      - name: Lizard (complexity)
+        run: python3 -m pip install --break-system-packages 'lizard==1.17.19'
+
+      - name: pnpm install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build WASM (for optional Vitest integration + consistent paths)
+        run: pnpm run build:wasm
+
+      - name: Rust tests + coverage summary (JSON)
+        run: |
+          cd tamil-seiyul-alagi
+          cargo llvm-cov test --summary-only --json --output-path llvm-cov-summary.json
+
+      - name: Frontend tests + coverage (json-summary)
+        run: pnpm run test:frontend:coverage
+
+      - name: Lizard XML (parser crate only — full `src/` tree breaks Lizard `-X` XML output)
+        run: |
+          lizard tamil-seiyul-alagi/src \
+            --exclude tamil-seiyul-alagi/src/wasm \
+            -X -o lizard-rust.xml
+
+      - name: Merge CRAP report
+        run: |
+          python3 dx/crap_report.py \
+            --lizard-xml lizard-rust.xml \
+            --rust-cov tamil-seiyul-alagi/llvm-cov-summary.json \
+            --vitest-summary coverage/coverage-summary.json \
+            --out-md crap-report.md
+
+      - name: Upload CRAP artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: crap-analysis
+          path: |
+            crap-report.md
+            lizard-rust.xml
+            tamil-seiyul-alagi/llvm-cov-summary.json
+            coverage/coverage-summary.json
