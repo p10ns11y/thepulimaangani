@@ -179,7 +179,8 @@ sync() {
                 echo "→ Cleaning up old branches..."
                 local count=0
                 while IFS= read -r b; do
-                    git branch -D "$b" --quiet && echo "   🗑 Deleted $b" && ((count++))
+                    # Use ++count: ((count++)) exits 1 when old value is 0 under set -e
+                    git branch -D "$b" --quiet && echo "   🗑 Deleted $b" && ((++count))
                 done < <(git branch --format='%(refname:short)' | grep -- '--to-be-deleted$' || true)
                 [ "$count" -gt 0 ] && echo "   ✓ Cleaned $count branch(es)"
                 ;;
@@ -203,10 +204,11 @@ sync() {
     if [ "$PUSH" = "1" ]; then
         echo ""
         echo "→ Pushing all branches with --force-with-lease..."
+        # Empty input: `while read` exits 1 — would trip set -e + pipefail without || true
         git branch --format='%(refname:short)' | grep -vE "^(${MAIN_BRANCH}|legacy)$" | while read -r b; do
             echo "   Pushing $b..."
             git push --force-with-lease origin "$b" --quiet && echo "   ✓ Pushed" || echo "   ⚠ Skipped"
-        done
+        done || true
     else
         echo ""
         echo "→ Push skipped (use PUSH=1 to push)"
