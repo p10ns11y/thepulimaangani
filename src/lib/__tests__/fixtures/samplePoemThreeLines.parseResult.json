@@ -3192,7 +3192,7 @@
     "feet": [
       {
         "text": "சுடர்தொடீஇ",
-        "foot_type": "கருவிளங்காய் (karuvilam kangay)"
+        "foot_type": "கருவிளங்காய் (karuvilangkaay)"
       },
       {
         "text": "கேளாய்",
@@ -3200,11 +3200,11 @@
       },
       {
         "text": "தெருவில்நாம்",
-        "foot_type": "புளிமாங்காய் (pulima kangay)"
+        "foot_type": "புளிமாங்காய் (pulimaangkaay)"
       },
       {
         "text": "மணற்சிற்றில்",
-        "foot_type": "புளிமாங்காய் (pulima kangay)"
+        "foot_type": "புளிமாங்காய் (pulimaangkaay)"
       },
       {
         "text": "காலில்",
@@ -3228,7 +3228,7 @@
       },
       {
         "text": "வரிப்பந்து",
-        "foot_type": "புளிமாங்காய் (pulima kangay)"
+        "foot_type": "புளிமாங்காய் (pulimaangkaay)"
       },
       {
         "text": "கொண்டோ",
@@ -3241,7 +3241,7 @@
         "to": 1,
         "from_line": 0,
         "to_line": 0,
-        "talai_type": "வெஞ்சீர் வெண்டளை",
+        "talai_type": "வெண்சீர் வெண்டளை",
         "is_valid": true
       },
       {
@@ -3265,7 +3265,7 @@
         "to": 4,
         "from_line": 0,
         "to_line": 0,
-        "talai_type": "வெஞ்சீர் வெண்டளை",
+        "talai_type": "வெண்சீர் வெண்டளை",
         "is_valid": true
       },
       {
@@ -3313,7 +3313,7 @@
         "to": 10,
         "from_line": 0,
         "to_line": 0,
-        "talai_type": "வெஞ்சீர் வெண்டளை",
+        "talai_type": "வெண்சீர் வெண்டளை",
         "is_valid": true
       }
     ]

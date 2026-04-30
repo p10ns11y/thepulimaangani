@@ -91,39 +91,44 @@ fn to_display_foot(f: &Foot) -> DisplayFoot {
     }
 }
 
-/// Tamil + simple Latin for classical feet; unknown patterns pass through as-is.
+/// Tamil + Latin gloss for classical feet.
+///
+/// Tamil compounds follow [feet-calculations.md](https://github.com/p10ns11y/thepulimaangani/blob/malar/.grok/migration-plan/feet-calculations.md)
+/// (ஈரசை / மூவசை / நான்கசை). Romanization uses doubled vowels for length (e.g. **themaangkaay**) where helpful.
 pub fn foot_pattern_display(pattern: &str) -> String {
     match pattern {
         "Ner" => "மா (ma)".to_string(),
         "Nirai" => "விளம் (vilam)".to_string(),
         "Ner-Ner" => "தேமா (thema)".to_string(),
-        "Ner-Nirai" => "கூவிளம் (ku vilam)".to_string(),
+        "Ner-Nirai" => "கூவிளம் (kuivilam)".to_string(),
         "Nirai-Ner" => "புளிமா (pulima)".to_string(),
         "Nirai-Nirai" => "கருவிளம் (karuvilam)".to_string(),
-        "Ner-Ner-Ner" => "தேமாங்காய் (thema kangay)".to_string(),
-        "Ner-Ner-Nirai" => "தேமாகவி (thema kavi)".to_string(),
-        "Ner-Nirai-Ner" => "கூவிளங்காய் (ku vilam kangay)".to_string(),
-        "Ner-Nirai-Nirai" => "கூவிளகவி (ku vilam kavi)".to_string(),
-        "Nirai-Ner-Ner" => "புளிமாங்காய் (pulima kangay)".to_string(),
-        "Nirai-Ner-Nirai" => "புளிமாகவி (pulima kavi)".to_string(),
-        "Nirai-Nirai-Ner" => "கருவிளங்காய் (karuvilam kangay)".to_string(),
-        "Nirai-Nirai-Nirai" => "கருவிளகவி (karuvilam kavi)".to_string(),
-        "Ner-Ner-Ner-Ner" => "தேமாந்தப்பூ (thema thanthapuu)".to_string(),
-        "Ner-Ner-Ner-Nirai" => "தேமாந்தநிழல் (thema thanth nizhal)".to_string(),
-        "Ner-Ner-Nirai-Ner" => "தேமாரும்பூ (thema arumpuu)".to_string(),
-        "Ner-Ner-Nirai-Nirai" => "தேமாருநிழல் (thema aru nizhal)".to_string(),
-        "Ner-Nirai-Ner-Ner" => "கூவிளந்தப்பூ (ku vilam thanthapuu)".to_string(),
-        "Ner-Nirai-Ner-Nirai" => "கூவிளந்தநிழல் (ku vilam thanth nizhal)".to_string(),
-        "Ner-Nirai-Nirai-Ner" => "கூவிளரும்பூ (ku vilam arumpuu)".to_string(),
-        "Ner-Nirai-Nirai-Nirai" => "கூவிளருநிழல் (ku vilam aru nizhal)".to_string(),
-        "Nirai-Ner-Ner-Ner" => "புளிமாந்தப்பூ (pulima thanthapuu)".to_string(),
-        "Nirai-Ner-Ner-Nirai" => "புளிமாந்தநிழல் (pulima thanth nizhal)".to_string(),
-        "Nirai-Ner-Nirai-Ner" => "புளிமாரும்பூ (pulima arumpuu)".to_string(),
-        "Nirai-Ner-Nirai-Nirai" => "புளிமாருநிழல் (pulima aru nizhal)".to_string(),
-        "Nirai-Nirai-Ner-Ner" => "கருவிளந்தப்பூ (karuvilam thanthapuu)".to_string(),
-        "Nirai-Nirai-Ner-Nirai" => "கருவிளந்தநிழல் (karuvilam thanth nizhal)".to_string(),
-        "Nirai-Nirai-Nirai-Ner" => "கருவிளரும்பூ (karuvilam arumpuu)".to_string(),
-        "Nirai-Nirai-Nirai-Nirai" => "கருவிளருநிழல் (karuvilam aru nizhal)".to_string(),
+        // 3-acai (மூவசை)
+        "Ner-Ner-Ner" => "தேமாங்காய் (themaangkaay)".to_string(),
+        "Ner-Ner-Nirai" => "தேமாங்கனி (themaangkani)".to_string(),
+        "Ner-Nirai-Ner" => "கூவிளங்காய் (kuivilangkaay)".to_string(),
+        "Ner-Nirai-Nirai" => "கூவிளங்கனி (kuivilangkani)".to_string(),
+        "Nirai-Ner-Ner" => "புளிமாங்காய் (pulimaangkaay)".to_string(),
+        "Nirai-Ner-Nirai" => "புளிமாங்கனி (pulimaangkani)".to_string(),
+        "Nirai-Nirai-Ner" => "கருவிளங்காய் (karuvilangkaay)".to_string(),
+        "Nirai-Nirai-Nirai" => "கருவிளங்கனி (karuvilangkani)".to_string(),
+        // 4-acai (நான்கசை) — தண் / நறும் spellings per feet-calculations.md
+        "Ner-Ner-Ner-Ner" => "தேமாந்தண்பூ (themaanthanpuu)".to_string(),
+        "Ner-Ner-Ner-Nirai" => "தேமாந்தண்ணிழல் (themaanthannizhal)".to_string(),
+        "Ner-Ner-Nirai-Ner" => "தேமாநறும்பூ (themanarumpuu)".to_string(),
+        "Ner-Ner-Nirai-Nirai" => "தேமாநறுநிழல் (themanarunizhal)".to_string(),
+        "Ner-Nirai-Ner-Ner" => "கூவிளந்தண்பூ (kuivilanthanpuu)".to_string(),
+        "Ner-Nirai-Ner-Nirai" => "கூவிளந்தண்ணிழல் (kuivilanthannizhal)".to_string(),
+        "Ner-Nirai-Nirai-Ner" => "கூவிளநறும்பூ (kuivilanarumpuu)".to_string(),
+        "Ner-Nirai-Nirai-Nirai" => "கூவிளநறுநிழல் (kuivilanarunizhal)".to_string(),
+        "Nirai-Ner-Ner-Ner" => "புளிமாந்தண்பூ (pulimaanthanpuu)".to_string(),
+        "Nirai-Ner-Ner-Nirai" => "புளிமாந்தண்ணிழல் (pulimaanthannizhal)".to_string(),
+        "Nirai-Ner-Nirai-Ner" => "புளிமாநறும்பூ (pulimanarumpuu)".to_string(),
+        "Nirai-Ner-Nirai-Nirai" => "புளிமாநறுநிழல் (pulimanarunizhal)".to_string(),
+        "Nirai-Nirai-Ner-Ner" => "கருவிளந்தண்பூ (karuvilanthanpuu)".to_string(),
+        "Nirai-Nirai-Ner-Nirai" => "கருவிளந்தண்ணிழல் (karuvilanthannizhal)".to_string(),
+        "Nirai-Nirai-Nirai-Ner" => "கருவிளநறும்பூ (karuvilanarumpuu)".to_string(),
+        "Nirai-Nirai-Nirai-Nirai" => "கருவிளநறுநிழல் (karuvilanarunizhal)".to_string(),
         "" => "—".to_string(),
         other => other.to_string(),
     }
@@ -136,7 +141,7 @@ fn to_display_talai(t: &Linkage) -> DisplayTalai {
             "நிரையொன்றிய ஆசிரியத்தளை".to_string()
         }
         LinkageSpecialType::IyarcirVenthalai => "இயற்சீர் வெண்டளை".to_string(),
-        LinkageSpecialType::VencirVenthalai => "வெஞ்சீர் வெண்டளை".to_string(),
+        LinkageSpecialType::VencirVenthalai => "வெண்சீர் வெண்டளை".to_string(),
         LinkageSpecialType::Kalithalai => "கலித்தளை".to_string(),
         LinkageSpecialType::OndriyaVanchithalai => "ஒன்றிய வஞ்சித்தளை".to_string(),
         LinkageSpecialType::OndrathaVanchithalai => "ஒன்றாத வஞ்சித்தளை".to_string(),
