@@ -131,6 +131,24 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed technical documentation.
 ### GitHub Actions
 
 - **Workflow:** [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on pushes to `malar` and `main` and on all pull requests: full `pnpm run build` (WebAssembly + Vite), `pnpm run typecheck`, and `pnpm run test` (Rust + Vitest). Node version matches [`.nvmrc`](.nvmrc).
+- **CRAP report:** Job `crap_analysis` uploads artifact **`crap-analysis`** (download from the run’s **Artifacts**). Open **`crap-report.md`** for the summary. Manual baseline notes live in [`tamil-seiyul-alagi/QUALITY_CRAP_BASELINE.md`](tamil-seiyul-alagi/QUALITY_CRAP_BASELINE.md).
+
+### CRAP report (local)
+
+Combines cyclomatic complexity (Lizard XML on the Rust parser tree) with line coverage (`cargo llvm-cov` + Vitest `coverage-summary.json`). Writes **`crap-report.md`** at the repo root.
+
+**Prerequisites (one-time):**
+
+- Python 3 + `pip install lizard` (CLI must be on `PATH` as `lizard`)
+- `rustup component add llvm-tools-preview` and `cargo install cargo-llvm-cov`
+
+**Run (matches CI inputs):**
+
+```bash
+pnpm run crap:local
+```
+
+Then open **`crap-report.md`**. Generated inputs (`lizard-rust.xml`, `tamil-seiyul-alagi/llvm-cov-summary.json`, `coverage/`) are gitignored; re-run the command when you want a fresh report.
 
 ### Vercel (this repo’s working flow)
 

@@ -22,6 +22,7 @@
     "test:frontend": "vitest run",
     "test:frontend:coverage": "vitest run --coverage",
     "crap:report": "python3 dx/crap_report.py --lizard-xml lizard-rust.xml --rust-cov tamil-seiyul-alagi/llvm-cov-summary.json --vitest-summary coverage/coverage-summary.json --out-md crap-report.md",
+    "crap:local": "pnpm run build:wasm && lizard tamil-seiyul-alagi/src --exclude tamil-seiyul-alagi/src/wasm -X -o lizard-rust.xml && cd tamil-seiyul-alagi && cargo llvm-cov test --summary-only --json --output-path llvm-cov-summary.json && cd .. && pnpm run test:frontend:coverage && pnpm run crap:report",
     "test:watch": "vitest",
     "lint": "echo 'No linter configured yet'",
     "typecheck": "tsc --noEmit"
