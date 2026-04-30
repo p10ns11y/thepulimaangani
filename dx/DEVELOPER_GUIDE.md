@@ -123,7 +123,7 @@ Short summary for agents: [`AGENTS.md`](../AGENTS.md).
 
 - **Default branch:** `malar`.
 - **Pick a role/branch:** [trinity-and-native-agents/AGENT_ROLES.md](../trinity-and-native-agents/AGENT_ROLES.md) first; full tables in [creators.md](../trinity-and-native-agents/creators.md), [maintainers.md](../trinity-and-native-agents/maintainers.md), [renewers.md](../trinity-and-native-agents/renewers.md), [ainthinai.md](../trinity-and-native-agents/ainthinai.md).
-- **After merging a PR:** `./dx/syncagents.sh` (use `PUSH=1` to update remote branch tips). [sync-branches-architecture-simple.md](./sync-branches-architecture-simple.md).
+- **After merging a PR:** `./dx/syncagents.sh` (use `PUSH=1` to update remote branch tips). The script **creates missing local branches** that track `origin/*` after each fetch, so every remote branch gets a local tracking copy before the reset/rebase phase. [sync-branches-architecture-simple.md](./sync-branches-architecture-simple.md).
 
 ---
 
