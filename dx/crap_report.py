@@ -4,6 +4,7 @@ Merge cyclomatic complexity (Lizard XML) with line coverage (Rust llvm-cov JSON 
 and emit CRAP-style metrics (Agitar formula: CRAP = C^2 * (1-d)^3 + C).
 
 CI: report-only by default — prints Markdown summary; use --max-mean to fail the job.
+`--lizard-xml` accepts multiple files (merged). CI currently passes one Rust report; Vitest coverage still feeds TS `d` where paths match.
 """
 
 from __future__ import annotations
