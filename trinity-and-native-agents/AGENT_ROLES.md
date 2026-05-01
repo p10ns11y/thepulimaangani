@@ -6,6 +6,16 @@
 
 ---
 
+## Branch names (read this before `git checkout -b`)
+
+**Repo roles (preferred local names):** pick from the table below — branch name **equals** role name when you work on that persona (e.g. `theni`, `pattampoochi`). See [creators.md](creators.md) for the full pollinator table.
+
+**Cursor Cloud / background agents** often **require** branches like `cursor/<description>-ce01`. When that applies, still **embed the role** in the slug so intent stays clear, e.g. `cursor/theni-parse-features-ce01`, not only `cursor/fix-bug-ce01`.
+
+**Never** invent a random `cursor/foo-ce01` without mapping it to a role in the PR title or description.
+
+---
+
 ## How to pick (30 seconds)
 
 | You are mainly… | Branch / agent name | Owns | Does *not* own |

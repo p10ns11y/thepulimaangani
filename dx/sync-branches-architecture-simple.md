@@ -71,3 +71,7 @@ COLLECT → BUILD PLAN → VALIDATE → SYNC → DONE
 ```
 
 This tool follows a clean state machine pattern with predictable transitions between phases.
+
+## Remote tracking locals
+
+After `git fetch`, **Phase 1** may create **missing local branches** that already exist on `origin/*` (`git branch --track <name> origin/<name>`). That way the later “reset each local branch to `origin/malar`” step includes remote-only persona branches (e.g. `theni`) once you have fetched them — not only branches that already existed in your clone.
