@@ -16,9 +16,11 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::linkage::{LinkageSpecialType, LinkageType};
-use crate::types::ParseResult;
+use crate::foot::Foot;
+use crate::linkage::{Linkage, LinkageSpecialType, LinkageType};
+use crate::syllable::Syllable;
 use crate::syllable::SyllableType;
+use crate::types::{Line, ParseResult};
 
 /// Increment when the dense vector layout or semantics change.
 pub const PARSE_FEATURE_SCHEMA_VERSION: u32 = 1;
@@ -63,6 +65,17 @@ pub fn fnv1a_u32(bytes: &[u8]) -> u32 {
     h
 }
 
+/// Intermediate pipeline state for [`ParseFeatureVector::from_pipeline`] (before `ParseResult` exists).
+#[derive(Debug, Clone, Copy)]
+pub struct ParseFeatureSource<'a> {
+    pub letter_count: usize,
+    pub vikalpa_count: usize,
+    pub lines: &'a [Line],
+    pub syllables: &'a [Syllable],
+    pub feet: &'a [Foot],
+    pub linkage: &'a [Linkage],
+}
+
 /// Dense prosody features for small models (linear layer, GBM export, etc.).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ParseFeatureVector {
@@ -72,33 +85,42 @@ pub struct ParseFeatureVector {
 }
 
 impl ParseFeatureVector {
-    /// Build features from a successful parse. Empty `feet` yields a zero vector with
-    /// global counts still reflecting `letter_count` / `lines` where applicable.
-    pub fn from_parse_result(result: &ParseResult) -> Self {
+    /// Build features from pipeline fields (same layout as [`from_parse_result`]).
+    pub fn from_pipeline(src: ParseFeatureSource<'_>) -> Self {
         let mut dense = vec![0.0f32; PARSE_FEATURE_DENSE_LEN];
-        fill_global(&mut dense[0..N_GLOBAL], result);
-        fill_linkage_types(
-            &mut dense[N_GLOBAL..N_GLOBAL + N_LINKAGE_TYPE],
-            result,
-        );
-        fill_linkage_special(
+        fill_global_from_parts(&mut dense[0..N_GLOBAL], src);
+        fill_linkage_types_slice(&mut dense[N_GLOBAL..N_GLOBAL + N_LINKAGE_TYPE], src.linkage);
+        fill_linkage_special_slice(
             &mut dense[N_GLOBAL + N_LINKAGE_TYPE..N_GLOBAL + N_LINKAGE_TYPE + N_LINK_SPECIAL],
-            result,
+            src.linkage,
         );
-        fill_foot_pattern_bins(
+        fill_foot_pattern_bins_slice(
             &mut dense[N_GLOBAL + N_LINKAGE_TYPE + N_LINK_SPECIAL
                 ..N_GLOBAL + N_LINKAGE_TYPE + N_LINK_SPECIAL + N_FOOT_HASH],
-            result,
+            src.feet,
         );
-        fill_line_foot_histogram(
+        fill_line_foot_histogram_slice(
             &mut dense[N_GLOBAL + N_LINKAGE_TYPE + N_LINK_SPECIAL + N_FOOT_HASH..],
-            result,
+            src.lines,
         );
 
         Self {
             schema_version: PARSE_FEATURE_SCHEMA_VERSION,
             dense,
         }
+    }
+
+    /// Build features from a successful parse. Empty `feet` yields a zero vector with
+    /// global counts still reflecting `letter_count` / `lines` where applicable.
+    pub fn from_parse_result(result: &ParseResult) -> Self {
+        Self::from_pipeline(ParseFeatureSource {
+            letter_count: result.letter_count,
+            vikalpa_count: result.vikalpa_count,
+            lines: &result.lines,
+            syllables: &result.syllables,
+            feet: &result.feet,
+            linkage: &result.linkage,
+        })
     }
 
     /// Borrow as a fixed slice when `dense` has the expected length (always true if built via `from_parse_result`).
@@ -111,15 +133,15 @@ fn ln1p_u32(n: usize) -> f32 {
     ((n as f64) + 1.0).ln() as f32
 }
 
-fn fill_global(slice: &mut [f32], result: &ParseResult) {
-    let n_lines = result.lines.len().max(1);
-    let n_feet = result.feet.len();
-    let n_syl = result.syllables.len();
-    let n_link = result.linkage.len();
+fn fill_global_from_parts(slice: &mut [f32], src: ParseFeatureSource<'_>) {
+    let n_lines = src.lines.len().max(1);
+    let n_feet = src.feet.len();
+    let n_syl = src.syllables.len();
+    let n_link = src.linkage.len();
 
     let mut ner = 0usize;
     let mut nirai = 0usize;
-    for s in &result.syllables {
+    for s in src.syllables {
         match s.syllable_type {
             SyllableType::Ner => ner += 1,
             SyllableType::Nirai => nirai += 1,
@@ -129,7 +151,7 @@ fn fill_global(slice: &mut [f32], result: &ParseResult) {
 
     let mut max_feet_per_line = 0usize;
     let mut total_feet_lines = 0usize;
-    for ln in &result.lines {
+    for ln in src.lines {
         let c = ln.feet.len();
         max_feet_per_line = max_feet_per_line.max(c);
         total_feet_lines += c;
@@ -138,7 +160,7 @@ fn fill_global(slice: &mut [f32], result: &ParseResult) {
 
     let mut max_syl_per_foot = 0usize;
     let mut sum_syl_foot = 0usize;
-    for f in &result.feet {
+    for f in src.feet {
         let c = f.syllables.len();
         max_syl_per_foot = max_syl_per_foot.max(c);
         sum_syl_foot += c;
@@ -149,9 +171,9 @@ fn fill_global(slice: &mut [f32], result: &ParseResult) {
         (sum_syl_foot as f32) / (n_feet as f32)
     };
 
-    slice[0] = ln1p_u32(result.letter_count);
-    slice[1] = result.vikalpa_count as f32;
-    slice[2] = result.lines.len() as f32;
+    slice[0] = ln1p_u32(src.letter_count);
+    slice[1] = src.vikalpa_count as f32;
+    slice[2] = src.lines.len() as f32;
     slice[3] = n_feet as f32;
     slice[4] = n_syl as f32;
     slice[5] = mean_feet_per_line;
@@ -175,9 +197,9 @@ fn linkage_type_index(t: &LinkageType) -> usize {
     }
 }
 
-fn fill_linkage_types(slice: &mut [f32], result: &ParseResult) {
-    let denom = result.linkage.len().max(1) as f32;
-    for link in &result.linkage {
+fn fill_linkage_types_slice(slice: &mut [f32], linkage: &[Linkage]) {
+    let denom = linkage.len().max(1) as f32;
+    for link in linkage {
         let i = linkage_type_index(&link.linkage_type);
         if i < N_LINKAGE_TYPE {
             slice[i] += 1.0 / denom;
@@ -198,17 +220,17 @@ fn linkage_special_index(s: LinkageSpecialType) -> usize {
     }
 }
 
-fn fill_linkage_special(slice: &mut [f32], result: &ParseResult) {
-    let denom = result.linkage.len().max(1) as f32;
-    for link in &result.linkage {
+fn fill_linkage_special_slice(slice: &mut [f32], linkage: &[Linkage]) {
+    let denom = linkage.len().max(1) as f32;
+    for link in linkage {
         let i = linkage_special_index(link.linkage_special_type);
         slice[i] += 1.0 / denom;
     }
 }
 
-fn fill_foot_pattern_bins(slice: &mut [f32], result: &ParseResult) {
-    let denom = result.feet.len().max(1) as f32;
-    for foot in &result.feet {
+fn fill_foot_pattern_bins_slice(slice: &mut [f32], feet: &[Foot]) {
+    let denom = feet.len().max(1) as f32;
+    for foot in feet {
         let h = fnv1a_u32(foot.foot_type.as_bytes()) as usize % N_FOOT_HASH;
         slice[h] += 1.0 / denom;
     }
@@ -228,9 +250,9 @@ fn line_foot_bin(foot_count: usize) -> usize {
     }
 }
 
-fn fill_line_foot_histogram(slice: &mut [f32], result: &ParseResult) {
-    let denom = result.lines.len().max(1) as f32;
-    for ln in &result.lines {
+fn fill_line_foot_histogram_slice(slice: &mut [f32], lines: &[Line]) {
+    let denom = lines.len().max(1) as f32;
+    for ln in lines {
         let b = line_foot_bin(ln.feet.len());
         if b < N_LINE_FOOT_HIST {
             slice[b] += 1.0 / denom;
@@ -275,6 +297,23 @@ mod tests {
         for (i, &x) in v.dense.iter().enumerate() {
             assert!(x.is_finite(), "index {i} is not finite: {x}");
         }
+    }
+
+    #[test]
+    fn from_pipeline_matches_from_parse_result() {
+        let mut opts = ParseOptions::default();
+        opts.no_detect = true;
+        let r = parse_poem("முற்ற உணர்ந்தானை ஏத்தி மொழிகுவன்\nகுற்றமொன்று இல்லா அறம்", opts).unwrap();
+        let a = ParseFeatureVector::from_parse_result(&r);
+        let b = ParseFeatureVector::from_pipeline(ParseFeatureSource {
+            letter_count: r.letter_count,
+            vikalpa_count: r.vikalpa_count,
+            lines: &r.lines,
+            syllables: &r.syllables,
+            feet: &r.feet,
+            linkage: &r.linkage,
+        });
+        assert_eq!(a, b);
     }
 
     #[test]

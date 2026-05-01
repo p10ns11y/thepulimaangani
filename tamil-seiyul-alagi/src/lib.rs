@@ -27,9 +27,9 @@ pub use letter::Letter;
 pub use linkage::{
     CirAcaiClass, FootPosition, Linkage, LinkageSpecialType, LinkageType, Talai, TalaiType,
 };
-pub use metre::MetreType;
+pub use metre::{boost_metre_hypotheses_with_dense, MetreType};
 pub use parse_features::{
-    fnv1a_u32, ParseFeatureVector, FOOT_PATTERN_BIN_DIM, FOOT_PATTERN_BIN_OFFSET,
+    fnv1a_u32, ParseFeatureSource, ParseFeatureVector, FOOT_PATTERN_BIN_DIM, FOOT_PATTERN_BIN_OFFSET,
     GLOBAL_FEATURE_DIM, GLOBAL_FEATURE_OFFSET, LINE_FOOT_HIST_FEATURE_DIM, LINE_FOOT_HIST_OFFSET,
     LINKAGE_TYPE_FEATURE_DIM, LINKAGE_TYPE_FEATURE_OFFSET, LINK_SPECIAL_FEATURE_DIM,
     LINK_SPECIAL_FEATURE_OFFSET, PARSE_FEATURE_DENSE_LEN, PARSE_FEATURE_SCHEMA_VERSION,
@@ -74,7 +74,18 @@ pub fn parse_poem(text: &str, options: ParseOptions) -> Result<ParseResult, Pars
         linkage.clone(),
     );
     let lines = types::flat_lines_from_poem(&poem);
-    let metre_hypotheses = metre::detect_metre_hypotheses(&feet, &linkage, options.no_detect);
+    let mut metre_hypotheses = metre::detect_metre_hypotheses(&feet, &linkage, options.no_detect);
+    if !options.no_detect && !metre_hypotheses.is_empty() {
+        let fv = ParseFeatureVector::from_pipeline(ParseFeatureSource {
+            letter_count: graphemes.len(),
+            vikalpa_count: if options.alt_scansion { 1 } else { 0 },
+            lines: &lines,
+            syllables: &syllables,
+            feet: &feet,
+            linkage: &linkage,
+        });
+        metre::boost_metre_hypotheses_with_dense(&mut metre_hypotheses, &fv.dense);
+    }
     let metre = metre_hypotheses.first().map(|h| h.metre_type.clone());
 
     Ok(ParseResult {
@@ -124,6 +135,26 @@ fn normalize_text(text: &str, uyir_u: bool) -> String {
 mod tests {
     use super::*;
     use unicode_segmentation::UnicodeSegmentation;
+
+    #[test]
+    fn metre_detection_applies_parse_feature_boost_for_sample_kural_venpaa() {
+        let text = "முற்ற உணர்ந்தானை ஏத்தி மொழிகுவன்\nகுற்றமொன்று இல்லா அறம்";
+        let r = parse_poem(text, ParseOptions::default()).expect("parse");
+        assert_eq!(r.metre_type, Some(MetreType::Venpaa));
+        let h = &r.top_k_metre_hypotheses[0];
+        assert!(
+            h.aggregate_score > 70,
+            "expected linkage feature boost above rule-only 70, got {}",
+            h.aggregate_score
+        );
+        assert!(
+            h.rule_ids.iter().any(|rid| {
+                matches!(rid, RuleId::Other(s) if s == "MetreParseFeatures01")
+            }),
+            "expected MetreParseFeatures01 in rule_ids, got {:?}",
+            h.rule_ids
+        );
+    }
 
     #[test]
     fn multiline_poem_pipeline_produces_stable_core_fields_and_structure() {
