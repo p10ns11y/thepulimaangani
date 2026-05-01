@@ -51,7 +51,7 @@ On a 36-row snapshot, the built-in metre heuristic still disagrees with `parent_
 2. Read `result.parse_features` (unwrap or skip if `None` when `no_detect` was used).
 3. Append one JSON line per sample, e.g. `{"label":"venpaa","schema_version":1,"dense":[...]}`.
 
-**WASM / JSON names:** `linkage_type`, `linkage_special_type`, and `MetreType` in `ParseResult` JSON use **Tamil-style `Aciriya…`** spellings and consistent **`…Talai`** suffixes on new keys (`VenTalai`, `KaliTalai`, `IyarcirVenTalai`, …). Legacy `Venthalai`, `Aciriyathalai`, `Kalithalai`, `Vanjithalai`, `*Venthalai`, `*Vanchithalai`, `Aasiriy…`, and `Asiriya…` strings remain accepted on **deserialize** (`serde` aliases on the enums). Empty-foot / unknown-cir edges serialize as `VenPathTalai` (not `VenTalai`).
+**WASM / JSON names:** `linkage_type`, `linkage_special_type`, and `MetreType` in `ParseResult` JSON use **Tamil-style `Aciriya…`** spellings and consistent **`…Talai`** suffixes on new keys (`VenTalai`, `KaliTalai`, `IyarcirVenTalai`, …). Legacy `Venthalai`, `Aciriyathalai`, `Kalithalai`, `Vanjithalai`, `*Venthalai`, `*Vanchithalai`, `Aasiriy…`, and `Asiriya…` strings remain accepted on **deserialize** (`serde` aliases on the enums). Empty-foot / unknown-cir edges use **`VenTalai`** with `linkage_special_type` **`Unknown`** (same coarse key as ven-class bonds).
 
 ## Model choices (all feasible in Rust)
 

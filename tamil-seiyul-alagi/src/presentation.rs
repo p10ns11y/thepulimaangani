@@ -150,8 +150,6 @@ fn to_display_talai(t: &Linkage) -> DisplayTalai {
             LinkageType::AciriyaTalai => "ஆசிரியத்தளை".to_string(),
             LinkageType::KaliTalai => "கலித்தளை".to_string(),
             LinkageType::VanjiTalai => "வஞ்சித்தளை".to_string(),
-            LinkageType::VenPathTalai => "வெண்டளை".to_string(),
-            LinkageType::VenPathAciriyaTalai => "ஆசிரியத்தளை".to_string(),
             LinkageType::Other(s) => s.clone(),
         },
     };

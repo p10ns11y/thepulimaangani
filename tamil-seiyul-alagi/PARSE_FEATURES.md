@@ -65,8 +65,8 @@ For each bond in `linkage`, increment the slot for its `linkage_type`, then **di
 | `13` | `AciriyaTalai` (was `Aciriyathalai`) |
 | `14` | `KaliTalai` (was `Kalithalai`) |
 | `15` | `VanjiTalai` (was `Vanjithalai`) |
-| `16` | `VenPathTalai` (empty-foot / unknown-cir fallback; legacy `VenTalai` on deserialize) |
-| `17` | `VenPathAciriyaTalai` (reserved ven-path slot; legacy `AsiriyaTalai` on deserialize) |
+| `16` | *(reserved; always zero in schema v1)* |
+| `17` | *(reserved; always zero in schema v1)* |
 | `18` | `Other(_)` |
 
 ---

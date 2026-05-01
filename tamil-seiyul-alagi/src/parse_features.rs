@@ -203,8 +203,7 @@ fn linkage_type_index(t: &LinkageType) -> usize {
         LinkageType::AciriyaTalai => 1,
         LinkageType::KaliTalai => 2,
         LinkageType::VanjiTalai => 3,
-        LinkageType::VenPathTalai => 4,
-        LinkageType::VenPathAciriyaTalai => 5,
+        // Indices 4–5 reserved (unused in schema v1); keep dense layout stable.
         LinkageType::Other(_) => 6,
     }
 }

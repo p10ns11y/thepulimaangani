@@ -4,8 +4,6 @@ const linkageTypeMap: Record<string, string> = {
   AciriyaTalai: 'ஆசிரியத்தளை',
   KaliTalai: 'கலித்தளை',
   VanjiTalai: 'வஞ்சித்தளை',
-  VenPathTalai: 'வெண்டளை',
-  VenPathAciriyaTalai: 'ஆசிரியத்தளை',
   // Legacy WASM keys (pre–*Talai suffix alignment)
   Venthalai: 'வெண்டளை',
   Aciriyathalai: 'ஆசிரியத்தளை',

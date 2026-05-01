@@ -23,19 +23,18 @@ pub enum LinkageType {
     /// JSON: `VenTalai` (legacy `Venthalai` on deserialize).
     #[serde(rename = "VenTalai", alias = "Venthalai")]
     VenTalai,
-    /// Coarse ஆசிரியத்தளை (JSON: `AciriyaTalai`; legacy `Aciriyathalai` / `Aasiriyathalai`).
-    #[serde(rename = "AciriyaTalai", alias = "Aciriyathalai", alias = "Aasiriyathalai")]
+    /// Coarse ஆசிரியத்தளை (JSON: `AciriyaTalai`; legacy `Aciriyathalai` / `Aasiriyathalai` / `AsiriyaTalai`).
+    #[serde(
+        rename = "AciriyaTalai",
+        alias = "Aciriyathalai",
+        alias = "Aasiriyathalai",
+        alias = "AsiriyaTalai"
+    )]
     AciriyaTalai,
     #[serde(rename = "KaliTalai", alias = "Kalithalai")]
     KaliTalai,
     #[serde(rename = "VanjiTalai", alias = "Vanjithalai")]
     VanjiTalai,
-    /// Fallback when the previous foot’s last cir cannot be classified (JSON: `VenPathTalai`).
-    #[serde(rename = "VenPathTalai")]
-    VenPathTalai,
-    /// Ven-class path classified as ஆசிரிய (JSON: `VenPathAciriyaTalai`; legacy `AsiriyaTalai`).
-    #[serde(rename = "VenPathAciriyaTalai", alias = "AsiriyaTalai")]
-    VenPathAciriyaTalai,
     Other(String),
 }
 
@@ -199,14 +198,14 @@ pub fn analyze_linkage(foot_positions: &[FootPosition], feet: &[Foot]) -> Vec<Li
                         (lt, lst, true)
                     } else {
                         (
-                            LinkageType::VenPathTalai,
+                            LinkageType::VenTalai,
                             LinkageSpecialType::Unknown,
                             false,
                         )
                     }
                 }
                 _ => (
-                    LinkageType::VenPathTalai,
+                    LinkageType::VenTalai,
                     LinkageSpecialType::Unknown,
                     false,
                 ),
@@ -399,15 +398,11 @@ mod tests {
         );
         assert_eq!(
             serde_json::from_str::<LinkageType>("\"AsiriyaTalai\"").unwrap(),
-            LinkageType::VenPathAciriyaTalai
+            LinkageType::AciriyaTalai
         );
         assert_eq!(
             serde_json::from_str::<LinkageType>("\"VenTalai\"").unwrap(),
             LinkageType::VenTalai
-        );
-        assert_eq!(
-            serde_json::from_str::<LinkageType>("\"VenPathTalai\"").unwrap(),
-            LinkageType::VenPathTalai
         );
         assert_eq!(
             serde_json::from_str::<LinkageType>("\"Kalithalai\"").unwrap(),
@@ -452,10 +447,6 @@ mod tests {
         assert_eq!(
             serde_json::to_string(&LinkageType::AciriyaTalai).unwrap(),
             "\"AciriyaTalai\""
-        );
-        assert_eq!(
-            serde_json::to_string(&LinkageType::VenPathTalai).unwrap(),
-            "\"VenPathTalai\""
         );
     }
 

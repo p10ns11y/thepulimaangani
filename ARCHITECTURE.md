@@ -97,7 +97,7 @@ The WebAssembly parser is built separately and its artifacts are copied to `src/
    - Syllable detection (நேர் / நிரை) per linguistic word
    - **Feet:** one foot per word; `foot_type` is a hyphenated **Ner/Nirai** pattern (not classical தேமா names in JSON)
    - **Metre:** ranked hypotheses; simple heuristics, not full classical rule engines yet
-   - **Linkage:** consecutive feet with line/word positions; **`linkage_type`** = coarse family (`VenTalai`, `AciriyaTalai`, `KaliTalai`, `VanjiTalai`) and **`linkage_special_type`** = issue #36 row (e.g. `VencirVenTalai`); `VenPathTalai` / `Unknown` only for malformed/empty feet
+   - **Linkage:** consecutive feet with line/word positions; **`linkage_type`** = coarse family (`VenTalai`, `AciriyaTalai`, `KaliTalai`, `VanjiTalai`) and **`linkage_special_type`** = issue #36 row (e.g. `VencirVenTalai`); `VenTalai` / `Unknown` only for malformed/empty feet
 4. **Result Serialization**: `ParseResult` to JSON in the browser
 5. **Display**: React reads JSON via `adaptWasmJsonToParsedPoem`; **`presentation`** from WASM carries Tamil metre / foot / தளை labels (canonical). The app may still map enums locally when `presentation` is absent (older builds).
 

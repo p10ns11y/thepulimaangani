@@ -42,7 +42,7 @@ Interpretation:
 | `src/lib.rs::parse_poem` | 3 | 2 | 6 | high | Main integration seam. **Mitigated:** direct unit tests for `types::flat_lines_from_poem` (linguistic_words vs words vs empty) reduce untested surface between tree and legacy `lines`. |
 | `src/syllable_builder.rs::build_inner` | 2 | 2 | 4 | moderate | Ordered regex scan per **linguistic word**; unit tests cover common paths. |
 | `src/word_scope.rs::segment_syllables_from_normalized` | 2 | 2 | 4 | moderate | Line/word tokenization drives all downstream syllables; integration-heavy. |
-| `src/linkage.rs::foot_positions_for_poem` + `analyze_linkage` | 2 | 1 | 2 | low | Positions + **`linkage_type`** (coarse) + **`linkage_special_type`** (issue #36); `VenPathTalai`/`Unknown` only on empty-foot fallback. |
+| `src/linkage.rs::foot_positions_for_poem` + `analyze_linkage` | 2 | 1 | 2 | low | Positions + **`linkage_type`** (coarse) + **`linkage_special_type`** (issue #36); `VenTalai`/`Unknown` only on empty-foot fallback. |
 | `src/poem_tree.rs::build_poem_tree` + `linguistic_words_per_line` | 2 | 1 | 2 | low | Tree build still dense; **legacy `ParseResult.lines`** alignment is pinned by `flat_lines_from_poem` tests + existing multiline / sparse-word integration. |
 | `src/foot.rs::group_into_feet_with_ranges` | 2 | 1 | 2 | low | One foot per linguistic word + `foot_pattern()` Ner-Nirai string; covered by foot tests. |
 
