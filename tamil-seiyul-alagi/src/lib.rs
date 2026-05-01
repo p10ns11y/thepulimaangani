@@ -5,6 +5,7 @@ mod letter;
 mod line_scope;
 mod linkage;
 mod metre;
+mod parse_features;
 mod poem_tree;
 mod presentation;
 mod prosodic_sequence;
@@ -27,6 +28,12 @@ pub use linkage::{
     CirAcaiClass, FootPosition, Linkage, LinkageSpecialType, LinkageType, Talai, TalaiType,
 };
 pub use metre::MetreType;
+pub use parse_features::{
+    fnv1a_u32, ParseFeatureVector, FOOT_PATTERN_BIN_DIM, FOOT_PATTERN_BIN_OFFSET,
+    GLOBAL_FEATURE_DIM, GLOBAL_FEATURE_OFFSET, LINE_FOOT_HIST_FEATURE_DIM, LINE_FOOT_HIST_OFFSET,
+    LINKAGE_TYPE_FEATURE_DIM, LINKAGE_TYPE_FEATURE_OFFSET, LINK_SPECIAL_FEATURE_DIM,
+    LINK_SPECIAL_FEATURE_OFFSET, PARSE_FEATURE_DENSE_LEN, PARSE_FEATURE_SCHEMA_VERSION,
+};
 pub use presentation::{
     foot_pattern_display, DisplayFoot, DisplayResult, DisplaySyllable, DisplayTalai,
 };
