@@ -21,3 +21,5 @@ With thanks,
 ---
 
 *Technical reference: [typewriter-web-audio-sound.md](./typewriter-web-audio-sound.md).*
+
+*Other collaboration notes in `notes/`: [creator-appreciation.md](./creator-appreciation.md), [prosody-parser-features-appreciation.md](./prosody-parser-features-appreciation.md).*
