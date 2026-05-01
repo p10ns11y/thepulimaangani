@@ -1,5 +1,8 @@
-//! Fixed-layout **numeric features** derived only from [`ParseResult`](crate::types::ParseResult)
-//! structure (feet, syllables, linkage, line shape). No raw poem text is embedded.
+//! Fixed-layout **numeric features** derived only from structured parse output
+//! (feet, syllables, linkage, line shape). No raw poem text is embedded.
+//!
+//! The WASM-facing snapshot type is [`crate::types::ParseFeatureSnapshot`]. Build it with
+//! [`ParseFeatureVector::from_pipeline`] then `.into_snapshot()`, or `ParseFeatureSnapshot::from(&parse_result)`.
 //!
 //! Bump [`PARSE_FEATURE_SCHEMA_VERSION`] and [`PARSE_FEATURE_DENSE_LEN`] together whenever
 //! the layout changes so downstream trainers / ONNX graphs can reject mismatched vectors.
@@ -20,7 +23,7 @@ use crate::foot::Foot;
 use crate::linkage::{Linkage, LinkageSpecialType, LinkageType};
 use crate::syllable::Syllable;
 use crate::syllable::SyllableType;
-use crate::types::{Line, ParseResult};
+use crate::types::{Line, ParseFeatureSnapshot, ParseResult};
 
 /// Increment when the dense vector layout or semantics change.
 pub const PARSE_FEATURE_SCHEMA_VERSION: u32 = 1;
@@ -85,7 +88,7 @@ pub struct ParseFeatureVector {
 }
 
 impl ParseFeatureVector {
-    /// Build features from pipeline fields (same layout as [`from_parse_result`]).
+    /// Build features from pipeline fields (same layout as WASM snapshot on [`crate::types::ParseResult`]).
     pub fn from_pipeline(src: ParseFeatureSource<'_>) -> Self {
         let mut dense = vec![0.0f32; PARSE_FEATURE_DENSE_LEN];
         fill_global_from_parts(&mut dense[0..N_GLOBAL], src);
@@ -110,10 +113,23 @@ impl ParseFeatureVector {
         }
     }
 
-    /// Build features from a successful parse. Empty `feet` yields a zero vector with
-    /// global counts still reflecting `letter_count` / `lines` where applicable.
-    pub fn from_parse_result(result: &ParseResult) -> Self {
-        Self::from_pipeline(ParseFeatureSource {
+    /// Convert to the JSON field shape on [`crate::types::ParseResult::parse_features`].
+    pub fn into_snapshot(self) -> ParseFeatureSnapshot {
+        ParseFeatureSnapshot {
+            schema_version: self.schema_version,
+            dense: self.dense,
+        }
+    }
+
+    /// Borrow as a fixed slice when `dense` has the expected length (always true if built via `from_pipeline`).
+    pub fn dense_slice(&self) -> &[f32] {
+        &self.dense
+    }
+}
+
+impl From<&ParseResult> for ParseFeatureSnapshot {
+    fn from(result: &ParseResult) -> Self {
+        ParseFeatureVector::from_pipeline(ParseFeatureSource {
             letter_count: result.letter_count,
             vikalpa_count: result.vikalpa_count,
             lines: &result.lines,
@@ -121,11 +137,7 @@ impl ParseFeatureVector {
             feet: &result.feet,
             linkage: &result.linkage,
         })
-    }
-
-    /// Borrow as a fixed slice when `dense` has the expected length (always true if built via `from_parse_result`).
-    pub fn dense_slice(&self) -> &[f32] {
-        &self.dense
+        .into_snapshot()
     }
 }
 
@@ -264,14 +276,14 @@ fn fill_line_foot_histogram_slice(slice: &mut [f32], lines: &[Line]) {
 mod tests {
     use super::*;
     use crate::parse_poem;
-    use crate::types::ParseOptions;
+    use crate::types::{ParseFeatureSnapshot, ParseOptions};
 
     #[test]
     fn dense_len_matches_constant() {
         let mut opts = ParseOptions::default();
         opts.no_detect = true;
         let r = parse_poem("கற்றது கைமணற்கு அணிதல்", opts).unwrap();
-        let v = ParseFeatureVector::from_parse_result(&r);
+        let v = ParseFeatureSnapshot::from(&r);
         assert_eq!(v.schema_version, PARSE_FEATURE_SCHEMA_VERSION);
         assert_eq!(v.dense.len(), PARSE_FEATURE_DENSE_LEN);
     }
@@ -283,8 +295,8 @@ mod tests {
         opts.no_detect = true;
         let a = parse_poem(text, opts.clone()).unwrap();
         let b = parse_poem(text, opts).unwrap();
-        let fa = ParseFeatureVector::from_parse_result(&a);
-        let fb = ParseFeatureVector::from_parse_result(&b);
+        let fa = ParseFeatureSnapshot::from(&a);
+        let fb = ParseFeatureSnapshot::from(&b);
         assert_eq!(fa, fb);
     }
 
@@ -293,7 +305,7 @@ mod tests {
         let mut opts = ParseOptions::default();
         opts.no_detect = true;
         let r = parse_poem("அ\nஅ\nஅ", opts).unwrap();
-        let v = ParseFeatureVector::from_parse_result(&r);
+        let v = ParseFeatureSnapshot::from(&r);
         for (i, &x) in v.dense.iter().enumerate() {
             assert!(x.is_finite(), "index {i} is not finite: {x}");
         }
@@ -304,7 +316,7 @@ mod tests {
         let mut opts = ParseOptions::default();
         opts.no_detect = true;
         let r = parse_poem("முற்ற உணர்ந்தானை ஏத்தி மொழிகுவன்\nகுற்றமொன்று இல்லா அறம்", opts).unwrap();
-        let a = ParseFeatureVector::from_parse_result(&r);
+        let a = ParseFeatureSnapshot::from(&r);
         let b = ParseFeatureVector::from_pipeline(ParseFeatureSource {
             letter_count: r.letter_count,
             vikalpa_count: r.vikalpa_count,
@@ -312,8 +324,34 @@ mod tests {
             syllables: &r.syllables,
             feet: &r.feet,
             linkage: &r.linkage,
-        });
+        })
+        .into_snapshot();
         assert_eq!(a, b);
+    }
+
+    #[test]
+    fn golden_kural_venpaa_parse_features_match_fixture() {
+        let fixture: ParseFeatureSnapshot = serde_json::from_str(include_str!(
+            "../tests/test_data/kural_venpaa_parse_features.json"
+        ))
+        .expect("fixture JSON");
+        let text = "முற்ற உணர்ந்தானை ஏத்தி மொழிகுவன்\nகுற்றமொன்று இல்லா அறம்";
+        let mut opts = ParseOptions::default();
+        opts.no_detect = true;
+        let r = parse_poem(text, opts).expect("parse");
+        let got = ParseFeatureSnapshot::from(&r);
+        assert_eq!(
+            got.schema_version, fixture.schema_version,
+            "bump fixture if PARSE_FEATURE_SCHEMA_VERSION changes"
+        );
+        assert_eq!(got.dense.len(), fixture.dense.len());
+        const EPS: f32 = 1e-4;
+        for (i, (&a, &b)) in got.dense.iter().zip(fixture.dense.iter()).enumerate() {
+            assert!(
+                (a - b).abs() < EPS,
+                "dense[{i}] mismatch: got {a}, fixture {b}"
+            );
+        }
     }
 
     #[test]
@@ -322,8 +360,8 @@ mod tests {
         opts.no_detect = true;
         let r1 = parse_poem("கா", opts.clone()).unwrap();
         let r2 = parse_poem("கா கி கு கே கை", opts).unwrap();
-        let v1 = ParseFeatureVector::from_parse_result(&r1);
-        let v2 = ParseFeatureVector::from_parse_result(&r2);
+        let v1 = ParseFeatureSnapshot::from(&r1);
+        let v2 = ParseFeatureSnapshot::from(&r2);
         assert_ne!(v1.dense[3], v2.dense[3], "foot count feature should differ");
         assert_ne!(v1.dense[11], v2.dense[11], "linkage count should differ");
     }

@@ -1,11 +1,11 @@
-//! Print [`ParseFeatureVector`](thepulimaangani_parser::ParseFeatureVector) as JSON for stdin text or first CLI argument.
+//! Print [`ParseFeatureSnapshot`](thepulimaangani_parser::ParseFeatureSnapshot) as JSON for stdin text or first CLI argument.
 //!
 //! ```text
 //! echo 'கற்றது' | cargo run --example dump_parse_features
 //! cargo run --example dump_parse_features -- 'கற்றது மொழி'
 //! ```
 
-use thepulimaangani_parser::{parse_poem, ParseFeatureVector, ParseOptions};
+use thepulimaangani_parser::{parse_poem, ParseFeatureSnapshot, ParseOptions};
 
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
@@ -23,8 +23,8 @@ fn main() {
 
     match parse_poem(text.trim(), opts) {
         Ok(result) => {
-            let fv = ParseFeatureVector::from_parse_result(&result);
-            println!("{}", serde_json::to_string_pretty(&fv).expect("json"));
+            let snap = ParseFeatureSnapshot::from(&result);
+            println!("{}", serde_json::to_string_pretty(&snap).expect("json"));
         }
         Err(e) => {
             eprintln!("parse error: {e}");

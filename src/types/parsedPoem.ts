@@ -53,6 +53,20 @@ export interface ParsedPresentation {
   talai: ParsedPresentationTalai[]
 }
 
+/** One metre hypothesis from WASM `top_k_metre_hypotheses`. */
+export interface ParsedMetreHypothesis {
+  metre_type: string
+  aggregate_score: number
+  violations: unknown[]
+  rule_ids: unknown[]
+}
+
+/** Dense 51-float snapshot when WASM includes `parse_features`. */
+export interface ParsedParseFeatures {
+  schema_version: number
+  dense: number[]
+}
+
 export interface ParsedPoem {
   original_text: string
   metre_type: string
@@ -64,6 +78,10 @@ export interface ParsedPoem {
   linkage?: ParsedLinkageEdge[]
   /** Rust presentation layer: Tamil labels for metre, feet, தளை (same JSON as other clients). */
   presentation?: ParsedPresentation
+  /** When present: coarse metre candidates with scores (WASM `top_k_metre_hypotheses`). */
+  top_k_metre_hypotheses?: ParsedMetreHypothesis[]
+  /** When present: 51-dim parse feature vector (WASM `parse_features`). */
+  parse_features?: ParsedParseFeatures
   errors?: string[]
 }
 

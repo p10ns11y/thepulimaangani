@@ -27,7 +27,7 @@ pub use letter::Letter;
 pub use linkage::{
     CirAcaiClass, FootPosition, Linkage, LinkageSpecialType, LinkageType, Talai, TalaiType,
 };
-pub use metre::{boost_metre_hypotheses_with_dense, MetreType};
+pub use metre::{boost_metre_hypotheses_with_dense, sort_metre_hypotheses_by_score, MetreType};
 pub use parse_features::{
     fnv1a_u32, ParseFeatureSource, ParseFeatureVector, FOOT_PATTERN_BIN_DIM, FOOT_PATTERN_BIN_OFFSET,
     GLOBAL_FEATURE_DIM, GLOBAL_FEATURE_OFFSET, LINE_FOOT_HIST_FEATURE_DIM, LINE_FOOT_HIST_OFFSET,
@@ -44,7 +44,9 @@ pub use poem_tree::{
 pub use prosodic_unit::{Consonant, ProsodicUnit, Vowel};
 pub use syllable::{Syllable, SyllableType};
 pub use syllable_builder::SyllableBuilder;
-pub use types::{flat_lines_from_poem, MetreHypothesis, ParseOptions, ParseResult, RuleId};
+pub use types::{
+    flat_lines_from_poem, MetreHypothesis, ParseFeatureSnapshot, ParseOptions, ParseResult, RuleId,
+};
 
 use unicode_segmentation::UnicodeSegmentation;
 
@@ -75,7 +77,8 @@ pub fn parse_poem(text: &str, options: ParseOptions) -> Result<ParseResult, Pars
     );
     let lines = types::flat_lines_from_poem(&poem);
     let mut metre_hypotheses = metre::detect_metre_hypotheses(&feet, &linkage, options.no_detect);
-    if !options.no_detect && !metre_hypotheses.is_empty() {
+
+    let parse_features = if !options.no_detect {
         let fv = ParseFeatureVector::from_pipeline(ParseFeatureSource {
             letter_count: graphemes.len(),
             vikalpa_count: if options.alt_scansion { 1 } else { 0 },
@@ -84,8 +87,15 @@ pub fn parse_poem(text: &str, options: ParseOptions) -> Result<ParseResult, Pars
             feet: &feet,
             linkage: &linkage,
         });
-        metre::boost_metre_hypotheses_with_dense(&mut metre_hypotheses, &fv.dense);
-    }
+        if !metre_hypotheses.is_empty() {
+            metre::boost_metre_hypotheses_with_dense(&mut metre_hypotheses, &fv.dense);
+            metre::sort_metre_hypotheses_by_score(&mut metre_hypotheses);
+        }
+        Some(fv.into_snapshot())
+    } else {
+        None
+    };
+
     let metre = metre_hypotheses.first().map(|h| h.metre_type.clone());
 
     Ok(ParseResult {
@@ -105,6 +115,7 @@ pub fn parse_poem(text: &str, options: ParseOptions) -> Result<ParseResult, Pars
             .first()
             .map_or_else(Vec::new, |h| h.rule_ids.clone()),
         top_k_metre_hypotheses: metre_hypotheses,
+        parse_features,
         presentation: presentation::to_display(text, &metre, &syllables, &feet, &linkage),
         errors: vec![],
     })
@@ -143,8 +154,8 @@ mod tests {
         assert_eq!(r.metre_type, Some(MetreType::Venpaa));
         let h = &r.top_k_metre_hypotheses[0];
         assert!(
-            h.aggregate_score > 70,
-            "expected linkage feature boost above rule-only 70, got {}",
+            h.aggregate_score > 75,
+            "expected linkage feature boost above rule prior 75, got {}",
             h.aggregate_score
         );
         assert!(
@@ -154,6 +165,37 @@ mod tests {
             "expected MetreParseFeatures01 in rule_ids, got {:?}",
             h.rule_ids
         );
+    }
+
+    #[test]
+    fn parse_result_includes_parse_features_when_metre_on() {
+        let r = parse_poem("கற்றது", ParseOptions::default()).expect("parse");
+        let pf = r.parse_features.as_ref().expect("parse_features");
+        assert_eq!(pf.schema_version, PARSE_FEATURE_SCHEMA_VERSION);
+        assert_eq!(pf.dense.len(), PARSE_FEATURE_DENSE_LEN);
+        let json = serde_json::to_value(&r).expect("json");
+        assert!(json.get("parse_features").is_some());
+    }
+
+    #[test]
+    fn parse_result_omits_parse_features_when_no_detect() {
+        let mut o = ParseOptions::default();
+        o.no_detect = true;
+        let r = parse_poem("கற்றது", o).expect("parse");
+        assert!(r.parse_features.is_none());
+    }
+
+    #[test]
+    fn metre_hypotheses_list_has_four_sorted_entries() {
+        let text = "முற்ற உணர்ந்தானை ஏத்தி மொழிகுவன்\nகுற்றமொன்று இல்லா அறம்";
+        let r = parse_poem(text, ParseOptions::default()).expect("parse");
+        assert_eq!(r.top_k_metre_hypotheses.len(), 4);
+        for i in 0..r.top_k_metre_hypotheses.len().saturating_sub(1) {
+            assert!(
+                r.top_k_metre_hypotheses[i].aggregate_score
+                    >= r.top_k_metre_hypotheses[i + 1].aggregate_score
+            );
+        }
     }
 
     #[test]
@@ -217,6 +259,7 @@ mod tests {
         assert!(json.get("linkage").and_then(|v| v.as_array()).is_some());
         assert!(json.get("presentation").is_some());
         assert!(json.get("poem").is_some());
+        assert!(json.get("parse_features").is_none());
 
         let poem = &result.poem;
         assert!(!poem.lines.is_empty(), "hierarchical poem should have at least one line");

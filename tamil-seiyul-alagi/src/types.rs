@@ -5,6 +5,14 @@ use crate::poem_tree::{LinguisticWordNode, PoemNode};
 use crate::presentation::DisplayResult;
 use crate::{Foot, Linkage, MetreType, Syllable, Talai};
 
+/// Serializable 51-float prosody vector (same layout as [`crate::parse_features`](crate::parse_features)).
+/// Present on [`ParseResult`] for WASM/JSON consumers and training export.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+pub struct ParseFeatureSnapshot {
+    pub schema_version: u32,
+    pub dense: Vec<f32>,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ParseOptions {
     pub only_prosody: bool,
@@ -31,6 +39,9 @@ pub struct ParseResult {
     pub metre_type: Option<MetreType>,
     #[serde(default)]
     pub top_k_metre_hypotheses: Vec<MetreHypothesis>,
+    /// Dense parse features (`schema_version` + 51 floats); included in WASM JSON when present.
+    #[serde(default)]
+    pub parse_features: Option<ParseFeatureSnapshot>,
     #[serde(default)]
     pub confidence: i32,
     #[serde(default)]

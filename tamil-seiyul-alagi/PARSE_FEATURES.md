@@ -7,10 +7,16 @@ Structured numeric features for metre confidence boosting and downstream small m
 | `PARSE_FEATURE_SCHEMA_VERSION` | `1` |
 | `PARSE_FEATURE_DENSE_LEN` | `51` |
 
-**Implementation:** [`src/parse_features.rs`](src/parse_features.rs) (`ParseFeatureVector`, `ParseFeatureSource::from_pipeline`, `from_parse_result`).  
+**Implementation:** [`src/parse_features.rs`](src/parse_features.rs) (`ParseFeatureVector`, `ParseFeatureSource::from_pipeline`, `ParseFeatureSnapshot::from(&ParseResult)`).  
 **Metre boost:** [`src/metre.rs`](src/metre.rs) `boost_metre_hypotheses_with_dense` uses indices **12–18** (linkage type) and **22–26** (linkage special) only.
 
-**Pipeline:** In `parse_poem` ([`src/lib.rs`](src/lib.rs)), after `flat_lines_from_poem` and `detect_metre_hypotheses`, when metre detection is on (`no_detect == false`), features are built from `ParseFeatureSource { letter_count, vikalpa_count, lines, syllables, feet, linkage }` and passed to the boost. Same layout if you call `ParseFeatureVector::from_parse_result` on a full `ParseResult`.
+**Pipeline:** In `parse_poem` ([`src/lib.rs`](src/lib.rs)), when metre detection is on (`no_detect == false`), features are built from `ParseFeatureSource { letter_count, vikalpa_count, lines, syllables, feet, linkage }`, stored on [`ParseResult::parse_features`](src/types.rs), and the same dense slice is passed to the metre boost. With `no_detect == true`, `parse_features` is omitted (`None`).
+
+**WASM:** `parse_poem_wasm` serializes the full `ParseResult`, including optional `parse_features` and `top_k_metre_hypotheses` (up to four rows, sorted by score after boost).
+
+**Golden vector:** [`tests/test_data/kural_venpaa_parse_features.json`](tests/test_data/kural_venpaa_parse_features.json) (ஒரு விகற்ப குறள் வெண்பா sample); regression test in `parse_features` tests.
+
+**Training workflow:** [`TRAINING_PROCESS.md`](TRAINING_PROCESS.md).
 
 Bump **`PARSE_FEATURE_SCHEMA_VERSION`** and this document whenever the layout changes.
 

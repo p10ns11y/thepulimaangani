@@ -2,6 +2,8 @@ import type {
   ParsedFoot,
   ParsedLine,
   ParsedLinkageEdge,
+  ParsedMetreHypothesis,
+  ParsedParseFeatures,
   ParsedPoem,
   ParsedPresentation,
   ParsedSyllable,
@@ -277,6 +279,45 @@ export function adaptWasmJsonToParsedPoem(data: unknown): ParsedPoem | null {
 
   const presentation = normalizePresentation(o.presentation)
 
+  const topKRaw = o.top_k_metre_hypotheses
+  const top_k_metre_hypotheses = Array.isArray(topKRaw)
+    ? (topKRaw as unknown[])
+        .map((row): ParsedMetreHypothesis | null => {
+          if (!row || typeof row !== 'object') return null
+          const h = row as Record<string, unknown>
+          const metre_type =
+            typeof h.metre_type === 'string'
+              ? h.metre_type
+              : h.metre_type != null
+                ? JSON.stringify(h.metre_type)
+                : ''
+          const aggregate_score =
+            typeof h.aggregate_score === 'number' ? h.aggregate_score : Number.NaN
+          if (!metre_type || Number.isNaN(aggregate_score)) return null
+          return {
+            metre_type,
+            aggregate_score,
+            violations: Array.isArray(h.violations) ? h.violations : [],
+            rule_ids: Array.isArray(h.rule_ids) ? h.rule_ids : [],
+          }
+        })
+        .filter((x): x is ParsedMetreHypothesis => x != null)
+    : undefined
+
+  const pfRaw = o.parse_features
+  let parse_features: ParsedParseFeatures | undefined
+  if (pfRaw && typeof pfRaw === 'object') {
+    const pf = pfRaw as Record<string, unknown>
+    const schema_version = typeof pf.schema_version === 'number' ? pf.schema_version : 0
+    const denseRaw = pf.dense
+    if (Array.isArray(denseRaw) && denseRaw.every((x) => typeof x === 'number')) {
+      parse_features = {
+        schema_version,
+        dense: denseRaw as number[],
+      }
+    }
+  }
+
   const metreRaw = o.metre_type
   const metreFromPres =
     presentation?.metre_type != null &&
@@ -309,6 +350,10 @@ export function adaptWasmJsonToParsedPoem(data: unknown): ParsedPoem | null {
     ...(presentation && (presentation.feet.length > 0 || presentation.talai.length > 0)
       ? { presentation }
       : {}),
+    ...(top_k_metre_hypotheses && top_k_metre_hypotheses.length > 0
+      ? { top_k_metre_hypotheses }
+      : {}),
+    ...(parse_features ? { parse_features } : {}),
     ...(errors && errors.length > 0 ? { errors } : {}),
   }
 }
