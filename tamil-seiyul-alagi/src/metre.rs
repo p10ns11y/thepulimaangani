@@ -24,10 +24,12 @@ fn linkage_coarse_fractions(linkage: &[Linkage]) -> (f32, f32, f32, f32) {
     let mut vanj = 0f32;
     for e in linkage {
         match &e.linkage_type {
-            LinkageType::Venthalai | LinkageType::VenTalai | LinkageType::AciriyaTalai => vent += 1.0,
-            LinkageType::Aciriyathalai => aasi += 1.0,
-            LinkageType::Kalithalai => kal += 1.0,
-            LinkageType::Vanjithalai => vanj += 1.0,
+            LinkageType::VenTalai | LinkageType::VenPathTalai | LinkageType::VenPathAciriyaTalai => {
+                vent += 1.0
+            }
+            LinkageType::AciriyaTalai => aasi += 1.0,
+            LinkageType::KaliTalai => kal += 1.0,
+            LinkageType::VanjiTalai => vanj += 1.0,
             LinkageType::Other(_) => {}
         }
     }
@@ -81,8 +83,8 @@ pub fn detect_metre_hypotheses(
         .into_iter()
         .map(|metre_type| {
             let mut score = rule_prior_score(&metre_type, n_feet);
-            // Training-data alignment: long poems with mostly Aciriyathalai bonds favour Aciriyappaa.
-            // Require Aciriyathalai to dominate Kalithalai / Vanjithalai as well; otherwise mixed
+            // Training-data alignment: long poems with mostly AciriyaTalai bonds favour Aciriyappaa.
+            // Require AciriyaTalai to dominate KaliTalai / VanjiTalai as well; otherwise mixed
             // Kali/Vanji talai (e.g. சிந்தடி வஞ்சிப்பா) gets misread as Aciriyappaa-heavy.
             if n_feet >= 4
                 && !linkage.is_empty()
@@ -96,7 +98,7 @@ pub fn detect_metre_hypotheses(
                     _ => {}
                 }
             }
-            // Kalippaa vs Vanjippaa: apply at most one linkage tilt; skip near-ties (Kalithalai ≈ Vanjithalai mass).
+            // Kalippaa vs Vanjippaa: apply at most one linkage tilt; skip near-ties (KaliTalai ≈ VanjiTalai mass).
             let kali_vs_vanji = (kal_f - vanj_f).abs();
             if n_feet >= 3
                 && !linkage.is_empty()
@@ -123,7 +125,7 @@ pub fn detect_metre_hypotheses(
                     _ => {}
                 }
             }
-            // Coarse Kalithalai and Vanjithalai masses both present but neither clearly wins: long
+            // Coarse KaliTalai and VanjiTalai masses both present but neither clearly wins: long
             // Venpaa prior is misleading (e.g. சிந்தடி வஞ்சிப்பா). Favour Vanjippaa over Kalippaa
             // slightly — coarse linkage fractions are noisy here, but metre is Vanji-class in training data.
             if n_feet >= 4
@@ -181,7 +183,7 @@ pub fn boost_metre_hypotheses_with_dense(hypotheses: &mut [MetreHypothesis], den
     let sp = LINK_SPECIAL_FEATURE_OFFSET;
     let vanj_special = dense[sp + 5] + dense[sp + 6];
     let kal_special = dense[sp + 4];
-    // When Kalithalai and Vanjithalai coarse masses are both present, Vanji special bonds are
+    // When KaliTalai and VanjiTalai coarse masses are both present, Vanji special bonds are
     // metre signal for Kali/Vanji metres — not Venpaa. Feeding them into Venpaa's boost was
     // flipping சிந்தடி வஞ்சிப்பா (gold Vanjippaa) to Venpaa on equal Kal/Vanji scores.
     let mixed_kali_vanji_coarse = kal >= 0.15 && vanj >= 0.15;

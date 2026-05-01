@@ -199,12 +199,12 @@ fn fill_global_from_parts(slice: &mut [f32], src: ParseFeatureSource<'_>) {
 
 fn linkage_type_index(t: &LinkageType) -> usize {
     match t {
-        LinkageType::Venthalai => 0,
-        LinkageType::Aciriyathalai => 1,
-        LinkageType::Kalithalai => 2,
-        LinkageType::Vanjithalai => 3,
-        LinkageType::VenTalai => 4,
-        LinkageType::AciriyaTalai => 5,
+        LinkageType::VenTalai => 0,
+        LinkageType::AciriyaTalai => 1,
+        LinkageType::KaliTalai => 2,
+        LinkageType::VanjiTalai => 3,
+        LinkageType::VenPathTalai => 4,
+        LinkageType::VenPathAciriyaTalai => 5,
         LinkageType::Other(_) => 6,
     }
 }

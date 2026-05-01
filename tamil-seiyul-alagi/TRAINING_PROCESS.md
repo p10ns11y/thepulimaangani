@@ -32,7 +32,7 @@ Columns include `sample_id`, `parent_metre` / `label_metre_en` (coarse gold from
 
 On a 36-row snapshot, the built-in metre heuristic still disagrees with `parent_metre` on many rows (especially Kalippaa / Vanjippaa and Venpaa “variations”). Treat **`parent_metre` + `sample_id` as supervision targets** and `predicted_metre` as a weak baseline; improve with a model on `dense_*` or richer rules.
 
-**Parser change:** `detect_metre_hypotheses` applies linkage priors when `feet >= 4`, linkage is non-empty, and **Aciriyathalai** mass exceeds **Venthalai** only if it also dominates coarse Kalithalai / Vanjithalai; plus a small **muddy Kali/Vanji** tilt when both coarse masses are present but nearly tied (see [`src/metre.rs`](src/metre.rs)). `boost_metre_hypotheses_with_dense` skips feeding Vanji-special mass into Venpaa when both coarse Kal and Vanji are substantial.
+**Parser change:** `detect_metre_hypotheses` applies linkage priors when `feet >= 4`, linkage is non-empty, and **AciriyaTalai** mass exceeds **VenTalai** only if it also dominates coarse **KaliTalai** / **VanjiTalai**; plus a small **muddy Kali/Vanji** tilt when both coarse masses are present but nearly tied (see [`src/metre.rs`](src/metre.rs)). `boost_metre_hypotheses_with_dense` skips feeding Vanji-special mass into Venpaa when both coarse Kal and Vanji are substantial.
 
 ## Shuffled iterations (Monte Carlo)
 
@@ -51,7 +51,7 @@ On a 36-row snapshot, the built-in metre heuristic still disagrees with `parent_
 2. Read `result.parse_features` (unwrap or skip if `None` when `no_detect` was used).
 3. Append one JSON line per sample, e.g. `{"label":"venpaa","schema_version":1,"dense":[...]}`.
 
-**WASM / JSON names:** `linkage_type`, `linkage_special_type`, and `MetreType` in `ParseResult` JSON use **Tamil-style `Aciriya…`** spellings; legacy `Aasiriy…` / `Asiriya…` strings remain accepted on **deserialize** (`serde` aliases on the enums).
+**WASM / JSON names:** `linkage_type`, `linkage_special_type`, and `MetreType` in `ParseResult` JSON use **Tamil-style `Aciriya…`** spellings and consistent **`…Talai`** suffixes on new keys (`VenTalai`, `KaliTalai`, `IyarcirVenTalai`, …). Legacy `Venthalai`, `Aciriyathalai`, `Kalithalai`, `Vanjithalai`, `*Venthalai`, `*Vanchithalai`, `Aasiriy…`, and `Asiriya…` strings remain accepted on **deserialize** (`serde` aliases on the enums). Empty-foot / unknown-cir edges serialize as `VenPathTalai` (not `VenTalai`).
 
 ## Model choices (all feasible in Rust)
 

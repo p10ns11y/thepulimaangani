@@ -59,14 +59,14 @@ Built from `ParseFeatureSource` / `ParseResult`: `letter_count`, `vikalpa_count`
 
 For each bond in `linkage`, increment the slot for its `linkage_type`, then **divide every slot by `max(linkage.len(), 1)`** so the vector sums to `1.0` when there is at least one edge (else all zeros).
 
-| Index | `LinkageType` variant |
+| Index | `LinkageType` variant (JSON string; legacy aliases still deserialize) |
 |-------|------------------------|
-| `12` | `Venthalai` |
-| `13` | `Aciriyathalai` |
-| `14` | `Kalithalai` |
-| `15` | `Vanjithalai` |
-| `16` | `VenTalai` |
-| `17` | `AciriyaTalai` |
+| `12` | `VenTalai` (was `Venthalai`) |
+| `13` | `AciriyaTalai` (was `Aciriyathalai`) |
+| `14` | `KaliTalai` (was `Kalithalai`) |
+| `15` | `VanjiTalai` (was `Vanjithalai`) |
+| `16` | `VenPathTalai` (empty-foot / unknown-cir fallback; legacy `VenTalai` on deserialize) |
+| `17` | `VenPathAciriyaTalai` (reserved ven-path slot; legacy `AsiriyaTalai` on deserialize) |
 | `18` | `Other(_)` |
 
 ---
@@ -75,18 +75,18 @@ For each bond in `linkage`, increment the slot for its `linkage_type`, then **di
 
 Same normalization: each slot is the **fraction** of edges with that `linkage_special_type` (denominator `max(linkage.len(), 1)`).
 
-| Index | `LinkageSpecialType` variant |
+| Index | `LinkageSpecialType` variant (JSON string) |
 |-------|-------------------------------|
-| `19` | `NerondriyaAciriyathalai` |
-| `20` | `NiraiondriyaAciriyathalai` |
-| `21` | `IyarcirVenthalai` |
-| `22` | `VencirVenthalai` |
-| `23` | `Kalithalai` |
-| `24` | `OndriyaVanchithalai` |
-| `25` | `OndrathaVanchithalai` |
+| `19` | `NerondriyaAciriyaTalai` (was `NerondriyaAciriyathalai`) |
+| `20` | `NiraiondriyaAciriyaTalai` (was `NiraiondriyaAciriyathalai`) |
+| `21` | `IyarcirVenTalai` (was `IyarcirVenthalai`) |
+| `22` | `VencirVenTalai` (was `VencirVenthalai`) |
+| `23` | `KaliTalai` (same Rust variant name; JSON was `Kalithalai`) |
+| `24` | `OndriyaVanjiTalai` (was `OndriyaVanchithalai`) |
+| `25` | `OndrathaVanjiTalai` (was `OndrathaVanchithalai`) |
 | `26` | `Unknown` |
 
-**Metre boost usage:** Kalippaa uses `dense[23]` (`Kalithalai` special); Vanjippaa uses `dense[24] + dense[25]`; Venpaa adds a small term from that vanji sum.
+**Metre boost usage:** Kalippaa uses `dense[23]` (`KaliTalai` special); Vanjippaa uses `dense[24] + dense[25]`; Venpaa adds a small term from that vanji sum.
 
 ---
 

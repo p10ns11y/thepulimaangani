@@ -171,8 +171,8 @@ describe('adaptWasmJsonToParsedPoem', () => {
         {
           from_foot: 0,
           to_foot: 1,
-          linkage_type: 'Venthalai',
-          linkage_special_type: 'IyarcirVenthalai',
+          linkage_type: 'VenTalai',
+          linkage_special_type: 'IyarcirVenTalai',
           is_valid: true,
         },
       ],
@@ -183,8 +183,8 @@ describe('adaptWasmJsonToParsedPoem', () => {
     expect(out!.lines[0]!.feet[0]!.foot_index_global).toBe(0)
     expect(out!.lines[0]!.feet[1]!.foot_index_global).toBe(1)
     expect(out!.linkage).toHaveLength(1)
-    expect(out!.linkage![0]!.linkage_type).toBe('Venthalai')
-    expect(out!.linkage![0]!.linkage_special_type).toBe('IyarcirVenthalai')
+    expect(out!.linkage![0]!.linkage_type).toBe('VenTalai')
+    expect(out!.linkage![0]!.linkage_special_type).toBe('IyarcirVenTalai')
   })
 
   it('prefers WASM presentation metre and foot labels when present', () => {

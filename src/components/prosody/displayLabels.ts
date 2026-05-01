@@ -1,18 +1,31 @@
 /** Coarse `linkage_type` from WASM (metre-facing family). */
 const linkageTypeMap: Record<string, string> = {
+  VenTalai: 'வெண்டளை',
+  AciriyaTalai: 'ஆசிரியத்தளை',
+  KaliTalai: 'கலித்தளை',
+  VanjiTalai: 'வஞ்சித்தளை',
+  VenPathTalai: 'வெண்டளை',
+  VenPathAciriyaTalai: 'ஆசிரியத்தளை',
+  // Legacy WASM keys (pre–*Talai suffix alignment)
   Venthalai: 'வெண்டளை',
   Aciriyathalai: 'ஆசிரியத்தளை',
   Kalithalai: 'கலித்தளை',
   Vanjithalai: 'வஞ்சித்தளை',
-  VenTalai: 'வெண்டளை',
-  AciriyaTalai: 'ஆசிரியத்தளை',
-  // Legacy WASM keys (pre–Tamil-style romanization)
   Aasiriyathalai: 'ஆசிரியத்தளை',
   AsiriyaTalai: 'ஆசிரியத்தளை',
 }
 
 /** Fine `linkage_special_type` from WASM (issue #36 rows). */
 const linkageSpecialMap: Record<string, string> = {
+  NerondriyaAciriyaTalai: 'நேரொன்றிய ஆசிரியத்தளை',
+  NiraiondriyaAciriyaTalai: 'நிரையொன்றிய ஆசிரியத்தளை',
+  IyarcirVenTalai: 'இயற்சீர் வெண்டளை',
+  VencirVenTalai: 'வெண்சீர் வெண்டளை',
+  KaliTalai: 'கலித்தளை',
+  OndriyaVanjiTalai: 'ஒன்றிய வஞ்சித்தளை',
+  OndrathaVanjiTalai: 'ஒன்றாத வஞ்சித்தளை',
+  Unknown: '—',
+  // Legacy keys
   NerondriyaAciriyathalai: 'நேரொன்றிய ஆசிரியத்தளை',
   NiraiondriyaAciriyathalai: 'நிரையொன்றிய ஆசிரியத்தளை',
   IyarcirVenthalai: 'இயற்சீர் வெண்டளை',
@@ -20,7 +33,6 @@ const linkageSpecialMap: Record<string, string> = {
   Kalithalai: 'கலித்தளை',
   OndriyaVanchithalai: 'ஒன்றிய வஞ்சித்தளை',
   OndrathaVanchithalai: 'ஒன்றாத வஞ்சித்தளை',
-  Unknown: '—',
   NerondriyaAasiriyathalai: 'நேரொன்றிய ஆசிரியத்தளை',
   NiraiondriyaAasiriyathalai: 'நிரையொன்றிய ஆசிரியத்தளை',
 }
