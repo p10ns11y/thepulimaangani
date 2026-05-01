@@ -20,7 +20,7 @@ Rust WebAssembly parser for high-performance Tamil prosody analysis. Implements 
 - **Syllable classification (Ner/Nirai):** Implemented (`syllable_builder`, `syllable`).
 - **Feet:** One foot per **linguistic word**; `foot_type` is a **Ner/Nirai pattern string** (see `foot_pattern.rs`). Tamil classical foot names and தளை strings are built in **`presentation.rs`** and serialized on each **`ParseResult.presentation`** for WASM and other clients.
 - **Linkage (talai):** Consecutive foot pairs with positions; **`linkage_type`** is the coarse family (`Venthalai`, `Aasiriyathalai`, `Kalithalai`, `Vanjithalai`) for metre-facing logic, and **`linkage_special_type`** is the nuanced bond from the issue #36 table (e.g. `VencirVenthalai`). Cir classes use **Maa / Vilam** (1–2 acai) and **Kaai / Kani** (3+). `VenTalai` + `Unknown` special only when a foot has no syllables.
-- **Metre:** Heuristic hypotheses (`metre.rs`); not full classical constraint sets yet.
+- **Metre:** Heuristic hypotheses (`metre.rs`); not full classical constraint sets yet. Optional **51-dim parse features** and metre score boost: [`PARSE_FEATURES.md`](PARSE_FEATURES.md), [`parse_features.rs`](src/parse_features.rs).
 
 Doc drift and cleanup tasks: [GitHub issue #49](https://github.com/p10ns11y/thepulimaangani/issues/49).
 
