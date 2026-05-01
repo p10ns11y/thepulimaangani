@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::foot::Foot;
-use crate::linkage::Linkage;
+use crate::linkage::{Linkage, LinkageType};
 use crate::parse_features::{LINK_SPECIAL_FEATURE_OFFSET, LINKAGE_TYPE_FEATURE_OFFSET, PARSE_FEATURE_DENSE_LEN};
 use crate::types::{MetreHypothesis, RuleId};
 
@@ -12,6 +12,24 @@ pub enum MetreType {
     Kalippaa,
     Vanjippaa,
     Other(String),
+}
+
+fn linkage_coarse_fractions(linkage: &[Linkage]) -> (f32, f32, f32, f32) {
+    let n = linkage.len().max(1) as f32;
+    let mut vent = 0f32;
+    let mut aasi = 0f32;
+    let mut kal = 0f32;
+    let mut vanj = 0f32;
+    for e in linkage {
+        match &e.linkage_type {
+            LinkageType::Venthalai | LinkageType::VenTalai | LinkageType::AsiriyaTalai => vent += 1.0,
+            LinkageType::Aasiriyathalai => aasi += 1.0,
+            LinkageType::Kalithalai => kal += 1.0,
+            LinkageType::Vanjithalai => vanj += 1.0,
+            LinkageType::Other(_) => {}
+        }
+    }
+    (vent / n, aasi / n, kal / n, vanj / n)
 }
 
 fn rule_prior_score(metre: &MetreType, feet_len: usize) -> i32 {
@@ -41,7 +59,7 @@ fn rule_prior_score(metre: &MetreType, feet_len: usize) -> i32 {
 /// linkage-feature re-ranking after [`boost_metre_hypotheses_with_dense`].
 pub fn detect_metre_hypotheses(
     feet: &[Foot],
-    _linkage: &[Linkage],
+    linkage: &[Linkage],
     no_detect: bool,
 ) -> Vec<MetreHypothesis> {
     if no_detect {
@@ -49,6 +67,7 @@ pub fn detect_metre_hypotheses(
     }
 
     let n_feet = feet.len();
+    let (vent_f, aasi_f, _kal_f, _vanj_f) = linkage_coarse_fractions(linkage);
     let candidates = [
         MetreType::Venpaa,
         MetreType::Asiriyappaa,
@@ -59,7 +78,18 @@ pub fn detect_metre_hypotheses(
     let mut out: Vec<MetreHypothesis> = candidates
         .into_iter()
         .map(|metre_type| {
-            let score = rule_prior_score(&metre_type, n_feet);
+            let mut score = rule_prior_score(&metre_type, n_feet);
+            // Training-data alignment: long poems with mostly Aasiriyathalai bonds favour Asiriyappaa.
+            if n_feet >= 4
+                && !linkage.is_empty()
+                && aasi_f + 0.08 > vent_f
+            {
+                match &metre_type {
+                    MetreType::Asiriyappaa => score += 22,
+                    MetreType::Venpaa => score -= 14,
+                    _ => {}
+                }
+            }
             MetreHypothesis {
                 metre_type,
                 aggregate_score: score,

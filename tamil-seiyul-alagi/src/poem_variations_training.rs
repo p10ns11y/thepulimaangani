@@ -1,0 +1,277 @@
+//! Parse [`data/poem_variations.js`](../../data/poem_variations.js) and build UTF-8 training rows
+//! (labels + optional 51-dim features from `parse_poem`).
+
+use std::collections::HashMap;
+use std::path::Path;
+
+use regex::Regex;
+
+use crate::parse_features::PARSE_FEATURE_DENSE_LEN;
+use crate::parse_poem;
+use crate::types::{ParseFeatureSnapshot, ParseOptions};
+
+/// One labelled sample from `poem_variations.js` (before parsing).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct PoemVariationLabelRow {
+    pub sample_id: String,
+    pub parent_metre: String,
+    pub row_kind: String,
+    pub label_ta: String,
+    pub text: String,
+}
+
+/// Label row plus parser outputs for CSV export.
+#[derive(Debug, Clone)]
+pub struct PoemVariationTrainingRow {
+    pub label: PoemVariationLabelRow,
+    pub parse_ok: bool,
+    pub parse_error: String,
+    pub predicted_metre: Option<String>,
+    pub top_score: Option<i32>,
+    pub features: Option<ParseFeatureSnapshot>,
+}
+
+fn slice_between<'a>(s: &'a str, start_pat: &str, end_pat: &str) -> Option<&'a str> {
+    let i = s.find(start_pat)? + start_pat.len();
+    let j = s[i..].find(end_pat)? + i;
+    Some(&s[i..j])
+}
+
+/// `const ORU_VIKARPA_KURAL_VENPAA = 'oru_vikarpa_kural_venpaa';` → const name → machine id.
+fn const_string_map(js: &str) -> HashMap<String, String> {
+    let re = Regex::new(r"(?m)^const\s+([A-Z0-9_]+)\s*=\s*'([^']*)'\s*;").expect("const regex");
+    let mut m = HashMap::new();
+    for cap in re.captures_iter(js) {
+        m.insert(cap[1].to_string(), cap[2].to_string());
+    }
+    m
+}
+
+fn examples_map(js: &str) -> HashMap<String, String> {
+    let body = slice_between(
+        js,
+        "const poemVariationExamples = {",
+        "\n};\n\n/** Tamil display label",
+    )
+    .expect("poemVariationExamples block");
+    let re = Regex::new(r"\[([a-zA-Z0-9_]+)\]\s*:\s*`([^`]*)`").expect("regex");
+    let mut m = HashMap::new();
+    for cap in re.captures_iter(body) {
+        m.insert(cap[1].to_string(), cap[2].to_string());
+    }
+    m
+}
+
+fn tamil_labels_map(js: &str) -> HashMap<String, String> {
+    let body = slice_between(
+        js,
+        "const tamilKeys = {",
+        "\n};\n\n/** @param {string} key */",
+    )
+    .expect("tamilKeys block");
+    let re = Regex::new(r"\[([a-zA-Z0-9_]+)\]\s*:\s*'([^']*)'").expect("regex");
+    let mut out = HashMap::new();
+    for cap in re.captures_iter(body) {
+        out.insert(cap[1].to_string(), cap[2].to_string());
+    }
+    out
+}
+
+fn variation_ids_in_block(block_inner: &str) -> Vec<String> {
+    let re = Regex::new(r"variationRow\(([a-zA-Z0-9_]+)\)").expect("regex");
+    re.captures_iter(block_inner)
+        .map(|c| c[1].to_string())
+        .collect()
+}
+
+/// Parse the canonical `poem_variations.js` source (UTF-8) into ordered label rows.
+pub fn poem_variation_label_rows(js: &str) -> Vec<PoemVariationLabelRow> {
+    let consts = const_string_map(js);
+    let examples = examples_map(js);
+    let tamil = tamil_labels_map(js);
+
+    let pv_body = slice_between(
+        js,
+        "const poemVariations = {",
+        "\n};\n\nexport {",
+    )
+    .expect("poemVariations block");
+
+    let parents = [
+        (r"(?s)\[VENPAA\]\s*:\s*\{\s*special_types:\s*\[(.*?)\]\s*,\s*variations:\s*\[(.*?)\]\s*,\s*\}", "venpaa"),
+        (r"(?s)\[ACIRIYAPPA\]\s*:\s*\{\s*special_types:\s*\[(.*?)\]\s*,\s*variations:\s*\[(.*?)\]\s*,\s*\}", "aciriyappa"),
+        (r"(?s)\[KALIPPAA\]\s*:\s*\{\s*special_types:\s*\[(.*?)\]\s*,\s*variations:\s*\[(.*?)\]\s*,\s*\}", "kalippaa"),
+        (r"(?s)\[VANJIPPAA\]\s*:\s*\{\s*special_types:\s*\[(.*?)\]\s*,\s*variations:\s*\[(.*?)\]\s*,\s*\}", "vanjippaa"),
+    ];
+
+    let mut out = Vec::new();
+    for (pat, parent_slug) in parents {
+        let re = Regex::new(pat).expect("parent regex");
+        let cap = re
+            .captures(pv_body)
+            .unwrap_or_else(|| panic!("parent block not found: {parent_slug}"));
+        let special_inner = cap.get(1).expect("special_types").as_str();
+        let var_inner = cap.get(2).expect("variations").as_str();
+
+        for sid_const in variation_ids_in_block(special_inner) {
+            let sample_id = consts
+                .get(&sid_const)
+                .cloned()
+                .unwrap_or_else(|| sid_const.to_lowercase());
+            let text = examples.get(&sid_const).cloned().unwrap_or_default();
+            let label_ta = tamil.get(&sid_const).cloned().unwrap_or_default();
+            out.push(PoemVariationLabelRow {
+                sample_id,
+                parent_metre: parent_slug.to_string(),
+                row_kind: "special_type".to_string(),
+                label_ta,
+                text,
+            });
+        }
+        for sid_const in variation_ids_in_block(var_inner) {
+            let sample_id = consts
+                .get(&sid_const)
+                .cloned()
+                .unwrap_or_else(|| sid_const.to_lowercase());
+            let text = examples.get(&sid_const).cloned().unwrap_or_default();
+            let label_ta = tamil.get(&sid_const).cloned().unwrap_or_default();
+            out.push(PoemVariationLabelRow {
+                sample_id,
+                parent_metre: parent_slug.to_string(),
+                row_kind: "variation".to_string(),
+                label_ta,
+                text,
+            });
+        }
+    }
+    out
+}
+
+/// Parse each sample with default options and attach features + top hypothesis.
+pub fn build_training_rows(labels: &[PoemVariationLabelRow]) -> Vec<PoemVariationTrainingRow> {
+    labels
+        .iter()
+        .map(|label| {
+            let mut opts = ParseOptions::default();
+            opts.uyir_u = true;
+            match parse_poem(label.text.trim(), opts) {
+                Ok(r) => {
+                    let top = r.top_k_metre_hypotheses.first();
+                    PoemVariationTrainingRow {
+                        label: label.clone(),
+                        parse_ok: true,
+                        parse_error: String::new(),
+                        predicted_metre: top.map(|h| format!("{:?}", h.metre_type)),
+                        top_score: top.map(|h| h.aggregate_score),
+                        features: r.parse_features.clone(),
+                    }
+                }
+                Err(e) => PoemVariationTrainingRow {
+                    label: label.clone(),
+                    parse_ok: false,
+                    parse_error: e.to_string(),
+                    predicted_metre: None,
+                    top_score: None,
+                    features: None,
+                },
+            }
+        })
+        .collect()
+}
+
+/// Write UTF-8 CSV (no BOM). Multilingual-safe: UTF-8 text fields; quote non-numeric fields.
+pub fn write_poem_variations_training_csv(
+    path: &Path,
+    rows: &[PoemVariationTrainingRow],
+) -> std::io::Result<()> {
+    let mut wtr = csv::WriterBuilder::new()
+        .quote_style(csv::QuoteStyle::NonNumeric)
+        .from_path(path)?;
+
+    let mut header = vec![
+        "sample_id".to_string(),
+        "parent_metre".to_string(),
+        "label_metre_en".to_string(),
+        "text_lang".to_string(),
+        "row_kind".to_string(),
+        "label_ta".to_string(),
+        "text".to_string(),
+        "parse_ok".to_string(),
+        "parse_error".to_string(),
+        "predicted_metre".to_string(),
+        "top_score".to_string(),
+        "pred_matches_parent".to_string(),
+        "feature_schema_version".to_string(),
+    ];
+    for i in 0..PARSE_FEATURE_DENSE_LEN {
+        header.push(format!("dense_{i}"));
+    }
+    wtr.write_record(&header)?;
+
+    for row in rows {
+        let pred = row.predicted_metre.as_deref();
+        let pred_match = if row.parse_ok {
+            pred
+                .map(|p| p.eq_ignore_ascii_case(&row.label.parent_metre))
+                .unwrap_or(false)
+        } else {
+            false
+        };
+        let mut rec: Vec<String> = vec![
+            row.label.sample_id.clone(),
+            row.label.parent_metre.clone(),
+            row.label.parent_metre.clone(),
+            "ta".to_string(),
+            row.label.row_kind.clone(),
+            row.label.label_ta.clone(),
+            row.label.text.clone(),
+            if row.parse_ok { "1".into() } else { "0".into() },
+            row.parse_error.clone(),
+            row.predicted_metre.clone().unwrap_or_default(),
+            row.top_score.map(|s| s.to_string()).unwrap_or_default(),
+            if pred_match { "1".into() } else { "0".into() },
+            row.features
+                .as_ref()
+                .map(|f| f.schema_version.to_string())
+                .unwrap_or_default(),
+        ];
+        if let Some(f) = &row.features {
+            for x in &f.dense {
+                rec.push(format!("{x}"));
+            }
+        } else {
+            for _ in 0..PARSE_FEATURE_DENSE_LEN {
+                rec.push(String::new());
+            }
+        }
+        wtr.write_record(&rec)?;
+    }
+    wtr.flush()?;
+    Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn js_fixture() -> String {
+        std::fs::read_to_string(
+            std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../data/poem_variations.js"),
+        )
+        .expect("read poem_variations.js")
+    }
+
+    #[test]
+    fn label_row_count_matches_poem_variations() {
+        let rows = poem_variation_label_rows(&js_fixture());
+        assert_eq!(rows.len(), 36, "expected 36 samples from poem_variations.js");
+    }
+
+    #[test]
+    fn first_sample_is_oru_vikarpa_kural_venpaa() {
+        let rows = poem_variation_label_rows(&js_fixture());
+        assert_eq!(rows[0].sample_id, "oru_vikarpa_kural_venpaa");
+        assert_eq!(rows[0].parent_metre, "venpaa");
+        assert_eq!(rows[0].row_kind, "special_type");
+    }
+}

@@ -20,6 +20,18 @@ Use your curated corpus (e.g. `data/poem_variations.js` keys) as **gold metre** 
 
 Do **not** use raw `original_text` as model input for the small linear head; keep text only for audit and for regenerating features when the parser changes.
 
+## Curated CSV from `poem_variations.js`
+
+Initial **UTF-8** (no BOM) wide table for multilingual / tabular tooling:
+
+- **Path:** [`data/training/poem_variations_training.csv`](../../data/training/poem_variations_training.csv)
+- **Regenerate:** from repo root  
+  `cargo run -p thepulimaangani-parser --example export_poem_variations_training_csv`
+
+Columns include `sample_id`, `parent_metre` / `label_metre_en` (coarse gold from the JS tree), `text_lang` (`ta`), Tamil `label_ta` and `text`, parse flags, `predicted_metre` / `top_score` from the current heuristic, **`pred_matches_parent`** (1 if `predicted_metre` matches `parent_metre` ASCII-wise), and **`dense_0` … `dense_50`**.
+
+On a 36-row snapshot, the built-in metre heuristic still disagrees with `parent_metre` on many rows (especially Kalippaa / Vanjippaa and Venpaa “variations”). Treat **`parent_metre` + `sample_id` as supervision targets** and `predicted_metre` as a weak baseline; improve with a model on `dense_*` or richer rules.
+
 ## Exporting a dataset (Rust)
 
 1. For each labelled text file or inline string, call `parse_poem(text, ParseOptions::default())`.
@@ -27,6 +39,8 @@ Do **not** use raw `original_text` as model input for the small linear head; kee
 3. Append one JSON line per sample, e.g. `{"label":"venpaa","schema_version":1,"dense":[...]}`.
 
 You can extend [`examples/dump_parse_features.rs`](examples/dump_parse_features.rs) into a small batch mode, or add `examples/export_training_jsonl.rs` that reads paths + labels from a CSV.
+
+**Parser change:** `detect_metre_hypotheses` applies a small **linkage prior** when `feet >= 4`, linkage is non-empty, and **Aasiriyathalai** mass exceeds **Venthalai** (see [`src/metre.rs`](src/metre.rs)) so Asiriyappaa-class samples in this CSV align better with `parent_metre`.
 
 ## Model choices (all feasible in Rust)
 

@@ -6,6 +6,7 @@ mod line_scope;
 mod linkage;
 mod metre;
 mod parse_features;
+mod poem_variations_training;
 mod poem_tree;
 mod presentation;
 mod prosodic_sequence;
@@ -36,6 +37,10 @@ pub use parse_features::{
 };
 pub use presentation::{
     foot_pattern_display, DisplayFoot, DisplayResult, DisplaySyllable, DisplayTalai,
+};
+pub use poem_variations_training::{
+    build_training_rows, poem_variation_label_rows, write_poem_variations_training_csv,
+    PoemVariationLabelRow, PoemVariationTrainingRow,
 };
 pub use poem_tree::{
     LetterLayer, LetterNode, LinguisticWordNode, LineLayer, PoemLayer, PoemLineNode, PoemNode,

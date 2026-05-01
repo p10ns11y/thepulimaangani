@@ -39,8 +39,8 @@ pub struct ParseResult {
     pub metre_type: Option<MetreType>,
     #[serde(default)]
     pub top_k_metre_hypotheses: Vec<MetreHypothesis>,
-    /// Dense parse features (`schema_version` + 51 floats); included in WASM JSON when present.
-    #[serde(default)]
+    /// Dense parse features (`schema_version` + 51 floats); omitted from JSON when metre detection is off.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub parse_features: Option<ParseFeatureSnapshot>,
     #[serde(default)]
     pub confidence: i32,

@@ -72,7 +72,6 @@ fn test_venpaa_variations() {
 }
 
 #[test]
-#[ignore = "Metre hint: parser currently classifies sample as Venpaa; Asiriyappaa expectation needs parser/metre alignment (run with cargo test --test test_poem_variations -- --ignored)"]
 fn test_aciriyappa_variations() {
     let poems = vec![
         "அருள்வீற் றிருந்த திருநிழற் போதி\nமுழுதுணர் முனிவநிற் பரவுதும் தொழுதக\nஒருமனம் எய்தி இருவினைப் பிணிவிட்டு\nமுப்பகை கடந்து நால்வகைப் பொருளுணர்ந்\nதோங்குநீர் உலகிடை யாவரும்\nநீங்கா இன்பமொடு நீடுவாழ் கெனவே",
