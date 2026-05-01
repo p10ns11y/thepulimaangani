@@ -7,7 +7,9 @@ use crate::types::{MetreHypothesis, RuleId};
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum MetreType {
     Venpaa,
-    Asiriyappaa,
+    /// ஆசிரியப்பா — WASM/JSON key uses Tamil-style romanization (`aciriya`), not Sanskrit-style `asiriya`.
+    #[serde(rename = "Aciriyappaa", alias = "Asiriyappaa")]
+    Aciriyappaa,
     Kalippaa,
     Vanjippaa,
     Other(String),
@@ -21,7 +23,7 @@ pub fn detect_metre(feet: &[Foot], _linkage: &[Linkage], no_detect: bool) -> Opt
     if feet.len() >= 4 {
         Some(MetreType::Venpaa)
     } else {
-        Some(MetreType::Asiriyappaa)
+        Some(MetreType::Aciriyappaa)
     }
 }
 

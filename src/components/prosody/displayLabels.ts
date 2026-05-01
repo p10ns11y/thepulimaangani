@@ -1,23 +1,28 @@
 /** Coarse `linkage_type` from WASM (metre-facing family). */
 const linkageTypeMap: Record<string, string> = {
   Venthalai: 'வெண்டளை',
-  Aasiriyathalai: 'ஆசிரியத்தளை',
+  Aciriyathalai: 'ஆசிரியத்தளை',
   Kalithalai: 'கலித்தளை',
   Vanjithalai: 'வஞ்சித்தளை',
   VenTalai: 'வெண்டளை',
+  AciriyaTalai: 'ஆசிரியத்தளை',
+  // Legacy WASM keys (pre–Tamil-style romanization)
+  Aasiriyathalai: 'ஆசிரியத்தளை',
   AsiriyaTalai: 'ஆசிரியத்தளை',
 }
 
 /** Fine `linkage_special_type` from WASM (issue #36 rows). */
 const linkageSpecialMap: Record<string, string> = {
-  NerondriyaAasiriyathalai: 'நேரொன்றிய ஆசிரியத்தளை',
-  NiraiondriyaAasiriyathalai: 'நிரையொன்றிய ஆசிரியத்தளை',
+  NerondriyaAciriyathalai: 'நேரொன்றிய ஆசிரியத்தளை',
+  NiraiondriyaAciriyathalai: 'நிரையொன்றிய ஆசிரியத்தளை',
   IyarcirVenthalai: 'இயற்சீர் வெண்டளை',
   VencirVenthalai: 'வெண்சீர் வெண்டளை',
   Kalithalai: 'கலித்தளை',
   OndriyaVanchithalai: 'ஒன்றிய வஞ்சித்தளை',
   OndrathaVanchithalai: 'ஒன்றாத வஞ்சித்தளை',
   Unknown: '—',
+  NerondriyaAasiriyathalai: 'நேரொன்றிய ஆசிரியத்தளை',
+  NiraiondriyaAasiriyathalai: 'நிரையொன்றிய ஆசிரியத்தளை',
 }
 
 /** Machine `line_class` → Tamil label. Prefer simple transliteration keys; legacy Avalokitam-style keys kept as aliases. */

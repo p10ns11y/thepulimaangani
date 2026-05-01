@@ -40,12 +40,12 @@ fn test_venpaa_variations() {
 }
 
 #[test]
-#[ignore = "Metre hint: parser currently classifies sample as Venpaa; Asiriyappaa expectation needs parser/metre alignment (run with cargo test --test test_poem_variations -- --ignored)"]
+#[ignore = "Metre hint: parser currently classifies sample as Venpaa; Aciriyappaa expectation needs parser/metre alignment (run with cargo test --test test_poem_variations -- --ignored)"]
 fn test_aciriyappa_variations() {
     let (special, _) = poem_variations_for_metre(ACIRIYAPPA).expect("aciriyappa block");
-    // First two classical Asiriyappaa forms (third is nilaimandila — longer sample).
+    // First two classical Aciriyappaa forms (third is nilaimandila — longer sample).
     for row in special.iter().take(2) {
-        assert_parses_successfully(row.example, Some("Asiriyappaa"));
+        assert_parses_successfully(row.example, Some("Aciriyappaa"));
     }
 }
 

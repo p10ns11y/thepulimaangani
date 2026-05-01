@@ -480,7 +480,7 @@ static VANJIPPAA_VARIATIONS: &[PoemVariationRow] = &[
     },
 ];
 
-/// All four metre blocks in stable order: Venpaa, Asiriyappa, Kalippaa, Vanjippaa.
+/// All four metre blocks in stable order: Venpaa, Aciriyappa, Kalippaa, Vanjippaa.
 pub fn poem_variations_blocks() -> [PoemVariationsBlock; 4] {
     [
         PoemVariationsBlock {
