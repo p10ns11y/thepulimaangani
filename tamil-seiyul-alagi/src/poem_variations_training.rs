@@ -6,6 +6,7 @@ use std::path::Path;
 
 use regex::Regex;
 
+use crate::linkage::Linkage;
 use crate::parse_features::{fnv1a_u32, PARSE_FEATURE_DENSE_LEN};
 use crate::parse_poem;
 use crate::types::{ParseFeatureSnapshot, ParseOptions};
@@ -29,6 +30,8 @@ pub struct PoemVariationTrainingRow {
     pub predicted_metre: Option<String>,
     pub top_score: Option<i32>,
     pub features: Option<ParseFeatureSnapshot>,
+    /// Full `ParseResult.linkage` when parse succeeded (WASM-style `linkage_type` / `linkage_special_type` strings).
+    pub linkage: Vec<Linkage>,
 }
 
 /// Aggregated confusion from repeated Monte Carlo–style passes (deterministic shuffle per iteration).
@@ -225,6 +228,7 @@ pub fn build_training_rows(labels: &[PoemVariationLabelRow]) -> Vec<PoemVariatio
                         predicted_metre: top.map(|h| format!("{:?}", h.metre_type)),
                         top_score: top.map(|h| h.aggregate_score),
                         features: r.parse_features.clone(),
+                        linkage: r.linkage.clone(),
                     }
                 }
                 Err(e) => PoemVariationTrainingRow {
@@ -234,6 +238,7 @@ pub fn build_training_rows(labels: &[PoemVariationLabelRow]) -> Vec<PoemVariatio
                     predicted_metre: None,
                     top_score: None,
                     features: None,
+                    linkage: Vec::new(),
                 },
             }
         })
@@ -329,17 +334,16 @@ mod tests {
     }
 
     #[test]
-    fn mc_ten_iterations_special_types_majority_correct() {
+    fn mc_twenty_iterations_special_types_majority_correct() {
         let js = js_fixture();
         let labels = poem_variation_special_type_rows(&poem_variation_label_rows(&js));
         assert_eq!(labels.len(), 17);
-        let agg = aggregate_metre_monte_carlo(&labels, 10);
-        assert_eq!(agg.iterations, 10);
-        assert_eq!(agg.total_evaluations, 170);
-        // After linkage-based priors for Kali/Vanji, expect strong majority on special_types.
+        let agg = aggregate_metre_monte_carlo(&labels, 20);
+        assert_eq!(agg.iterations, 20);
+        assert_eq!(agg.total_evaluations, 340);
         assert!(
-            agg.total_correct >= 140,
-            "expected >=140/170 correct on special_types over 10 iters, got {}",
+            agg.total_correct >= 280,
+            "expected >=280/340 correct on special_types over 20 iters, got {}",
             agg.total_correct
         );
     }

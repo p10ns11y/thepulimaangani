@@ -28,22 +28,24 @@ Initial **UTF-8** (no BOM) wide table for multilingual / tabular tooling:
 - **Regenerate:** from repo root  
   `cargo run -p thepulimaangani-parser --example export_poem_variations_training_csv`
 
-Columns include `sample_id`, `parent_metre` / `label_metre_en` (coarse gold from the JS tree), `text_lang` (`ta`), Tamil `label_ta` and `text`, parse flags, `predicted_metre` / `top_score` from the current heuristic, **`pred_matches_parent`** (1 if `predicted_metre` matches `parent_metre` ASCII-wise), and **`dense_0` … `dense_50`**.
+Columns include `sample_id`, `parent_metre` / `label_metre_en` (coarse gold from the JS tree), `text_lang` (`ta`), Tamil `label_ta` and `text`, parse flags, `predicted_metre` / `top_score` from the current heuristic, **`pred_matches_parent`** (1 if `predicted_metre` matches `parent_metre` ASCII-wise), **`feature_schema_version`**, and **`dense_0` … `dense_50`**. The CSV does **not** embed linkage columns (wide enough already); linkage strings for tooling live in the companion **JSONL** export below.
 
-On a 36-row snapshot, the built-in metre heuristic still disagrees with `parent_metre` on many rows (especially Kalippaa / Vanjippaa and Venpaa “variations”). Treat **`parent_metre` + `sample_id` as supervision targets** and `predicted_metre` as a weak baseline; improve with a model on `dense_*` or richer rules.
+After parser or linkage JSON renames, **re-run the export** so `dense_*` and `predicted_metre` stay aligned with the shipped heuristic.
 
-**Parser change:** `detect_metre_hypotheses` applies linkage priors when `feet >= 4`, linkage is non-empty, and **AciriyaTalai** mass exceeds **VenTalai** only if it also dominates coarse **KaliTalai** / **VanjiTalai**; plus a small **muddy Kali/Vanji** tilt when both coarse masses are present but nearly tied (see [`src/metre.rs`](src/metre.rs)). `boost_metre_hypotheses_with_dense` skips feeding Vanji-special mass into Venpaa when both coarse Kal and Vanji are substantial.
+On a 36-row snapshot, the built-in metre heuristic still disagrees with `parent_metre` on many rows (especially Kalippaa / Vanjippaa and Venpaa “variations”). Treat **`parent_metre` + `sample_id` as supervision targets** and `predicted_metre` as a weak baseline; improve with a model on `dense_*` or richer rules. `detect_metre_hypotheses` applies linkage priors when `feet >= 4`, linkage is non-empty, and **AciriyaTalai** mass exceeds **VenTalai** only if it also dominates coarse **KaliTalai** / **VanjiTalai**; plus a small **muddy Kali/Vanji** tilt when both coarse masses are present but nearly tied (see [`src/metre.rs`](src/metre.rs)). `boost_metre_hypotheses_with_dense` skips feeding Vanji-special mass into Venpaa when both coarse Kal and Vanji are substantial.
 
 ## Shuffled iterations (Monte Carlo)
 
-[`aggregate_metre_monte_carlo`](src/poem_variations_training.rs) runs `parse_poem` over **`special_type`** rows for a fixed number of **deterministic** shuffles (`shuffle_labels_for_iteration` + FNV salt). Use it to aggregate confusion / accuracy **once per tuning pass** (not after every shuffle, which overfits). Example: [`examples/metre_monte_carlo_report.rs`](examples/metre_monte_carlo_report.rs). Unit test `mc_ten_iterations_special_types_majority_correct` guards regression on that aggregate.
+[`aggregate_metre_monte_carlo`](src/poem_variations_training.rs) runs `parse_poem` over **`special_type`** rows for a fixed number of **deterministic** shuffles (`shuffle_labels_for_iteration` + FNV salt). Use it to aggregate confusion / accuracy **once per tuning pass** (not after every shuffle, which overfits). Example: [`examples/metre_monte_carlo_report.rs`](examples/metre_monte_carlo_report.rs) defaults to **20** iterations; set **`MC_ITERATIONS`** to override (e.g. `MC_ITERATIONS=50`). Unit test `mc_twenty_iterations_special_types_majority_correct` guards regression on that aggregate (≥280/340 correct at time of writing).
 
 ## PCA and feature–label alignment
 
 - **PCA on `dense_*` alone** does not depend on WASM string spellings; interpret loadings using **[`PARSE_FEATURES.md`](PARSE_FEATURES.md)** index tables (same order as `linkage_type_index` / `linkage_special_index` in [`src/parse_features.rs`](src/parse_features.rs)).
 - **Dev tool:** [`examples/parse_features_pca_metre.rs`](examples/parse_features_pca_metre.rs) reads [`data/training/poem_variations_training.csv`](../../data/training/poem_variations_training.csv), prints top **PC1 loadings** and **correlation of each `dense_j` with a coarse `parent_metre` index** (ordinal 0–3). Run:  
   `cargo run -p thepulimaangani-parser --example parse_features_pca_metre`
-- **JSONL:** There is no checked-in `.jsonl` file. For a canonical line-oriented dataset, emit one JSON object per line with at least `label` (or `parent_metre`), `schema_version`, and `dense` (51 floats). You can extend [`examples/dump_parse_features.rs`](examples/dump_parse_features.rs) or add `examples/export_training_jsonl.rs`.
+- **JSONL (checked in):** [`data/training/poem_variations_training.jsonl`](../../data/training/poem_variations_training.jsonl) — one JSON object per line with labels, `parse_features` (same shape as WASM), and full **`linkage`** (so `linkage_type` / `linkage_special_type` reflect current `*Talai` spellings). Regenerate with  
+  `cargo run -p thepulimaangani-parser --example export_poem_variations_training_jsonl`  
+  whenever you change the parser, linkage serde names, or feature layout.
 
 ## Exporting a dataset (Rust)
 
