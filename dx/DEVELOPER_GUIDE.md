@@ -124,7 +124,7 @@ Short summary for agents: [`AGENTS.md`](../AGENTS.md).
 
 - **Default branch:** `malar`.
 - **Pick a role/branch:** [trinity-and-native-agents/AGENT_ROLES.md](../trinity-and-native-agents/AGENT_ROLES.md) first; full tables in [creators.md](../trinity-and-native-agents/creators.md), [maintainers.md](../trinity-and-native-agents/maintainers.md), [renewers.md](../trinity-and-native-agents/renewers.md), [ainthinai.md](../trinity-and-native-agents/ainthinai.md).
-- **After merging a PR:** `./dx/syncagents.sh` from the repo root (optional `PUSH=1` to push). Creates missing local `origin/*` tracking branches, then hard-resets non-default branches to the default tip (skips open PR heads and `legacy`). **Agents:** read **Autonomous agents & safety** in [sync-branches-architecture-simple.md](./sync-branches-architecture-simple.md); use `DRY_RUN=1` first.
+- **After merging a PR:** **`./dx/syncagents-agent.sh`** (autonomous agents / minimal clones — skips mass `origin/*` locals; optional `PUSH=1` only when your environment is safe). **`./dx/syncagents-push-human.sh`** (human maintainer — full tracking + gated push). **`./dx/syncagents.sh`** is the core engine (creates missing local `origin/*` tracking branches by default, then hard-resets non-default branches to the default tip; skips open PR heads and `legacy`). **Agents:** read **Autonomous agents & safety** in [sync-branches-architecture-simple.md](./sync-branches-architecture-simple.md); use **`DRY_RUN=1 ./dx/syncagents-agent.sh`** first. [HUMAN_SYNC.md](./HUMAN_SYNC.md).
 
 ---
 

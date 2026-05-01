@@ -23,6 +23,7 @@ flowchart TD
 - **All other branches use `git reset --hard origin/malar`**
 - **File-based plan storage** for reliability
 - **Vibrant truecolor output** for excellent terminal experience
+- **Push is opt-in:** `syncagents.sh` defaults to **no** `PUSH`. Force-updating **remote** tips is a separate human entry point: [`syncagents-push-human.sh`](./syncagents-push-human.sh) — see [`HUMAN_SYNC.md`](./HUMAN_SYNC.md).
 
 ---
 
