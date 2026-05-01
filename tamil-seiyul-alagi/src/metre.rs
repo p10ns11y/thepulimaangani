@@ -125,7 +125,7 @@ pub fn detect_metre_hypotheses(
             }
             // Coarse Kalithalai and Vanjithalai masses both present but neither clearly wins: long
             // Venpaa prior is misleading (e.g. சிந்தடி வஞ்சிப்பா). Favour Vanjippaa over Kalippaa
-            // slightly — talai labels are noisy here, but metre is Vanji-class in training data.
+            // slightly — coarse linkage fractions are noisy here, but metre is Vanji-class in training data.
             if n_feet >= 4
                 && !linkage.is_empty()
                 && kal_f >= 0.15
@@ -234,7 +234,7 @@ mod boost_tests {
 
     fn dense_venthalai_favourable_for_boost() -> Vec<f32> {
         let mut d = vec![0.0f32; PARSE_FEATURE_DENSE_LEN];
-        // Mixed talai so uncertainty factor stays high (no single family > ~0.48).
+        // Mixed Talai so uncertainty factor stays high (no single family > ~0.48).
         d[LINKAGE_TYPE_FEATURE_OFFSET] = 0.40;
         d[LINKAGE_TYPE_FEATURE_OFFSET + 1] = 0.35;
         d[LINKAGE_TYPE_FEATURE_OFFSET + 2] = 0.25;

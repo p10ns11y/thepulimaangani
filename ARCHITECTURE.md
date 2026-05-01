@@ -58,7 +58,7 @@ tamil-seiyul-alagi/
 │   ├── word_scope.rs       # Linguistic words → syllables
 │   ├── syllable_builder.rs # Ner/Nirai syllables
 │   ├── foot.rs / foot_pattern.rs  # One foot per word; Ner-Nirai pattern string
-│   ├── linkage.rs          # Consecutive-foot edges; table-driven talai (issue #36)
+│   ├── linkage.rs          # Consecutive-foot edges; table-driven Talai (தளை; issue #36)
 │   ├── metre.rs            # Metre hypotheses (heuristic)
 │   ├── poem_tree.rs        # Structured poem tree
 │   ├── presentation.rs     # Human labels; embedded in `ParseResult.presentation` (WASM JSON)
@@ -67,7 +67,7 @@ tamil-seiyul-alagi/
 └── target/             # Build artifacts
 ```
 
-**Accuracy note:** User-facing copy sometimes describes classical feet and full talai sets; the shipped WASM JSON uses **Ner/Nirai foot patterns**, **table-driven linkage** from the previous foot’s last acai and the next foot’s first acai ([issue #36](https://github.com/p10ns11y/thepulimaangani/issues/36)), and **heuristic** metre ranking. See `tamil-seiyul-alagi/MACHINE_FIRST_SPEC.md` and `QUALITY_CRAP_BASELINE.md`.
+**Accuracy note:** User-facing copy sometimes describes classical feet and full **Talai** (தளை) sets; the shipped WASM JSON uses **Ner/Nirai foot patterns**, **table-driven linkage** from the previous foot’s last acai and the next foot’s first acai ([issue #36](https://github.com/p10ns11y/thepulimaangani/issues/36)), and **heuristic** metre ranking. See `tamil-seiyul-alagi/MACHINE_FIRST_SPEC.md` and `QUALITY_CRAP_BASELINE.md`.
 
 ### 3. Build Configuration
 
@@ -118,9 +118,9 @@ The engine groups syllables into **one foot per linguistic word** and sets `foot
 
 `metre.rs` produces **hypotheses** with scores; it does **not** yet encode full classical constraints for வெண்பா, வெண்கலிப்பா, ஆசிரியப்பா, கலிப்பா, etc. Treat catalogue metres as **targets** for `MACHINE_FIRST_SPEC.md`, not guarantees from the current build.
 
-### Linkage / talai (current)
+### Linkage / Talai (current)
 
-Consecutive feet get a linkage record with **positions** plus **`linkage_type`** / **`linkage_special_type`**. **`ParseResult.presentation.talai`** carries the full Tamil தளை string per bond (same indices as `linkage`). The Structure tab prefers **`presentation.talai`** when present.
+Consecutive feet get a linkage record with **positions** plus **`linkage_type`** / **`linkage_special_type`**. **`ParseResult.presentation.talai`** carries the full Tamil தளை string per bond (same indices as `linkage`). The Structure tab prefers **`presentation.talai`** when present. In English prose use **Talai** (capital **T** at sentence start), not **Thalai** (that suggests தலை “head”).
 
 ## Performance Considerations
 

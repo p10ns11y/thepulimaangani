@@ -17,7 +17,7 @@ pub enum CirAcaiClass {
     Kani,
 }
 
-/// Coarse **talai** family for metre-facing logic (Venpaa vs Kalippaa hints, etc.).
+/// Coarse **Talai** (தளை) family for metre-facing logic (Venpaa vs Kalippaa hints, etc.).
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum LinkageType {
     Venthalai,
@@ -209,7 +209,7 @@ pub fn analyze_linkage(foot_positions: &[FootPosition], feet: &[Foot]) -> Vec<Li
 pub type Talai = Linkage;
 pub type TalaiType = LinkageType;
 
-/// Traditional name for [`analyze_linkage`] (talai = bond between consecutive feet).
+/// Traditional name for [`analyze_linkage`] (**Talai** = bond between consecutive feet; Tamil தளை — romanize *Talai*, not *Thalai*, to avoid confusion with தலை “head”).
 #[allow(dead_code)] // Kept for API symmetry with `Talai` / migration call sites.
 pub fn analyze_talai(foot_positions: &[FootPosition], feet: &[Foot]) -> Vec<Talai> {
     analyze_linkage(foot_positions, feet)

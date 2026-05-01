@@ -23,6 +23,7 @@ Two strict layers, no leaks:
 
 Naming policy:
 - Core module names use machine-first English: `linkage.rs` (not `talai.rs`), `foot.rs`, `metre.rs`, `syllable.rs`, etc.
+- In **English prose** (docs, UI copy), refer to தளை as **Talai** with a capital **T** at sentence start; do **not** write **Thalai** (that suggests தலை “head”). Code may keep field names like `talai` / `Talai` for JSON compatibility.
 - Core type names use machine-first English: `LinkageClass`, `FootPattern`, `MetreHypothesis`. Tamil **prose** labels for feet and தளை are **not** in core logic; they are emitted only inside **`ParseResult.presentation`** (see `presentation.rs`).
 - **Romanization:** Prefer Tamil-style keys in JSON and Rust enum variants for ஆசிரிய- words — **`aciriya`** (one *c*, *i* after *c*), not Sanskrit-style **`asiriya`**. Example WASM strings: `Aciriyathalai`, `AciriyaTalai`, `Aciriyappaa`, `NerondriyaAciriyathalai`. Legacy spellings (`Aasiriy…`, `Asiriya…`, `Asiriyappaa`) remain accepted on deserialize via `serde` aliases.
 - Exception for other canonical grammar identifiers: when there is no clean neutral replacement, keep the established Latin key (e.g. `VenTalai`) inside enum variants while preserving English container names (`LinkageType`).
