@@ -32,15 +32,26 @@ Columns include `sample_id`, `parent_metre` / `label_metre_en` (coarse gold from
 
 On a 36-row snapshot, the built-in metre heuristic still disagrees with `parent_metre` on many rows (especially Kalippaa / Vanjippaa and Venpaa “variations”). Treat **`parent_metre` + `sample_id` as supervision targets** and `predicted_metre` as a weak baseline; improve with a model on `dense_*` or richer rules.
 
+**Parser change:** `detect_metre_hypotheses` applies linkage priors when `feet >= 4`, linkage is non-empty, and **Aciriyathalai** mass exceeds **Venthalai** only if it also dominates coarse Kalithalai / Vanjithalai; plus a small **muddy Kali/Vanji** tilt when both coarse masses are present but nearly tied (see [`src/metre.rs`](src/metre.rs)). `boost_metre_hypotheses_with_dense` skips feeding Vanji-special mass into Venpaa when both coarse Kal and Vanji are substantial.
+
+## Shuffled iterations (Monte Carlo)
+
+[`aggregate_metre_monte_carlo`](src/poem_variations_training.rs) runs `parse_poem` over **`special_type`** rows for a fixed number of **deterministic** shuffles (`shuffle_labels_for_iteration` + FNV salt). Use it to aggregate confusion / accuracy **once per tuning pass** (not after every shuffle, which overfits). Example: [`examples/metre_monte_carlo_report.rs`](examples/metre_monte_carlo_report.rs). Unit test `mc_ten_iterations_special_types_majority_correct` guards regression on that aggregate.
+
+## PCA and feature–label alignment
+
+- **PCA on `dense_*` alone** does not depend on WASM string spellings; interpret loadings using **[`PARSE_FEATURES.md`](PARSE_FEATURES.md)** index tables (same order as `linkage_type_index` / `linkage_special_index` in [`src/parse_features.rs`](src/parse_features.rs)).
+- **Dev tool:** [`examples/parse_features_pca_metre.rs`](examples/parse_features_pca_metre.rs) reads [`data/training/poem_variations_training.csv`](../../data/training/poem_variations_training.csv), prints top **PC1 loadings** and **correlation of each `dense_j` with a coarse `parent_metre` index** (ordinal 0–3). Run:  
+  `cargo run -p thepulimaangani-parser --example parse_features_pca_metre`
+- **JSONL:** There is no checked-in `.jsonl` file. For a canonical line-oriented dataset, emit one JSON object per line with at least `label` (or `parent_metre`), `schema_version`, and `dense` (51 floats). You can extend [`examples/dump_parse_features.rs`](examples/dump_parse_features.rs) or add `examples/export_training_jsonl.rs`.
+
 ## Exporting a dataset (Rust)
 
 1. For each labelled text file or inline string, call `parse_poem(text, ParseOptions::default())`.
 2. Read `result.parse_features` (unwrap or skip if `None` when `no_detect` was used).
 3. Append one JSON line per sample, e.g. `{"label":"venpaa","schema_version":1,"dense":[...]}`.
 
-You can extend [`examples/dump_parse_features.rs`](examples/dump_parse_features.rs) into a small batch mode, or add `examples/export_training_jsonl.rs` that reads paths + labels from a CSV.
-
-**Parser change:** `detect_metre_hypotheses` applies a small **linkage prior** when `feet >= 4`, linkage is non-empty, and **Aasiriyathalai** mass exceeds **Venthalai** (see [`src/metre.rs`](src/metre.rs)) so Asiriyappaa-class samples in this CSV align better with `parent_metre`.
+**WASM / JSON names:** `linkage_type`, `linkage_special_type`, and `MetreType` in `ParseResult` JSON use **Tamil-style `Aciriya…`** spellings; legacy `Aasiriy…` / `Asiriya…` strings remain accepted on **deserialize** (`serde` aliases on the enums).
 
 ## Model choices (all feasible in Rust)
 

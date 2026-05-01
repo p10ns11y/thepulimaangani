@@ -62,7 +62,7 @@ pub fn to_display(
 fn format_metre(metre: &MetreType) -> String {
     match metre {
         MetreType::Venpaa => "வெண்பா".to_string(),
-        MetreType::Asiriyappaa => "ஆசிரியப்பா".to_string(),
+        MetreType::Aciriyappaa => "ஆசிரியப்பா".to_string(),
         MetreType::Kalippaa => "கலிப்பா".to_string(),
         MetreType::Vanjippaa => "வஞ்சிப்பா".to_string(),
         MetreType::Other(s) => s.clone(),
@@ -136,8 +136,8 @@ pub fn foot_pattern_display(pattern: &str) -> String {
 
 fn to_display_talai(t: &Linkage) -> DisplayTalai {
     let talai_type = match t.linkage_special_type {
-        LinkageSpecialType::NerondriyaAasiriyathalai => "நேரொன்றிய ஆசிரியத்தளை".to_string(),
-        LinkageSpecialType::NiraiondriyaAasiriyathalai => {
+        LinkageSpecialType::NerondriyaAciriyathalai => "நேரொன்றிய ஆசிரியத்தளை".to_string(),
+        LinkageSpecialType::NiraiondriyaAciriyathalai => {
             "நிரையொன்றிய ஆசிரியத்தளை".to_string()
         }
         LinkageSpecialType::IyarcirVenthalai => "இயற்சீர் வெண்டளை".to_string(),
@@ -147,9 +147,9 @@ fn to_display_talai(t: &Linkage) -> DisplayTalai {
         LinkageSpecialType::OndrathaVanchithalai => "ஒன்றாத வஞ்சித்தளை".to_string(),
         LinkageSpecialType::Unknown => match &t.linkage_type {
             LinkageType::VenTalai => "வெண்டளை".to_string(),
-            LinkageType::AsiriyaTalai => "ஆசிரியத்தளை".to_string(),
+            LinkageType::AciriyaTalai => "ஆசிரியத்தளை".to_string(),
             LinkageType::Venthalai => "வெண்டளை".to_string(),
-            LinkageType::Aasiriyathalai => "ஆசிரியத்தளை".to_string(),
+            LinkageType::Aciriyathalai => "ஆசிரியத்தளை".to_string(),
             LinkageType::Kalithalai => "கலித்தளை".to_string(),
             LinkageType::Vanjithalai => "வஞ்சித்தளை".to_string(),
             LinkageType::Other(s) => s.clone(),

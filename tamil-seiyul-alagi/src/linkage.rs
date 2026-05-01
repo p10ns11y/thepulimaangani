@@ -21,20 +21,25 @@ pub enum CirAcaiClass {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum LinkageType {
     Venthalai,
-    Aasiriyathalai,
+    /// Coarse ஆசிரியத்தளை family (JSON: `Aciriyathalai`; legacy `Aasiriyathalai` accepted on deserialize).
+    #[serde(rename = "Aciriyathalai", alias = "Aasiriyathalai")]
+    Aciriyathalai,
     Kalithalai,
     Vanjithalai,
     /// Reserved when the previous foot’s last cir cannot be classified (e.g. empty foot).
     VenTalai,
-    AsiriyaTalai,
+    #[serde(rename = "AciriyaTalai", alias = "AsiriyaTalai")]
+    AciriyaTalai,
     Other(String),
 }
 
 /// Nuanced bond name within a [`LinkageType`] family (issue #36 row names).
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub enum LinkageSpecialType {
-    NerondriyaAasiriyathalai,
-    NiraiondriyaAasiriyathalai,
+    #[serde(rename = "NerondriyaAciriyathalai", alias = "NerondriyaAasiriyathalai")]
+    NerondriyaAciriyathalai,
+    #[serde(rename = "NiraiondriyaAciriyathalai", alias = "NiraiondriyaAasiriyathalai")]
+    NiraiondriyaAciriyathalai,
     IyarcirVenthalai,
     VencirVenthalai,
     Kalithalai,
@@ -121,12 +126,12 @@ fn classify_edge(
 ) -> (LinkageType, LinkageSpecialType) {
     match (prev_cir, next_first) {
         (CirAcaiClass::Maa, SyllableType::Ner) => (
-            LinkageType::Aasiriyathalai,
-            LinkageSpecialType::NerondriyaAasiriyathalai,
+            LinkageType::Aciriyathalai,
+            LinkageSpecialType::NerondriyaAciriyathalai,
         ),
         (CirAcaiClass::Vilam, SyllableType::Nirai) => (
-            LinkageType::Aasiriyathalai,
-            LinkageSpecialType::NiraiondriyaAasiriyathalai,
+            LinkageType::Aciriyathalai,
+            LinkageSpecialType::NiraiondriyaAciriyathalai,
         ),
         (CirAcaiClass::Maa, SyllableType::Nirai) => (
             LinkageType::Venthalai,
@@ -245,28 +250,28 @@ mod tests {
     }
 
     #[test]
-    fn table_maa_ner_is_nerondriya_aasiriyathalai() {
+    fn table_maa_ner_is_nerondriya_aciriyathalai() {
         let feet = vec![foot_with(&[SyllableType::Ner]), foot_with(&[SyllableType::Ner])];
         let pos = positions(2);
         let l = analyze_linkage(&pos, &feet);
         assert_eq!(l.len(), 1);
-        assert_eq!(l[0].linkage_type, LinkageType::Aasiriyathalai);
+        assert_eq!(l[0].linkage_type, LinkageType::Aciriyathalai);
         assert_eq!(
             l[0].linkage_special_type,
-            LinkageSpecialType::NerondriyaAasiriyathalai
+            LinkageSpecialType::NerondriyaAciriyathalai
         );
         assert!(l[0].is_valid);
     }
 
     #[test]
-    fn table_vilam_nirai_is_niraiondriya_aasiriyathalai() {
+    fn table_vilam_nirai_is_niraiondriya_aciriyathalai() {
         let feet = vec![foot_with(&[SyllableType::Nirai]), foot_with(&[SyllableType::Nirai])];
         let pos = positions(2);
         let l = analyze_linkage(&pos, &feet);
-        assert_eq!(l[0].linkage_type, LinkageType::Aasiriyathalai);
+        assert_eq!(l[0].linkage_type, LinkageType::Aciriyathalai);
         assert_eq!(
             l[0].linkage_special_type,
-            LinkageSpecialType::NiraiondriyaAasiriyathalai
+            LinkageSpecialType::NiraiondriyaAciriyathalai
         );
     }
 
@@ -364,6 +369,26 @@ mod tests {
         assert_eq!(
             l[0].linkage_special_type,
             LinkageSpecialType::OndrathaVanchithalai
+        );
+    }
+
+    #[test]
+    fn serde_accepts_legacy_aciriya_spellings_in_json() {
+        assert_eq!(
+            serde_json::from_str::<LinkageType>("\"Aasiriyathalai\"").unwrap(),
+            LinkageType::Aciriyathalai
+        );
+        assert_eq!(
+            serde_json::from_str::<LinkageType>("\"AsiriyaTalai\"").unwrap(),
+            LinkageType::AciriyaTalai
+        );
+        assert_eq!(
+            serde_json::from_str::<LinkageSpecialType>("\"NerondriyaAasiriyathalai\"").unwrap(),
+            LinkageSpecialType::NerondriyaAciriyathalai
+        );
+        assert_eq!(
+            serde_json::from_str::<crate::metre::MetreType>("\"Asiriyappaa\"").unwrap(),
+            crate::metre::MetreType::Aciriyappaa
         );
     }
 

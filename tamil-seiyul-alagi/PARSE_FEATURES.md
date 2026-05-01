@@ -62,11 +62,11 @@ For each bond in `linkage`, increment the slot for its `linkage_type`, then **di
 | Index | `LinkageType` variant |
 |-------|------------------------|
 | `12` | `Venthalai` |
-| `13` | `Aasiriyathalai` |
+| `13` | `Aciriyathalai` |
 | `14` | `Kalithalai` |
 | `15` | `Vanjithalai` |
 | `16` | `VenTalai` |
-| `17` | `AsiriyaTalai` |
+| `17` | `AciriyaTalai` |
 | `18` | `Other(_)` |
 
 ---
@@ -77,8 +77,8 @@ Same normalization: each slot is the **fraction** of edges with that `linkage_sp
 
 | Index | `LinkageSpecialType` variant |
 |-------|-------------------------------|
-| `19` | `NerondriyaAasiriyathalai` |
-| `20` | `NiraiondriyaAasiriyathalai` |
+| `19` | `NerondriyaAciriyathalai` |
+| `20` | `NiraiondriyaAciriyathalai` |
 | `21` | `IyarcirVenthalai` |
 | `22` | `VencirVenthalai` |
 | `23` | `Kalithalai` |

@@ -8,7 +8,9 @@ use crate::types::{MetreHypothesis, RuleId};
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum MetreType {
     Venpaa,
-    Asiriyappaa,
+    /// ஆசிரியப்பா — WASM/JSON key uses Tamil-style romanization (`aciriya`), not Sanskrit-style `asiriya`.
+    #[serde(rename = "Aciriyappaa", alias = "Asiriyappaa")]
+    Aciriyappaa,
     Kalippaa,
     Vanjippaa,
     Other(String),
@@ -22,8 +24,8 @@ fn linkage_coarse_fractions(linkage: &[Linkage]) -> (f32, f32, f32, f32) {
     let mut vanj = 0f32;
     for e in linkage {
         match &e.linkage_type {
-            LinkageType::Venthalai | LinkageType::VenTalai | LinkageType::AsiriyaTalai => vent += 1.0,
-            LinkageType::Aasiriyathalai => aasi += 1.0,
+            LinkageType::Venthalai | LinkageType::VenTalai | LinkageType::AciriyaTalai => vent += 1.0,
+            LinkageType::Aciriyathalai => aasi += 1.0,
             LinkageType::Kalithalai => kal += 1.0,
             LinkageType::Vanjithalai => vanj += 1.0,
             LinkageType::Other(_) => {}
@@ -42,7 +44,7 @@ fn rule_prior_score(metre: &MetreType, feet_len: usize) -> i32 {
                 52
             }
         }
-        MetreType::Asiriyappaa => {
+        MetreType::Aciriyappaa => {
             if long {
                 58
             } else {
@@ -55,7 +57,7 @@ fn rule_prior_score(metre: &MetreType, feet_len: usize) -> i32 {
 }
 
 /// Emit up to four coarse metre candidates with rule priors, then sort by descending score.
-/// Primary rule remains foot-count Venpaa vs Asiriyappaa; Kalippaa / Vanjippaa are included for
+/// Primary rule remains foot-count Venpaa vs Aciriyappaa; Kalippaa / Vanjippaa are included for
 /// linkage-feature re-ranking after [`boost_metre_hypotheses_with_dense`].
 pub fn detect_metre_hypotheses(
     feet: &[Foot],
@@ -70,7 +72,7 @@ pub fn detect_metre_hypotheses(
     let (vent_f, aasi_f, kal_f, vanj_f) = linkage_coarse_fractions(linkage);
     let candidates = [
         MetreType::Venpaa,
-        MetreType::Asiriyappaa,
+        MetreType::Aciriyappaa,
         MetreType::Kalippaa,
         MetreType::Vanjippaa,
     ];
@@ -79,9 +81,9 @@ pub fn detect_metre_hypotheses(
         .into_iter()
         .map(|metre_type| {
             let mut score = rule_prior_score(&metre_type, n_feet);
-            // Training-data alignment: long poems with mostly Aasiriyathalai bonds favour Asiriyappaa.
-            // Require Aasiriyathalai to dominate Kalithalai / Vanjithalai as well; otherwise mixed
-            // Kali/Vanji talai (e.g. சிந்தடி வஞ்சிப்பா) gets misread as Asiriyappaa-heavy.
+            // Training-data alignment: long poems with mostly Aciriyathalai bonds favour Aciriyappaa.
+            // Require Aciriyathalai to dominate Kalithalai / Vanjithalai as well; otherwise mixed
+            // Kali/Vanji talai (e.g. சிந்தடி வஞ்சிப்பா) gets misread as Aciriyappaa-heavy.
             if n_feet >= 4
                 && !linkage.is_empty()
                 && aasi_f + 0.08 > vent_f
@@ -89,7 +91,7 @@ pub fn detect_metre_hypotheses(
                 && aasi_f >= vanj_f
             {
                 match &metre_type {
-                    MetreType::Asiriyappaa => score += 22,
+                    MetreType::Aciriyappaa => score += 22,
                     MetreType::Venpaa => score -= 14,
                     _ => {}
                 }
@@ -105,7 +107,7 @@ pub fn detect_metre_hypotheses(
             {
                 match &metre_type {
                     MetreType::Kalippaa => score += 24,
-                    MetreType::Venpaa | MetreType::Asiriyappaa => score -= 10,
+                    MetreType::Venpaa | MetreType::Aciriyappaa => score -= 10,
                     _ => {}
                 }
             } else if n_feet >= 3
@@ -117,7 +119,7 @@ pub fn detect_metre_hypotheses(
             {
                 match &metre_type {
                     MetreType::Vanjippaa => score += 24,
-                    MetreType::Venpaa | MetreType::Asiriyappaa => score -= 10,
+                    MetreType::Venpaa | MetreType::Aciriyappaa => score -= 10,
                     _ => {}
                 }
             }
@@ -132,7 +134,7 @@ pub fn detect_metre_hypotheses(
             {
                 match &metre_type {
                     MetreType::Venpaa => score -= 22,
-                    MetreType::Asiriyappaa => score -= 6,
+                    MetreType::Aciriyappaa => score -= 6,
                     MetreType::Kalippaa => score -= 6,
                     MetreType::Vanjippaa => score += 12,
                     _ => {}
@@ -197,7 +199,7 @@ pub fn boost_metre_hypotheses_with_dense(hypotheses: &mut [MetreHypothesis], den
                     base + vanj_special * 3.5
                 }
             }
-            MetreType::Asiriyappaa => aasi * 9.0,
+            MetreType::Aciriyappaa => aasi * 9.0,
             MetreType::Kalippaa => kal * 11.0 + kal_special * 5.0,
             MetreType::Vanjippaa => vanj * 11.0 + vanj_special * 5.0,
             MetreType::Other(_) => 0.0,

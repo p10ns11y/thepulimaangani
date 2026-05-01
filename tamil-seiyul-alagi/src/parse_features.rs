@@ -200,11 +200,11 @@ fn fill_global_from_parts(slice: &mut [f32], src: ParseFeatureSource<'_>) {
 fn linkage_type_index(t: &LinkageType) -> usize {
     match t {
         LinkageType::Venthalai => 0,
-        LinkageType::Aasiriyathalai => 1,
+        LinkageType::Aciriyathalai => 1,
         LinkageType::Kalithalai => 2,
         LinkageType::Vanjithalai => 3,
         LinkageType::VenTalai => 4,
-        LinkageType::AsiriyaTalai => 5,
+        LinkageType::AciriyaTalai => 5,
         LinkageType::Other(_) => 6,
     }
 }
@@ -221,8 +221,8 @@ fn fill_linkage_types_slice(slice: &mut [f32], linkage: &[Linkage]) {
 
 fn linkage_special_index(s: LinkageSpecialType) -> usize {
     match s {
-        LinkageSpecialType::NerondriyaAasiriyathalai => 0,
-        LinkageSpecialType::NiraiondriyaAasiriyathalai => 1,
+        LinkageSpecialType::NerondriyaAciriyathalai => 0,
+        LinkageSpecialType::NiraiondriyaAciriyathalai => 1,
         LinkageSpecialType::IyarcirVenthalai => 2,
         LinkageSpecialType::VencirVenthalai => 3,
         LinkageSpecialType::Kalithalai => 4,

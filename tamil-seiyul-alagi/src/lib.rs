@@ -6,6 +6,7 @@ mod line_scope;
 mod linkage;
 mod metre;
 mod parse_features;
+mod poem_variations;
 mod poem_variations_training;
 mod poem_tree;
 mod presentation;
@@ -34,6 +35,10 @@ pub use parse_features::{
     GLOBAL_FEATURE_DIM, GLOBAL_FEATURE_OFFSET, LINE_FOOT_HIST_FEATURE_DIM, LINE_FOOT_HIST_OFFSET,
     LINKAGE_TYPE_FEATURE_DIM, LINKAGE_TYPE_FEATURE_OFFSET, LINK_SPECIAL_FEATURE_DIM,
     LINK_SPECIAL_FEATURE_OFFSET, PARSE_FEATURE_DENSE_LEN, PARSE_FEATURE_SCHEMA_VERSION,
+};
+pub use poem_variations::{
+    poem_variation_example, poem_variations_blocks, poem_variations_for_metre, tamil_label_for_sample,
+    variation_row, PoemVariationRow, PoemVariationsBlock, ACIRIYAPPA, KALIPPAA, VANJIPPAA, VENPAA,
 };
 pub use presentation::{
     foot_pattern_display, DisplayFoot, DisplayResult, DisplaySyllable, DisplayTalai,
