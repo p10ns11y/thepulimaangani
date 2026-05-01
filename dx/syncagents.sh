@@ -9,7 +9,11 @@
 # This script can DESTROY local git state at scale: every local branch except
 # the default branch and `legacy` is `git reset --hard` to origin/<default>.
 # It may also `git push --force-with-lease` every such branch when PUSH=1.
-# See dx/sync-branches-architecture-simple.md § "Autonomous agents & safety".
+#
+# SYNCAGENTS_SKIP_REMOTE_TRACKING=1 — skip auto-creating local branches for every
+# origin/* (used by dx/syncagents-agent.sh). Default: create missing tracking locals.
+#
+# See dx/HUMAN_SYNC.md and dx/sync-branches-architecture-simple.md § "Autonomous agents & safety".
 # ---------------------------------------------------------------------------
 #
 
@@ -86,7 +90,13 @@ collect_state() {
     echo -e "${C_PHASE1}→ Fetching latest from remote...${C_RESET}"
     git fetch --all --prune --quiet
 
-    ensure_remote_tracking_locals
+    # Agent entry point (syncagents-agent.sh) sets SYNCAGENTS_SKIP_REMOTE_TRACKING=1 so we only
+    # sync branches that already exist locally — no mass creation of locals for every origin/*.
+    if [[ "${SYNCAGENTS_SKIP_REMOTE_TRACKING:-0}" != "1" ]]; then
+        ensure_remote_tracking_locals
+    else
+        echo -e "${C_PHASE1}→ Skipping ensure_remote_tracking_locals (agent mode)${C_RESET}"
+    fi
 
     if ! MAIN_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@refs/remotes/origin/@@'); then
         for candidate in main master malar; do

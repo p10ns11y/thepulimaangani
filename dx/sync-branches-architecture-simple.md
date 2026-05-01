@@ -23,6 +23,15 @@ flowchart TD
 - **All other branches use `git reset --hard origin/malar`**
 - **File-based plan storage** for reliability
 - **Vibrant truecolor output** for excellent terminal experience
+- **Push is opt-in:** `syncagents.sh` respects `PUSH`. **Agents** normally use [`syncagents-agent.sh`](./syncagents-agent.sh) (no mass `origin/*` locals). **Humans** use [`syncagents-push-human.sh`](./syncagents-push-human.sh) for full tracking + gated push — [`HUMAN_SYNC.md`](./HUMAN_SYNC.md).
+
+## Entry points (agent vs human)
+
+| Script | Remote tracking locals | Typical `PUSH` |
+|--------|-------------------------|----------------|
+| [`syncagents-agent.sh`](./syncagents-agent.sh) | **Skipped** (`SYNCAGENTS_SKIP_REMOTE_TRACKING=1`) | `0` or `1` if your env is safe |
+| [`syncagents.sh`](./syncagents.sh) | **Default on** (unless skip env set) | `0` or `1` |
+| [`syncagents-push-human.sh`](./syncagents-push-human.sh) | **On** (full power) | Gated second prompt or `HUMAN_SYNC_ACK` |
 
 ---
 
@@ -70,3 +79,9 @@ COLLECT → BUILD PLAN → VALIDATE → SYNC → DONE
 ```
 
 This tool follows a clean state machine pattern with predictable transitions between phases.
+
+## Remote tracking locals (default `syncagents.sh` / human wrapper only)
+
+After `git fetch`, **Phase 1** may create **missing local branches** that already exist on `origin/*` (`git branch --track <name> origin/<name>`). That way the later “reset each local branch to `origin/malar`” step includes remote-only persona branches (e.g. `theni`) once you have fetched them — not only branches that already existed in your clone.
+
+**`syncagents-agent.sh`** skips this step so minimal agent workspaces do not grow a local branch per `origin/*`.

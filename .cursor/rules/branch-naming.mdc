@@ -1,0 +1,12 @@
+---
+description: Git branch names must follow trinity-and-native-agents/AGENT_ROLES.md; use role in slug when Cursor requires cursor/ prefix.
+alwaysApply: true
+---
+
+# Branch naming (Thepulimaangani)
+
+1. **Pick a role first:** [trinity-and-native-agents/AGENT_ROLES.md](../trinity-and-native-agents/AGENT_ROLES.md) — the branch name should reflect that role (e.g. `theni`, `pattampoochi`, `thumpi`).
+2. **If the environment forces `cursor/…`:** use `cursor/<role>-<short-slug>-ce01` (or the suffix your runner requires), e.g. `cursor/theni-parser-fix-ce01` — **do not** use a generic `cursor/feature-ce01` with no role.
+3. **Default integration branch:** `malar` — do not use role branches as the merge target unless the workflow explicitly says so.
+
+Post-merge sync: **`./dx/syncagents-agent.sh`** (agents; optional `PUSH=1` only with a safe env). Human full sync: **`./dx/syncagents-push-human.sh`** — [dx/HUMAN_SYNC.md](../dx/HUMAN_SYNC.md).

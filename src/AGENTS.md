@@ -22,7 +22,7 @@ React/TypeScript frontend using TanStack Start/Router, Vite, Tailwind CSS. Focus
 ## Branches and post-merge sync
 
 - **Default branch:** `malar`. Name your branch using [trinity-and-native-agents/AGENT_ROLES.md](../trinity-and-native-agents/AGENT_ROLES.md) first; full detail in [creators.md](../trinity-and-native-agents/creators.md).
-- **After every PR merge:** run `./dx/syncagents.sh` from the repo root; see [dx/sync-branches-architecture-simple.md](../dx/sync-branches-architecture-simple.md).
+- **After every PR merge:** **`./dx/syncagents-agent.sh`** (agents; no mass `origin/*` locals). **`./dx/syncagents-push-human.sh`** (humans; full sync + gated push). See [../dx/HUMAN_SYNC.md](../dx/HUMAN_SYNC.md) and [../dx/sync-branches-architecture-simple.md](../dx/sync-branches-architecture-simple.md).
 
 ## Backlog / future UI
 - **Site-wide font size** (toolbar or settings) for Tamil body text and panels — accessibility and reading comfort.
