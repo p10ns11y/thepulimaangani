@@ -7,9 +7,10 @@ use std::path::Path;
 use regex::Regex;
 
 use crate::linkage::Linkage;
+use crate::metre::MetreType;
 use crate::parse_features::{fnv1a_u32, PARSE_FEATURE_DENSE_LEN};
 use crate::parse_poem;
-use crate::types::{ParseFeatureSnapshot, ParseOptions};
+use crate::types::{ParseFeatureSnapshot, ParseOptions, ParseResult};
 
 /// One labelled sample from `poem_variations.js` (before parsing).
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -39,7 +40,14 @@ pub struct PoemVariationTrainingRow {
 pub struct MetreMonteCarloAggregate {
     pub iterations: u32,
     pub total_evaluations: u64,
+    /// Top-1 accuracy: predicted head metre equals gold coarse metre for `parent_metre`.
     pub total_correct: u64,
+    /// Mean reciprocal rank of the gold metre in `top_k_metre_hypotheses` (0 if gold missing from list).
+    #[serde(default)]
+    pub mean_reciprocal_rank: f64,
+    /// Count where gold appears in the top two hypotheses.
+    #[serde(default)]
+    pub correct_at_2: u64,
     pub confusion: BTreeMap<String, u64>,
 }
 
@@ -49,6 +57,22 @@ pub fn poem_variation_special_type_rows(rows: &[PoemVariationLabelRow]) -> Vec<P
         .filter(|r| r.row_kind == "special_type")
         .cloned()
         .collect()
+}
+
+/// Rows whose `row_kind` is one of `kinds` (e.g. `&["special_type", "variation"]`). If `kinds` is empty, returns a clone of all `rows`.
+pub fn poem_variation_rows_by_kinds(rows: &[PoemVariationLabelRow], kinds: &[&str]) -> Vec<PoemVariationLabelRow> {
+    if kinds.is_empty() {
+        return rows.to_vec();
+    }
+    rows.iter()
+        .filter(|r| kinds.iter().any(|k| r.row_kind == *k))
+        .cloned()
+        .collect()
+}
+
+/// Parse like [`build_training_rows`] (uyir_u hints) for evaluation / diagnostics.
+pub fn parse_label_row_for_eval(label: &PoemVariationLabelRow) -> Result<ParseResult, crate::error::ParseError> {
+    parse_poem(label.text.trim(), ParseOptions::poem_variations_training())
 }
 
 /// Deterministic permutation for iteration `iter` (reproducible without RNG).
@@ -65,7 +89,29 @@ pub fn shuffle_labels_for_iteration(labels: &[PoemVariationLabelRow], iter: u32)
     out
 }
 
-/// Run `iterations` shuffled passes over `labels`, parse each sample, aggregate top-metre vs `parent_metre`.
+/// Gold coarse [`MetreType`] for a `parent_metre` slug from `poem_variations.js`.
+pub fn gold_metre_type_for_parent(parent_slug: &str) -> Option<MetreType> {
+    match parent_slug {
+        "venpaa" => Some(MetreType::Venpaa),
+        "aciriyappa" => Some(MetreType::Aciriyappaa),
+        "kalippaa" => Some(MetreType::Kalippaa),
+        "vanjippaa" => Some(MetreType::Vanjippaa),
+        _ => None,
+    }
+}
+
+/// Gold coarse metre label string for a `parent_metre` slug from `poem_variations.js` (`aciriyappa` → `Aciriyappaa`).
+pub fn gold_metre_label_for_parent(parent_slug: &str) -> Option<&'static str> {
+    gold_metre_type_for_parent(parent_slug).map(|m| match m {
+        MetreType::Venpaa => "Venpaa",
+        MetreType::Aciriyappaa => "Aciriyappaa",
+        MetreType::Kalippaa => "Kalippaa",
+        MetreType::Vanjippaa => "Vanjippaa",
+        MetreType::Other(_) => "Other",
+    })
+}
+
+/// Run `iterations` shuffled passes over `labels`, parse each sample, aggregate top-metre vs gold from `parent_metre`.
 pub fn aggregate_metre_monte_carlo(
     labels: &[PoemVariationLabelRow],
     iterations: u32,
@@ -74,23 +120,36 @@ pub fn aggregate_metre_monte_carlo(
         iterations,
         ..Default::default()
     };
+    let mut mrr_sum = 0.0f64;
     for it in 0..iterations {
         let perm = shuffle_labels_for_iteration(labels, it);
-        for row in build_training_rows(&perm) {
-            if !row.parse_ok {
-                continue;
-            }
-            let Some(pred) = row.predicted_metre.as_ref() else {
+        for label in &perm {
+            let Ok(r) = parse_label_row_for_eval(label) else {
                 continue;
             };
+            let hy = &r.top_k_metre_hypotheses;
+            if hy.is_empty() {
+                continue;
+            }
+            let Some(gold) = gold_metre_type_for_parent(label.parent_metre.as_str()) else {
+                continue;
+            };
+            let pred1 = hy[0].metre_type.clone();
             agg.total_evaluations += 1;
-            let parent = row.label.parent_metre.as_str();
-            if pred.eq_ignore_ascii_case(parent) {
+            if pred1 == gold {
                 agg.total_correct += 1;
             }
-            let key = format!("{parent}|{pred}");
+            let rank = hy.iter().position(|h| h.metre_type == gold);
+            mrr_sum += rank.map(|i| 1.0 / (i + 1) as f64).unwrap_or(0.0);
+            if rank.is_some_and(|i| i < 2) {
+                agg.correct_at_2 += 1;
+            }
+            let key = format!("{}|{:?}", label.parent_metre, pred1);
             *agg.confusion.entry(key).or_insert(0) += 1;
         }
+    }
+    if agg.total_evaluations > 0 {
+        agg.mean_reciprocal_rank = mrr_sum / agg.total_evaluations as f64;
     }
     agg
 }
@@ -211,14 +270,12 @@ pub fn poem_variation_label_rows(js: &str) -> Vec<PoemVariationLabelRow> {
     out
 }
 
-/// Parse each sample with default options and attach features + top hypothesis.
+/// Parse each sample with [`ParseOptions::poem_variations_training`] and attach features + top hypothesis.
 pub fn build_training_rows(labels: &[PoemVariationLabelRow]) -> Vec<PoemVariationTrainingRow> {
     labels
         .iter()
         .map(|label| {
-            let mut opts = ParseOptions::default();
-            opts.uyir_u = true;
-            match parse_poem(label.text.trim(), opts) {
+            match parse_poem(label.text.trim(), ParseOptions::poem_variations_training()) {
                 Ok(r) => {
                     let top = r.top_k_metre_hypotheses.first();
                     PoemVariationTrainingRow {
@@ -277,9 +334,10 @@ pub fn write_poem_variations_training_csv(
     for row in rows {
         let pred = row.predicted_metre.as_deref();
         let pred_match = if row.parse_ok {
-            pred
-                .map(|p| p.eq_ignore_ascii_case(&row.label.parent_metre))
-                .unwrap_or(false)
+            match (pred, gold_metre_label_for_parent(row.label.parent_metre.as_str())) {
+                (Some(p), Some(g)) => p == g,
+                _ => false,
+            }
         } else {
             false
         };

@@ -21,6 +21,18 @@ pub struct ParseOptions {
     pub uyir_u: bool,
 }
 
+impl ParseOptions {
+    /// Matches [`crate::poem_variations_training::build_training_rows`] (`uyir_u` elision hints on).
+    pub fn poem_variations_training() -> Self {
+        Self {
+            only_prosody: false,
+            no_detect: false,
+            alt_scansion: false,
+            uyir_u: true,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ParseResult {
     pub original_text: String,

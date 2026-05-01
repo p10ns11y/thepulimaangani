@@ -29,7 +29,7 @@ pub use letter::Letter;
 pub use linkage::{
     CirAcaiClass, FootPosition, Linkage, LinkageSpecialType, LinkageType, Talai, TalaiType,
 };
-pub use metre::{boost_metre_hypotheses_with_dense, sort_metre_hypotheses_by_score, MetreType};
+pub use metre::{boost_metre_hypotheses_with_dense, linkage_coarse_fractions, sort_metre_hypotheses_by_score, MetreType};
 pub use parse_features::{
     fnv1a_u32, ParseFeatureSource, ParseFeatureVector, FOOT_PATTERN_BIN_DIM, FOOT_PATTERN_BIN_OFFSET,
     GLOBAL_FEATURE_DIM, GLOBAL_FEATURE_OFFSET, LINE_FOOT_HIST_FEATURE_DIM, LINE_FOOT_HIST_OFFSET,
@@ -44,8 +44,9 @@ pub use presentation::{
     foot_pattern_display, DisplayFoot, DisplayResult, DisplaySyllable, DisplayTalai,
 };
 pub use poem_variations_training::{
-    aggregate_metre_monte_carlo, build_training_rows, poem_variation_label_rows,
-    poem_variation_special_type_rows, shuffle_labels_for_iteration,
+    aggregate_metre_monte_carlo, build_training_rows, gold_metre_label_for_parent,
+    gold_metre_type_for_parent, parse_label_row_for_eval, poem_variation_label_rows,
+    poem_variation_rows_by_kinds, poem_variation_special_type_rows, shuffle_labels_for_iteration,
     write_poem_variations_training_csv, MetreMonteCarloAggregate, PoemVariationLabelRow,
     PoemVariationTrainingRow,
 };

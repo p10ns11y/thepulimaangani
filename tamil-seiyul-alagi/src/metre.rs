@@ -16,7 +16,7 @@ pub enum MetreType {
     Other(String),
 }
 
-fn linkage_coarse_fractions(linkage: &[Linkage]) -> (f32, f32, f32, f32) {
+pub fn linkage_coarse_fractions(linkage: &[Linkage]) -> (f32, f32, f32, f32) {
     let n = linkage.len().max(1) as f32;
     let mut vent = 0f32;
     let mut aasi = 0f32;
@@ -84,7 +84,11 @@ pub fn detect_metre_hypotheses(
             // Training-data alignment: long poems with mostly AciriyaTalai bonds favour Aciriyappaa.
             // Require AciriyaTalai to dominate KaliTalai / VanjiTalai as well; otherwise mixed
             // Kali/Vanji talai (e.g. சிந்தடி வஞ்சிப்பா) gets misread as Aciriyappaa-heavy.
-            if n_feet >= 4
+            // Skip Aciriyappaa dominance prior when Vanji coarse mass leads Kali (Vanji-class lines
+            // often still show substantial AciriyaTalai bonds; e.g. சிந்தடி வஞ்சிப்பா in training).
+            let apply_aciriya_prior = !(vanj_f + 0.02 >= kal_f && vanj_f >= 0.12);
+            if apply_aciriya_prior
+                && n_feet >= 4
                 && !linkage.is_empty()
                 && aasi_f + 0.08 > vent_f
                 && aasi_f >= kal_f

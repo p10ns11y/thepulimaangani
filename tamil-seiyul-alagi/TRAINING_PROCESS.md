@@ -28,15 +28,26 @@ Initial **UTF-8** (no BOM) wide table for multilingual / tabular tooling:
 - **Regenerate:** from repo root  
   `cargo run -p thepulimaangani-parser --example export_poem_variations_training_csv`
 
-Columns include `sample_id`, `parent_metre` / `label_metre_en` (coarse gold from the JS tree), `text_lang` (`ta`), Tamil `label_ta` and `text`, parse flags, `predicted_metre` / `top_score` from the current heuristic, **`pred_matches_parent`** (1 if `predicted_metre` matches `parent_metre` ASCII-wise), **`feature_schema_version`**, and **`dense_0` … `dense_50`**. The CSV does **not** embed linkage columns (wide enough already); linkage strings for tooling live in the companion **JSONL** export below.
+Columns include `sample_id`, `parent_metre` / `label_metre_en` (coarse gold from the JS tree), `text_lang` (`ta`), Tamil `label_ta` and `text`, parse flags, `predicted_metre` / `top_score` from the current heuristic, **`pred_matches_parent`** (1 if top prediction matches the gold coarse metre for `parent_metre`, e.g. `aciriyappa` → `Aciriyappaa`), **`feature_schema_version`**, and **`dense_0` … `dense_50`**. The CSV does **not** embed linkage columns (wide enough already); linkage strings for tooling live in the companion **JSONL** export below.
 
 After parser or linkage JSON renames, **re-run the export** so `dense_*` and `predicted_metre` stay aligned with the shipped heuristic.
 
-On a 36-row snapshot, the built-in metre heuristic still disagrees with `parent_metre` on many rows (especially Kalippaa / Vanjippaa and Venpaa “variations”). Treat **`parent_metre` + `sample_id` as supervision targets** and `predicted_metre` as a weak baseline; improve with a model on `dense_*` or richer rules. `detect_metre_hypotheses` applies linkage priors when `feet >= 4`, linkage is non-empty, and **AciriyaTalai** mass exceeds **VenTalai** only if it also dominates coarse **KaliTalai** / **VanjiTalai**; plus a small **muddy Kali/Vanji** tilt when both coarse masses are present but nearly tied (see [`src/metre.rs`](src/metre.rs)). `boost_metre_hypotheses_with_dense` skips feeding Vanji-special mass into Venpaa when both coarse Kal and Vanji are substantial.
+On a 36-row snapshot, the built-in metre heuristic still disagrees with gold on many **variation** rows. Treat **`parent_metre` + `sample_id` as supervision targets** and `predicted_metre` as a weak baseline; improve with a model on `dense_*` or richer rules.
+
+**Parser (linkage priors):** `detect_metre_hypotheses` applies an **Aciriyappaa dominance** tilt when **AciriyaTalai** mass leads **VenTalai** and also leads **KaliTalai** / **VanjiTalai** — but **skips** that tilt when **VanjiTalai** coarse mass leads **KaliTalai** (Vanji-class lines often still show substantial AciriyaTalai). A **muddy Kali/Vanji** tilt applies when both coarse masses are present but nearly tied. **`boost_metre_hypotheses_with_dense`** skips feeding Vanji-special mass into Venpaa when both coarse Kal and Vanji are substantial.
 
 ## Shuffled iterations (Monte Carlo)
 
-[`aggregate_metre_monte_carlo`](src/poem_variations_training.rs) runs `parse_poem` over **`special_type`** rows for a fixed number of **deterministic** shuffles (`shuffle_labels_for_iteration` + FNV salt). Use it to aggregate confusion / accuracy **once per tuning pass** (not after every shuffle, which overfits). Example: [`examples/metre_monte_carlo_report.rs`](examples/metre_monte_carlo_report.rs) defaults to **20** iterations; set **`MC_ITERATIONS`** to override (e.g. `MC_ITERATIONS=50`). Unit test `mc_twenty_iterations_special_types_majority_correct` guards regression on that aggregate (≥280/340 correct at time of writing).
+[`aggregate_metre_monte_carlo`](src/poem_variations_training.rs) runs [`parse_label_row_for_eval`](src/poem_variations_training.rs) (same options as training export) over a label list for **deterministic** shuffles (`shuffle_labels_for_iteration` + FNV salt). The JSON aggregate includes **`total_correct`** (top-1 vs gold [`MetreType`](src/metre.rs)), **`mean_reciprocal_rank`**, **`correct_at_2`**, and **`confusion`** keys `parent_slug|PredictedDebug`.
+
+Example: [`examples/metre_monte_carlo_report.rs`](examples/metre_monte_carlo_report.rs) defaults to **20** iterations and **`special_type`** rows only. Environment:
+
+- **`MC_ITERATIONS`** — default `20` (e.g. `50`).
+- **`MC_ROW_KINDS`** — comma-separated `special_type`, `variation`, or **`all`** (default `special_type` to match the regression test).
+
+Linkage inspection: [`examples/training_linkage_vs_gold.rs`](examples/training_linkage_vs_gold.rs) prints per-sample coarse fractions and `linkage_type` counts (same `MC_ROW_KINDS` / `all`).
+
+Unit test `mc_twenty_iterations_special_types_majority_correct` guards regression on **special_type** top-1 (≥280/340 at time of writing).
 
 ## PCA and feature–label alignment
 
