@@ -17,28 +17,51 @@ pub enum CirAcaiClass {
     Kani,
 }
 
-/// Coarse **talai** family for metre-facing logic (Venpaa vs Kalippaa hints, etc.).
+/// Coarse **Talai** (தளை) family for metre-facing logic (Venpaa vs Kalippaa hints, etc.).
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum LinkageType {
-    Venthalai,
-    Aasiriyathalai,
-    Kalithalai,
-    Vanjithalai,
-    /// Reserved when the previous foot’s last cir cannot be classified (e.g. empty foot).
+    /// JSON: `VenTalai` (legacy `Venthalai` on deserialize).
+    #[serde(rename = "VenTalai", alias = "Venthalai")]
     VenTalai,
-    AsiriyaTalai,
+    /// Coarse ஆசிரியத்தளை (JSON: `AciriyaTalai`; legacy `Aciriyathalai` / `Aasiriyathalai` / `AsiriyaTalai`).
+    #[serde(
+        rename = "AciriyaTalai",
+        alias = "Aciriyathalai",
+        alias = "Aasiriyathalai",
+        alias = "AsiriyaTalai"
+    )]
+    AciriyaTalai,
+    #[serde(rename = "KaliTalai", alias = "Kalithalai")]
+    KaliTalai,
+    #[serde(rename = "VanjiTalai", alias = "Vanjithalai")]
+    VanjiTalai,
     Other(String),
 }
 
 /// Nuanced bond name within a [`LinkageType`] family (issue #36 row names).
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub enum LinkageSpecialType {
-    NerondriyaAasiriyathalai,
-    NiraiondriyaAasiriyathalai,
+    #[serde(
+        rename = "NerondriyaAciriyaTalai",
+        alias = "NerondriyaAciriyathalai",
+        alias = "NerondriyaAasiriyathalai"
+    )]
+    NerondriyaAciriyathalai,
+    #[serde(
+        rename = "NiraiondriyaAciriyaTalai",
+        alias = "NiraiondriyaAciriyathalai",
+        alias = "NiraiondriyaAasiriyathalai"
+    )]
+    NiraiondriyaAciriyathalai,
+    #[serde(rename = "IyarcirVenTalai", alias = "IyarcirVenthalai")]
     IyarcirVenthalai,
+    #[serde(rename = "VencirVenTalai", alias = "VencirVenthalai")]
     VencirVenthalai,
+    #[serde(rename = "KaliTalai", alias = "Kalithalai")]
     Kalithalai,
+    #[serde(rename = "OndriyaVanjiTalai", alias = "OndriyaVanchithalai")]
     OndriyaVanchithalai,
+    #[serde(rename = "OndrathaVanjiTalai", alias = "OndrathaVanchithalai")]
     OndrathaVanchithalai,
     Unknown,
 }
@@ -121,35 +144,35 @@ fn classify_edge(
 ) -> (LinkageType, LinkageSpecialType) {
     match (prev_cir, next_first) {
         (CirAcaiClass::Maa, SyllableType::Ner) => (
-            LinkageType::Aasiriyathalai,
-            LinkageSpecialType::NerondriyaAasiriyathalai,
+            LinkageType::AciriyaTalai,
+            LinkageSpecialType::NerondriyaAciriyathalai,
         ),
         (CirAcaiClass::Vilam, SyllableType::Nirai) => (
-            LinkageType::Aasiriyathalai,
-            LinkageSpecialType::NiraiondriyaAasiriyathalai,
+            LinkageType::AciriyaTalai,
+            LinkageSpecialType::NiraiondriyaAciriyathalai,
         ),
         (CirAcaiClass::Maa, SyllableType::Nirai) => (
-            LinkageType::Venthalai,
+            LinkageType::VenTalai,
             LinkageSpecialType::IyarcirVenthalai,
         ),
         (CirAcaiClass::Vilam, SyllableType::Ner) => (
-            LinkageType::Venthalai,
+            LinkageType::VenTalai,
             LinkageSpecialType::IyarcirVenthalai,
         ),
         (CirAcaiClass::Kaai, SyllableType::Ner) => (
-            LinkageType::Venthalai,
+            LinkageType::VenTalai,
             LinkageSpecialType::VencirVenthalai,
         ),
         (CirAcaiClass::Kaai, SyllableType::Nirai) => (
-            LinkageType::Kalithalai,
+            LinkageType::KaliTalai,
             LinkageSpecialType::Kalithalai,
         ),
         (CirAcaiClass::Kani, SyllableType::Nirai) => (
-            LinkageType::Vanjithalai,
+            LinkageType::VanjiTalai,
             LinkageSpecialType::OndriyaVanchithalai,
         ),
         (CirAcaiClass::Kani, SyllableType::Ner) => (
-            LinkageType::Vanjithalai,
+            LinkageType::VanjiTalai,
             LinkageSpecialType::OndrathaVanchithalai,
         ),
     }
@@ -204,7 +227,7 @@ pub fn analyze_linkage(foot_positions: &[FootPosition], feet: &[Foot]) -> Vec<Li
 pub type Talai = Linkage;
 pub type TalaiType = LinkageType;
 
-/// Traditional name for [`analyze_linkage`] (talai = bond between consecutive feet).
+/// Traditional name for [`analyze_linkage`] (**Talai** = bond between consecutive feet; Tamil தளை — romanize *Talai*, not *Thalai*, to avoid confusion with தலை “head”).
 #[allow(dead_code)] // Kept for API symmetry with `Talai` / migration call sites.
 pub fn analyze_talai(foot_positions: &[FootPosition], feet: &[Foot]) -> Vec<Talai> {
     analyze_linkage(foot_positions, feet)
@@ -245,28 +268,28 @@ mod tests {
     }
 
     #[test]
-    fn table_maa_ner_is_nerondriya_aasiriyathalai() {
+    fn table_maa_ner_is_nerondriya_aciriyathalai() {
         let feet = vec![foot_with(&[SyllableType::Ner]), foot_with(&[SyllableType::Ner])];
         let pos = positions(2);
         let l = analyze_linkage(&pos, &feet);
         assert_eq!(l.len(), 1);
-        assert_eq!(l[0].linkage_type, LinkageType::Aasiriyathalai);
+        assert_eq!(l[0].linkage_type, LinkageType::AciriyaTalai);
         assert_eq!(
             l[0].linkage_special_type,
-            LinkageSpecialType::NerondriyaAasiriyathalai
+            LinkageSpecialType::NerondriyaAciriyathalai
         );
         assert!(l[0].is_valid);
     }
 
     #[test]
-    fn table_vilam_nirai_is_niraiondriya_aasiriyathalai() {
+    fn table_vilam_nirai_is_niraiondriya_aciriyathalai() {
         let feet = vec![foot_with(&[SyllableType::Nirai]), foot_with(&[SyllableType::Nirai])];
         let pos = positions(2);
         let l = analyze_linkage(&pos, &feet);
-        assert_eq!(l[0].linkage_type, LinkageType::Aasiriyathalai);
+        assert_eq!(l[0].linkage_type, LinkageType::AciriyaTalai);
         assert_eq!(
             l[0].linkage_special_type,
-            LinkageSpecialType::NiraiondriyaAasiriyathalai
+            LinkageSpecialType::NiraiondriyaAciriyathalai
         );
     }
 
@@ -275,7 +298,7 @@ mod tests {
         let feet = vec![foot_with(&[SyllableType::Ner]), foot_with(&[SyllableType::Nirai])];
         let pos = positions(2);
         let l = analyze_linkage(&pos, &feet);
-        assert_eq!(l[0].linkage_type, LinkageType::Venthalai);
+        assert_eq!(l[0].linkage_type, LinkageType::VenTalai);
         assert_eq!(
             l[0].linkage_special_type,
             LinkageSpecialType::IyarcirVenthalai
@@ -287,7 +310,7 @@ mod tests {
         let feet = vec![foot_with(&[SyllableType::Nirai]), foot_with(&[SyllableType::Ner])];
         let pos = positions(2);
         let l = analyze_linkage(&pos, &feet);
-        assert_eq!(l[0].linkage_type, LinkageType::Venthalai);
+        assert_eq!(l[0].linkage_type, LinkageType::VenTalai);
         assert_eq!(
             l[0].linkage_special_type,
             LinkageSpecialType::IyarcirVenthalai
@@ -306,7 +329,7 @@ mod tests {
         ];
         let pos = positions(2);
         let l = analyze_linkage(&pos, &feet);
-        assert_eq!(l[0].linkage_type, LinkageType::Venthalai);
+        assert_eq!(l[0].linkage_type, LinkageType::VenTalai);
         assert_eq!(
             l[0].linkage_special_type,
             LinkageSpecialType::VencirVenthalai
@@ -325,7 +348,7 @@ mod tests {
         ];
         let pos = positions(2);
         let l = analyze_linkage(&pos, &feet);
-        assert_eq!(l[0].linkage_type, LinkageType::Kalithalai);
+        assert_eq!(l[0].linkage_type, LinkageType::KaliTalai);
         assert_eq!(l[0].linkage_special_type, LinkageSpecialType::Kalithalai);
     }
 
@@ -341,7 +364,7 @@ mod tests {
         ];
         let pos = positions(2);
         let l = analyze_linkage(&pos, &feet);
-        assert_eq!(l[0].linkage_type, LinkageType::Vanjithalai);
+        assert_eq!(l[0].linkage_type, LinkageType::VanjiTalai);
         assert_eq!(
             l[0].linkage_special_type,
             LinkageSpecialType::OndriyaVanchithalai
@@ -360,10 +383,70 @@ mod tests {
         ];
         let pos = positions(2);
         let l = analyze_linkage(&pos, &feet);
-        assert_eq!(l[0].linkage_type, LinkageType::Vanjithalai);
+        assert_eq!(l[0].linkage_type, LinkageType::VanjiTalai);
         assert_eq!(
             l[0].linkage_special_type,
             LinkageSpecialType::OndrathaVanchithalai
+        );
+    }
+
+    #[test]
+    fn serde_accepts_legacy_aciriya_spellings_in_json() {
+        assert_eq!(
+            serde_json::from_str::<LinkageType>("\"Aasiriyathalai\"").unwrap(),
+            LinkageType::AciriyaTalai
+        );
+        assert_eq!(
+            serde_json::from_str::<LinkageType>("\"AsiriyaTalai\"").unwrap(),
+            LinkageType::AciriyaTalai
+        );
+        assert_eq!(
+            serde_json::from_str::<LinkageType>("\"VenTalai\"").unwrap(),
+            LinkageType::VenTalai
+        );
+        assert_eq!(
+            serde_json::from_str::<LinkageType>("\"Kalithalai\"").unwrap(),
+            LinkageType::KaliTalai
+        );
+        assert_eq!(
+            serde_json::from_str::<LinkageType>("\"Vanjithalai\"").unwrap(),
+            LinkageType::VanjiTalai
+        );
+        assert_eq!(
+            serde_json::from_str::<LinkageType>("\"Aciriyathalai\"").unwrap(),
+            LinkageType::AciriyaTalai
+        );
+        assert_eq!(
+            serde_json::from_str::<LinkageSpecialType>("\"NerondriyaAciriyathalai\"").unwrap(),
+            LinkageSpecialType::NerondriyaAciriyathalai
+        );
+        assert_eq!(
+            serde_json::from_str::<LinkageSpecialType>("\"NerondriyaAasiriyathalai\"").unwrap(),
+            LinkageSpecialType::NerondriyaAciriyathalai
+        );
+        assert_eq!(
+            serde_json::from_str::<LinkageSpecialType>("\"IyarcirVenthalai\"").unwrap(),
+            LinkageSpecialType::IyarcirVenthalai
+        );
+        assert_eq!(
+            serde_json::from_str::<LinkageSpecialType>("\"IyarcirVenTalai\"").unwrap(),
+            LinkageSpecialType::IyarcirVenthalai
+        );
+        assert_eq!(
+            serde_json::from_str::<crate::metre::MetreType>("\"Asiriyappaa\"").unwrap(),
+            crate::metre::MetreType::Aciriyappaa
+        );
+    }
+
+    #[test]
+    fn linkage_type_serializes_consistent_talai_suffix() {
+        assert_eq!(
+            serde_json::to_string(&LinkageType::VenTalai).unwrap(),
+            "\"VenTalai\""
+        );
+        assert_eq!(
+            serde_json::to_string(&LinkageType::AciriyaTalai).unwrap(),
+            "\"AciriyaTalai\""
         );
     }
 
@@ -375,7 +458,7 @@ mod tests {
         ];
         let pos = positions(2);
         let l = analyze_linkage(&pos, &feet);
-        assert_eq!(l[0].linkage_type, LinkageType::Venthalai);
+        assert_eq!(l[0].linkage_type, LinkageType::VenTalai);
         assert_eq!(
             l[0].linkage_special_type,
             LinkageSpecialType::IyarcirVenthalai

@@ -23,8 +23,10 @@ Two strict layers, no leaks:
 
 Naming policy:
 - Core module names use machine-first English: `linkage.rs` (not `talai.rs`), `foot.rs`, `metre.rs`, `syllable.rs`, etc.
+- In **English prose** (docs, UI copy), refer to தளை as **Talai** with a capital **T** at sentence start; do **not** write **Thalai** (that suggests தலை “head”). Code may keep field names like `talai` / `Talai` for JSON compatibility.
 - Core type names use machine-first English: `LinkageClass`, `FootPattern`, `MetreHypothesis`. Tamil **prose** labels for feet and தளை are **not** in core logic; they are emitted only inside **`ParseResult.presentation`** (see `presentation.rs`).
-- Exception for canonical grammar identifiers: when a concept is a standard classical-grammar term without a clean neutral replacement, keep the canonical term in English-Latin form (e.g., `VenTalai`, `AsiriyaTalai`) inside enum variants while preserving English container names (`LinkageType`).
+- **Romanization:** Prefer Tamil-style keys in JSON and Rust enum variants for ஆசிரிய- words — **`aciriya`** (one *c*, *i* after *c*), not Sanskrit-style **`asiriya`**. Example WASM strings: `AciriyaTalai`, `VenTalai`, `Aciriyappaa`, `NerondriyaAciriyaTalai`. Legacy spellings (`Venthalai`, `Aciriyathalai`, `Kalithalai`, `Vanjithalai`, `Aasiriy…`, `Asiriya…`, `Asiriyappaa`) remain accepted on deserialize via `serde` aliases.
+- **Talai suffix:** Prefer the English morpheme **Talai** (capital *T*) in Latin identifiers for தளை so searches align (`VenTalai`, `KaliTalai`, `IyarcirVenTalai`). The empty-foot / unknown-cir fallback still uses **`VenTalai`** with **`Unknown`** special (same coarse key as valid ven-class bonds).
 
 ---
 
@@ -53,7 +55,7 @@ The registry lives in code as a single typed enum (later phase), with a docstrin
 Conceptual shape (final Rust types refined later):
 
 - `ProsodicUnit` — atomic segmental unit (vowel, consonant, uyirmei, etc.).
-- `Asai` — prosodic metreme. Variants: `Ner`, `Nirai`, plus future `NerPu`, `NiraiPu` if needed.
+- `Acai` — prosodic metreme (Tamil அசை). Variants: `Ner`, `Nirai`, plus future `NerPu`, `NiraiPu` if needed.
 - `FootCandidate` — a span of asai forming a possible foot. Carries `signature`, `width`, `feature_vector`, `score`, `rule_ids`.
 - `LinkageCandidate` — adjacency between two `FootCandidate`s. Carries `class_id`, `is_valid`, `violations`, `score`, `rule_ids`.
 - `MetreHypothesis` — a global interpretation. Carries `metre_id`, `aggregate_score`, `violations`, `rule_ids`, `selected_foot_path`, `selected_linkage_path`.
@@ -74,7 +76,7 @@ Conceptual shape (final Rust types refined later):
 
 Algorithm (lattice-based segmentation):
 
-1. Accept `[Asai]` for a line.
+1. Accept `[Acai]` for a line.
 2. Enumerate candidate foot spans of allowed widths (start with 2..=4 asai).
 3. For each span:
    - Compute `pattern_signature` (asai-type sequence).
@@ -89,7 +91,7 @@ Out-of-scope here: classical foot naming. That mapping lives in `presentation.rs
 
 Module: [`src/linkage.rs`](src/linkage.rs) (successor to the historical `talai` naming).
 
-**Current shipped code** (`linkage.rs`) classifies each consecutive pair using the **previous foot’s last acai** (Maa/Vilam for 1–2 acai per foot, Kaai/Kani for 3+) and the **next foot’s first acai** (Ner/Nirai). JSON exposes **`linkage_type`** (coarse: `Venthalai`, `Aasiriyathalai`, `Kalithalai`, `Vanjithalai`) and **`linkage_special_type`** (e.g. `VencirVenthalai`, `NerondriyaAasiriyathalai`). The lattice wording below remains the **target** once `FootCandidate` paths exist.
+**Current shipped code** (`linkage.rs`) classifies each consecutive pair using the **previous foot’s last acai** (Maa/Vilam for 1–2 acai per foot, Kaai/Kani for 3+) and the **next foot’s first acai** (Ner/Nirai). JSON exposes **`linkage_type`** (coarse: `VenTalai`, `AciriyaTalai`, `KaliTalai`, `VanjiTalai`) and **`linkage_special_type`** (e.g. `VencirVenTalai`, `NerondriyaAciriyaTalai`). The lattice wording below remains the **target** once `FootCandidate` paths exist.
 
 Algorithm:
 
@@ -182,6 +184,6 @@ Required guarantees before flipping defaults:
 ## 10. Change Log
 
 - v0.1 — initial draft on `thumpi` branch.
-- v0.2 — naming rule clarified: English container types with canonical grammar-specific variant names (e.g., `VenTalai`).
+- v0.2 — naming rule clarified: English container types with canonical grammar-specific variant names (e.g., `VenTalai`, `AciriyaTalai`).
 - v0.3 — §4.2: shipped one-foot-per-word path uses the eight-way transition table ([issue #36](https://github.com/p10ns11y/thepulimaangani/issues/36)); lattice `FootCandidate` linkage remains future work.
 - v0.4 — §4.2: split **coarse** `LinkageType` vs **nuanced** `LinkageSpecialType`; cir **Vilam** (விளம்) replaces Vilai in code/docs.

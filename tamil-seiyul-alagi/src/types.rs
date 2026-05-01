@@ -5,12 +5,32 @@ use crate::poem_tree::{LinguisticWordNode, PoemNode};
 use crate::presentation::DisplayResult;
 use crate::{Foot, Linkage, MetreType, Syllable, Talai};
 
+/// Serializable 51-float prosody vector (same layout as [`crate::parse_features`](crate::parse_features)).
+/// Present on [`ParseResult`] for WASM/JSON consumers and training export.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+pub struct ParseFeatureSnapshot {
+    pub schema_version: u32,
+    pub dense: Vec<f32>,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ParseOptions {
     pub only_prosody: bool,
     pub no_detect: bool,
     pub alt_scansion: bool,
     pub uyir_u: bool,
+}
+
+impl ParseOptions {
+    /// Matches [`crate::poem_variations_training::build_training_rows`] (`uyir_u` elision hints on).
+    pub fn poem_variations_training() -> Self {
+        Self {
+            only_prosody: false,
+            no_detect: false,
+            alt_scansion: false,
+            uyir_u: true,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -31,6 +51,9 @@ pub struct ParseResult {
     pub metre_type: Option<MetreType>,
     #[serde(default)]
     pub top_k_metre_hypotheses: Vec<MetreHypothesis>,
+    /// Dense parse features (`schema_version` + 51 floats); omitted from JSON when metre detection is off.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub parse_features: Option<ParseFeatureSnapshot>,
     #[serde(default)]
     pub confidence: i32,
     #[serde(default)]

@@ -13,7 +13,8 @@ Tamil prosody (யாப்பு) analysis in the browser: **React / TanStack S
 ## Features (summary)
 
 - Syllables as நேர் / நிரை; feet as **Ner/Nirai pattern strings** per linguistic word
-- Metre **hypotheses** (heuristic); linkage structure with line/word positions (classical talai naming is roadmap)
+- Metre **hypotheses** (heuristic); linkage (**Talai**) with line/word positions; WASM JSON uses Latin keys with a **`*Talai`** suffix on new linkage enums (legacy `*thalai` spellings still accepted by the parser on deserialize)
+- Optional **`parse_features`** (51 floats) and **`top_k_metre_hypotheses`** on `ParseResult` JSON when metre detection runs; training export / Monte Carlo notes: [`tamil-seiyul-alagi/TRAINING_PROCESS.md`](../tamil-seiyul-alagi/TRAINING_PROCESS.md)
 - JSON export; live parsing in the UI
 
 ---

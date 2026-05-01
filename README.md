@@ -83,6 +83,9 @@ Vercel must use **`.vercel/output`** (Nitro Build Output API v3), not `dist` alo
 | [`AGENTS.md`](AGENTS.md) | Commands, quality gates, Vercel note, branch sync |
 | [`trinity-and-native-agents/AGENT_ROLES.md`](trinity-and-native-agents/AGENT_ROLES.md) | Which Git branch / role to use for a task |
 | [`tamil-seiyul-alagi/MACHINE_FIRST_SPEC.md`](tamil-seiyul-alagi/MACHINE_FIRST_SPEC.md) | Machine-first parser spec (draft) |
+| [`tamil-seiyul-alagi/AGENTS.md`](tamil-seiyul-alagi/AGENTS.md) | Parser crate: WASM build, linkage/metre JSON naming (`*Talai`), quality gates |
+| [`tamil-seiyul-alagi/PARSE_FEATURES.md`](tamil-seiyul-alagi/PARSE_FEATURES.md) | 51-dim `parse_features` layout for WASM / training |
+| [`tamil-seiyul-alagi/TRAINING_PROCESS.md`](tamil-seiyul-alagi/TRAINING_PROCESS.md) | CSV / JSONL export, Monte Carlo evaluation, PCA example |
 
 ---
 

@@ -38,7 +38,7 @@ Interpretation:
 
 | Module / Function | Complexity Rank | Untested Rank | Score | Risk | Why |
 |---|---:|---:|---:|---|---|
-| `src/metre.rs::detect_metre` | 3 | 3 | 9 | critical | Heuristic still misclassifies known Asiriyappaa fixture; metre hypotheses naive. _(Unchanged in recent work.)_ |
+| `src/metre.rs::detect_metre_hypotheses` | 3 | 3 | 9 | critical | Heuristic metre head + linkage priors still rough on some curated fixtures; hypotheses are a staging area for richer rules / small models. _(Revisit when classical constraints land.)_ |
 | `src/lib.rs::parse_poem` | 3 | 2 | 6 | high | Main integration seam. **Mitigated:** direct unit tests for `types::flat_lines_from_poem` (linguistic_words vs words vs empty) reduce untested surface between tree and legacy `lines`. |
 | `src/syllable_builder.rs::build_inner` | 2 | 2 | 4 | moderate | Ordered regex scan per **linguistic word**; unit tests cover common paths. |
 | `src/word_scope.rs::segment_syllables_from_normalized` | 2 | 2 | 4 | moderate | Line/word tokenization drives all downstream syllables; integration-heavy. |
