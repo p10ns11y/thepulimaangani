@@ -5,6 +5,7 @@ mod letter;
 mod line_scope;
 mod linkage;
 mod metre;
+pub mod poem_variations;
 mod poem_tree;
 mod presentation;
 mod prosodic_sequence;
@@ -27,6 +28,10 @@ pub use linkage::{
     CirAcaiClass, FootPosition, Linkage, LinkageSpecialType, LinkageType, Talai, TalaiType,
 };
 pub use metre::MetreType;
+pub use poem_variations::{
+    poem_variation_example, poem_variations_blocks, poem_variations_for_metre, tamil_label_for_sample,
+    variation_row, PoemVariationRow, PoemVariationsBlock, ACIRIYAPPA, KALIPPAA, VANJIPPAA, VENPAA,
+};
 pub use presentation::{
     foot_pattern_display, DisplayFoot, DisplayResult, DisplaySyllable, DisplayTalai,
 };
