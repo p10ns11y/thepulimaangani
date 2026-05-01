@@ -3,6 +3,15 @@
 # sync-branches.sh — Simple One-Color-Per-Phase Version
 # Clean, consistent, and beautiful
 #
+# ---------------------------------------------------------------------------
+# DANGER / HANDOVER (especially for autonomous agents)
+#
+# This script can DESTROY local git state at scale: every local branch except
+# the default branch and `legacy` is `git reset --hard` to origin/<default>.
+# It may also `git push --force-with-lease` every such branch when PUSH=1.
+# See dx/sync-branches-architecture-simple.md § "Autonomous agents & safety".
+# ---------------------------------------------------------------------------
+#
 
 set -euo pipefail
 
@@ -31,6 +40,40 @@ MAIN_COMMIT=""
 IS_DIRTY=0
 STASH_NAME=""
 
+# Create a local branch tracking origin/<name> when it exists on the remote but not locally.
+# Without this, sync only touches branches that already exist locally (see AGENTS.md / sync docs).
+ensure_remote_tracking_locals() {
+    echo -e "${C_PHASE1}→ Ensuring local tracking branches for origin/*...${C_RESET}"
+    local created=0
+    while IFS= read -r short; do
+        [ -z "$short" ] && continue
+        [ "$short" = "HEAD" ] && continue
+        if git show-ref --verify --quiet "refs/heads/$short" 2>/dev/null; then
+            continue
+        fi
+        if ! git show-ref --verify --quiet "refs/remotes/origin/$short" 2>/dev/null; then
+            continue
+        fi
+        if [ "$DRY_RUN" = "1" ]; then
+            echo "   [DRY] Would create local branch $short → origin/$short"
+            created=1
+            continue
+        fi
+        if git branch --track "$short" "origin/$short" --quiet 2>/dev/null; then
+            echo "   + $short → origin/$short"
+            created=1
+        fi
+    done < <(
+        git for-each-ref refs/remotes/origin --format='%(refname:short)' |
+            sed 's|^origin/||' |
+            grep -vxF HEAD |
+            sort -u
+    )
+    if [ "$created" = "0" ]; then
+        echo "   (no new local branches needed)"
+    fi
+}
+
 # ==================== PHASE 1: COLLECT (Blue) ====================
 collect_state() {
     echo -e "\n${C_PHASE1}╔════════════════════════════════════════════════════════════╗${C_RESET}"
@@ -42,6 +85,8 @@ collect_state() {
 
     echo -e "${C_PHASE1}→ Fetching latest from remote...${C_RESET}"
     git fetch --all --prune --quiet
+
+    ensure_remote_tracking_locals
 
     if ! MAIN_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@refs/remotes/origin/@@'); then
         for candidate in main master malar; do
