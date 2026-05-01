@@ -86,4 +86,4 @@ Temporary expedition branches (e.g. `kurinji-expedition`) are optional; see [ain
 
 ## After merge
 
-From repo root: `./dx/syncagents.sh` (local sync only for agents). **Remote push** after sync: human maintainer runs [`../dx/syncagents-push-human.sh`](../dx/syncagents-push-human.sh) — policy [../dx/HUMAN_SYNC.md](../dx/HUMAN_SYNC.md). Details: [../dx/sync-branches-architecture-simple.md](../dx/sync-branches-architecture-simple.md).
+From repo root: **`./dx/syncagents-agent.sh`** (agents). **`./dx/syncagents-push-human.sh`** (humans — full sync + gated push). [../dx/HUMAN_SYNC.md](../dx/HUMAN_SYNC.md). [../dx/sync-branches-architecture-simple.md](../dx/sync-branches-architecture-simple.md).

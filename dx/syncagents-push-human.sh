@@ -1,70 +1,77 @@
 #!/usr/bin/env bash
 #
-# syncagents-push-human.sh — Human-gated branch push after sync
+# syncagents-push-human.sh — Human-only full sync (remote tracking + gated push)
 #
-# Policy (post–PR review): `./dx/syncagents.sh` alone resets local branches to
-# origin/malar but does NOT push. Force-pushing many branch tips is a
-# destructive, trust-sensitive operation — run it only from a human-controlled
-# environment, not from unattended agent sessions.
+# Runs dx/syncagents.sh once with DEFAULT behaviour (creates missing local branches
+# tracking origin/* so remote-only persona branches get reset to malar too).
+# PUSH is set per run: 0 for sync-only, 1 to also force-with-lease local branch tips.
 #
-# Usage (interactive):
-#   ./dx/syncagents-push-human.sh
-#
-# Usage (creator / CI you own — non-interactive):
-#   HUMAN_SYNC_ACK=YES_I_AM_HUMAN ./dx/syncagents-push-human.sh
-#
-# Coding agents: do NOT set HUMAN_SYNC_ACK or pipe "yes" into this script.
-# If you need remotes updated, ask the human maintainer to run this file.
+# Coding agents: use ./dx/syncagents-agent.sh instead. Do NOT set HUMAN_SYNC_ACK.
 #
 
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$ROOT"
-
 SYNC_SCRIPT="${ROOT}/dx/syncagents.sh"
 
-if [[ ! -x "$SYNC_SCRIPT" ]] && [[ ! -f "$SYNC_SCRIPT" ]]; then
+if [[ ! -f "$SYNC_SCRIPT" ]]; then
 	echo "error: missing $SYNC_SCRIPT" >&2
 	exit 1
 fi
 
+# Full power: ensure every origin/* can get a local tracking branch before sync.
+unset SYNCAGENTS_SKIP_REMOTE_TRACKING
+
+run_sync() {
+	local push_val="$1"
+	( export PUSH="$push_val"; exec bash "$SYNC_SCRIPT" )
+}
+
 if [[ "${HUMAN_SYNC_ACK:-}" == "YES_I_AM_HUMAN" ]]; then
-	export PUSH=1
-	exec bash "$SYNC_SCRIPT"
+	if [[ "${HUMAN_SYNC_PUSH:-1}" == "1" ]]; then
+		run_sync 1
+	else
+		run_sync 0
+	fi
+	exit 0
 fi
 
 if [[ ! -t 0 ]]; then
 	cat >&2 <<'EOF'
 Refusing non-interactive run without HUMAN_SYNC_ACK.
 
-This script force-pushes local branch tips after syncing to malar. That must
-not run from a headless agent unless a human explicitly exports:
+Full sync (remote tracking locals) + optional force-push must not run headless
+unless a human exports:
 
   HUMAN_SYNC_ACK=YES_I_AM_HUMAN
 
-Do not add that export to agent rules, CI secrets, or shared env files.
+Optional: HUMAN_SYNC_PUSH=0 to only run sync (tracking + reset) without push.
+
+Do not add HUMAN_SYNC_ACK to agent rules or shared env files.
 EOF
 	exit 2
 fi
 
 cat <<'EOF'
 ╔════════════════════════════════════════════════════════════════════╗
-║  HUMAN SYNC — branch push after ./dx/syncagents.sh                 ║
+║  HUMAN FULL SYNC — dx/syncagents.sh (remote tracking ON)          ║
 ╠════════════════════════════════════════════════════════════════════╣
-║  Next step runs:  PUSH=1 ./dx/syncagents.sh                          ║
-║  That force-pushes every local branch (except malar/legacy) to     ║
-║  origin with --force-with-lease. Open PR heads are skipped.        ║
+║  One run: fetch, ensure origin/* locals, reset locals to malar,   ║
+║  then optionally force-with-lease (if you choose PUSH below).      ║
 ║                                                                    ║
-║  Coding agents: run ./dx/syncagents.sh only (no PUSH).            ║
+║  Only run when no agents rely on local-only state you care about. ║
 ╚════════════════════════════════════════════════════════════════════╝
 EOF
 
-read -r -p "Type YES (all caps) to continue with push: " reply
+read -r -p "Type YES (all caps) to continue: " reply
 if [[ "$reply" != "YES" ]]; then
-	echo "Aborted (no push)."
+	echo "Aborted."
 	exit 1
 fi
 
-export PUSH=1
-exec bash "$SYNC_SCRIPT"
+read -r -p "Type PUSH (all caps) to include force-push, or NO for sync only: " reply2
+if [[ "$reply2" == "PUSH" ]]; then
+	run_sync 1
+else
+	run_sync 0
+fi

@@ -9,4 +9,4 @@ alwaysApply: true
 2. **If the environment forces `cursor/…`:** use `cursor/<role>-<short-slug>-ce01` (or the suffix your runner requires), e.g. `cursor/theni-parser-fix-ce01` — **do not** use a generic `cursor/feature-ce01` with no role.
 3. **Default integration branch:** `malar` — do not use role branches as the merge target unless the workflow explicitly says so.
 
-Post-merge sync: `./dx/syncagents.sh` (no `PUSH=1` for unattended agents). Human push: `./dx/syncagents-push-human.sh` — [dx/HUMAN_SYNC.md](../dx/HUMAN_SYNC.md).
+Post-merge sync: **`./dx/syncagents-agent.sh`** (agents; optional `PUSH=1` only with a safe env). Human full sync: **`./dx/syncagents-push-human.sh`** — [dx/HUMAN_SYNC.md](../dx/HUMAN_SYNC.md).
