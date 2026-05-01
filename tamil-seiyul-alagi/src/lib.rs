@@ -39,8 +39,10 @@ pub use presentation::{
     foot_pattern_display, DisplayFoot, DisplayResult, DisplaySyllable, DisplayTalai,
 };
 pub use poem_variations_training::{
-    build_training_rows, poem_variation_label_rows, write_poem_variations_training_csv,
-    PoemVariationLabelRow, PoemVariationTrainingRow,
+    aggregate_metre_monte_carlo, build_training_rows, poem_variation_label_rows,
+    poem_variation_special_type_rows, shuffle_labels_for_iteration,
+    write_poem_variations_training_csv, MetreMonteCarloAggregate, PoemVariationLabelRow,
+    PoemVariationTrainingRow,
 };
 pub use poem_tree::{
     LetterLayer, LetterNode, LinguisticWordNode, LineLayer, PoemLayer, PoemLineNode, PoemNode,

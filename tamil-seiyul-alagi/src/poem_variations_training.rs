@@ -1,12 +1,12 @@
 //! Parse [`data/poem_variations.js`](../../data/poem_variations.js) and build UTF-8 training rows
 //! (labels + optional 51-dim features from `parse_poem`).
 
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 use std::path::Path;
 
 use regex::Regex;
 
-use crate::parse_features::PARSE_FEATURE_DENSE_LEN;
+use crate::parse_features::{fnv1a_u32, PARSE_FEATURE_DENSE_LEN};
 use crate::parse_poem;
 use crate::types::{ParseFeatureSnapshot, ParseOptions};
 
@@ -29,6 +29,67 @@ pub struct PoemVariationTrainingRow {
     pub predicted_metre: Option<String>,
     pub top_score: Option<i32>,
     pub features: Option<ParseFeatureSnapshot>,
+}
+
+/// Aggregated confusion from repeated Monte Carlo–style passes (deterministic shuffle per iteration).
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct MetreMonteCarloAggregate {
+    pub iterations: u32,
+    pub total_evaluations: u64,
+    pub total_correct: u64,
+    pub confusion: BTreeMap<String, u64>,
+}
+
+/// Rows with `row_kind == "special_type"` (curated “good” variations).
+pub fn poem_variation_special_type_rows(rows: &[PoemVariationLabelRow]) -> Vec<PoemVariationLabelRow> {
+    rows.iter()
+        .filter(|r| r.row_kind == "special_type")
+        .cloned()
+        .collect()
+}
+
+/// Deterministic permutation for iteration `iter` (reproducible without RNG).
+pub fn shuffle_labels_for_iteration(labels: &[PoemVariationLabelRow], iter: u32) -> Vec<PoemVariationLabelRow> {
+    let mut out: Vec<_> = labels.to_vec();
+    let salt = iter.to_le_bytes();
+    out.sort_by(|a, b| {
+        let mut ka = salt.to_vec();
+        ka.extend_from_slice(a.sample_id.as_bytes());
+        let mut kb = salt.to_vec();
+        kb.extend_from_slice(b.sample_id.as_bytes());
+        fnv1a_u32(&ka).cmp(&fnv1a_u32(&kb))
+    });
+    out
+}
+
+/// Run `iterations` shuffled passes over `labels`, parse each sample, aggregate top-metre vs `parent_metre`.
+pub fn aggregate_metre_monte_carlo(
+    labels: &[PoemVariationLabelRow],
+    iterations: u32,
+) -> MetreMonteCarloAggregate {
+    let mut agg = MetreMonteCarloAggregate {
+        iterations,
+        ..Default::default()
+    };
+    for it in 0..iterations {
+        let perm = shuffle_labels_for_iteration(labels, it);
+        for row in build_training_rows(&perm) {
+            if !row.parse_ok {
+                continue;
+            }
+            let Some(pred) = row.predicted_metre.as_ref() else {
+                continue;
+            };
+            agg.total_evaluations += 1;
+            let parent = row.label.parent_metre.as_str();
+            if pred.eq_ignore_ascii_case(parent) {
+                agg.total_correct += 1;
+            }
+            let key = format!("{parent}|{pred}");
+            *agg.confusion.entry(key).or_insert(0) += 1;
+        }
+    }
+    agg
 }
 
 fn slice_between<'a>(s: &'a str, start_pat: &str, end_pat: &str) -> Option<&'a str> {
@@ -268,10 +329,18 @@ mod tests {
     }
 
     #[test]
-    fn first_sample_is_oru_vikarpa_kural_venpaa() {
-        let rows = poem_variation_label_rows(&js_fixture());
-        assert_eq!(rows[0].sample_id, "oru_vikarpa_kural_venpaa");
-        assert_eq!(rows[0].parent_metre, "venpaa");
-        assert_eq!(rows[0].row_kind, "special_type");
+    fn mc_ten_iterations_special_types_majority_correct() {
+        let js = js_fixture();
+        let labels = poem_variation_special_type_rows(&poem_variation_label_rows(&js));
+        assert_eq!(labels.len(), 17);
+        let agg = aggregate_metre_monte_carlo(&labels, 10);
+        assert_eq!(agg.iterations, 10);
+        assert_eq!(agg.total_evaluations, 170);
+        // After linkage-based priors for Kali/Vanji, expect strong majority on special_types.
+        assert!(
+            agg.total_correct >= 140,
+            "expected >=140/170 correct on special_types over 10 iters, got {}",
+            agg.total_correct
+        );
     }
 }

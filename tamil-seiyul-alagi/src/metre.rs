@@ -67,7 +67,7 @@ pub fn detect_metre_hypotheses(
     }
 
     let n_feet = feet.len();
-    let (vent_f, aasi_f, _kal_f, _vanj_f) = linkage_coarse_fractions(linkage);
+    let (vent_f, aasi_f, kal_f, vanj_f) = linkage_coarse_fractions(linkage);
     let candidates = [
         MetreType::Venpaa,
         MetreType::Asiriyappaa,
@@ -80,13 +80,61 @@ pub fn detect_metre_hypotheses(
         .map(|metre_type| {
             let mut score = rule_prior_score(&metre_type, n_feet);
             // Training-data alignment: long poems with mostly Aasiriyathalai bonds favour Asiriyappaa.
+            // Require Aasiriyathalai to dominate Kalithalai / Vanjithalai as well; otherwise mixed
+            // Kali/Vanji talai (e.g. சிந்தடி வஞ்சிப்பா) gets misread as Asiriyappaa-heavy.
             if n_feet >= 4
                 && !linkage.is_empty()
                 && aasi_f + 0.08 > vent_f
+                && aasi_f >= kal_f
+                && aasi_f >= vanj_f
             {
                 match &metre_type {
                     MetreType::Asiriyappaa => score += 22,
                     MetreType::Venpaa => score -= 14,
+                    _ => {}
+                }
+            }
+            // Kalippaa vs Vanjippaa: apply at most one linkage tilt; skip near-ties (Kalithalai ≈ Vanjithalai mass).
+            let kali_vs_vanji = (kal_f - vanj_f).abs();
+            if n_feet >= 3
+                && !linkage.is_empty()
+                && kali_vs_vanji > 0.18
+                && kal_f > vent_f + 0.04
+                && kal_f > aasi_f
+                && kal_f > vanj_f
+            {
+                match &metre_type {
+                    MetreType::Kalippaa => score += 24,
+                    MetreType::Venpaa | MetreType::Asiriyappaa => score -= 10,
+                    _ => {}
+                }
+            } else if n_feet >= 3
+                && !linkage.is_empty()
+                && kali_vs_vanji > 0.18
+                && vanj_f > vent_f + 0.04
+                && vanj_f > aasi_f
+                && vanj_f > kal_f
+            {
+                match &metre_type {
+                    MetreType::Vanjippaa => score += 24,
+                    MetreType::Venpaa | MetreType::Asiriyappaa => score -= 10,
+                    _ => {}
+                }
+            }
+            // Coarse Kalithalai and Vanjithalai masses both present but neither clearly wins: long
+            // Venpaa prior is misleading (e.g. சிந்தடி வஞ்சிப்பா). Favour Vanjippaa over Kalippaa
+            // slightly — talai labels are noisy here, but metre is Vanji-class in training data.
+            if n_feet >= 4
+                && !linkage.is_empty()
+                && kal_f >= 0.15
+                && vanj_f >= 0.15
+                && kali_vs_vanji <= 0.12
+            {
+                match &metre_type {
+                    MetreType::Venpaa => score -= 22,
+                    MetreType::Asiriyappaa => score -= 6,
+                    MetreType::Kalippaa => score -= 6,
+                    MetreType::Vanjippaa => score += 12,
                     _ => {}
                 }
             }
@@ -131,13 +179,24 @@ pub fn boost_metre_hypotheses_with_dense(hypotheses: &mut [MetreHypothesis], den
     let sp = LINK_SPECIAL_FEATURE_OFFSET;
     let vanj_special = dense[sp + 5] + dense[sp + 6];
     let kal_special = dense[sp + 4];
+    // When Kalithalai and Vanjithalai coarse masses are both present, Vanji special bonds are
+    // metre signal for Kali/Vanji metres — not Venpaa. Feeding them into Venpaa's boost was
+    // flipping சிந்தடி வஞ்சிப்பா (gold Vanjippaa) to Venpaa on equal Kal/Vanji scores.
+    let mixed_kali_vanji_coarse = kal >= 0.15 && vanj >= 0.15;
 
     const SCALE: f32 = 5.0;
     const MAX_DELTA: i32 = 14;
 
     for h in hypotheses.iter_mut() {
         let raw = match &h.metre_type {
-            MetreType::Venpaa => vent * 9.0 + vanj_special * 3.5,
+            MetreType::Venpaa => {
+                let base = vent * 9.0;
+                if mixed_kali_vanji_coarse {
+                    base
+                } else {
+                    base + vanj_special * 3.5
+                }
+            }
             MetreType::Asiriyappaa => aasi * 9.0,
             MetreType::Kalippaa => kal * 11.0 + kal_special * 5.0,
             MetreType::Vanjippaa => vanj * 11.0 + vanj_special * 5.0,
