@@ -2,6 +2,10 @@
 
 Tamil prosody (யாப்பு) in the browser: React (TanStack Start) + Rust WebAssembly parser. See [ARCHITECTURE.md](./ARCHITECTURE.md) for stack and data flow.
 
+[![நா அசைத்தால் — Tamil prosody layers (அசை · சீர் · தளை · அடி · தொடை)](./docs/images/readme-banner.jpg)](https://grok.com/imagine/post/5240e773-46a4-468b-89fc-8d057ecaf07c)
+
+*Banner: [Grok Imagine](https://grok.com/imagine/post/5240e773-46a4-468b-89fc-8d057ecaf07c) — image mirrored at [`docs/images/readme-banner.jpg`](./docs/images/readme-banner.jpg) for stable README rendering.*
+
 ---
 
 ## Quick start (about 5 minutes)
