@@ -43,21 +43,9 @@ jobs:
         with:
           tool: wasm-pack@0.13.1
 
-      - name: pnpm install
-        run: pnpm install --frozen-lockfile
-
-      - name: Build (WASM + Vite)
-        run: pnpm run build
-
-      - name: Typecheck
-        run: pnpm run typecheck
-
-      # Vitest integration tests read `public/wasm/thepulimaangani_parser_bg.wasm` (see `src/test/vitest.setup.ts`).
-      - name: Verify WASM artifact for Vitest
-        run: test -f public/wasm/thepulimaangani_parser_bg.wasm
-
-      - name: Test
-        run: pnpm run test
+      # Same sequence as `pnpm run gate` → `scripts/ci-frontend.sh` (install → build → typecheck → wasm check → test).
+      - name: Gate
+        run: pnpm run gate
 
   # CRAP-style report: cyclomatic complexity (Lizard) × line coverage (Rust llvm-cov + Vitest v8).
   # Report-only — does not fail the workflow (see `dx/crap_report.py --max-mean` to enforce later).
