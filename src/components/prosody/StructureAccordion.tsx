@@ -82,7 +82,7 @@ export function StructureAccordion({ data }: StructureAccordionProps) {
 
       <AccordionRow
         id="metre"
-        title="மாத்திரை · Metre insights"
+        title="பா அலகிடு · Metre insights"
         subtitle={`${data.metre_type} · vikalpa ${String(data.vikalpa_count)}`}
         expanded={open === 'metre'}
         onToggle={() => toggle('metre')}

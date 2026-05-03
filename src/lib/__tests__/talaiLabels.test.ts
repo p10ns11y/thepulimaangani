@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { buildLinkageOverviewRows } from '#/lib/linkageOverview'
 import { bondDisplayLabel, linkageRowsByFromFoot } from '#/lib/talaiLabels'
-import type { ParsedFoot, ParsedPoem } from '#/types/parsedPoem'
+import type { ParsedFoot } from '#/types/parsedPoem'
 
 function foot(g: number): ParsedFoot {
   return {
