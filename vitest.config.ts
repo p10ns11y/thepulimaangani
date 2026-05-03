@@ -6,6 +6,7 @@ export default mergeConfig(
   viteConfig,
   defineConfig({
     test: {
+      setupFiles: ['./src/test/vitest.setup.ts'],
       coverage: {
         provider: 'v8',
         reporter: ['text', 'json-summary'],
@@ -14,10 +15,20 @@ export default mergeConfig(
         exclude: [
           'src/**/*.test.{ts,tsx}',
           'src/**/__tests__/**',
+          'src/test/**',
           'src/routeTree.gen.ts',
           'src/wasm/**',
         ],
+        thresholds: {
+          lines: 80,
+          functions: 75,
+          branches: 75,
+          statements: 80,
+        },
       },
+      include: ['src/**/*.test.{ts,tsx}', 'src/**/__tests__/**/*.test.{ts,tsx}'],
+      testTimeout: 30_000,
+      hookTimeout: 30_000,
     },
   }),
 )
