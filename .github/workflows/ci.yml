@@ -13,7 +13,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -52,6 +52,10 @@ jobs:
       - name: Typecheck
         run: pnpm run typecheck
 
+      # Vitest integration tests read `public/wasm/thepulimaangani_parser_bg.wasm` (see `src/test/vitest.setup.ts`).
+      - name: Verify WASM artifact for Vitest
+        run: test -f public/wasm/thepulimaangani_parser_bg.wasm
+
       - name: Test
         run: pnpm run test
 
@@ -59,7 +63,7 @@ jobs:
   # Report-only — does not fail the workflow (see `dx/crap_report.py --max-mean` to enforce later).
   crap_analysis:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -73,10 +77,11 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
 
-      - name: Rust (llvm-cov)
+      - name: Rust (llvm-cov + wasm32 for build:wasm)
         uses: dtolnay/rust-toolchain@stable
         with:
           components: llvm-tools-preview
+          targets: wasm32-unknown-unknown
 
       - name: Rust dependency cache
         uses: Swatinem/rust-cache@v2
@@ -101,6 +106,9 @@ jobs:
 
       - name: Build WASM (for optional Vitest integration + consistent paths)
         run: pnpm run build:wasm
+
+      - name: Verify WASM artifact for Vitest
+        run: test -f public/wasm/thepulimaangani_parser_bg.wasm
 
       - name: Rust tests + coverage summary (JSON)
         run: |
