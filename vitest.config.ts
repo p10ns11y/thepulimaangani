@@ -5,6 +5,10 @@ import viteConfig from './vite.config'
 export default mergeConfig(
   viteConfig,
   defineConfig({
+    resolve: {
+      // Avoid Invalid hook call / null dispatcher when Vitest bundles peer deps twice (React 19 + RTL).
+      dedupe: ['react', 'react-dom'],
+    },
     test: {
       setupFiles: ['./src/test/vitest.setup.ts'],
       coverage: {
@@ -27,7 +31,6 @@ export default mergeConfig(
         },
       },
       include: ['src/**/*.test.{ts,tsx}', 'src/**/__tests__/**/*.test.{ts,tsx}'],
-      /** Integration tests mock debounce timers; WASM remains real and async. */
       testTimeout: 20_000,
       hookTimeout: 15_000,
     },

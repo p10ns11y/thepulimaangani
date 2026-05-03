@@ -82,6 +82,10 @@ export function ParseResultPanel({
     )
   }
 
+  if (!syncedJson) {
+    return null
+  }
+
   return (
     <Card className={cn(PARSE_RESULT_PANEL_CLASS, className)}>
       <CardContent className="flex flex-col gap-0 p-0">

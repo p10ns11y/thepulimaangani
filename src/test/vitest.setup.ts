@@ -1,6 +1,5 @@
 /**
- * Vitest global setup: serve real WASM bytes for `/wasm/thepulimaangani_parser_bg.wasm`
- * so jsdom tests run the actual parser (same artifact as `pnpm run build:wasm` → public/wasm).
+ * Vitest global setup: serve real WASM bytes for `/wasm/thepulimaangani_parser_bg.wasm`.
  */
 import fs from 'node:fs'
 import path from 'node:path'
@@ -51,8 +50,9 @@ vi.stubGlobal(
             : String(input)
 
     if (matchesWasmRequest(url)) {
+      const body = new Uint8Array(wasmBuf)
       return Promise.resolve(
-        new Response(wasmBuf, {
+        new Response(body, {
           status: 200,
           headers: { 'Content-Type': 'application/wasm' },
         }),
