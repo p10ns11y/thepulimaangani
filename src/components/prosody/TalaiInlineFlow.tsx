@@ -69,9 +69,7 @@ export function TalaiInlineFlow({ data }: TalaiInlineFlowProps) {
                 <Fragment key={`talai-foot-${li}-${fj}-${g ?? fj}`}>
                   <div
                     className={`flex min-w-0 max-w-[min(100%,13rem)] flex-col items-center gap-0.5 px-0.5 ${
-                      alt
-                        ? 'text-sky-950 dark:text-sky-50'
-                        : 'text-rose-950 dark:text-rose-50'
+                      alt ? 'text-syllable-ner' : 'text-syllable-nirai'
                     }`}
                   >
                     <span className="font-tamil text-[1.06rem] leading-[1.38] tracking-tight">{wordText}</span>

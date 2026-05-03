@@ -50,7 +50,7 @@ export function StructureAccordion({ data }: StructureAccordionProps) {
 
       <AccordionRow
         id="bonds"
-        title="தளை · Talai flow"
+        title="தளை · Bond flow"
         subtitle={
           bondRows.length === 0 ? 'No bonds' : `${bondRows.length} bonds · inline with words`
         }
