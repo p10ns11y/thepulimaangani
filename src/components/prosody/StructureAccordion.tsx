@@ -45,33 +45,6 @@ export function StructureAccordion({ data }: StructureAccordionProps) {
               <p className="text-foreground mt-0.5 text-sm font-medium">{String(data.vikalpa_count)}</p>
             </div>
           </div>
-          {data.lines.map((line, i) => (
-            <div
-              key={`ins-line-${i}-${line.line_class}`}
-              className="border-rim/15 bg-surface-2/25 rounded-lg px-2 py-2 sm:px-3"
-            >
-              <div className="text-foreground mb-2 font-tamil text-sm font-medium">
-                அடி {i + 1}{' '}
-                <span className="text-muted-foreground font-normal">({getLineClassDisplay(line.line_class)})</span>
-              </div>
-              <div className="flex flex-col gap-2">
-                {line.feet.map((foot, j) => {
-                  const footLabel =
-                    foot.display_foot_type != null && foot.display_foot_type.length > 0
-                      ? foot.display_foot_type
-                      : getFootTypeDisplay(foot.foot_type)
-                  return (
-                    <div key={`ins-foot-${i}-${j}`}>
-                      <div className="text-foreground font-tamil text-base leading-snug">
-                        {foot.syllables.map((s) => s.text).join('')}
-                      </div>
-                      <div className="text-muted-foreground mt-0.5 font-tamil text-xs">{footLabel}</div>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          ))}
         </div>
       </AccordionRow>
 
