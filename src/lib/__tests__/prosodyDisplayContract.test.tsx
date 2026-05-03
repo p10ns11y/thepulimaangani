@@ -23,7 +23,7 @@ import { PROSODY_DISPLAY_CONTRACT_VERSION } from '#/lib/prosodyDisplayContract'
 
 describe('prosody display contract version', () => {
   it('is bumped when contract rules in prosodyDisplayContract.ts change materially', () => {
-    expect(PROSODY_DISPLAY_CONTRACT_VERSION).toBe(1)
+    expect(PROSODY_DISPLAY_CONTRACT_VERSION).toBe(2)
   })
 })
 
@@ -179,7 +179,7 @@ describe('documented non-fidelity: coarse linkage summary', () => {
 })
 
 describe('FootTypeCaption', () => {
-  it('renders Tamil and Latin verbatim from structured foot', () => {
+  it('renders Tamil and Latin verbatim from structured foot (default)', () => {
     const { container } = render(
       <FootTypeCaption
         foot={{
@@ -193,5 +193,21 @@ describe('FootTypeCaption', () => {
     )
     expect(container.textContent).toContain('தேமா')
     expect(container.textContent).toContain('thema')
+  })
+
+  it('tamilOnly variant hides Latin for Bond flow density', () => {
+    const { container } = render(
+      <FootTypeCaption
+        variant="tamilOnly"
+        foot={{
+          foot_type: 'Ner-Ner',
+          syllables: [parsedSyllable('a', 'Ner')],
+          display_foot_type_tamil: 'தேமா',
+          display_foot_type_latin: 'thema',
+        }}
+      />,
+    )
+    expect(container.textContent).toContain('தேமா')
+    expect(container.textContent).not.toContain('thema')
   })
 })

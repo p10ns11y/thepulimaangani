@@ -10,14 +10,27 @@ type FootTypeCaptionProps = {
   label?: string
   className?: string
   align?: 'center' | 'start'
+  /**
+   * Bond flow: Tamil classical name only (compact). Structure tab etc.: both Tamil + Latin when known.
+   */
+  variant?: 'default' | 'tamilOnly'
 }
 
-export function FootTypeCaption({ foot, label, className, align = 'center' }: FootTypeCaptionProps) {
+export function FootTypeCaption({
+  foot,
+  label,
+  className,
+  align = 'center',
+  variant = 'default',
+}: FootTypeCaptionProps) {
   const parts =
     foot != null
       ? resolveFootDisplayParts(foot)
       : splitFootDisplayLabel(label ?? '')
-  const { tamil, latin } = parts
+  let { tamil, latin } = parts
+  if (variant === 'tamilOnly') {
+    latin = undefined
+  }
   const alignClass = align === 'start' ? 'text-left' : 'text-center'
 
   if (!latin) {

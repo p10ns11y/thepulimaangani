@@ -69,7 +69,7 @@ export function TalaiInlineFlow({ data }: TalaiInlineFlowProps) {
                     }`}
                   >
                     <span className="font-tamil text-[1.06rem] leading-[1.38] tracking-tight">{wordText}</span>
-                    <FootTypeCaption foot={foot} align="center" />
+                    <FootTypeCaption foot={foot} align="center" variant="tamilOnly" />
                   </div>
 
                   {showBetweenSameLine ? (
