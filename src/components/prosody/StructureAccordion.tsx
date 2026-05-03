@@ -28,59 +28,6 @@ export function StructureAccordion({ data }: StructureAccordionProps) {
   return (
     <div className="flex flex-col gap-1.5">
       <AccordionRow
-        id="syllables"
-        title="சொற்கள் மற்றும் அசைகள்"
-        subtitle={`${data.syllables.length} syllables · feet as typed`}
-        expanded={open === 'syllables'}
-        onToggle={() => toggle('syllables')}
-      >
-        <div className="flex flex-col gap-3 pt-1">
-          {data.lines.map((line, i) => (
-            <div key={`acc-line-syl-${i}`}>
-              <div className="text-muted-foreground mb-1.5 text-[0.65rem] font-medium uppercase tracking-wide">
-                Line {i + 1} · {getLineClassDisplay(line.line_class)}
-              </div>
-              <div className="flex flex-col gap-2">
-                {line.feet.map((foot, j) => {
-                  const footLabel =
-                    foot.display_foot_type != null && foot.display_foot_type.length > 0
-                      ? foot.display_foot_type
-                      : getFootTypeDisplay(foot.foot_type)
-                  return (
-                    <div key={`foot-syl-${i}-${j}`} className="flex flex-col gap-1.5">
-                      <span className="text-muted-foreground text-[0.7rem]">{footLabel}</span>
-                      <div className="flex flex-wrap gap-1.5">
-                        {foot.syllables.map((syl, k) => (
-                          <SyllableChip
-                            key={`syl-${i}-${j}-${k}-${syl.text}`}
-                            syllableType={syl.syllable_type}
-                            text={syl.text}
-                            variant="compact"
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          ))}
-        </div>
-      </AccordionRow>
-
-      <AccordionRow
-        id="bonds"
-        title="தளை · Talai flow"
-        subtitle={
-          bondRows.length === 0 ? 'No bonds' : `${bondRows.length} bonds · inline with words`
-        }
-        expanded={open === 'bonds'}
-        onToggle={() => toggle('bonds')}
-      >
-        <TalaiInlineFlow data={data} />
-      </AccordionRow>
-
-      <AccordionRow
         id="metre"
         title="பா அலகிடு · Metre insights"
         subtitle={`${data.metre_type} · vikalpa ${String(data.vikalpa_count)}`}
@@ -119,6 +66,59 @@ export function StructureAccordion({ data }: StructureAccordionProps) {
                         {foot.syllables.map((s) => s.text).join('')}
                       </div>
                       <div className="text-muted-foreground mt-0.5 font-tamil text-xs">{footLabel}</div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      </AccordionRow>
+
+      <AccordionRow
+        id="bonds"
+        title="தளை · Talai flow"
+        subtitle={
+          bondRows.length === 0 ? 'No bonds' : `${bondRows.length} bonds · inline with words`
+        }
+        expanded={open === 'bonds'}
+        onToggle={() => toggle('bonds')}
+      >
+        <TalaiInlineFlow data={data} />
+      </AccordionRow>
+
+      <AccordionRow
+        id="syllables"
+        title="சொற்கள் மற்றும் அசைகள்"
+        subtitle={`${data.syllables.length} syllables · feet as typed`}
+        expanded={open === 'syllables'}
+        onToggle={() => toggle('syllables')}
+      >
+        <div className="flex flex-col gap-3 pt-1">
+          {data.lines.map((line, i) => (
+            <div key={`acc-line-syl-${i}`}>
+              <div className="text-muted-foreground mb-1.5 text-[0.65rem] font-medium uppercase tracking-wide">
+                Line {i + 1} · {getLineClassDisplay(line.line_class)}
+              </div>
+              <div className="flex flex-col gap-2">
+                {line.feet.map((foot, j) => {
+                  const footLabel =
+                    foot.display_foot_type != null && foot.display_foot_type.length > 0
+                      ? foot.display_foot_type
+                      : getFootTypeDisplay(foot.foot_type)
+                  return (
+                    <div key={`foot-syl-${i}-${j}`} className="flex flex-col gap-1.5">
+                      <span className="text-muted-foreground text-[0.7rem]">{footLabel}</span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {foot.syllables.map((syl, k) => (
+                          <SyllableChip
+                            key={`syl-${i}-${j}-${k}-${syl.text}`}
+                            syllableType={syl.syllable_type}
+                            text={syl.text}
+                            variant="compact"
+                          />
+                        ))}
+                      </div>
                     </div>
                   )
                 })}
