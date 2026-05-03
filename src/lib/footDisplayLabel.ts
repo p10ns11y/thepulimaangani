@@ -2,6 +2,8 @@ import { getFootTypeDisplay } from '#/components/prosody/displayLabels'
 import { splitFootDisplayLabel } from '#/lib/footDisplayLabelParts'
 import type { ParsedFoot } from '#/types/parsedPoem'
 
+/** Fidelity rules: `src/lib/prosodyDisplayContract.ts` */
+
 /** Prefer WASM structured Tamil/Latin; else combined display string; else machine-pattern labels. */
 export function resolveFootDisplayLabel(foot: ParsedFoot): string {
   const tt = foot.display_foot_type_tamil?.trim()

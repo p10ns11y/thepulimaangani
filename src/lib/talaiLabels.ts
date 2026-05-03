@@ -4,7 +4,7 @@ import {
 } from '#/components/prosody/displayLabels'
 import type { LinkageOverviewRow } from '#/lib/linkageOverview'
 
-/** Tamil / coarse label for one bond row (presentation talai first). */
+/** Fidelity: prefer `presentation.talai` Tamil string; else `displayLabels` maps. See `prosodyDisplayContract.ts`. */
 export function bondDisplayLabel(row: LinkageOverviewRow): string {
   const pres = row.presentationTalaiType?.trim()
   if (pres && pres.length > 0) return pres
