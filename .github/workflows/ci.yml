@@ -13,7 +13,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -43,23 +43,15 @@ jobs:
         with:
           tool: wasm-pack@0.13.1
 
-      - name: pnpm install
-        run: pnpm install --frozen-lockfile
-
-      - name: Build (WASM + Vite)
-        run: pnpm run build
-
-      - name: Typecheck
-        run: pnpm run typecheck
-
-      - name: Test
-        run: pnpm run test
+      # Same sequence as `pnpm run gate` → `scripts/ci-frontend.sh` (install → build → typecheck → wasm check → test).
+      - name: Gate
+        run: pnpm run gate
 
   # CRAP-style report: cyclomatic complexity (Lizard) × line coverage (Rust llvm-cov + Vitest v8).
   # Report-only — does not fail the workflow (see `dx/crap_report.py --max-mean` to enforce later).
   crap_analysis:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 40
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -73,10 +65,11 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
 
-      - name: Rust (llvm-cov)
+      - name: Rust (llvm-cov + wasm32 for build:wasm)
         uses: dtolnay/rust-toolchain@stable
         with:
           components: llvm-tools-preview
+          targets: wasm32-unknown-unknown
 
       - name: Rust dependency cache
         uses: Swatinem/rust-cache@v2
@@ -101,6 +94,9 @@ jobs:
 
       - name: Build WASM (for optional Vitest integration + consistent paths)
         run: pnpm run build:wasm
+
+      - name: Verify WASM artifact for Vitest
+        run: test -f public/wasm/thepulimaangani_parser_bg.wasm
 
       - name: Rust tests + coverage summary (JSON)
         run: |

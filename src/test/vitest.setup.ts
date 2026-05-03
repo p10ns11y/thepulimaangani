@@ -1,0 +1,82 @@
+/**
+ * Vitest global setup: WASM fetch shim + jsdom gaps (ResizeObserver, etc.).
+ */
+import fs from 'node:fs'
+import path from 'node:path'
+
+import { afterEach, vi } from 'vitest'
+import { cleanup } from '@testing-library/react'
+
+/**
+ * Vitest + `poolOptions.forks.singleFork` can leave the jsdom body across tests; explicit cleanup
+ * avoids duplicate roles (e.g. multiple "Refresh" buttons) and stale trees.
+ */
+afterEach(() => {
+  cleanup()
+})
+
+/** jsdom does not implement ResizeObserver (used by useFitPoemFontSize / PoemFitPreview). */
+if (typeof globalThis.ResizeObserver === 'undefined') {
+  globalThis.ResizeObserver = class {
+    constructor(_cb: ResizeObserverCallback) {}
+    observe(): void {}
+    unobserve(): void {}
+    disconnect(): void {}
+  }
+}
+const repoRoot = path.resolve(__dirname, '../..')
+
+const wasmCandidates = [
+  path.join(repoRoot, 'public/wasm/thepulimaangani_parser_bg.wasm'),
+  path.join(repoRoot, 'src/wasm/thepulimaangani_parser_bg.wasm'),
+]
+
+function readWasmBytes(): Buffer {
+  for (const p of wasmCandidates) {
+    if (fs.existsSync(p)) {
+      return fs.readFileSync(p)
+    }
+  }
+  throw new Error(
+    'WASM binary not found. Run `pnpm run build:wasm` so `public/wasm/` (or `src/wasm/`) contains thepulimaangani_parser_bg.wasm.',
+  )
+}
+
+const wasmBuf = readWasmBytes()
+
+function matchesWasmRequest(url: string): boolean {
+  return (
+    url.endsWith('/wasm/thepulimaangani_parser_bg.wasm') ||
+    url.includes('thepulimaangani_parser_bg.wasm')
+  )
+}
+
+const origFetch = globalThis.fetch?.bind(globalThis)
+
+vi.stubGlobal(
+  'fetch',
+  vi.fn((input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+    const url =
+      typeof input === 'string'
+        ? input
+        : input instanceof URL
+          ? input.href
+          : typeof Request !== 'undefined' && input instanceof Request
+            ? input.url
+            : String(input)
+
+    if (matchesWasmRequest(url)) {
+      const body = new Uint8Array(wasmBuf)
+      return Promise.resolve(
+        new Response(body, {
+          status: 200,
+          headers: { 'Content-Type': 'application/wasm' },
+        }),
+      )
+    }
+    if (origFetch) {
+      return origFetch(input as RequestInfo, init)
+    }
+    throw new Error(`Unhandled fetch in tests: ${url}`)
+  }),
+)

@@ -62,6 +62,8 @@ describe('LivePreviewController', () => {
     await vi.runAllTimersAsync()
     expect(wasmSpy.mock.calls.length).toBe(1)
     expect(states.some((s) => s.status === 'ready' && s.parsed != null)).toBe(true)
+    const ready = states.filter((s) => s.status === 'ready' && s.parsed != null)
+    expect(ready[ready.length - 1]?.rawJson).toMatch(/^\{/)
 
     wasmSpy.mockClear()
 

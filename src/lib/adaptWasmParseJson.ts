@@ -1,5 +1,6 @@
 import type {
   ParsedFoot,
+  ParsedFootPosition,
   ParsedLine,
   ParsedLinkageEdge,
   ParsedMetreHypothesis,
@@ -79,6 +80,22 @@ function assignGlobalFootIndices(lines: ParsedLine[]): ParsedLine[] {
   }))
 }
 
+function parseFootPosition(raw: unknown): ParsedFootPosition | undefined {
+  if (!raw || typeof raw !== 'object') return undefined
+  const p = raw as Record<string, unknown>
+  const foot_index = p.foot_index
+  const line_index = p.line_index
+  const word_index_in_line = p.word_index_in_line
+  if (
+    typeof foot_index !== 'number' ||
+    typeof line_index !== 'number' ||
+    typeof word_index_in_line !== 'number'
+  ) {
+    return undefined
+  }
+  return { foot_index, line_index, word_index_in_line }
+}
+
 function normalizeLinkage(raw: unknown): ParsedLinkageEdge[] {
   if (!Array.isArray(raw)) return []
   const out: ParsedLinkageEdge[] = []
@@ -98,12 +115,16 @@ function normalizeLinkage(raw: unknown): ParsedLinkageEdge[] {
     }
     const linkage_special_type =
       typeof e.linkage_special_type === 'string' ? e.linkage_special_type : 'Unknown'
+    const from = parseFootPosition(e.from)
+    const to = parseFootPosition(e.to)
     out.push({
       from_foot,
       to_foot,
       linkage_type,
       linkage_special_type,
       is_valid: typeof e.is_valid === 'boolean' ? e.is_valid : true,
+      ...(from ? { from } : {}),
+      ...(to ? { to } : {}),
     })
   }
   return out
@@ -121,7 +142,18 @@ function normalizePresentation(raw: unknown): ParsedPresentation | undefined {
     if (!item || typeof item !== 'object') continue
     const f = item as Record<string, unknown>
     if (typeof f.text !== 'string' || typeof f.foot_type !== 'string') continue
-    feet.push({ text: f.text, foot_type: f.foot_type })
+    const tamilRaw = f.foot_type_tamil
+    const latinRaw = f.foot_type_latin
+    const tamil =
+      typeof tamilRaw === 'string' && tamilRaw.trim().length > 0 ? tamilRaw.trim() : undefined
+    const latin =
+      typeof latinRaw === 'string' && latinRaw.trim().length > 0 ? latinRaw.trim() : undefined
+    feet.push({
+      text: f.text,
+      foot_type: f.foot_type,
+      ...(tamil ? { foot_type_tamil: tamil } : {}),
+      ...(latin ? { foot_type_latin: latin } : {}),
+    })
   }
 
   const talai: ParsedPresentation['talai'] = []
@@ -175,7 +207,13 @@ function mergePresentationFeet(
       if (typeof g !== 'number' || g < 0 || g >= presentation.feet.length) return foot
       const label = presentation.feet[g]?.foot_type
       if (typeof label !== 'string' || label.length === 0) return foot
-      return { ...foot, display_foot_type: label }
+      const row = presentation.feet[g]
+      const next: ParsedFoot = { ...foot, display_foot_type: label }
+      const tt = row?.foot_type_tamil?.trim()
+      const tl = row?.foot_type_latin?.trim()
+      if (tt && tt.length > 0) next.display_foot_type_tamil = tt
+      if (tl && tl.length > 0) next.display_foot_type_latin = tl
+      return next
     }),
   }))
 }
@@ -226,12 +264,11 @@ function linesFromPoemNode(poem: unknown): ParsedLine[] | null {
         if (!Array.isArray(syllNodes)) continue
         const syllables = syllablesFromSyllableNodes(syllNodes)
         if (syllables.length === 0) continue
-        const fig =
-          typeof LW.word_index_in_line === 'number' ? LW.word_index_in_line : undefined
+        // Do not set `foot_index_global` from `word_index_in_line` — that is per-line (0..n-1), not
+        // poem-wide. Reusing it collides across lines and breaks `mergePresentationFeet` / talai maps.
         lineFeet.push({
           foot_type: machineFootPatternFromSyllables(syllables),
           syllables,
-          ...(fig !== undefined ? { foot_index_global: fig } : {}),
         })
       }
     } else if (Array.isArray(words) && words.length > 0) {

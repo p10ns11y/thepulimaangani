@@ -45,11 +45,12 @@ export function PoemAndParseCard({
         <div className="flex justify-end">
           <Button
             type="button"
+            variant="outline"
             onClick={onParse}
             disabled={loading}
-            className="h-9 w-fit min-w-[7.5rem] rounded-md px-4 text-sm font-medium"
+            className="h-9 w-fit min-w-[7.5rem] shrink-0 rounded-md px-4 text-sm font-medium"
           >
-            {loading ? 'Parsing…' : 'Parse poem'}
+            {loading ? 'Parsing…' : 'Refresh'}
           </Button>
         </div>
       </CardContent>

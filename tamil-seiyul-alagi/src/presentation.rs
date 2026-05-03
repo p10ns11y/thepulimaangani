@@ -25,10 +25,17 @@ pub struct DisplaySyllable {
     pub hint: Option<String>,
 }
 
+/// One foot in `DisplayResult` (WASM `presentation.feet[]`).
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DisplayFoot {
     pub text: String,
-    /// Tamil mnemonic · simple Latin when known; otherwise raw `Ner-Nirai` pattern from logic.
+    /// Classical Tamil foot name when the pattern is in the table (e.g. தேமா).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub foot_type_tamil: Option<String>,
+    /// Simple Latin gloss when known (e.g. thema).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub foot_type_latin: Option<String>,
+    /// Stable combined label for older clients: `தமிழ் · latin`, or pattern / em dash when unknown.
     pub foot_type: String,
 }
 
@@ -81,57 +88,94 @@ fn to_display_syllable(s: &Syllable) -> DisplaySyllable {
 }
 
 fn to_display_foot(f: &Foot) -> DisplayFoot {
+    let (tamil, latin) = foot_pattern_labels(&f.foot_type);
+    let foot_type = foot_pattern_display_combined(&f.foot_type, tamil.as_ref(), latin.as_ref());
     DisplayFoot {
         text: f
             .syllables
             .iter()
             .map(|s| s.text.as_str())
             .collect::<String>(),
-        foot_type: foot_pattern_display(&f.foot_type),
+        foot_type_tamil: tamil,
+        foot_type_latin: latin,
+        foot_type,
     }
 }
 
-/// Tamil + Latin gloss for classical feet.
+/// Tamil + Latin parts for classical feet (logic-layer pattern → classical names).
 ///
 /// Tamil compounds follow [feet-calculations.md](https://github.com/p10ns11y/thepulimaangani/blob/malar/.grok/migration-plan/feet-calculations.md)
 /// (ஈரசை / மூவசை / நான்கசை). Romanization uses doubled vowels for length (e.g. **themaangkaay**) where helpful.
-pub fn foot_pattern_display(pattern: &str) -> String {
+pub fn foot_pattern_labels(pattern: &str) -> (Option<String>, Option<String>) {
     match pattern {
-        "Ner" => "மா (ma)".to_string(),
-        "Nirai" => "விளம் (vilam)".to_string(),
-        "Ner-Ner" => "தேமா (thema)".to_string(),
-        "Ner-Nirai" => "கூவிளம் (koovilam)".to_string(),
-        "Nirai-Ner" => "புளிமா (pulima)".to_string(),
-        "Nirai-Nirai" => "கருவிளம் (karuvilam)".to_string(),
+        "Ner" => (Some("மா".into()), Some("ma".into())),
+        "Nirai" => (Some("விளம்".into()), Some("vilam".into())),
+        "Ner-Ner" => (Some("தேமா".into()), Some("thema".into())),
+        "Ner-Nirai" => (Some("கூவிளம்".into()), Some("koovilam".into())),
+        "Nirai-Ner" => (Some("புளிமா".into()), Some("pulima".into())),
+        "Nirai-Nirai" => (Some("கருவிளம்".into()), Some("karuvilam".into())),
         // 3-acai (மூவசை)
-        "Ner-Ner-Ner" => "தேமாங்காய் (themaangkaay)".to_string(),
-        "Ner-Ner-Nirai" => "தேமாங்கனி (themaangkani)".to_string(),
-        "Ner-Nirai-Ner" => "கூவிளங்காய் (koovilangkaay)".to_string(),
-        "Ner-Nirai-Nirai" => "கூவிளங்கனி (koovilangkani)".to_string(),
-        "Nirai-Ner-Ner" => "புளிமாங்காய் (pulimaangkaay)".to_string(),
-        "Nirai-Ner-Nirai" => "புளிமாங்கனி (pulimaangkani)".to_string(),
-        "Nirai-Nirai-Ner" => "கருவிளங்காய் (karuvilangkaay)".to_string(),
-        "Nirai-Nirai-Nirai" => "கருவிளங்கனி (karuvilangkani)".to_string(),
+        "Ner-Ner-Ner" => (Some("தேமாங்காய்".into()), Some("themaangkaay".into())),
+        "Ner-Ner-Nirai" => (Some("தேமாங்கனி".into()), Some("themaangkani".into())),
+        "Ner-Nirai-Ner" => (Some("கூவிளங்காய்".into()), Some("koovilangkaay".into())),
+        "Ner-Nirai-Nirai" => (Some("கூவிளங்கனி".into()), Some("koovilangkani".into())),
+        "Nirai-Ner-Ner" => (Some("புளிமாங்காய்".into()), Some("pulimaangkaay".into())),
+        "Nirai-Ner-Nirai" => (Some("புளிமாங்கனி".into()), Some("pulimaangkani".into())),
+        "Nirai-Nirai-Ner" => (Some("கருவிளங்காய்".into()), Some("karuvilangkaay".into())),
+        "Nirai-Nirai-Nirai" => (Some("கருவிளங்கனி".into()), Some("karuvilangkani".into())),
         // 4-acai (நான்கசை) — தண் / நறும் spellings per feet-calculations.md
-        "Ner-Ner-Ner-Ner" => "தேமாந்தண்பூ (themaanthanpuu)".to_string(),
-        "Ner-Ner-Ner-Nirai" => "தேமாந்தண்ணிழல் (themaanthannizhal)".to_string(),
-        "Ner-Ner-Nirai-Ner" => "தேமாநறும்பூ (themanarumpuu)".to_string(),
-        "Ner-Ner-Nirai-Nirai" => "தேமாநறுநிழல் (themanarunizhal)".to_string(),
-        "Ner-Nirai-Ner-Ner" => "கூவிளந்தண்பூ (koovilanthanpuu)".to_string(),
-        "Ner-Nirai-Ner-Nirai" => "கூவிளந்தண்ணிழல் (koovilanthannizhal)".to_string(),
-        "Ner-Nirai-Nirai-Ner" => "கூவிளநறும்பூ (koovilanarumpuu)".to_string(),
-        "Ner-Nirai-Nirai-Nirai" => "கூவிளநறுநிழல் (koovilanarunizhal)".to_string(),
-        "Nirai-Ner-Ner-Ner" => "புளிமாந்தண்பூ (pulimaanthanpuu)".to_string(),
-        "Nirai-Ner-Ner-Nirai" => "புளிமாந்தண்ணிழல் (pulimaanthannizhal)".to_string(),
-        "Nirai-Ner-Nirai-Ner" => "புளிமாநறும்பூ (pulimanarumpuu)".to_string(),
-        "Nirai-Ner-Nirai-Nirai" => "புளிமாநறுநிழல் (pulimanarunizhal)".to_string(),
-        "Nirai-Nirai-Ner-Ner" => "கருவிளந்தண்பூ (karuvilanthanpuu)".to_string(),
-        "Nirai-Nirai-Ner-Nirai" => "கருவிளந்தண்ணிழல் (karuvilanthannizhal)".to_string(),
-        "Nirai-Nirai-Nirai-Ner" => "கருவிளநறும்பூ (karuvilanarumpuu)".to_string(),
-        "Nirai-Nirai-Nirai-Nirai" => "கருவிளநறுநிழல் (karuvilanarunizhal)".to_string(),
-        "" => "—".to_string(),
-        other => other.to_string(),
+        "Ner-Ner-Ner-Ner" => (Some("தேமாந்தண்பூ".into()), Some("themaanthanpuu".into())),
+        "Ner-Ner-Ner-Nirai" => (
+            Some("தேமாந்தண்ணிழல்".into()),
+            Some("themaanthannizhal".into()),
+        ),
+        "Ner-Ner-Nirai-Ner" => (Some("தேமாநறும்பூ".into()), Some("themanarumpuu".into())),
+        "Ner-Ner-Nirai-Nirai" => (Some("தேமாநறுநிழல்".into()), Some("themanarunizhal".into())),
+        "Ner-Nirai-Ner-Ner" => (Some("கூவிளந்தண்பூ".into()), Some("koovilanthanpuu".into())),
+        "Ner-Nirai-Ner-Nirai" => (
+            Some("கூவிளந்தண்ணிழல்".into()),
+            Some("koovilanthannizhal".into()),
+        ),
+        "Ner-Nirai-Nirai-Ner" => (Some("கூவிளநறும்பூ".into()), Some("koovilanarumpuu".into())),
+        "Ner-Nirai-Nirai-Nirai" => (Some("கூவிளநறுநிழல்".into()), Some("koovilanarunizhal".into())),
+        "Nirai-Ner-Ner-Ner" => (Some("புளிமாந்தண்பூ".into()), Some("pulimaanthanpuu".into())),
+        "Nirai-Ner-Ner-Nirai" => (
+            Some("புளிமாந்தண்ணிழல்".into()),
+            Some("pulimaanthannizhal".into()),
+        ),
+        "Nirai-Ner-Nirai-Ner" => (Some("புளிமாநறும்பூ".into()), Some("pulimanarumpuu".into())),
+        "Nirai-Ner-Nirai-Nirai" => (Some("புளிமாநறுநிழல்".into()), Some("pulimanarunizhal".into())),
+        "Nirai-Nirai-Ner-Ner" => (Some("கருவிளந்தண்பூ".into()), Some("karuvilanthanpuu".into())),
+        "Nirai-Nirai-Ner-Nirai" => (
+            Some("கருவிளந்தண்ணிழல்".into()),
+            Some("karuvilanthannizhal".into()),
+        ),
+        "Nirai-Nirai-Nirai-Ner" => (Some("கருவிளநறும்பூ".into()), Some("karuvilanarumpuu".into())),
+        "Nirai-Nirai-Nirai-Nirai" => (Some("கருவிளநறுநிழல்".into()), Some("karuvilanarunizhal".into())),
+        "" => (None, None),
+        _ => (None, None),
     }
+}
+
+/// Combined string for JSON clients that only read `foot_type` (Tamil · Latin, no parentheses).
+fn foot_pattern_display_combined(
+    pattern: &str,
+    tamil: Option<&String>,
+    latin: Option<&String>,
+) -> String {
+    match (tamil, latin) {
+        (Some(t), Some(l)) => format!("{t} · {l}"),
+        (Some(t), None) => t.clone(),
+        (None, Some(l)) => l.clone(),
+        (None, None) if pattern.is_empty() => "—".to_string(),
+        (None, None) => pattern.to_string(),
+    }
+}
+
+/// Backward-compatible single line: same as `DisplayFoot.foot_type` for known patterns.
+pub fn foot_pattern_display(pattern: &str) -> String {
+    let (tamil, latin) = foot_pattern_labels(pattern);
+    foot_pattern_display_combined(pattern, tamil.as_ref(), latin.as_ref())
 }
 
 fn to_display_talai(t: &Linkage) -> DisplayTalai {
@@ -181,6 +225,13 @@ mod tests {
 
     #[test]
     fn foot_pattern_display_maps_known_pattern() {
-        assert_eq!(foot_pattern_display("Ner-Ner"), "தேமா (thema)".to_string());
+        assert_eq!(foot_pattern_display("Ner-Ner"), "தேமா · thema".to_string());
+    }
+
+    #[test]
+    fn foot_pattern_labels_split_tamil_latin() {
+        let (t, l) = foot_pattern_labels("Ner-Ner");
+        assert_eq!(t.as_deref(), Some("தேமா"));
+        assert_eq!(l.as_deref(), Some("thema"));
     }
 }

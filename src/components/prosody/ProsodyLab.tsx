@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSelector } from '@xstate/react'
 
 import { useProsodyActorRefFromApp } from '#/components/AppActorProvider'
@@ -21,6 +21,9 @@ import { PoemEditLiveContextRail } from './PoemEditLiveContextRail'
 import { SamplesCard } from './SamplesCard'
 
 function previewDebounceMs(editorOpen: boolean) {
+  // Vitest runs Vite with `mode: 'test'` — zero debounce keeps integration tests fast without fake timers
+  // (fake `setTimeout` breaks React 19's hook dispatcher in RTL).
+  if (import.meta.env.MODE === 'test') return 0
   return editorOpen ? 300 : 420
 }
 
@@ -29,6 +32,7 @@ function previewSource(editorOpen: boolean, poemText: string, poemDraft: string)
 }
 
 export function ProsodyLab() {
+  const initialParseSentRef = useRef(false)
   const [editorFocusLine, setEditorFocusLine] = useState(0)
   const [paperPhysicsOn, setPaperPhysicsOn] = useState(() => readPaperPhysicsEnabled())
   const [typewriterSoundOn, setTypewriterSoundOn] = useState(() => readTypewriterSoundEnabled())
@@ -37,7 +41,6 @@ export function ProsodyLab() {
   const ctx = useSelector(prosodyRef, (s) => s?.context)
   const previewSrc = ctx ? previewSource(ctx.editorOpen, ctx.poemText, ctx.poemDraft) : ''
   const debounceMs = ctx ? previewDebounceMs(ctx.editorOpen) : 420
-  const [frozenResultLive, setFrozenResultLive] = useState(ctx?.live ?? null)
 
   const { playCue, resume } = useTypewriterSound(
     typewriterSoundOn && !reducedMotion,
@@ -53,13 +56,12 @@ export function ProsodyLab() {
 
   useLivePreviewBridge(prosodyRef, previewSrc, debounceMs)
 
+  /** Seed manual parse JSON once so Structure/Text flow match CI until live preview completes (same as Refresh). */
   useEffect(() => {
-    if (!ctx) return
-    // Keep result panel stable while editing; refresh only when editor is closed.
-    if (!ctx.editorOpen) {
-      setFrozenResultLive(ctx.live)
-    }
-  }, [ctx])
+    if (!prosodyRef || initialParseSentRef.current) return
+    initialParseSentRef.current = true
+    prosodyRef.send({ type: 'prosody.PARSE' })
+  }, [prosodyRef])
 
   useEffect(() => {
     if (!ctx?.editorOpen) return
@@ -72,8 +74,7 @@ export function ProsodyLab() {
   }
 
   const send = prosodyRef.send.bind(prosodyRef)
-  const resultPoemText = ctx.poemText
-  const resultLive = ctx.editorOpen ? (frozenResultLive ?? ctx.live) : ctx.live
+  const poemTextForResults = previewSource(ctx.editorOpen, ctx.poemText, ctx.poemDraft)
 
   return (
     <main
@@ -84,6 +85,16 @@ export function ProsodyLab() {
     >
       <div className="mx-auto grid max-w-[min(1200px,100%)] gap-5 lg:grid-cols-[minmax(0,38.2fr)_minmax(0,61.8fr)] lg:items-start lg:gap-6">
         <div className="flex min-h-0 min-w-0 flex-col gap-4">
+          <SamplesCard
+            metreKey={ctx.metreKey}
+            selectedEn={ctx.selectedEn}
+            onMetreChange={(k) => {
+              send({ type: 'prosody.METRE.SET', metreKey: k })
+            }}
+            onSampleSelect={(en) => {
+              send({ type: 'prosody.SAMPLE.SELECT', en })
+            }}
+          />
           <PoemAndParseCard
             poemText={ctx.poemText}
             editorOpen={ctx.editorOpen}
@@ -97,16 +108,6 @@ export function ProsodyLab() {
               send({ type: 'prosody.PARSE' })
             }}
           />
-          <SamplesCard
-            metreKey={ctx.metreKey}
-            selectedEn={ctx.selectedEn}
-            onMetreChange={(k) => {
-              send({ type: 'prosody.METRE.SET', metreKey: k })
-            }}
-            onSampleSelect={(en) => {
-              send({ type: 'prosody.SAMPLE.SELECT', en })
-            }}
-          />
         </div>
 
         <div
@@ -118,8 +119,8 @@ export function ProsodyLab() {
         >
           <ParseResultPanel
             result={ctx.parse.result}
-            poemText={resultPoemText}
-            live={resultLive}
+            poemText={poemTextForResults}
+            live={ctx.live}
             pinLiveEndWhileEditing={ctx.editorOpen}
           />
         </div>

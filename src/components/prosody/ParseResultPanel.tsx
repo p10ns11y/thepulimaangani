@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 
 import { Card, CardContent } from '#/components/ui/card'
 import { adaptWasmJsonToParsedPoem } from '#/lib/adaptWasmParseJson'
+import { resolveSyncedParseJson } from '#/lib/resolveSyncedParseJson'
 import { cn } from '#/lib/utils'
 import type { LivePreviewState } from '#/types/livePreview'
 
@@ -33,26 +34,31 @@ export function ParseResultPanel({
   autoFollowLivePreview = false,
   className,
 }: ParseResultPanelProps) {
+  const syncedJson = useMemo(
+    () => resolveSyncedParseJson({ poemText, live, manualResult: result }),
+    [poemText, live, result],
+  )
+
   const parsed = useMemo(() => {
-    if (!result) return null
+    if (!syncedJson) return null
     try {
-      const data: unknown = JSON.parse(result)
+      const data: unknown = JSON.parse(syncedJson)
       return adaptWasmJsonToParsedPoem(data)
     } catch {
       return null
     }
-  }, [result])
+  }, [syncedJson])
 
   const hasText = poemText.trim().length > 0
 
-  if (!hasText && !result) {
+  if (!hasText && !syncedJson) {
     return <ParseResultEmptyState className={className} />
   }
 
-  if (result && !parsed) {
+  if (syncedJson && !parsed) {
     return (
       <ParseResultErrorState
-        result={result}
+        result={syncedJson}
         poemText={poemText}
         live={live}
         pinLiveEndWhileEditing={pinLiveEndWhileEditing}
@@ -76,7 +82,7 @@ export function ParseResultPanel({
     )
   }
 
-  if (!result) {
+  if (!syncedJson) {
     return null
   }
 
@@ -85,7 +91,7 @@ export function ParseResultPanel({
       <CardContent className="flex flex-col gap-0 p-0">
         <ParseResultTabsView
           parsed={parsed}
-          resultJson={result}
+          resultJson={syncedJson}
           poemText={poemText}
           live={live}
           pinLiveEndWhileEditing={pinLiveEndWhileEditing}
