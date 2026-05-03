@@ -4,6 +4,7 @@ import type { ParsedPoem, ParsedPresentationTalai } from '#/types/parsedPoem'
 
 import { getFootTypeDisplay, getLineClassDisplay, getLinkageSpecialDisplay, getLinkageTypeDisplay } from './displayLabels'
 import { SyllableChip } from './SyllableChip'
+import { TalaiLinkageOverview } from './TalaiLinkageOverview'
 
 type StructuredParseResultProps = {
   data: ParsedPoem
@@ -68,6 +69,8 @@ export function StructuredParseResult({ data }: StructuredParseResultProps) {
           <p className="text-foreground text-sm font-medium">{String(data.vikalpa_count)}</p>
         </div>
       </div>
+
+      <TalaiLinkageOverview data={data} />
 
       <div>
         <h3 className="text-foreground mb-2 text-sm font-medium">Prosodic structure</h3>

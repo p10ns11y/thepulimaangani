@@ -7,6 +7,13 @@ export interface ParsedSyllable {
   word_index_in_line?: number
 }
 
+/** Position of a foot in the poem (Rust `FootPosition`; optional on older JSON). */
+export interface ParsedFootPosition {
+  foot_index: number
+  line_index: number
+  word_index_in_line: number
+}
+
 /** One bond after `from_foot` (same indices as Rust `ParseResult.linkage`). */
 export interface ParsedLinkageEdge {
   from_foot: number
@@ -14,6 +21,9 @@ export interface ParsedLinkageEdge {
   linkage_type: string
   linkage_special_type: string
   is_valid: boolean
+  /** Present when WASM embeds Rust `from` / `to` — preferred for cross-line display. */
+  from?: ParsedFootPosition
+  to?: ParsedFootPosition
 }
 
 export interface ParsedFoot {

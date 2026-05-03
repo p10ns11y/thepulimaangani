@@ -1,5 +1,6 @@
 import type {
   ParsedFoot,
+  ParsedFootPosition,
   ParsedLine,
   ParsedLinkageEdge,
   ParsedMetreHypothesis,
@@ -79,6 +80,22 @@ function assignGlobalFootIndices(lines: ParsedLine[]): ParsedLine[] {
   }))
 }
 
+function parseFootPosition(raw: unknown): ParsedFootPosition | undefined {
+  if (!raw || typeof raw !== 'object') return undefined
+  const p = raw as Record<string, unknown>
+  const foot_index = p.foot_index
+  const line_index = p.line_index
+  const word_index_in_line = p.word_index_in_line
+  if (
+    typeof foot_index !== 'number' ||
+    typeof line_index !== 'number' ||
+    typeof word_index_in_line !== 'number'
+  ) {
+    return undefined
+  }
+  return { foot_index, line_index, word_index_in_line }
+}
+
 function normalizeLinkage(raw: unknown): ParsedLinkageEdge[] {
   if (!Array.isArray(raw)) return []
   const out: ParsedLinkageEdge[] = []
@@ -98,12 +115,16 @@ function normalizeLinkage(raw: unknown): ParsedLinkageEdge[] {
     }
     const linkage_special_type =
       typeof e.linkage_special_type === 'string' ? e.linkage_special_type : 'Unknown'
+    const from = parseFootPosition(e.from)
+    const to = parseFootPosition(e.to)
     out.push({
       from_foot,
       to_foot,
       linkage_type,
       linkage_special_type,
       is_valid: typeof e.is_valid === 'boolean' ? e.is_valid : true,
+      ...(from ? { from } : {}),
+      ...(to ? { to } : {}),
     })
   }
   return out
