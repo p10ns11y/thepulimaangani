@@ -29,6 +29,7 @@
     "ci:frontend": "bash scripts/ci-frontend.sh",
     "ci:crap-frontend": "bash scripts/ci-crap-frontend.sh",
     "gate": "bash scripts/gate.sh",
+    "precommit": "bash scripts/pre-commit.sh",
     "prepare": "husky"
   },
   "dependencies": {
