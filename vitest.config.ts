@@ -27,8 +27,9 @@ export default mergeConfig(
         },
       },
       include: ['src/**/*.test.{ts,tsx}', 'src/**/__tests__/**/*.test.{ts,tsx}'],
-      testTimeout: 30_000,
-      hookTimeout: 30_000,
+      /** Integration tests mock debounce timers; WASM remains real and async. */
+      testTimeout: 20_000,
+      hookTimeout: 15_000,
     },
   }),
 )
