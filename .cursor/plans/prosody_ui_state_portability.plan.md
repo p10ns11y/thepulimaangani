@@ -109,6 +109,54 @@ You already ship **TanStack Start / Router**. **[TanStack Store](https://tanstac
 
 ---
 
+## Library & pattern fit map (reference)
+
+*Tight map for this stack: prosody lab, WASM, XState already in place.* **Goal:** maximum leverage, minimum new concepts to maintain.
+
+### Rule of thumb
+
+**Extend what you own first.** Every new library is another mental model, upgrade path, and “who writes this field?” diagram. For Thepulimaangani that usually means:
+
+1. **App / prosody XState** — anything that must stay **consistent across panels** (poem, draft, parse snapshot, live preview, loading/errors, sample/metre).
+2. **Thin module + machine events** — debounced WASM pipeline feeding **`prosody.LIVE.STATE`** (already shaped like this).
+3. **Local React state** — **only** true UI chrome (e.g. uncontrolled tab index, transient hover).
+4. **localStorage + tiny helpers** — persisted prefs (typewriter, physics) — **don’t** introduce a store until reads scatter everywhere.
+
+Add **Zustand / Nanostores / TanStack Store / Jotai / signals** only where XState is **worse** than the dependency cost (tables below). For **TanStack Store** specifically, see the section **TanStack Store — when it fits (and “locked in”)** above.
+
+### Where each *pattern* fits without extra overhead
+
+| Pattern / tool | Best fit (this repo) | Overhead to avoid |
+|----------------|----------------------|-------------------|
+| **XState (actors / machines)** | Editor lifecycle, sample changes, manual parse, **`live` replacing stale UI**, any **ordered** flow | Duplicating the same field in a second store |
+| **No global store — functions + events** | `LivePreviewController`-style: debounce → WASM → adapt → **one** `prosody.LIVE.STATE` | Second subscription layer for a single pipeline |
+| **Nanostores** | Shared **ephemeral** UI that **many** small islands need (Astro) | Until non-React surfaces **exist**; **never** duplicate poem/parse |
+| **TanStack Store** | Cross-route / shell **UI chrome**; tab memory; dedicated section above | Mirroring `poemText` / `live` |
+| **Zustand** | Many **independent** layout booleans with **no** ordering rules | Easiest place to **accidentally mirror** machine state — high discipline |
+| **Jotai** | Many **small derived** pieces from same WASM JSON | Often **overkill** if few views derive from `live` |
+| **Valtio** | Large **mutable** nested blobs | Poem/parse are mostly **strings + immutable JSON** — poor default fit |
+| **Legend-State** | **Persistence / sync** (offline, conflict handling) | Skip until real sync requirements |
+| **Preact / signal-style libs** | UIs with **thousands** of fine-grained scalars | Parser updates are **batchy** (debounced WASM) — usually unnecessary |
+
+### One-page summary (this product)
+
+| Concern | Prefer | Usually skip |
+|---------|--------|----------------|
+| Poem, draft, editor, parse, live, samples | **XState prosody** | Second global store |
+| Debounced WASM → live JSON | **Controller module + machine events** | Signals / atoms for this alone |
+| Structure vs Live sync | **Derived from same `live` / resolved JSON** | Duplicate copies in Jotai |
+| Tab index, panel chrome | **Local state or Radix** until duplicated | New store for one panel |
+| Prefs (sound, physics) | **localStorage hooks** | Global store until used in many places |
+| Future Svelte/Astro island | **Subscribe to same actor / small UI-only store** | Rewriting domain logic per framework |
+
+### Bottom line
+
+**Lowest maintenance:** **deeper XState + thin non-React modules** for side effects, not more generic state libraries. Add **Nanostores or TanStack Store** only when a **second renderer** or **cross-route** UI state makes that cost real — not preemptively.
+
+That keeps boundaries **solid** without importing Solid’s ecosystem.
+
+---
+
 ## Migration phases (future PR)
 
 1. **Inventory** — spreadsheet of every hook in `components/prosody/**`: domain vs presentation vs DOM.
@@ -117,7 +165,7 @@ You already ship **TanStack Start / Router**. **[TanStack Store](https://tanstac
 
 3. **Collapse duplicates** — move stray `useState` that mirrors machine fields into **selectors + send**.
 
-4. **Cross-cutting UI** — introduce **one** small store or machine region for tabs/chrome; persist only if product asks.
+4. **Cross-cutting UI** — introduce **one** small store (prefer TanStack Store if aligned with § above, else XState parallel region) for tabs/chrome; persist only if product asks.
 
 5. **Adapter sketch** — document `subscribeProsody(actor)` / `sendProsody(event)` for a hypothetical Svelte wrapper (no implementation required in phase 1).
 
