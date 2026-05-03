@@ -130,7 +130,7 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
     }, SYNC_OPTIONS)
   })
 
-  it('Text flow tab shows metre summary lines', async () => {
+  it('Text flow tab shows Textual insights', async () => {
     render(
       <AppActorProvider>
         <ProsodyLab />
@@ -141,6 +141,6 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
 
     fireEvent.click(screen.getByRole('tab', { name: /Text flow/i }))
 
-    await waitForDocText(/மீட்டர்:/)
+    await waitForDocText(/Textual insights/)
   })
 })

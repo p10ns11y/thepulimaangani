@@ -2,10 +2,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs'
 import type { ParsedPoem } from '#/types/parsedPoem'
 import type { LivePreviewState } from '#/types/livePreview'
 
-import { PretextLineViewport } from '../PretextLineViewport'
-import { TAMIL_PRETEXT_FONT_COMPACT } from '../pretextConstants'
-import { buildParseFlowText } from '../parseFlowText'
 import { StructuredParseResult } from '../StructuredParseResult'
+import { TextualInsights } from '../TextualInsights'
 
 import { JsonActionsFooter } from './JsonActionsFooter'
 import { LiveSyllableWithSentinel } from './LiveSyllableWithSentinel'
@@ -40,7 +38,6 @@ export function ParseResultTabsView({
   ) : (
     <p className="text-muted-foreground m-0 text-sm">Add poem text to preview syllables.</p>
   )
-  const flowTextResolved = buildParseFlowText(parsed)
   const forceMount =
     import.meta.env.MODE === 'test' ? ({ forceMount: true } as { forceMount: true }) : undefined
 
@@ -75,17 +72,7 @@ export function ParseResultTabsView({
             <StructuredParseResult data={parsed} />
           </TabsContent>
           <TabsContent value="flow" className="mt-3 pb-1 outline-none" {...(forceMount ?? {})}>
-            <p className="text-muted-foreground mb-2 text-balance text-xs leading-relaxed sm:text-sm">
-              Metre and counts. Each editor line stays one row; scroll horizontally if a row is longer than
-              the panel.
-            </p>
-            <div className="luxe-inset-surface rounded-lg p-3 sm:p-4">
-              <PretextLineViewport
-                text={flowTextResolved}
-                lineHeightPx={26}
-                font={TAMIL_PRETEXT_FONT_COMPACT}
-              />
-            </div>
+            <TextualInsights data={parsed} />
           </TabsContent>
         </Tabs>
       </div>
