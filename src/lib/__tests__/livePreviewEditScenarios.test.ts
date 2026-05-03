@@ -142,9 +142,23 @@ describe.skipIf(!isWasmPkgBuilt())('live preview + WASM integration', () => {
           `step ${step}: aligned layout should surface syllables`,
         ).toBeGreaterThan(0)
       } else {
+        // Editor can show extra blank-only rows (e.g. reversed lines leave `''` first; WASM
+        // `normalize_text` trims the whole poem). `feetPerPhysicalLine` may merge those blanks
+        // into buckets — then counts differ but chips stay aligned. Otherwise require empty rows
+        // so we never slice feet onto wrong lines (e.g. mid-edit stale parse).
+        const totalBucket = totalSyllablesFromBuckets(buckets)
+        const allEmpty = buckets.every((r) => r.length === 0)
+        const maxRowSyllables = Math.max(
+          ...buckets.map((row) => flattenFootSyllableTexts(row).length),
+          0,
+        )
+        const mergedAligned =
+          totalBucket === parsed.syllables.length &&
+          totalBucket > 0 &&
+          (phys.length < 2 || maxRowSyllables < parsed.syllables.length)
         expect(
-          buckets.every((r) => r.length === 0),
-          `step ${step}: mismatched counts should avoid placing feet on wrong rows`,
+          allEmpty || mergedAligned,
+          `step ${step}: mismatched counts should either empty chips or fully partition syllables without one row holding the whole poem`,
         ).toBe(true)
       }
     }

@@ -43,6 +43,54 @@ describe('feetPerPhysicalLine', () => {
     expect(buckets[0]).toEqual([])
     expect(buckets[1]).toEqual([])
   })
+
+  it('keeps structured feet aligned when blank stanza lines sit between Tamil rows', () => {
+    const poemText = 'கற்றது\n\nமொழிந்தது'
+    const lines: ParsedPoem['lines'] = [
+      {
+        line_class: '—',
+        feet: [
+          {
+            foot_type: 'Ner-Nirai',
+            syllables: [
+              { text: 'கற்', syllable_type: 'Ner' },
+              { text: 'றது', syllable_type: 'Nirai' },
+            ],
+          },
+        ],
+      },
+      {
+        line_class: '—',
+        feet: [{ foot_type: 'Ner', syllables: [{ text: 'மொழிந்தது', syllable_type: 'Ner' }] }],
+      },
+    ]
+    const buckets = feetPerPhysicalLine(poem(lines), poemText)
+    expect(buckets).toHaveLength(3)
+    expect(buckets[0]!.length).toBe(1)
+    expect(buckets[1]).toEqual([])
+    expect(buckets[2]!.length).toBe(1)
+    expect(buckets[2]![0]!.syllables[0]!.text).toBe('மொழிந்தது')
+  })
+
+  it('handles two consecutive blank stanza separators between Tamil rows', () => {
+    const poemText = 'கற்றது\n\n\nமொழிந்தது'
+    const lines: ParsedPoem['lines'] = [
+      {
+        line_class: '—',
+        feet: [{ foot_type: 'Ner', syllables: [{ text: 'கற்றது', syllable_type: 'Ner' }] }],
+      },
+      {
+        line_class: '—',
+        feet: [{ foot_type: 'Ner', syllables: [{ text: 'மொழிந்தது', syllable_type: 'Ner' }] }],
+      },
+    ]
+    const buckets = feetPerPhysicalLine(poem(lines), poemText)
+    expect(buckets).toHaveLength(4)
+    expect(buckets[0]!.length).toBe(1)
+    expect(buckets[1]).toEqual([])
+    expect(buckets[2]).toEqual([])
+    expect(buckets[3]!.length).toBe(1)
+  })
 })
 
 describe('groupsFromFeet', () => {
