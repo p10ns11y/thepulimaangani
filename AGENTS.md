@@ -46,8 +46,7 @@ Thepulimaangani is a Tamil prosody analysis web application with React/TypeScrip
 - **After every PR merge:** from the repo root, run **`./dx/syncagents-agent.sh`** for **autonomous agents / minimal clones** (skips auto-creating a local branch for every `origin/*`; optional `PUSH=1` only when your environment limits which branches exist and what credentials can push). **Humans** doing a full-machine sync (all `origin/*` locals + gated push): **`./dx/syncagents-push-human.sh`**. Direct use of **`./dx/syncagents.sh`** is the core engine (creates missing `origin/*` tracking branches by default, then resets non-default locals to the default tip; skips open PR heads and `legacy`) — prefer the agent or human wrappers unless you intend that behaviour. **Autonomous agents:** read **Autonomous agents & safety** in [dx/sync-branches-architecture-simple.md](dx/sync-branches-architecture-simple.md); use **`DRY_RUN=1 ./dx/syncagents-agent.sh`** (or `DRY_RUN=1 ./dx/syncagents.sh`) first. Policy: [dx/HUMAN_SYNC.md](dx/HUMAN_SYNC.md).
 
 ## Rules
-- Run **`pnpm run gate`** before pushing or opening a PR when you touched **Rust, WASM, build, or lockfile** — it matches the GitHub Actions **`build`** job. Day-to-day commits rely on the lighter **`pnpm run precommit`** (Husky).
+- **Day-to-day:** Husky runs **`pnpm run precommit`** (typecheck + Vitest). **Before push / PR** when you changed **Rust, WASM, dependencies, build, or lockfile**, run **`pnpm run gate`** — same sequence as GitHub Actions **`build`**; CI will fail the same way if those layers break.
 - Rebuild WASM after Rust edits
-- No changes without passing all gates
 - Use tools efficiently, cache results
 - Escalate on failures, no force pushes

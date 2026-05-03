@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Mirrors `.github/workflows/ci.yml` build job front-end gates (install → build → typecheck → wasm check → test).
+# Mirrors `.github/workflows/ci.yml` **`build`** job — invoked by `pnpm run gate` (GitHub Actions runs `pnpm run gate` as a single step).
 # Requires: Node 22 (see `.nvmrc`), pnpm, Rust+wasm32+wasm-pack for `pnpm run build`.
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
