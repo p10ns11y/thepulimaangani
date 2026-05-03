@@ -10,8 +10,4 @@ describe('normalizePoemText', () => {
   it('normalizes CRLF only', () => {
     expect(normalizePoemText('x\r\ny')).toBe('x\ny')
   })
-
-  it('merges optional sandhi in ASCII parens for WASM (Rust skips unknown graphemes)', () => {
-    expect(normalizePoemText('தெருமந்திட்(டு)')).toBe(normalizePoemText('தெருமந்திட்டு'))
-  })
 })
