@@ -108,6 +108,52 @@ describe('adaptWasmJsonToParsedPoem', () => {
     expect(out!.lines[1]!.feet[0]!.syllables[0]!.text).toBe('y')
   })
 
+  it('assigns poem-wide foot indices for linguistic_words (not word_index_in_line) so presentation.feet aligns', () => {
+    const wasm = wasmParseJsonFixture({
+      original_text: 'x\ny',
+      syllables: [],
+      feet: [],
+      lines: [],
+      presentation: {
+        feet: [
+          { text: 'x', foot_type: 'LABEL_GLOBAL_0' },
+          { text: 'y', foot_type: 'LABEL_GLOBAL_1' },
+        ],
+        talai: [],
+      },
+      poem: wasmPoem([
+        wasmPoemLine({
+          line_index: 0,
+          words: [],
+          linguistic_words: [
+            wasmLinguisticWord({
+              word_index_in_line: 0,
+              syllableNodes: [wasmSyllableNode('a', 'Ner'), wasmSyllableNode('b', 'Ner')],
+            }),
+          ],
+        }),
+        wasmPoemLine({
+          line_index: 1,
+          words: [],
+          linguistic_words: [
+            wasmLinguisticWord({
+              word_index_in_line: 0,
+              syllableNodes: [wasmSyllableNode('c', 'Ner'), wasmSyllableNode('d', 'Ner')],
+            }),
+          ],
+        }),
+      ]),
+    })
+
+    const out = adaptWasmJsonToParsedPoem(wasm)
+    expect(out).not.toBeNull()
+    expect(out!.lines).toHaveLength(2)
+    expect(out!.lines[0]!.feet[0]!.foot_index_global).toBe(0)
+    expect(out!.lines[1]!.feet[0]!.foot_index_global).toBe(1)
+    expect(out!.lines[0]!.feet[0]!.display_foot_type).toBe('LABEL_GLOBAL_0')
+    expect(out!.lines[1]!.feet[0]!.display_foot_type).toBe('LABEL_GLOBAL_1')
+  })
+
   it('uses linguistic_words on a row when words is empty (WASM lines 2+)', () => {
     const wasm = wasmParseJsonFixture({
       original_text: 'a\nb',

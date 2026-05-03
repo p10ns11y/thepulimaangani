@@ -247,12 +247,11 @@ function linesFromPoemNode(poem: unknown): ParsedLine[] | null {
         if (!Array.isArray(syllNodes)) continue
         const syllables = syllablesFromSyllableNodes(syllNodes)
         if (syllables.length === 0) continue
-        const fig =
-          typeof LW.word_index_in_line === 'number' ? LW.word_index_in_line : undefined
+        // Do not set `foot_index_global` from `word_index_in_line` — that is per-line (0..n-1), not
+        // poem-wide. Reusing it collides across lines and breaks `mergePresentationFeet` / talai maps.
         lineFeet.push({
           foot_type: machineFootPatternFromSyllables(syllables),
           syllables,
-          ...(fig !== undefined ? { foot_index_global: fig } : {}),
         })
       }
     } else if (Array.isArray(words) && words.length > 0) {
