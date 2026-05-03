@@ -102,9 +102,23 @@ export const prosodyLabMachine = setup({
       if (event.type !== 'prosody.EDITOR.APPLY') return {}
       return { poemText: context.poemDraft, editorOpen: false }
     }),
-    setLive: assign(({ event }) => {
+    setLive: assign(({ context, event }) => {
       if (event.type !== 'prosody.LIVE.STATE') return {}
-      return { live: event.live }
+      const live = event.live
+      // Keep manual parse slice aligned with successful live WASM JSON so tabs + export stay in
+      // sync even before the user clicks Refresh (same source as debounced live preview).
+      if (live.status === 'ready' && typeof live.rawJson === 'string' && live.rawJson.length > 0) {
+        return {
+          live,
+          parse: {
+            ...context.parse,
+            result: live.rawJson,
+            loading: false,
+            validationError: null,
+          },
+        }
+      }
+      return { live }
     }),
     setParseLoading: assign({
       parse: ({ context }) => ({

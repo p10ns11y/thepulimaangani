@@ -14,6 +14,7 @@ Thepulimaangani is a Tamil prosody analysis web application with React/TypeScrip
 - WASM Build: `pnpm run build:wasm`
 - Test: `pnpm run test` (Vitest) + `cargo test` (Rust)
 - Typecheck: `pnpm run typecheck`
+- **Same gates as CI `build` job:** `pnpm run ci:frontend` or `pnpm run gate` (frozen lockfile → build → typecheck → wasm artifact → full test suite). Husky runs this on **pre-commit** after `pnpm install` (see `prepare` script).
 
 ## Deployment (Vercel)
 - Full flow: [**CI and deployment** in `dx/DEVELOPER_GUIDE.md`](dx/DEVELOPER_GUIDE.md#ci-and-deployment). In short: [`vercel.json`](vercel.json) runs the wasm toolchain install, then `NITRO_PRESET=vercel pnpm run build`, and **`outputDirectory` is `.vercel/output`** (Nitro Build Output v3). Do not point the Vercel project at `dist` or `dist/client` only.
@@ -44,7 +45,7 @@ Thepulimaangani is a Tamil prosody analysis web application with React/TypeScrip
 - **After every PR merge:** from the repo root, run **`./dx/syncagents-agent.sh`** for **autonomous agents / minimal clones** (skips auto-creating a local branch for every `origin/*`; optional `PUSH=1` only when your environment limits which branches exist and what credentials can push). **Humans** doing a full-machine sync (all `origin/*` locals + gated push): **`./dx/syncagents-push-human.sh`**. Direct use of **`./dx/syncagents.sh`** is the core engine (creates missing `origin/*` tracking branches by default, then resets non-default locals to the default tip; skips open PR heads and `legacy`) — prefer the agent or human wrappers unless you intend that behaviour. **Autonomous agents:** read **Autonomous agents & safety** in [dx/sync-branches-architecture-simple.md](dx/sync-branches-architecture-simple.md); use **`DRY_RUN=1 ./dx/syncagents-agent.sh`** (or `DRY_RUN=1 ./dx/syncagents.sh`) first. Policy: [dx/HUMAN_SYNC.md](dx/HUMAN_SYNC.md).
 
 ## Rules
-- Always run tests and typecheck before/after changes
+- Run `pnpm run gate` (or rely on Husky pre-commit after install) before pushing; it matches the GitHub Actions `build` job.
 - Rebuild WASM after Rust edits
 - No changes without passing all gates
 - Use tools efficiently, cache results

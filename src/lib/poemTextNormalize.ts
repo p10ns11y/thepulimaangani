@@ -6,5 +6,5 @@
  * causing stale parses to pair with the wrong `physicalPoemLines()` layout.
  */
 export function normalizePoemText(s: string): string {
-  return s.replace(/\r\n/g, '\n')
+  return s.replace(/\r\n/g, '\n').normalize('NFC')
 }

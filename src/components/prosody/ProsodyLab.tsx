@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSelector } from '@xstate/react'
 
 import { useProsodyActorRefFromApp } from '#/components/AppActorProvider'
@@ -32,6 +32,7 @@ function previewSource(editorOpen: boolean, poemText: string, poemDraft: string)
 }
 
 export function ProsodyLab() {
+  const initialParseSentRef = useRef(false)
   const [editorFocusLine, setEditorFocusLine] = useState(0)
   const [paperPhysicsOn, setPaperPhysicsOn] = useState(() => readPaperPhysicsEnabled())
   const [typewriterSoundOn, setTypewriterSoundOn] = useState(() => readTypewriterSoundEnabled())
@@ -54,6 +55,13 @@ export function ProsodyLab() {
   )
 
   useLivePreviewBridge(prosodyRef, previewSrc, debounceMs)
+
+  /** Seed manual parse JSON once so Structure/Text flow match CI until live preview completes (same as Refresh). */
+  useEffect(() => {
+    if (!prosodyRef || initialParseSentRef.current) return
+    initialParseSentRef.current = true
+    prosodyRef.send({ type: 'prosody.PARSE' })
+  }, [prosodyRef])
 
   useEffect(() => {
     if (!ctx?.editorOpen) return

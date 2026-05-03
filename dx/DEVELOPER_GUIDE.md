@@ -28,7 +28,10 @@ pnpm run test           # Rust + frontend
 pnpm run test:rust      # Parser only
 pnpm run test:frontend  # Vitest only
 pnpm run typecheck
+pnpm run gate           # Same sequence as GitHub Actions `build` job (install → build → typecheck → wasm check → test)
 ```
+
+After `pnpm install`, **Husky** runs `pnpm run gate` on **pre-commit** so local commits match the default CI job (see [`scripts/ci-frontend.sh`](../scripts/ci-frontend.sh)).
 
 **Optional Rust line coverage** (requires [cargo-tarpaulin](https://github.com/xd009642/tarpaulin)):
 

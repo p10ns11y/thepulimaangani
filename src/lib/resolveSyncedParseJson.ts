@@ -25,6 +25,16 @@ export function resolveSyncedParseJson(args: ResolveSyncedParseJsonArgs): string
     }
   }
 
+  // Fast path: live preview already holds aligned parsed + raw (avoids JSON re-parse edge cases).
+  if (
+    args.live.status === 'ready' &&
+    args.live.parsed &&
+    args.live.rawJson &&
+    normalizePoemText(args.live.parsed.original_text) === previewNorm
+  ) {
+    return args.live.rawJson
+  }
+
   const candidates: string[] = []
   if (args.live.rawJson) candidates.push(args.live.rawJson)
   if (args.manualResult) candidates.push(args.manualResult)

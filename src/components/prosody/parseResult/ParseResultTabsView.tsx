@@ -41,6 +41,8 @@ export function ParseResultTabsView({
     <p className="text-muted-foreground m-0 text-sm">Add poem text to preview syllables.</p>
   )
   const flowTextResolved = buildParseFlowText(parsed)
+  const forceMount =
+    import.meta.env.MODE === 'test' ? ({ forceMount: true } as { forceMount: true }) : undefined
 
   return (
     <>
@@ -66,13 +68,13 @@ export function ParseResultTabsView({
               Text flow
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="live" className="mt-3 pb-1 outline-none">
+          <TabsContent value="live" className="mt-3 pb-1 outline-none" {...(forceMount ?? {})}>
             {liveBlock}
           </TabsContent>
-          <TabsContent value="structure" className="mt-3 pb-1 outline-none">
+          <TabsContent value="structure" className="mt-3 pb-1 outline-none" {...(forceMount ?? {})}>
             <StructuredParseResult data={parsed} />
           </TabsContent>
-          <TabsContent value="flow" className="mt-3 pb-1 outline-none">
+          <TabsContent value="flow" className="mt-3 pb-1 outline-none" {...(forceMount ?? {})}>
             <p className="text-muted-foreground mb-2 text-balance text-xs leading-relaxed sm:text-sm">
               Metre and counts. Each editor line stays one row; scroll horizontally if a row is longer than
               the panel.

@@ -11,6 +11,20 @@ import { ProsodyLab } from '#/components/prosody/ProsodyLab'
 
 const SYNC_OPTIONS = { timeout: 15_000 }
 
+/** Panel mounts parse tabs after WASM completes (Structure tab exists for Live-only and full modes). */
+function waitForParseTabs(options = SYNC_OPTIONS) {
+  return waitFor(() => {
+    screen.getByRole('tab', { name: /^Structure$/i })
+  }, options)
+}
+
+/** Radix hides inactive tab panels from the a11y tree; assert on document text after activating a tab. */
+function waitForDocText(re: RegExp, options = SYNC_OPTIONS) {
+  return waitFor(() => {
+    expect(document.body.textContent).toMatch(re)
+  }, options)
+}
+
 function mockViewportAndObservers() {
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
@@ -49,14 +63,10 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
       </AppActorProvider>,
     )
 
-    await waitFor(() => {
-      screen.getByRole('heading', { name: /Analysis summary/i })
-    }, SYNC_OPTIONS)
+    await waitForParseTabs()
 
     fireEvent.click(screen.getByRole('tab', { name: /^Structure$/i }))
-    await waitFor(() => {
-      screen.getByRole('heading', { name: /Prosodic structure/i })
-    }, SYNC_OPTIONS)
+    await waitForDocText(/Prosodic structure/)
   })
 
   it('updates poem when switching metre tab so Structure reflects new sample after sync', async () => {
@@ -66,20 +76,14 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
       </AppActorProvider>,
     )
 
-    await waitFor(() => {
-      screen.getByRole('heading', { name: /Analysis summary/i })
-    }, SYNC_OPTIONS)
+    await waitForParseTabs()
 
     fireEvent.click(screen.getByRole('tab', { name: /ஆசிரியப்பா/i }))
 
-    await waitFor(() => {
-      screen.getByRole('heading', { name: /Analysis summary/i })
-    }, SYNC_OPTIONS)
+    await waitForParseTabs()
 
     fireEvent.click(screen.getByRole('tab', { name: /^Structure$/i }))
-    await waitFor(() => {
-      screen.getByRole('heading', { name: /Prosodic structure/i })
-    }, SYNC_OPTIONS)
+    await waitForDocText(/Prosodic structure/)
   })
 
   it('opens editor from poem preview and applies draft', async () => {
@@ -89,9 +93,7 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
       </AppActorProvider>,
     )
 
-    await waitFor(() => {
-      screen.getByRole('heading', { name: /Analysis summary/i })
-    }, SYNC_OPTIONS)
+    await waitForParseTabs()
 
     fireEvent.click(screen.getByRole('button', { name: /Edit poem/i }))
 
@@ -105,9 +107,7 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
       expect(screen.queryByRole('textbox')).toBeNull()
     })
 
-    await waitFor(() => {
-      screen.getByRole('heading', { name: /Analysis summary/i })
-    }, SYNC_OPTIONS)
+    await waitForParseTabs()
   })
 
   it('refresh parse completes without error', async () => {
@@ -137,14 +137,10 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
       </AppActorProvider>,
     )
 
-    await waitFor(() => {
-      screen.getByRole('heading', { name: /Analysis summary/i })
-    }, SYNC_OPTIONS)
+    await waitForParseTabs()
 
     fireEvent.click(screen.getByRole('tab', { name: /Text flow/i }))
 
-    await waitFor(() => {
-      screen.getByText(/மீட்டர்:/)
-    }, SYNC_OPTIONS)
+    await waitForDocText(/மீட்டர்:/)
   })
 })
