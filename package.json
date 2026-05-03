@@ -25,7 +25,9 @@
     "crap:local": "pnpm run build:wasm && lizard tamil-seiyul-alagi/src --exclude tamil-seiyul-alagi/src/wasm -X -o lizard-rust.xml && cd tamil-seiyul-alagi && cargo llvm-cov test --summary-only --json --output-path llvm-cov-summary.json && cd .. && pnpm run test:frontend:coverage && pnpm run crap:report",
     "test:watch": "vitest",
     "lint": "echo 'No linter configured yet'",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "ci:frontend": "bash scripts/ci-frontend.sh",
+    "ci:crap-frontend": "bash scripts/ci-crap-frontend.sh"
   },
   "dependencies": {
     "@chenglou/pretext": "^0.0.6",
