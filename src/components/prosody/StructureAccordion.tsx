@@ -4,11 +4,10 @@ import { useMemo, useState, type ReactNode } from 'react'
 import {
   getFootTypeDisplay,
   getLineClassDisplay,
-  getLinkageSpecialDisplay,
-  getLinkageTypeDisplay,
 } from '#/components/prosody/displayLabels'
 import { SyllableChip } from '#/components/prosody/SyllableChip'
-import { buildLinkageOverviewRows, linkageCoarseCounts } from '#/lib/linkageOverview'
+import { TalaiInlineFlow } from '#/components/prosody/TalaiInlineFlow'
+import { buildLinkageOverviewRows } from '#/lib/linkageOverview'
 import type { ParsedPoem } from '#/types/parsedPoem'
 
 type PanelId = 'syllables' | 'bonds' | 'metre'
@@ -17,27 +16,10 @@ type StructureAccordionProps = {
   data: ParsedPoem
 }
 
-function bondLabelFine(row: ReturnType<typeof buildLinkageOverviewRows>[0]): string {
-  const pres = row.presentationTalaiType?.trim()
-  if (pres && pres.length > 0) return pres
-  const e = row.edge
-  if (e.linkage_special_type && e.linkage_special_type !== 'Unknown') {
-    return getLinkageSpecialDisplay(e.linkage_special_type)
-  }
-  return getLinkageTypeDisplay(e.linkage_type)
-}
-
 export function StructureAccordion({ data }: StructureAccordionProps) {
   const [open, setOpen] = useState<PanelId | null>(null)
 
   const bondRows = useMemo(() => buildLinkageOverviewRows(data), [data])
-  const coarse = useMemo(() => linkageCoarseCounts(data.linkage ?? []), [data.linkage])
-
-  const crossLineRows = useMemo(
-    () => bondRows.filter((r) => r.crossLine),
-    [bondRows],
-  )
-  const sameLineCount = bondRows.length - crossLineRows.length
 
   const toggle = (id: PanelId) => {
     setOpen((cur) => (cur === id ? null : id))
@@ -88,62 +70,14 @@ export function StructureAccordion({ data }: StructureAccordionProps) {
 
       <AccordionRow
         id="bonds"
-        title="தளை · Bonds / linkage"
+        title="தளை · Talai flow"
         subtitle={
-          bondRows.length === 0
-            ? 'No bonds'
-            : `${bondRows.length} bonds · ${crossLineRows.length} cross-line`
+          bondRows.length === 0 ? 'No bonds' : `${bondRows.length} bonds · inline with words`
         }
         expanded={open === 'bonds'}
         onToggle={() => toggle('bonds')}
       >
-        {bondRows.length === 0 ? (
-          <p className="text-muted-foreground m-0 text-xs">No consecutive-foot bonds in this parse.</p>
-        ) : (
-          <div className="flex flex-col gap-3 pt-1">
-            <div className="flex flex-wrap gap-1.5">
-              {Object.entries(coarse).map(([k, n]) => (
-                <span
-                  key={k}
-                  className="border-rim/35 bg-surface-2/80 text-foreground inline-flex items-center rounded-full border px-2 py-0.5 text-[0.7rem]"
-                >
-                  {getLinkageTypeDisplay(k)} · {n}
-                </span>
-              ))}
-            </div>
-            {crossLineRows.length > 0 ? (
-              <div className="flex flex-col gap-2">
-                <span className="text-muted-foreground text-[0.65rem] font-medium uppercase tracking-wide">
-                  Cross-line
-                </span>
-                {crossLineRows.map((row) => (
-                  <div
-                    key={`xl-${row.index1}-${row.edge.from_foot}-${row.edge.to_foot}`}
-                    className="border-rim/35 bg-surface-2/50 rounded-lg border px-2.5 py-2"
-                  >
-                    <div className="text-foreground flex flex-wrap items-baseline gap-x-1.5 font-tamil text-sm leading-snug">
-                      <span className="text-muted-foreground tabular-nums">L{row.fromLine1}</span>
-                      <span aria-hidden className="text-muted-foreground">
-                        →
-                      </span>
-                      <span className="text-muted-foreground tabular-nums">L{row.toLine1}</span>
-                    </div>
-                    <p className="text-foreground mt-1 font-tamil text-sm leading-snug">{bondLabelFine(row)}</p>
-                    {!row.edge.is_valid ? (
-                      <span className="text-destructive mt-1 inline-block text-xs">Invalid bond</span>
-                    ) : null}
-                  </div>
-                ))}
-              </div>
-            ) : null}
-            {sameLineCount > 0 ? (
-              <p className="text-muted-foreground m-0 text-xs leading-relaxed">
-                <span className="text-foreground/90">{sameLineCount}</span> further bonds stay within the same physical
-                line (mostly consecutive words). Open full export or Text flow if you need every bond listed.
-              </p>
-            ) : null}
-          </div>
-        )}
+        <TalaiInlineFlow data={data} />
       </AccordionRow>
 
       <AccordionRow
@@ -154,12 +88,12 @@ export function StructureAccordion({ data }: StructureAccordionProps) {
         onToggle={() => toggle('metre')}
       >
         <div className="flex flex-col gap-3 pt-1">
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            <div className="bg-surface-2/90 border-rim/35 rounded-md border px-2.5 py-2">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="bg-surface-2/40 rounded-md px-3 py-2.5">
               <span className="text-muted-foreground text-xs">Metre type</span>
               <p className="text-foreground mt-0.5 font-tamil text-sm font-medium">{data.metre_type}</p>
             </div>
-            <div className="bg-surface-2/90 border-rim/35 rounded-md border px-2.5 py-2">
+            <div className="bg-surface-2/40 rounded-md px-3 py-2.5">
               <span className="text-muted-foreground text-xs">Vikalpa</span>
               <p className="text-foreground mt-0.5 text-sm font-medium">{String(data.vikalpa_count)}</p>
             </div>
@@ -167,7 +101,7 @@ export function StructureAccordion({ data }: StructureAccordionProps) {
           {data.lines.map((line, i) => (
             <div
               key={`ins-line-${i}-${line.line_class}`}
-              className="border-rim/25 bg-surface-2/40 rounded-md border px-2.5 py-2"
+              className="border-rim/15 bg-surface-2/25 rounded-lg px-2 py-2 sm:px-3"
             >
               <div className="text-foreground mb-2 font-tamil text-sm font-medium">
                 அடி {i + 1}{' '}
