@@ -85,6 +85,16 @@ export function ProsodyLab() {
     >
       <div className="mx-auto grid max-w-[min(1200px,100%)] gap-5 lg:grid-cols-[minmax(0,38.2fr)_minmax(0,61.8fr)] lg:items-start lg:gap-6">
         <div className="flex min-h-0 min-w-0 flex-col gap-4">
+          <SamplesCard
+            metreKey={ctx.metreKey}
+            selectedEn={ctx.selectedEn}
+            onMetreChange={(k) => {
+              send({ type: 'prosody.METRE.SET', metreKey: k })
+            }}
+            onSampleSelect={(en) => {
+              send({ type: 'prosody.SAMPLE.SELECT', en })
+            }}
+          />
           <PoemAndParseCard
             poemText={ctx.poemText}
             editorOpen={ctx.editorOpen}
@@ -96,16 +106,6 @@ export function ProsodyLab() {
             }}
             onParse={() => {
               send({ type: 'prosody.PARSE' })
-            }}
-          />
-          <SamplesCard
-            metreKey={ctx.metreKey}
-            selectedEn={ctx.selectedEn}
-            onMetreChange={(k) => {
-              send({ type: 'prosody.METRE.SET', metreKey: k })
-            }}
-            onSampleSelect={(en) => {
-              send({ type: 'prosody.SAMPLE.SELECT', en })
             }}
           />
         </div>

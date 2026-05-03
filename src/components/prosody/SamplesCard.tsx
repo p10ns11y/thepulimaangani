@@ -1,3 +1,6 @@
+import { ChevronDown } from 'lucide-react'
+import { useMemo, useState } from 'react'
+
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
 import {
   Select,
@@ -9,9 +12,20 @@ import {
   SelectValue,
 } from '#/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs'
-import { getMetreBlock, METRE_ORDER, METRE_TAB_LABEL, type MetreKey } from '#/machines/prosodyLab.defaults'
+import { useViewportMatchMedia } from '#/hooks/useViewportMatchMedia'
+import { cn } from '#/lib/utils'
+import {
+  getFlatRows,
+  getMetreBlock,
+  METRE_ORDER,
+  METRE_TAB_LABEL,
+  type MetreKey,
+} from '#/machines/prosodyLab.defaults'
 
 const cardClass = 'luxe-prosody-card luxe-sheen-hover bg-transparent overflow-hidden rounded-xl'
+
+/** Tailwind `lg` breakpoint — matches Prosody lab two-column layout. */
+const LG_QUERY = '(min-width: 1024px)'
 
 type SamplesCardProps = {
   metreKey: MetreKey
@@ -21,12 +35,58 @@ type SamplesCardProps = {
 }
 
 export function SamplesCard({ metreKey, selectedEn, onMetreChange, onSampleSelect }: SamplesCardProps) {
+  const isLg = useViewportMatchMedia(LG_QUERY)
+  /** Vitest keeps metre tabs in the a11y tree without mocking desktop `matchMedia`. */
+  const forceExpanded = import.meta.env.MODE === 'test'
+  const [mobileExpanded, setMobileExpanded] = useState(false)
+
+  const variationTa = useMemo(() => {
+    const rows = getFlatRows(metreKey)
+    return rows.find((r) => r.en === selectedEn)?.ta ?? selectedEn
+  }, [metreKey, selectedEn])
+
+  const summaryLine = `${METRE_TAB_LABEL[metreKey]} · ${variationTa}`
+  const showPicker = forceExpanded || isLg || mobileExpanded
+  const mobileCollapsible = !forceExpanded && !isLg
+
   return (
     <Card className={cardClass}>
-      <CardHeader className="px-4 py-3 pb-2">
-        <CardTitle className="text-balance text-base font-semibold tracking-tight">Samples</CardTitle>
+      <CardHeader
+        className={cn(
+          'px-4 py-3 pb-2',
+          mobileCollapsible ? 'pb-1' : null,
+        )}
+      >
+        {mobileCollapsible ? (
+          <button
+            type="button"
+            onClick={() => setMobileExpanded((v) => !v)}
+            aria-expanded={showPicker}
+            className="hover:bg-surface-2/50 -mx-1 flex w-full items-start gap-2 rounded-lg px-1 py-0.5 text-left transition-colors"
+          >
+            <ChevronDown
+              className={cn(
+                'text-muted-foreground mt-0.5 size-4 shrink-0 transition-transform',
+                showPicker ? 'rotate-180' : '',
+              )}
+              aria-hidden
+            />
+            <span className="min-w-0 flex-1">
+              <CardTitle className="text-balance text-base font-semibold tracking-tight">Samples</CardTitle>
+              <span className="text-muted-foreground mt-0.5 block font-tamil text-[0.75rem] leading-snug">
+                {summaryLine}
+              </span>
+              {!showPicker ? (
+                <span className="text-muted-foreground/80 mt-1 block text-[0.65rem]">Tap to change sample</span>
+              ) : null}
+            </span>
+          </button>
+        ) : (
+          <CardTitle className="text-balance text-base font-semibold tracking-tight">Samples</CardTitle>
+        )}
       </CardHeader>
-      <CardContent className="flex flex-col gap-3 px-4 pb-4 pt-0">
+      {showPicker ? (
+        <CardContent className="flex flex-col gap-3 px-4 pb-4 pt-0">
         <Tabs
           value={metreKey}
           onValueChange={(v) => {
@@ -52,7 +112,13 @@ export function SamplesCard({ metreKey, selectedEn, onMetreChange, onSampleSelec
             >
               Variation
             </label>
-            <Select value={selectedEn} onValueChange={onSampleSelect}>
+            <Select
+              value={selectedEn}
+              onValueChange={(en) => {
+                onSampleSelect(en)
+                if (mobileCollapsible) setMobileExpanded(false)
+              }}
+            >
               <SelectTrigger
                 id="sample-select"
                 className="font-tamil border-rim/50 bg-surface-2/60 h-9 w-full text-[0.8125rem] shadow-none"
@@ -80,7 +146,8 @@ export function SamplesCard({ metreKey, selectedEn, onMetreChange, onSampleSelec
             </Select>
           </TabsContent>
         </Tabs>
-      </CardContent>
+        </CardContent>
+      ) : null}
     </Card>
   )
 }
