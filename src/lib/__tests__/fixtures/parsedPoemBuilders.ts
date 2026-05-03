@@ -28,7 +28,7 @@ type ParsedPoemCore = Omit<ParsedPoem, 'errors'> & { errors?: string[] }
  * Supply `lines` and `original_text`; everything else gets stable defaults.
  */
 export function parsedPoem(overrides: Partial<ParsedPoemCore> & Pick<ParsedPoem, 'lines'>): ParsedPoem {
-  const { errors, ...rest } = overrides
+  const { errors, linkage, presentation, top_k_metre_hypotheses, parse_features, ...rest } = overrides
   const base: ParsedPoem = {
     original_text: rest.original_text ?? '',
     metre_type: rest.metre_type ?? '—',
@@ -36,6 +36,12 @@ export function parsedPoem(overrides: Partial<ParsedPoemCore> & Pick<ParsedPoem,
     vikalpa_count: rest.vikalpa_count ?? 0,
     syllables: rest.syllables ?? defaultSyllables,
     lines: rest.lines,
+    ...(linkage != null && linkage.length > 0 ? { linkage } : {}),
+    ...(presentation != null ? { presentation } : {}),
+    ...(top_k_metre_hypotheses != null && top_k_metre_hypotheses.length > 0
+      ? { top_k_metre_hypotheses }
+      : {}),
+    ...(parse_features != null ? { parse_features } : {}),
   }
   return errors != null && errors.length > 0 ? { ...base, errors } : base
 }
