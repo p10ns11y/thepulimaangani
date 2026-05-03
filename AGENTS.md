@@ -29,7 +29,7 @@ Thepulimaangani is a Tamil prosody analysis web application with React/TypeScrip
 - Frontend: Vitest for components and logic
 - Rust: Cargo test with coverage
 - Integration: End-to-end parsing tests
-- Coverage: Maintain 90%+ in both
+- Coverage: **Rust** — aim for 90%+ (see `tamil-seiyul-alagi`). **Frontend (Vitest v8)** — enforced thresholds and **included file globs** are in [`vitest.config.ts`](vitest.config.ts) (prosody + `lib` + `machines` + tested hooks; routes/shell are out of scope until mounted in tests).
 
 ## Commits
 - Atomic changes
