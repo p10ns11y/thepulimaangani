@@ -4,7 +4,16 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { vi } from 'vitest'
+import { afterEach, vi } from 'vitest'
+import { cleanup } from '@testing-library/react'
+
+/**
+ * Vitest + `poolOptions.forks.singleFork` can leave the jsdom body across tests; explicit cleanup
+ * avoids duplicate roles (e.g. multiple "Refresh parse" buttons) and stale trees.
+ */
+afterEach(() => {
+  cleanup()
+})
 
 /** jsdom does not implement ResizeObserver (used by useFitPoemFontSize / PoemFitPreview). */
 if (typeof globalThis.ResizeObserver === 'undefined') {
