@@ -1,10 +1,8 @@
 import { ChevronDown } from 'lucide-react'
 import { useMemo, useState, type ReactNode } from 'react'
 
-import {
-  getFootTypeDisplay,
-  getLineClassDisplay,
-} from '#/components/prosody/displayLabels'
+import { getLineClassDisplay } from '#/components/prosody/displayLabels'
+import { FootTypeCaption } from '#/components/prosody/FootTypeCaption'
 import { SyllableChip } from '#/components/prosody/SyllableChip'
 import { TalaiInlineFlow } from '#/components/prosody/TalaiInlineFlow'
 import { buildLinkageOverviewRows } from '#/lib/linkageOverview'
@@ -75,13 +73,9 @@ export function StructureAccordion({ data }: StructureAccordionProps) {
               </div>
               <div className="flex flex-col gap-2">
                 {line.feet.map((foot, j) => {
-                  const footLabel =
-                    foot.display_foot_type != null && foot.display_foot_type.length > 0
-                      ? foot.display_foot_type
-                      : getFootTypeDisplay(foot.foot_type)
                   return (
                     <div key={`foot-syl-${i}-${j}`} className="flex flex-col gap-1.5">
-                      <span className="text-muted-foreground text-[0.7rem]">{footLabel}</span>
+                      <FootTypeCaption foot={foot} align="start" />
                       <div className="flex flex-wrap gap-1.5">
                         {foot.syllables.map((syl, k) => (
                           <SyllableChip

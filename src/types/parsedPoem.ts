@@ -30,6 +30,9 @@ export interface ParsedFoot {
   foot_type: string
   /** Tamil classical label from WASM `presentation.feet` when present. */
   display_foot_type?: string
+  /** When WASM sends structured presentation (preferred over parsing `display_foot_type`). */
+  display_foot_type_tamil?: string
+  display_foot_type_latin?: string
   syllables: ParsedSyllable[]
   /** Poem-wide foot index when known (from WASM `poem` tree); used for தளை lookup. */
   foot_index_global?: number
@@ -40,10 +43,13 @@ export interface ParsedLine {
   feet: ParsedFoot[]
 }
 
-/** WASM `presentation.feet[]` — Tamil foot labels aligned with poem-wide foot order. */
+/** WASM `presentation.feet[]` — foot labels aligned with poem-wide foot order. */
 export interface ParsedPresentationFoot {
   text: string
+  /** Combined label for legacy clients: `தமிழ் · latin`, or machine pattern when unknown. */
   foot_type: string
+  foot_type_tamil?: string
+  foot_type_latin?: string
 }
 
 /** WASM `presentation.talai[]` — human தளை line (from / to indices match linkage). */

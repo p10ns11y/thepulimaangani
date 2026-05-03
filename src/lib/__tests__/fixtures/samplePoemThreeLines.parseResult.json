@@ -1767,7 +1767,7 @@
           "word_index_in_line": 3
         },
         "linkage_type": "KaliTalai",
-        "linkage_special_type": "Kalithalai",
+        "linkage_special_type": "KaliTalai",
         "is_valid": true
       },
       {
@@ -2449,7 +2449,7 @@
         "word_index_in_line": 3
       },
       "linkage_type": "KaliTalai",
-      "linkage_special_type": "Kalithalai",
+      "linkage_special_type": "KaliTalai",
       "is_valid": true
     },
     {
@@ -2621,7 +2621,7 @@
         "word_index_in_line": 3
       },
       "linkage_type": "KaliTalai",
-      "linkage_special_type": "Kalithalai",
+      "linkage_special_type": "KaliTalai",
       "is_valid": true
     },
     {
@@ -3045,7 +3045,40 @@
   "top_k_metre_hypotheses": [
     {
       "metre_type": "Venpaa",
-      "aggregate_score": 70,
+      "aggregate_score": 89,
+      "violations": [],
+      "rule_ids": [
+        "MetreLength01",
+        "LinkageAdjacency01",
+        {
+          "Other": "MetreParseFeatures01"
+        }
+      ]
+    },
+    {
+      "metre_type": "Aciriyappaa",
+      "aggregate_score": 58,
+      "violations": [],
+      "rule_ids": [
+        "MetreLength01",
+        "LinkageAdjacency01"
+      ]
+    },
+    {
+      "metre_type": "Kalippaa",
+      "aggregate_score": 58,
+      "violations": [],
+      "rule_ids": [
+        "MetreLength01",
+        "LinkageAdjacency01",
+        {
+          "Other": "MetreParseFeatures01"
+        }
+      ]
+    },
+    {
+      "metre_type": "Vanjippaa",
+      "aggregate_score": 55,
       "violations": [],
       "rule_ids": [
         "MetreLength01",
@@ -3053,10 +3086,69 @@
       ]
     }
   ],
-  "confidence": 70,
+  "parse_features": {
+    "schema_version": 1,
+    "dense": [
+      4.0430512,
+      0.0,
+      3.0,
+      11.0,
+      25.0,
+      3.6666667,
+      4.0,
+      2.2727273,
+      3.0,
+      0.68,
+      0.32,
+      10.0,
+      0.9000001,
+      0.0,
+      0.1,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.6,
+      0.3,
+      0.1,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.36363637,
+      0.0,
+      0.54545456,
+      0.0,
+      0.09090909,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.33333334,
+      0.6666667,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "confidence": 89,
   "provenance": [
     "MetreLength01",
-    "LinkageAdjacency01"
+    "LinkageAdjacency01",
+    {
+      "Other": "MetreParseFeatures01"
+    }
   ],
   "errors": [],
   "presentation": {
@@ -3192,47 +3284,69 @@
     "feet": [
       {
         "text": "சுடர்தொடீஇ",
-        "foot_type": "கருவிளங்காய் (karuvilangkaay)"
+        "foot_type_tamil": "கருவிளங்காய்",
+        "foot_type_latin": "karuvilangkaay",
+        "foot_type": "கருவிளங்காய் · karuvilangkaay"
       },
       {
         "text": "கேளாய்",
-        "foot_type": "தேமா (thema)"
+        "foot_type_tamil": "தேமா",
+        "foot_type_latin": "thema",
+        "foot_type": "தேமா · thema"
       },
       {
         "text": "தெருவில்நாம்",
-        "foot_type": "புளிமாங்காய் (pulimaangkaay)"
+        "foot_type_tamil": "புளிமாங்காய்",
+        "foot_type_latin": "pulimaangkaay",
+        "foot_type": "புளிமாங்காய் · pulimaangkaay"
       },
       {
         "text": "மணற்சிற்றில்",
-        "foot_type": "புளிமாங்காய் (pulimaangkaay)"
+        "foot_type_tamil": "புளிமாங்காய்",
+        "foot_type_latin": "pulimaangkaay",
+        "foot_type": "புளிமாங்காய் · pulimaangkaay"
       },
       {
         "text": "காலில்",
-        "foot_type": "தேமா (thema)"
+        "foot_type_tamil": "தேமா",
+        "foot_type_latin": "thema",
+        "foot_type": "தேமா · thema"
       },
       {
         "text": "சிதையா",
-        "foot_type": "புளிமா (pulima)"
+        "foot_type_tamil": "புளிமா",
+        "foot_type_latin": "pulima",
+        "foot_type": "புளிமா · pulima"
       },
       {
         "text": "அடை",
-        "foot_type": "விளம் (vilam)"
+        "foot_type_tamil": "விளம்",
+        "foot_type_latin": "vilam",
+        "foot_type": "விளம் · vilam"
       },
       {
         "text": "கோதை",
-        "foot_type": "தேமா (thema)"
+        "foot_type_tamil": "தேமா",
+        "foot_type_latin": "thema",
+        "foot_type": "தேமா · thema"
       },
       {
         "text": "பரிந்து",
-        "foot_type": "புளிமா (pulima)"
+        "foot_type_tamil": "புளிமா",
+        "foot_type_latin": "pulima",
+        "foot_type": "புளிமா · pulima"
       },
       {
         "text": "வரிப்பந்து",
-        "foot_type": "புளிமாங்காய் (pulimaangkaay)"
+        "foot_type_tamil": "புளிமாங்காய்",
+        "foot_type_latin": "pulimaangkaay",
+        "foot_type": "புளிமாங்காய் · pulimaangkaay"
       },
       {
         "text": "கொண்டோ",
-        "foot_type": "தேமா (thema)"
+        "foot_type_tamil": "தேமா",
+        "foot_type_latin": "thema",
+        "foot_type": "தேமா · thema"
       }
     ],
     "talai": [

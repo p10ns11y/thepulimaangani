@@ -233,6 +233,46 @@ describe('adaptWasmJsonToParsedPoem', () => {
     expect(out!.linkage![0]!.linkage_special_type).toBe('IyarcirVenTalai')
   })
 
+  it('maps presentation foot_type_tamil and foot_type_latin onto ParsedFoot', () => {
+    const wasm = wasmParseJsonFixture({
+      original_text: 'ab',
+      syllables: [],
+      feet: [],
+      lines: [],
+      metre_type: 'Venpaa',
+      poem: wasmPoem([
+        wasmPoemLine({
+          line_index: 0,
+          words: [
+            wasmWordFoot({
+              foot_type: 'Ner',
+              syllableNodes: [wasmSyllableNode('a', 'Ner')],
+              foot_index_global: 0,
+            }),
+          ],
+        }),
+      ]),
+      presentation: {
+        metre_type: 'வெண்பா',
+        feet: [
+          {
+            text: 'a',
+            foot_type: 'மா · ma',
+            foot_type_tamil: 'மா',
+            foot_type_latin: 'ma',
+          },
+        ],
+        talai: [],
+      },
+    })
+
+    const out = adaptWasmJsonToParsedPoem(wasm)
+    expect(out).not.toBeNull()
+    expect(out!.lines[0]!.feet[0]!.display_foot_type).toBe('மா · ma')
+    expect(out!.lines[0]!.feet[0]!.display_foot_type_tamil).toBe('மா')
+    expect(out!.lines[0]!.feet[0]!.display_foot_type_latin).toBe('ma')
+  })
+
   it('prefers WASM presentation metre and foot labels when present', () => {
     const wasm = wasmParseJsonFixture({
       original_text: 'ab',

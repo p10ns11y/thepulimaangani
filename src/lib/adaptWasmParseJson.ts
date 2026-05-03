@@ -142,7 +142,18 @@ function normalizePresentation(raw: unknown): ParsedPresentation | undefined {
     if (!item || typeof item !== 'object') continue
     const f = item as Record<string, unknown>
     if (typeof f.text !== 'string' || typeof f.foot_type !== 'string') continue
-    feet.push({ text: f.text, foot_type: f.foot_type })
+    const tamilRaw = f.foot_type_tamil
+    const latinRaw = f.foot_type_latin
+    const tamil =
+      typeof tamilRaw === 'string' && tamilRaw.trim().length > 0 ? tamilRaw.trim() : undefined
+    const latin =
+      typeof latinRaw === 'string' && latinRaw.trim().length > 0 ? latinRaw.trim() : undefined
+    feet.push({
+      text: f.text,
+      foot_type: f.foot_type,
+      ...(tamil ? { foot_type_tamil: tamil } : {}),
+      ...(latin ? { foot_type_latin: latin } : {}),
+    })
   }
 
   const talai: ParsedPresentation['talai'] = []
@@ -196,7 +207,13 @@ function mergePresentationFeet(
       if (typeof g !== 'number' || g < 0 || g >= presentation.feet.length) return foot
       const label = presentation.feet[g]?.foot_type
       if (typeof label !== 'string' || label.length === 0) return foot
-      return { ...foot, display_foot_type: label }
+      const row = presentation.feet[g]
+      const next: ParsedFoot = { ...foot, display_foot_type: label }
+      const tt = row?.foot_type_tamil?.trim()
+      const tl = row?.foot_type_latin?.trim()
+      if (tt && tt.length > 0) next.display_foot_type_tamil = tt
+      if (tl && tl.length > 0) next.display_foot_type_latin = tl
+      return next
     }),
   }))
 }

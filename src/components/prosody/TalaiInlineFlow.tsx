@@ -1,7 +1,7 @@
 import { Fragment, useMemo } from 'react'
 
+import { FootTypeCaption } from '#/components/prosody/FootTypeCaption'
 import {
-  getFootTypeDisplay,
   getLineClassDisplay,
   getLinkageTypeDisplay,
 } from '#/components/prosody/displayLabels'
@@ -53,10 +53,6 @@ export function TalaiInlineFlow({ data }: TalaiInlineFlowProps) {
               const bondAfter =
                 typeof g === 'number' ? byFrom.get(g) : undefined
               const wordText = foot.syllables.map((s) => s.text).join('')
-              const footLabel =
-                foot.display_foot_type != null && foot.display_foot_type.length > 0
-                  ? foot.display_foot_type
-                  : getFootTypeDisplay(foot.foot_type)
               const alt = typeof g === 'number' && g % 2 === 0
 
               const isLastOnLine = fj === line.feet.length - 1
@@ -73,9 +69,7 @@ export function TalaiInlineFlow({ data }: TalaiInlineFlowProps) {
                     }`}
                   >
                     <span className="font-tamil text-[1.06rem] leading-[1.38] tracking-tight">{wordText}</span>
-                    <span className="text-muted-foreground max-w-full text-center font-tamil text-[0.65rem] leading-tight">
-                      {footLabel}
-                    </span>
+                    <FootTypeCaption foot={foot} align="center" />
                   </div>
 
                   {showBetweenSameLine ? (

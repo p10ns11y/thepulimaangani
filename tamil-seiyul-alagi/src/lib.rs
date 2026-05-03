@@ -41,7 +41,7 @@ pub use poem_variations::{
     variation_row, PoemVariationRow, PoemVariationsBlock, ACIRIYAPPA, KALIPPAA, VANJIPPAA, VENPAA,
 };
 pub use presentation::{
-    foot_pattern_display, DisplayFoot, DisplayResult, DisplaySyllable, DisplayTalai,
+    foot_pattern_display, foot_pattern_labels, DisplayFoot, DisplayResult, DisplaySyllable, DisplayTalai,
 };
 pub use poem_variations_training::{
     aggregate_metre_monte_carlo, build_training_rows, gold_metre_label_for_parent,
