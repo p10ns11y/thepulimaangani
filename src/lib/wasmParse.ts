@@ -1,8 +1,10 @@
+import { normalizePoemText } from '#/lib/poemTextNormalize'
 import { validatePoemInput } from '#/lib/prosodyValidation'
 
 /** Validates input, loads WASM once per call, returns raw JSON string from the parser. */
 export async function runWasmParse(poemText: string): Promise<string> {
-  const inputError = validatePoemInput(poemText)
+  const forParse = normalizePoemText(poemText)
+  const inputError = validatePoemInput(forParse)
   if (inputError) {
     throw new Error(inputError)
   }
@@ -11,7 +13,7 @@ export async function runWasmParse(poemText: string): Promise<string> {
   const wasm = await import('../wasm/thepulimaangani_parser.js')
   // Nitro dev can intercept `/src/*`; serve wasm from stable public path instead.
   await wasm.default({ module_or_path: '/wasm/thepulimaangani_parser_bg.wasm' })
-  const parseResult = wasm.parse_poem_wasm(poemText)
+  const parseResult = wasm.parse_poem_wasm(forParse)
   if (parseResult.includes('Error') || parseResult.trim() === '') {
     throw new Error(
       'Unable to analyze the provided text. Please check that it contains valid Tamil poetry.',
