@@ -19,6 +19,7 @@ export class LivePreviewController {
   private latestText = ''
   private lastParsedNorm: string | null = null
   private lastReadyParsed: ParsedPoem | null = null
+  private lastRawJson: string | null = null
   private layoutVersion = 0
   private debounceMs: number
   private prev: LivePreviewState = DEFAULT_LIVE_PREVIEW
@@ -48,6 +49,7 @@ export class LivePreviewController {
     if (!trimmed) {
       this.lastParsedNorm = null
       this.lastReadyParsed = null
+      this.lastRawJson = null
       this.layoutVersion = 0
       this.prev = DEFAULT_LIVE_PREVIEW
       this.onUpdate(this.prev)
@@ -61,6 +63,7 @@ export class LivePreviewController {
       this.prev = {
         status: 'ready',
         parsed: cached,
+        rawJson: this.lastRawJson,
         message: null,
         layoutVersion: this.layoutVersion,
       }
@@ -72,6 +75,7 @@ export class LivePreviewController {
       this.prev = {
         status: 'syncing',
         parsed: this.lastReadyParsed ?? this.prev.parsed,
+        rawJson: this.lastRawJson ?? this.prev.rawJson,
         message: null,
         layoutVersion: this.prev.layoutVersion,
       }
@@ -90,6 +94,7 @@ export class LivePreviewController {
     this.prev = {
       status: 'pending',
       parsed: this.lastReadyParsed ?? this.prev.parsed,
+      rawJson: this.lastRawJson ?? this.prev.rawJson,
       message: null,
       layoutVersion: this.prev.layoutVersion,
     }
@@ -105,10 +110,12 @@ export class LivePreviewController {
       if (!data) {
         this.lastReadyParsed = null
         this.lastParsedNorm = null
+        this.lastRawJson = null
         this.layoutVersion = 0
         this.prev = {
           status: 'error',
           parsed: null,
+          rawJson: null,
           message: 'Unexpected parser output.',
           layoutVersion: 0,
         }
@@ -118,10 +125,12 @@ export class LivePreviewController {
 
       this.lastParsedNorm = normalizePoemText(data.original_text)
       this.lastReadyParsed = data
+      this.lastRawJson = raw
       this.layoutVersion += 1
       this.prev = {
         status: 'ready',
         parsed: data,
+        rawJson: raw,
         message: null,
         layoutVersion: this.layoutVersion,
       }
@@ -132,12 +141,14 @@ export class LivePreviewController {
 
       this.lastReadyParsed = null
       this.lastParsedNorm = null
+      this.lastRawJson = null
       this.layoutVersion = 0
       const message = e instanceof Error ? e.message : 'Parse failed.'
       const isValidation = VALIDATION_ERR_RE.test(message)
       this.prev = {
         status: isValidation ? 'invalid' : 'error',
         parsed: null,
+        rawJson: null,
         message,
         layoutVersion: 0,
       }

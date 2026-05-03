@@ -37,7 +37,6 @@ export function ProsodyLab() {
   const ctx = useSelector(prosodyRef, (s) => s?.context)
   const previewSrc = ctx ? previewSource(ctx.editorOpen, ctx.poemText, ctx.poemDraft) : ''
   const debounceMs = ctx ? previewDebounceMs(ctx.editorOpen) : 420
-  const [frozenResultLive, setFrozenResultLive] = useState(ctx?.live ?? null)
 
   const { playCue, resume } = useTypewriterSound(
     typewriterSoundOn && !reducedMotion,
@@ -54,14 +53,6 @@ export function ProsodyLab() {
   useLivePreviewBridge(prosodyRef, previewSrc, debounceMs)
 
   useEffect(() => {
-    if (!ctx) return
-    // Keep result panel stable while editing; refresh only when editor is closed.
-    if (!ctx.editorOpen) {
-      setFrozenResultLive(ctx.live)
-    }
-  }, [ctx])
-
-  useEffect(() => {
     if (!ctx?.editorOpen) return
     setPaperPhysicsOn(readPaperPhysicsEnabled())
     setTypewriterSoundOn(readTypewriterSoundEnabled())
@@ -72,8 +63,7 @@ export function ProsodyLab() {
   }
 
   const send = prosodyRef.send.bind(prosodyRef)
-  const resultPoemText = ctx.poemText
-  const resultLive = ctx.editorOpen ? (frozenResultLive ?? ctx.live) : ctx.live
+  const poemTextForResults = previewSource(ctx.editorOpen, ctx.poemText, ctx.poemDraft)
 
   return (
     <main
@@ -118,8 +108,8 @@ export function ProsodyLab() {
         >
           <ParseResultPanel
             result={ctx.parse.result}
-            poemText={resultPoemText}
-            live={resultLive}
+            poemText={poemTextForResults}
+            live={ctx.live}
             pinLiveEndWhileEditing={ctx.editorOpen}
           />
         </div>

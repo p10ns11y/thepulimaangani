@@ -42,14 +42,18 @@ export function PoemAndParseCard({
           </div>
         ) : null}
         <Separator />
-        <div className="flex justify-end">
+        <div className="flex flex-col items-end gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-muted-foreground m-0 max-w-[28rem] text-right text-xs leading-snug sm:text-left">
+            All tabs use the same debounced parse as Live. Refresh runs WASM immediately if you cannot wait.
+          </p>
           <Button
             type="button"
+            variant="outline"
             onClick={onParse}
             disabled={loading}
-            className="h-9 w-fit min-w-[7.5rem] rounded-md px-4 text-sm font-medium"
+            className="h-9 w-fit min-w-[7.5rem] shrink-0 rounded-md px-4 text-sm font-medium"
           >
-            {loading ? 'Parsing…' : 'Parse poem'}
+            {loading ? 'Parsing…' : 'Refresh parse'}
           </Button>
         </div>
       </CardContent>
