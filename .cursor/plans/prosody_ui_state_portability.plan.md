@@ -15,7 +15,7 @@ todos:
     content: Prefer extending prosodyLab/app actors for lab domain; add tiny invoked actors only where order matters (debounced live pipeline optional extraction)
     status: pending
   - id: cross-cutting-ui-store
-    content: If needed, one thin slice for tab chrome / transient lab UI — Zustand or XState parallel region; never mirror poem/parse fields
+    content: If needed, TanStack Store or XState parallel region for tab chrome / transient lab UI — never mirror poem/parse fields (see plan § TanStack Store)
     status: pending
   - id: adapter-pattern-future-views
     content: Define thin adapters — same actor/store subscriptions for React today; thin bindings for Svelte/Astro later (subscribe + send)
@@ -65,6 +65,37 @@ This plan is a **reference for a future PR**; it does not prescribe library chur
 | **Live preview pipeline** | Either stay **controller + machine events** (today) or **one invoked actor** that owns debounce + WASM call — **single** output to `live` |
 | **React components** | DOM, a11y, composition | Cards, tabs markup, `fireEvent`-friendly boundaries |
 | **Thin hooks** | Imperative DOM only | Sentinel scroll, reduced motion |
+
+---
+
+## TanStack Store — when it fits (and “locked in”)
+
+You already ship **TanStack Start / Router**. **[TanStack Store](https://tanstack.com/store)** is a **small, framework-agnostic** subscription store (vanilla core + React hooks). It is a plausible choice for **cross-cutting UI** that should **not** bloat XState — but it **does** anchor maintenance to the TanStack stack.
+
+### Good use cases (low overhead)
+
+| Use case | Why TanStack Store |
+|----------|---------------------|
+| **Parse result panel UI chrome** — remember last selected tab (Live / Structure / Text flow) across navigations **within** the lab | Pure presentation; orthogonal to poem/parse; survives remount without growing prosody machine context. |
+| **Shared read-mostly “lab shell” state** — e.g. sidebar collapsed, compact density — consumed by **multiple routes** under the same app shell | One subscribe API from shell layout + leaf panels; avoids prop-drilling without encoding layout in XState unless URL/analytics needs it. |
+| **Cross-route breadcrumbs / “last opened sample id”** (non-authoritative hints) | Keeps **routing-adjacent** fluff out of `prosodyLab` machine until product ties it to URL params. |
+| **Thin derived caches** for expensive-but-pure transforms of **already-owned** data — *only* if you **subscribe** from machine-fed inputs and **never** duplicate source fields | Example: keyed memo by `live.layoutVersion`; invalidated when parent passes new snapshot — still **one upstream truth** (machine `live`). |
+
+### Bad use cases (extra overhead — avoid)
+
+| Use case | Prefer instead |
+|----------|----------------|
+| Poem text, draft, editor open, metre/sample, parse invoke, `live`, `parse.result` | **prosodyLab / app XState** |
+| Debounced WASM pipeline | **Module + machine events** (existing `LivePreviewController` shape) |
+| Anything that must be **replayable / ordered / inspectable** as a workflow | **XState** |
+| **Mirroring** machine fields “for convenience” in the store | Nothing — fix selectors |
+
+### “Locked in?” tradeoff
+
+- **Pros:** Same vendor as Router/Start; small API; vanilla core suits **future non-React** bindings better than a React-first store default.
+- **Cons:** Another layer beside **XState**; requires **clear boundaries** so TanStack Store never becomes a second prosody brain.
+
+**Rule:** TanStack Store holds **UI/session chrome** or **pure derivatives** with a **documented invalidation rule** from machine-owned snapshots — **not** parallel copies of domain fields.
 
 ---
 
