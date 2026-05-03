@@ -43,6 +43,10 @@ export function StructureAccordion({ data }: StructureAccordionProps) {
               <p className="text-foreground mt-0.5 text-sm font-medium">{String(data.vikalpa_count)}</p>
             </div>
           </div>
+          <p className="text-muted-foreground m-0 text-[0.68rem] leading-relaxed">
+            <span className="font-tamil text-foreground/88">தற்போதைய மீட்டர்:</span> ML அடிப்படையிலான முன்னறிவிப்பு
+            (WASM parser; விதிசார் விளக்கம் பின்னர்).
+          </p>
         </div>
       </AccordionRow>
 
