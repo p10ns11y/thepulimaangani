@@ -118,14 +118,14 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
     )
 
     await waitFor(() => {
-      const b = screen.getByRole('button', { name: /Refresh parse/i }) as HTMLButtonElement
+      const b = screen.getByRole('button', { name: /^Refresh$/i }) as HTMLButtonElement
       expect(b.disabled).toBe(false)
     }, SYNC_OPTIONS)
 
-    fireEvent.click(screen.getByRole('button', { name: /Refresh parse/i }))
+    fireEvent.click(screen.getByRole('button', { name: /^Refresh$/i }))
 
     await waitFor(() => {
-      const b = screen.getByRole('button', { name: /Refresh parse/i }) as HTMLButtonElement
+      const b = screen.getByRole('button', { name: /^Refresh$/i }) as HTMLButtonElement
       expect(b.disabled).toBe(false)
     }, SYNC_OPTIONS)
   })

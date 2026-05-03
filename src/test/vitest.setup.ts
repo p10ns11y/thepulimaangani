@@ -9,7 +9,7 @@ import { cleanup } from '@testing-library/react'
 
 /**
  * Vitest + `poolOptions.forks.singleFork` can leave the jsdom body across tests; explicit cleanup
- * avoids duplicate roles (e.g. multiple "Refresh parse" buttons) and stale trees.
+ * avoids duplicate roles (e.g. multiple "Refresh" buttons) and stale trees.
  */
 afterEach(() => {
   cleanup()
