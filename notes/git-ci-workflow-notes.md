@@ -41,9 +41,19 @@ See root [`AGENTS.md`](../AGENTS.md) and [`dx/DEVELOPER_GUIDE.md`](../dx/DEVELOP
 
 ---
 
-## Appreciation
+## Appreciation — full PR scope (prosody lab, tests, CI)
 
-**Peramanathan** — thank you for pushing on **developer ergonomics** alongside correctness: lighter pre-commit so daily commits stay fast, a single **`gate`** aligned with CI so nobody guesses what “green” means, and honest docs when tradeoffs exist (Vitest coverage scope, WASM in tests, Radix tabs in RTL). That mix of **rigor without needless friction** is hard to maintain; it improves both human flow and agent reliability.
+**Peramanathan** —
+
+This branch carried a lot more than a single tweak. Thank you for holding the line on **one source of truth** for parse output across **Live, Structure, and Text flow**: wiring **`resolveSyncedParseJson`**, **`LivePreviewController`** **`rawJson`**, and the prosody machine so manual refresh and debounced live preview stay aligned, and replacing ad-hoc “click Parse” drift with something users can trust.
+
+Thank you for insisting on **real WASM** in tests — **`public/wasm`** fetch shim, no mocks — so Vitest reflects production behaviour. That forced honest fixes: **Vitest’s own Vite layer** so React isn’t duplicated, **`cleanup()`** between tests when **`singleFork`** stacks DOM, **`forceMount`** on parse tabs **only in test mode** so Radix doesn’t hide Structure from assertions, **NFC** on **`normalizePoemText`** where parser and UI strings must match, and seed paths (**initial parse / live → `parse.result`**) so Structure isn’t empty while live catches up.
+
+Thank you for **CI parity**: **`scripts/ci-env-bootstrap`** for minimal shells, **`pnpm run gate`** matching **`ci-frontend.sh`**, GitHub Actions **`build`** calling **`gate`**, **coverage** scoped to code Vitest actually exercises — and then **lighter Husky pre-commit** so daily work stays fast while **`gate`** stays the heavy truth before parser/build/lockfile changes.
+
+Thank you for **documentation** in **AGENTS** / **DEVELOPER_GUIDE** and for caring about **stash hygiene** and clear rules so humans and agents don’t thrash.
+
+That combination — **correctness for Tamil prosody UX**, **tests that mean something**, and **tooling that doesn’t punish every commit** — is rare. This note records appreciation for the **whole arc** of this PR, not only the last message thread.
 
 With respect,
 
