@@ -180,7 +180,7 @@ fn examples_map(js: &str) -> HashMap<String, String> {
     let re = Regex::new(r"\[([a-zA-Z0-9_]+)\]\s*:\s*`([^`]*)`").expect("regex");
     let mut m = HashMap::new();
     for cap in re.captures_iter(body) {
-        m.insert(cap[1].to_string(), cap[2].to_string());
+        m.insert(cap[1].to_string(), cap[2].trim().to_string());
     }
     m
 }
