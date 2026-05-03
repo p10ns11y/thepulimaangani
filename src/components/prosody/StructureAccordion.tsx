@@ -11,7 +11,7 @@ import { SyllableChip } from '#/components/prosody/SyllableChip'
 import { buildLinkageOverviewRows, linkageCoarseCounts } from '#/lib/linkageOverview'
 import type { ParsedPoem } from '#/types/parsedPoem'
 
-type PanelId = 'syllables' | 'bonds' | 'insights'
+type PanelId = 'syllables' | 'bonds' | 'metre'
 
 type StructureAccordionProps = {
   data: ParsedPoem
@@ -147,22 +147,22 @@ export function StructureAccordion({ data }: StructureAccordionProps) {
       </AccordionRow>
 
       <AccordionRow
-        id="insights"
-        title="வரி வகை · Line insights"
-        subtitle={`${data.lines.length} lines`}
-        expanded={open === 'insights'}
-        onToggle={() => toggle('insights')}
+        id="metre"
+        title="மாத்திரை · Metre insights"
+        subtitle={`${data.metre_type} · vikalpa ${String(data.vikalpa_count)}`}
+        expanded={open === 'metre'}
+        onToggle={() => toggle('metre')}
       >
         <div className="flex flex-col gap-3 pt-1">
-          <div className="text-muted-foreground flex flex-wrap gap-x-3 gap-y-1 text-[0.7rem]">
-            <span>மாத்திரை: {data.metre_type}</span>
-            <span>
-              எழுத்து:{' '}
-              {typeof data.letter_count === 'object'
-                ? JSON.stringify(data.letter_count)
-                : String(data.letter_count)}
-            </span>
-            <span>விகற்பம்: {String(data.vikalpa_count)}</span>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <div className="bg-surface-2/90 border-rim/35 rounded-md border px-2.5 py-2">
+              <span className="text-muted-foreground text-xs">Metre type</span>
+              <p className="text-foreground mt-0.5 font-tamil text-sm font-medium">{data.metre_type}</p>
+            </div>
+            <div className="bg-surface-2/90 border-rim/35 rounded-md border px-2.5 py-2">
+              <span className="text-muted-foreground text-xs">Vikalpa</span>
+              <p className="text-foreground mt-0.5 text-sm font-medium">{String(data.vikalpa_count)}</p>
+            </div>
           </div>
           {data.lines.map((line, i) => (
             <div

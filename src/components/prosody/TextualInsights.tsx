@@ -35,16 +35,6 @@ export function TextualInsights({ data }: TextualInsightsProps) {
           <span className="text-foreground ml-1.5 font-medium tabular-nums">{totalLetters}</span>
         </div>
       </div>
-      <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <div className="bg-surface-2/90 border-rim/35 rounded-md border px-2.5 py-2">
-          <span className="text-muted-foreground text-xs">Metre type</span>
-          <p className="text-foreground mt-0.5 text-sm font-medium">{data.metre_type}</p>
-        </div>
-        <div className="bg-surface-2/90 border-rim/35 rounded-md border px-2.5 py-2">
-          <span className="text-muted-foreground text-xs">Vikalpa</span>
-          <p className="text-foreground mt-0.5 text-sm font-medium">{String(data.vikalpa_count)}</p>
-        </div>
-      </div>
       {letterDetail ? (
         <div className="border-rim/30 bg-surface-2/50 mt-3 rounded-md border px-2.5 py-2">
           <span className="text-muted-foreground text-xs">Letter breakdown (parser)</span>
