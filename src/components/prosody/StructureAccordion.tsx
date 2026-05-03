@@ -44,8 +44,11 @@ export function StructureAccordion({ data }: StructureAccordionProps) {
             </div>
           </div>
           <p className="text-muted-foreground m-0 text-[0.68rem] leading-relaxed">
-            <span className="font-tamil text-foreground/88">தற்போதைய மீட்டர்:</span> ML அடிப்படையிலான முன்னறிவிப்பு
-            (WASM parser; விதிசார் விளக்கம் பின்னர்).
+            <span className="text-foreground/88">Current prediction:</span> the parser scores up to four
+            metres from rule-based priors and bond (linkage) patterns, then refines the ranking with a
+            hand-tuned boost on a 51-value summary of the parse (no raw text in that vector). That summary is
+            the same one used to train optional ML classifiers; the UI shows the parser&apos;s best guess, not
+            a separate in-browser model.
           </p>
         </div>
       </AccordionRow>
