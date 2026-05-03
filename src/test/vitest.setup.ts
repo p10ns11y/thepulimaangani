@@ -1,5 +1,5 @@
 /**
- * Vitest global setup: serve real WASM bytes for `/wasm/thepulimaangani_parser_bg.wasm`.
+ * Vitest global setup: WASM fetch shim + jsdom gaps (ResizeObserver, etc.).
  */
 import fs from 'node:fs'
 import path from 'node:path'
@@ -7,7 +7,15 @@ import { fileURLToPath } from 'node:url'
 
 import { vi } from 'vitest'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+/** jsdom does not implement ResizeObserver (used by useFitPoemFontSize / PoemFitPreview). */
+if (typeof globalThis.ResizeObserver === 'undefined') {
+  globalThis.ResizeObserver = class {
+    constructor(_cb: ResizeObserverCallback) {}
+    observe(): void {}
+    unobserve(): void {}
+    disconnect(): void {}
+  }
+}
 const repoRoot = path.resolve(__dirname, '../..')
 
 const wasmCandidates = [
