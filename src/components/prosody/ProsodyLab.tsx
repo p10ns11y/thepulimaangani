@@ -21,6 +21,9 @@ import { PoemEditLiveContextRail } from './PoemEditLiveContextRail'
 import { SamplesCard } from './SamplesCard'
 
 function previewDebounceMs(editorOpen: boolean) {
+  // Vitest runs Vite with `mode: 'test'` — zero debounce keeps integration tests fast without fake timers
+  // (fake `setTimeout` breaks React 19's hook dispatcher in RTL).
+  if (import.meta.env.MODE === 'test') return 0
   return editorOpen ? 300 : 420
 }
 

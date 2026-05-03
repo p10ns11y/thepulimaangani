@@ -1,21 +1,15 @@
 /**
  * @vitest-environment jsdom
  *
- * Fake timers skip LivePreviewController debounce (300–420ms) so CI spends time on WASM only.
+ * Live preview debounce is 0 when `import.meta.env.MODE === 'test'` (ProsodyLab) — no fake timers (they break React 19 hooks).
  */
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AppActorProvider } from '#/components/AppActorProvider'
 import { ProsodyLab } from '#/components/prosody/ProsodyLab'
 
-/** WASM compile + parse can still be slow on cold CI; debounce is no longer in this budget. */
 const SYNC_OPTIONS = { timeout: 15_000 }
-
-/** Skip live-preview debounce (`LivePreviewController` uses `setTimeout`). */
-async function flushLivePreviewDebounce() {
-  await vi.runAllTimersAsync()
-}
 
 function mockViewportAndObservers() {
   Object.defineProperty(window, 'matchMedia', {
@@ -46,13 +40,6 @@ function mockViewportAndObservers() {
 describe('ProsodyLab integration (real WASM from public/wasm)', () => {
   beforeEach(() => {
     mockViewportAndObservers()
-    vi.useFakeTimers({
-      toFake: ['setTimeout', 'setInterval', 'clearTimeout', 'clearInterval'],
-    })
-  })
-
-  afterEach(() => {
-    vi.useRealTimers()
   })
 
   it('shows Structure analysis after live parse syncs from default sample', async () => {
@@ -61,8 +48,6 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
         <ProsodyLab />
       </AppActorProvider>,
     )
-
-    await flushLivePreviewDebounce()
 
     await waitFor(
       () => {
@@ -87,8 +72,6 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
       </AppActorProvider>,
     )
 
-    await flushLivePreviewDebounce()
-
     await waitFor(
       () => {
         expect(screen.getByRole('heading', { name: /Analysis summary/i })).toBeInTheDocument()
@@ -97,7 +80,6 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
     )
 
     fireEvent.click(screen.getByRole('tab', { name: /ஆசிரியப்பா/i }))
-    await flushLivePreviewDebounce()
 
     await waitFor(
       () => {
@@ -122,8 +104,6 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
       </AppActorProvider>,
     )
 
-    await flushLivePreviewDebounce()
-
     await waitFor(
       () => {
         expect(screen.getByRole('heading', { name: /Analysis summary/i })).toBeInTheDocument()
@@ -143,8 +123,6 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
       expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
     })
 
-    await flushLivePreviewDebounce()
-
     await waitFor(
       () => {
         expect(screen.getByRole('heading', { name: /Analysis summary/i })).toBeInTheDocument()
@@ -159,8 +137,6 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
         <ProsodyLab />
       </AppActorProvider>,
     )
-
-    await flushLivePreviewDebounce()
 
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /Refresh parse/i })).toBeEnabled()
@@ -179,8 +155,6 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
         <ProsodyLab />
       </AppActorProvider>,
     )
-
-    await flushLivePreviewDebounce()
 
     await waitFor(
       () => {

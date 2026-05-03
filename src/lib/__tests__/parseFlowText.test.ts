@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { buildParseFlowText } from '#/components/prosody/parseFlowText'
+import { buildParseFlowText } from '../../components/prosody/parseFlowText'
 import type { ParsedPoem } from '#/types/parsedPoem'
 
 function minimalParsed(overrides: Partial<ParsedPoem> = {}): ParsedPoem {
