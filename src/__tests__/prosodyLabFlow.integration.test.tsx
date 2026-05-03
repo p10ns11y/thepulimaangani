@@ -1,8 +1,7 @@
 /**
  * @vitest-environment jsdom
  */
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AppActorProvider } from '#/components/AppActorProvider'
@@ -43,7 +42,6 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
   })
 
   it('shows Structure analysis after live parse syncs from default sample', async () => {
-    const user = userEvent.setup()
     render(
       <AppActorProvider>
         <ProsodyLab />
@@ -57,7 +55,7 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
       SYNC_OPTIONS,
     )
 
-    await user.click(screen.getByRole('tab', { name: /^Structure$/i }))
+    fireEvent.click(screen.getByRole('tab', { name: /^Structure$/i }))
     await waitFor(
       () => {
         expect(screen.getByRole('heading', { name: /Prosodic structure/i })).toBeInTheDocument()
@@ -67,7 +65,6 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
   })
 
   it('updates poem when switching metre tab so Structure reflects new sample after sync', async () => {
-    const user = userEvent.setup()
     render(
       <AppActorProvider>
         <ProsodyLab />
@@ -81,7 +78,7 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
       SYNC_OPTIONS,
     )
 
-    await user.click(screen.getByRole('tab', { name: /ஆசிரியப்பா/i }))
+    fireEvent.click(screen.getByRole('tab', { name: /ஆசிரியப்பா/i }))
 
     await waitFor(
       () => {
@@ -90,7 +87,7 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
       SYNC_OPTIONS,
     )
 
-    await user.click(screen.getByRole('tab', { name: /^Structure$/i }))
+    fireEvent.click(screen.getByRole('tab', { name: /^Structure$/i }))
     await waitFor(
       () => {
         expect(screen.getByRole('heading', { name: /Prosodic structure/i })).toBeInTheDocument()
@@ -100,7 +97,6 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
   })
 
   it('opens editor from poem preview and applies draft', async () => {
-    const user = userEvent.setup()
     render(
       <AppActorProvider>
         <ProsodyLab />
@@ -114,13 +110,13 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
       SYNC_OPTIONS,
     )
 
-    await user.click(screen.getByRole('button', { name: /Edit poem/i }))
+    fireEvent.click(screen.getByRole('button', { name: /Edit poem/i }))
 
     const ta = await screen.findByRole('textbox')
-    await user.clear(ta)
-    await user.type(ta, 'தமிழ் அழகு')
+    fireEvent.change(ta, { target: { value: '' } })
+    fireEvent.change(ta, { target: { value: 'தமிழ் அழகு' } })
 
-    await user.click(screen.getByRole('button', { name: /Done/i }))
+    fireEvent.click(screen.getByRole('button', { name: /Done/i }))
 
     await waitFor(() => {
       expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
@@ -135,7 +131,6 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
   })
 
   it('refresh parse completes without error', async () => {
-    const user = userEvent.setup()
     render(
       <AppActorProvider>
         <ProsodyLab />
@@ -146,7 +141,7 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
       expect(screen.getByRole('button', { name: /Refresh parse/i })).toBeEnabled()
     }, SYNC_OPTIONS)
 
-    await user.click(screen.getByRole('button', { name: /Refresh parse/i }))
+    fireEvent.click(screen.getByRole('button', { name: /Refresh parse/i }))
 
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /Refresh parse/i })).toBeEnabled()
@@ -154,7 +149,6 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
   })
 
   it('Text flow tab shows metre summary lines', async () => {
-    const user = userEvent.setup()
     render(
       <AppActorProvider>
         <ProsodyLab />
@@ -168,7 +162,7 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
       SYNC_OPTIONS,
     )
 
-    await user.click(screen.getByRole('tab', { name: /Text flow/i }))
+    fireEvent.click(screen.getByRole('tab', { name: /Text flow/i }))
 
     await waitFor(
       () => {
