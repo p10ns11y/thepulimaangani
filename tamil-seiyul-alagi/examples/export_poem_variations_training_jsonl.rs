@@ -1,4 +1,4 @@
-//! Emit one JSON line per row from `data/poem_variations.js` (labels + dense + linkage).
+//! Emit one JSON line per row from the Rust `poem_variations` tables (labels + dense + linkage).
 //!
 //! Linkage uses the same `linkage_type` / `linkage_special_type` strings as WASM JSON
 //! (e.g. `VenTalai`, `IyarcirVenTalai`).
@@ -16,13 +16,11 @@ use thepulimaangani_parser::{build_training_rows, poem_variation_label_rows};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let manifest = Path::new(env!("CARGO_MANIFEST_DIR"));
-    let js_path = manifest.join("../data/poem_variations.js");
     let out_dir = manifest.join("../data/training");
     std::fs::create_dir_all(&out_dir)?;
     let out_path = out_dir.join("poem_variations_training.jsonl");
 
-    let js = std::fs::read_to_string(&js_path)?;
-    let labels = poem_variation_label_rows(&js);
+    let labels = poem_variation_label_rows();
     let rows = build_training_rows(&labels);
 
     let mut file = std::fs::File::create(&out_path)?;

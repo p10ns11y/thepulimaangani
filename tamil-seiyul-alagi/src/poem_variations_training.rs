@@ -1,18 +1,18 @@
-//! Parse [`data/poem_variations.js`](../../data/poem_variations.js) and build UTF-8 training rows
-//! (labels + optional 51-dim features from `parse_poem`).
+//! Build UTF-8 training rows from the canonical Rust poem-variation tables in [`crate::poem_variations`]
+//! (kept in sync with [`data/poem_variations.js`](../../data/poem_variations.js) at the repo root).
+//! Labels + optional 51-dim features from `parse_poem`.
 
-use std::collections::{BTreeMap, HashMap};
+use std::collections::BTreeMap;
 use std::path::Path;
-
-use regex::Regex;
 
 use crate::linkage::Linkage;
 use crate::metre::MetreType;
+use crate::poem_variations::{poem_variations_blocks, PoemVariationRow};
 use crate::parse_features::{fnv1a_u32, PARSE_FEATURE_DENSE_LEN};
 use crate::parse_poem;
 use crate::types::{ParseFeatureSnapshot, ParseOptions, ParseResult};
 
-/// One labelled sample from `poem_variations.js` (before parsing).
+/// One labelled sample from the poem-variation corpus (before parsing).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PoemVariationLabelRow {
     pub sample_id: String,
@@ -89,7 +89,7 @@ pub fn shuffle_labels_for_iteration(labels: &[PoemVariationLabelRow], iter: u32)
     out
 }
 
-/// Gold coarse [`MetreType`] for a `parent_metre` slug from `poem_variations.js`.
+/// Gold coarse [`MetreType`] for a `parent_metre` slug (`venpaa`, `aciriyappa`, …).
 pub fn gold_metre_type_for_parent(parent_slug: &str) -> Option<MetreType> {
     match parent_slug {
         "venpaa" => Some(MetreType::Venpaa),
@@ -100,7 +100,7 @@ pub fn gold_metre_type_for_parent(parent_slug: &str) -> Option<MetreType> {
     }
 }
 
-/// Gold coarse metre label string for a `parent_metre` slug from `poem_variations.js` (`aciriyappa` → `Aciriyappaa`).
+/// Gold coarse metre label string for a `parent_metre` slug (`aciriyappa` → `Aciriyappaa`).
 pub fn gold_metre_label_for_parent(parent_slug: &str) -> Option<&'static str> {
     gold_metre_type_for_parent(parent_slug).map(|m| match m {
         MetreType::Venpaa => "Venpaa",
@@ -154,117 +154,31 @@ pub fn aggregate_metre_monte_carlo(
     agg
 }
 
-fn slice_between<'a>(s: &'a str, start_pat: &str, end_pat: &str) -> Option<&'a str> {
-    let i = s.find(start_pat)? + start_pat.len();
-    let j = s[i..].find(end_pat)? + i;
-    Some(&s[i..j])
+fn push_label_row(
+    out: &mut Vec<PoemVariationLabelRow>,
+    parent_metre: &str,
+    row_kind: &str,
+    row: PoemVariationRow,
+) {
+    out.push(PoemVariationLabelRow {
+        sample_id: row.en.to_string(),
+        parent_metre: parent_metre.to_string(),
+        row_kind: row_kind.to_string(),
+        label_ta: row.ta.to_string(),
+        text: row.example.to_string(),
+    });
 }
 
-/// `const ORU_VIKARPA_KURAL_VENPAA = 'oru_vikarpa_kural_venpaa';` → const name → machine id.
-fn const_string_map(js: &str) -> HashMap<String, String> {
-    let re = Regex::new(r"(?m)^const\s+([A-Z0-9_]+)\s*=\s*'([^']*)'\s*;").expect("const regex");
-    let mut m = HashMap::new();
-    for cap in re.captures_iter(js) {
-        m.insert(cap[1].to_string(), cap[2].to_string());
-    }
-    m
-}
-
-fn examples_map(js: &str) -> HashMap<String, String> {
-    let body = slice_between(
-        js,
-        "const poemVariationExamples = {",
-        "\n};\n\n/** Tamil display label",
-    )
-    .expect("poemVariationExamples block");
-    let re = Regex::new(r"\[([a-zA-Z0-9_]+)\]\s*:\s*`([^`]*)`").expect("regex");
-    let mut m = HashMap::new();
-    for cap in re.captures_iter(body) {
-        m.insert(cap[1].to_string(), cap[2].trim().to_string());
-    }
-    m
-}
-
-fn tamil_labels_map(js: &str) -> HashMap<String, String> {
-    let body = slice_between(
-        js,
-        "const tamilKeys = {",
-        "\n};\n\n/** @param {string} key */",
-    )
-    .expect("tamilKeys block");
-    let re = Regex::new(r"\[([a-zA-Z0-9_]+)\]\s*:\s*'([^']*)'").expect("regex");
-    let mut out = HashMap::new();
-    for cap in re.captures_iter(body) {
-        out.insert(cap[1].to_string(), cap[2].to_string());
-    }
-    out
-}
-
-fn variation_ids_in_block(block_inner: &str) -> Vec<String> {
-    let re = Regex::new(r"variationRow\(([a-zA-Z0-9_]+)\)").expect("regex");
-    re.captures_iter(block_inner)
-        .map(|c| c[1].to_string())
-        .collect()
-}
-
-/// Parse the canonical `poem_variations.js` source (UTF-8) into ordered label rows.
-pub fn poem_variation_label_rows(js: &str) -> Vec<PoemVariationLabelRow> {
-    let consts = const_string_map(js);
-    let examples = examples_map(js);
-    let tamil = tamil_labels_map(js);
-
-    let pv_body = slice_between(
-        js,
-        "const poemVariations = {",
-        "\n};\n\nexport {",
-    )
-    .expect("poemVariations block");
-
-    let parents = [
-        (r"(?s)\[VENPAA\]\s*:\s*\{\s*special_types:\s*\[(.*?)\]\s*,\s*variations:\s*\[(.*?)\]\s*,\s*\}", "venpaa"),
-        (r"(?s)\[ACIRIYAPPA\]\s*:\s*\{\s*special_types:\s*\[(.*?)\]\s*,\s*variations:\s*\[(.*?)\]\s*,\s*\}", "aciriyappa"),
-        (r"(?s)\[KALIPPAA\]\s*:\s*\{\s*special_types:\s*\[(.*?)\]\s*,\s*variations:\s*\[(.*?)\]\s*,\s*\}", "kalippaa"),
-        (r"(?s)\[VANJIPPAA\]\s*:\s*\{\s*special_types:\s*\[(.*?)\]\s*,\s*variations:\s*\[(.*?)\]\s*,\s*\}", "vanjippaa"),
-    ];
-
+/// Ordered label rows from [`crate::poem_variations::poem_variations_blocks`]: Venpaa → Vanjippaa,
+/// and within each metre block all `special_type` rows then all `variation` rows (same order as the JS source).
+pub fn poem_variation_label_rows() -> Vec<PoemVariationLabelRow> {
     let mut out = Vec::new();
-    for (pat, parent_slug) in parents {
-        let re = Regex::new(pat).expect("parent regex");
-        let cap = re
-            .captures(pv_body)
-            .unwrap_or_else(|| panic!("parent block not found: {parent_slug}"));
-        let special_inner = cap.get(1).expect("special_types").as_str();
-        let var_inner = cap.get(2).expect("variations").as_str();
-
-        for sid_const in variation_ids_in_block(special_inner) {
-            let sample_id = consts
-                .get(&sid_const)
-                .cloned()
-                .unwrap_or_else(|| sid_const.to_lowercase());
-            let text = examples.get(&sid_const).cloned().unwrap_or_default();
-            let label_ta = tamil.get(&sid_const).cloned().unwrap_or_default();
-            out.push(PoemVariationLabelRow {
-                sample_id,
-                parent_metre: parent_slug.to_string(),
-                row_kind: "special_type".to_string(),
-                label_ta,
-                text,
-            });
+    for block in poem_variations_blocks() {
+        for row in block.special_types {
+            push_label_row(&mut out, block.metre_key, "special_type", *row);
         }
-        for sid_const in variation_ids_in_block(var_inner) {
-            let sample_id = consts
-                .get(&sid_const)
-                .cloned()
-                .unwrap_or_else(|| sid_const.to_lowercase());
-            let text = examples.get(&sid_const).cloned().unwrap_or_default();
-            let label_ta = tamil.get(&sid_const).cloned().unwrap_or_default();
-            out.push(PoemVariationLabelRow {
-                sample_id,
-                parent_metre: parent_slug.to_string(),
-                row_kind: "variation".to_string(),
-                label_ta,
-                text,
-            });
+        for row in block.variations {
+            push_label_row(&mut out, block.metre_key, "variation", *row);
         }
     }
     out
@@ -378,23 +292,15 @@ pub fn write_poem_variations_training_csv(
 mod tests {
     use super::*;
 
-    fn js_fixture() -> String {
-        std::fs::read_to_string(
-            std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../data/poem_variations.js"),
-        )
-        .expect("read poem_variations.js")
-    }
-
     #[test]
     fn label_row_count_matches_poem_variations() {
-        let rows = poem_variation_label_rows(&js_fixture());
-        assert_eq!(rows.len(), 36, "expected 36 samples from poem_variations.js");
+        let rows = poem_variation_label_rows();
+        assert_eq!(rows.len(), 36, "expected 36 samples from poem_variations blocks");
     }
 
     #[test]
     fn hybrid_head_special_type_top1_matches_gold() {
-        let js = js_fixture();
-        let labels = poem_variation_special_type_rows(&poem_variation_label_rows(&js));
+        let labels = poem_variation_special_type_rows(&poem_variation_label_rows());
         let mut o = ParseOptions::default();
         o.uyir_u = true;
         for label in &labels {
@@ -411,8 +317,7 @@ mod tests {
 
     #[test]
     fn mc_twenty_iterations_special_types_majority_correct() {
-        let js = js_fixture();
-        let labels = poem_variation_special_type_rows(&poem_variation_label_rows(&js));
+        let labels = poem_variation_special_type_rows(&poem_variation_label_rows());
         assert_eq!(labels.len(), 17);
         let agg = aggregate_metre_monte_carlo(&labels, 20);
         assert_eq!(agg.iterations, 20);

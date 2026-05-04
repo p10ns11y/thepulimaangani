@@ -41,7 +41,7 @@ impl Default for HybridMetreHead {
     }
 }
 
-/// Fitted on `poem_variations.js` **special_type** rows (see `examples/fit_metre_hybrid_weights.rs`).
+/// Fitted on **special_type** rows from [`crate::poem_variations`](crate::poem_variations) (see `examples/fit_metre_hybrid_weights.rs`).
 /// Regenerate when corpus or feature schema changes.
 pub fn shipped_hybrid_metre_head() -> &'static HybridMetreHead {
     &SHIPPED_HYBRID_METRE_HEAD
