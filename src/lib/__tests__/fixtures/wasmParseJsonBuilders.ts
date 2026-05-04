@@ -1,5 +1,5 @@
 /**
- * Builders for JSON shapes produced by `parse_poem_wasm` / consumed by {@link adaptWasmJsonToParsedPoem}.
+ * Builders for JSON shapes produced by `parse_poem_wasm` / consumed by {@link wasmJsonToParsedPoem}.
  * Keeps tests readable and structurally consistent with serde field names.
  */
 

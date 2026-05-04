@@ -5,7 +5,7 @@
  */
 import rawParseResult from '#/lib/__tests__/fixtures/samplePoemThreeLines.parseResult.json'
 
-import { adaptWasmJsonToParsedPoem } from '#/lib/adaptWasmParseJson'
+import { wasmJsonToParsedPoem } from '#/lib/wasmWireParseResult'
 import { physicalPoemLines } from '#/lib/mapFeetToPhysicalLines'
 import type { ParsedPoem } from '#/types/parsedPoem'
 
@@ -13,8 +13,8 @@ export const SAMPLE_POEM_THREE_LINES = rawParseResult.original_text as string
 
 /** Full `ParsedPoem` from the committed `ParseResult` JSON (via the same adapter as WASM). */
 export function parsedSampleThreeLines(): ParsedPoem {
-  const p = adaptWasmJsonToParsedPoem(rawParseResult)
-  if (!p) throw new Error('samplePoemThreeLines.parseResult.json failed adaptWasmJsonToParsedPoem')
+  const p = wasmJsonToParsedPoem(rawParseResult)
+  if (!p) throw new Error('samplePoemThreeLines.parseResult.json failed wasmJsonToParsedPoem')
   return p
 }
 

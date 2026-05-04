@@ -1,6 +1,6 @@
-import { adaptWasmJsonToParsedPoem } from '#/lib/adaptWasmParseJson'
 import { normalizePoemText } from '#/lib/poemTextNormalize'
 import { runWasmParse } from '#/lib/wasmParse'
+import { wasmJsonToParsedPoem } from '#/lib/wasmWireParseResult'
 import type { ParsedPoem } from '#/types/parsedPoem'
 import type { LivePreviewState } from '#/types/livePreview'
 import { DEFAULT_LIVE_PREVIEW } from '#/types/livePreview'
@@ -106,7 +106,7 @@ export class LivePreviewController {
       if (normalizePoemText(this.latestText) !== norm) return
 
       const rawJson: unknown = JSON.parse(raw)
-      const data = adaptWasmJsonToParsedPoem(rawJson)
+      const data = wasmJsonToParsedPoem(rawJson)
       if (!data) {
         this.lastReadyParsed = null
         this.lastParsedNorm = null

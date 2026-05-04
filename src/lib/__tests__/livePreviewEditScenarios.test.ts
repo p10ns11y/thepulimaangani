@@ -32,7 +32,7 @@ import {
   type WasmParseFn,
   type WasmParseRawFn,
 } from '#/lib/__tests__/wasmParseHarness'
-import { adaptWasmJsonToParsedPoem } from '#/lib/adaptWasmParseJson'
+import { wasmJsonToParsedPoem } from '#/lib/wasmWireParseResult'
 
 export { SAMPLE_POEM_THREE_LINES }
 
@@ -200,7 +200,7 @@ describe.skipIf(!isWasmPkgBuilt())('live preview + WASM integration', () => {
     const text = SAMPLE_POEM_THREE_LINES
     const raw = await parseRaw(text)
     expect(raw).not.toBeNull()
-    const viaAdapter = adaptWasmJsonToParsedPoem(raw!)
+    const viaAdapter = wasmJsonToParsedPoem(raw!)
     const fixture = parsedSampleThreeLines()
     expect(viaAdapter).not.toBeNull()
     expect(viaAdapter!.lines.length).toBe(fixture.lines.length)

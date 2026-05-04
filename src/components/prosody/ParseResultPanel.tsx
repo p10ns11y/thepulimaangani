@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 
 import { Card, CardContent } from '#/components/ui/card'
-import { adaptWasmJsonToParsedPoem } from '#/lib/adaptWasmParseJson'
+import { wasmJsonToParsedPoem } from '#/lib/wasmWireParseResult'
 import { resolveSyncedParseJson } from '#/lib/resolveSyncedParseJson'
 import { cn } from '#/lib/utils'
 import type { LivePreviewState } from '#/types/livePreview'
@@ -43,7 +43,7 @@ export function ParseResultPanel({
     if (!syncedJson) return null
     try {
       const data: unknown = JSON.parse(syncedJson)
-      return adaptWasmJsonToParsedPoem(data)
+      return wasmJsonToParsedPoem(data)
     } catch {
       return null
     }

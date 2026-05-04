@@ -11,7 +11,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
-import { adaptWasmJsonToParsedPoem } from '#/lib/adaptWasmParseJson'
+import { wasmJsonToParsedPoem } from '#/lib/wasmWireParseResult'
 import type { ParsedPoem } from '#/types/parsedPoem'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -48,11 +48,11 @@ export async function createWasmParsePoem(): Promise<WasmParseFn> {
   const parseRaw = await createWasmParseRaw()
   return async (poemText: string) => {
     const json = await parseRaw(poemText)
-    return json == null ? null : adaptWasmJsonToParsedPoem(json)
+    return json == null ? null : wasmJsonToParsedPoem(json)
   }
 }
 
-/** Raw JSON from `parse_poem_wasm` (before {@link adaptWasmJsonToParsedPoem}). */
+/** Raw JSON from `parse_poem_wasm` (before {@link wasmJsonToParsedPoem}). */
 export async function createWasmParseRaw(): Promise<WasmParseRawFn> {
   const bundle = resolveWasmBundle()
   if (!bundle) {
