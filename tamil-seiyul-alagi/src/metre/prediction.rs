@@ -125,6 +125,8 @@ pub fn detect_metre_hypotheses(
                 aggregate_score: score,
                 violations: vec![],
                 rule_ids: vec![RuleId::MetreLength01, RuleId::LinkageAdjacency01],
+                metre_probability: None,
+                metre_rank: None,
             }
         })
         .collect();
@@ -228,6 +230,8 @@ mod boost_tests {
             aggregate_score: 70,
             violations: vec![],
             rule_ids: vec![RuleId::MetreLength01],
+            metre_probability: None,
+            metre_rank: None,
         }];
         boost_metre_hypotheses_with_dense(&mut hyps, &dense_venthalai_favourable_for_boost());
         assert!(hyps[0].aggregate_score > 70, "expected positive feature boost");
@@ -244,6 +248,8 @@ mod boost_tests {
             aggregate_score: 70,
             violations: vec![],
             rule_ids: vec![],
+            metre_probability: None,
+            metre_rank: None,
         }];
         boost_metre_hypotheses_with_dense(&mut hyps, &[0.0f32; 3]);
         assert_eq!(hyps[0].aggregate_score, 70);
@@ -259,6 +265,8 @@ mod boost_tests {
             aggregate_score: 50,
             violations: vec![],
             rule_ids: vec![],
+            metre_probability: None,
+            metre_rank: None,
         }];
         boost_metre_hypotheses_with_dense(&mut hyps, &d);
         assert!(hyps[0].aggregate_score > 50);

@@ -3,6 +3,7 @@
 
 mod classical_checker;
 mod fractions;
+pub mod ml_head;
 mod prediction;
 
 pub use classical_checker::classical_violations_for_metre;

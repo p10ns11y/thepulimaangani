@@ -392,6 +392,24 @@ mod tests {
     }
 
     #[test]
+    fn hybrid_head_special_type_top1_matches_gold() {
+        let js = js_fixture();
+        let labels = poem_variation_special_type_rows(&poem_variation_label_rows(&js));
+        let mut o = ParseOptions::default();
+        o.uyir_u = true;
+        for label in &labels {
+            let gold = gold_metre_type_for_parent(label.parent_metre.as_str()).expect("gold");
+            let r = parse_poem(label.text.trim(), o).expect("parse");
+            assert!(
+                r.metre_entropy_bits.is_some(),
+                "expected hybrid entropy on {}",
+                label.sample_id
+            );
+            assert_eq!(r.metre_type, Some(gold), "sample {}", label.sample_id);
+        }
+    }
+
+    #[test]
     fn mc_twenty_iterations_special_types_majority_correct() {
         let js = js_fixture();
         let labels = poem_variation_special_type_rows(&poem_variation_label_rows(&js));

@@ -4,7 +4,7 @@ mod foot_pattern;
 mod letter;
 mod line_scope;
 mod linkage;
-mod metre;
+pub mod metre;
 mod parse_features;
 mod poem_variations;
 mod poem_variations_training;
@@ -15,7 +15,7 @@ mod prosodic_unit;
 mod syllable;
 mod syllable_builder;
 mod tamil_chars;
-mod types;
+pub mod types;
 mod word_scope;
 
 pub use prosodic_sequence::ProsodicSequence;
@@ -31,7 +31,7 @@ pub use linkage::{
 };
 pub use metre::{
     boost_metre_hypotheses_with_dense, classical_violations_for_metre, detect_metre_hypotheses,
-    linkage_coarse_fractions, sort_metre_hypotheses_by_score, MetreType,
+    linkage_coarse_fractions, ml_head, sort_metre_hypotheses_by_score, MetreType,
 };
 pub use parse_features::{
     fnv1a_u32, ParseFeatureSource, ParseFeatureVector, FOOT_PATTERN_BIN_DIM, FOOT_PATTERN_BIN_OFFSET,
@@ -94,6 +94,8 @@ pub fn parse_poem(text: &str, options: ParseOptions) -> Result<ParseResult, Pars
     let lines = types::flat_lines_from_poem(&poem);
     let mut metre_hypotheses = metre::detect_metre_hypotheses(&feet, &linkage, options.no_detect);
 
+    let mut metre_entropy_bits = None;
+    let mut metre_epistemic_margin = None;
     let parse_features = if !options.no_detect {
         let fv = ParseFeatureVector::from_pipeline(ParseFeatureSource {
             letter_count: graphemes.len(),
@@ -106,6 +108,31 @@ pub fn parse_poem(text: &str, options: ParseOptions) -> Result<ParseResult, Pars
         if !metre_hypotheses.is_empty() {
             metre::boost_metre_hypotheses_with_dense(&mut metre_hypotheses, &fv.dense);
             metre::sort_metre_hypotheses_by_score(&mut metre_hypotheses);
+            if !options.skip_ml_metre && metre::ml_head::hybrid_head_is_active(metre::ml_head::shipped_hybrid_metre_head())
+            {
+                if let Some((_, ent, mar)) = metre::ml_head::apply_hybrid_metre_head(
+                    metre::ml_head::shipped_hybrid_metre_head(),
+                    &fv.dense,
+                    &mut metre_hypotheses,
+                    15.0,
+                ) {
+                    metre::sort_metre_hypotheses_by_score(&mut metre_hypotheses);
+                    metre_entropy_bits = Some(ent);
+                    metre_epistemic_margin = Some(mar);
+                    for h in &mut metre_hypotheses {
+                        if h.metre_rank == Some(1) {
+                            let mut ids = h.rule_ids.clone();
+                            if !ids
+                                .iter()
+                                .any(|r| matches!(r, RuleId::Other(s) if s == "MetreHybridLogit01"))
+                            {
+                                ids.push(RuleId::Other("MetreHybridLogit01".into()));
+                            }
+                            h.rule_ids = ids;
+                        }
+                    }
+                }
+            }
         }
         Some(fv.into_snapshot())
     } else {
@@ -127,6 +154,8 @@ pub fn parse_poem(text: &str, options: ParseOptions) -> Result<ParseResult, Pars
         lines,
         metre_type: metre.clone(),
         confidence: metre_hypotheses.first().map_or(0, |h| h.aggregate_score),
+        metre_entropy_bits,
+        metre_epistemic_margin,
         provenance: metre_hypotheses
             .first()
             .map_or_else(Vec::new, |h| h.rule_ids.clone()),
@@ -166,7 +195,9 @@ mod tests {
     #[test]
     fn metre_detection_applies_parse_feature_boost_for_sample_kural_venpaa() {
         let text = "முற்ற உணர்ந்தானை ஏத்தி மொழிகுவன்\nகுற்றமொன்று இல்லா அறம்";
-        let r = parse_poem(text, ParseOptions::default()).expect("parse");
+        let mut o = ParseOptions::default();
+        o.skip_ml_metre = true;
+        let r = parse_poem(text, o).expect("parse");
         assert_eq!(r.metre_type, Some(MetreType::Venpaa));
         let h = &r.top_k_metre_hypotheses[0];
         assert!(

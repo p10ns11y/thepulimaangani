@@ -71,6 +71,7 @@ Unit test `mc_twenty_iterations_special_types_majority_correct` guards regressio
 | Approach | When to use |
 |----------|-------------|
 | **Hand-tuned boost** (current [`boost_metre_hypotheses_with_dense`](src/metre/prediction.rs)) | Fast, no training; tune constants against a dev set. |
+| **Hybrid logit** (optional; [`src/metre/ml_head.rs`](src/metre/ml_head.rs) + generated [`metre_hybrid_weights.inc.rs`](src/metre/metre_hybrid_weights.inc.rs)) | Retune with `cargo run --example fit_metre_hybrid_weights` after corpus or feature-schema changes. |
 | **Linear / softmax on `dense`** | Few hundred parameters; fit with SGD or closed-form least squares per class. |
 | **Prototype / k-NN** | One or few examples per class; store mean vector per label. |
 
@@ -93,6 +94,7 @@ Gradient boosting (XGBoost-style) is usually **not** maintained in pure Rust at 
 The browser receives the same `ParseResult` JSON as native Rust serialization. Optional fields for the UI:
 
 - `parse_features` — plot or log the vector; compare to server golden runs.
-- `top_k_metre_hypotheses` — show alternate metre scores without re-parsing.
+- `top_k_metre_hypotheses` — show alternate metre scores without re-parsing (includes optional `metre_probability` / `metre_rank` when hybrid head ran).
+- `metre_entropy_bits` / `metre_epistemic_margin` — optional coarse-metre uncertainty from the hybrid head.
 
 See [`src/types/parsedPoem.ts`](../../src/types/parsedPoem.ts) and [`src/lib/adaptWasmParseJson.ts`](../../src/lib/adaptWasmParseJson.ts) for adapter fields.

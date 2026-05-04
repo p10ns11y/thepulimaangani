@@ -331,11 +331,19 @@ export function adaptWasmJsonToParsedPoem(data: unknown): ParsedPoem | null {
           const aggregate_score =
             typeof h.aggregate_score === 'number' ? h.aggregate_score : Number.NaN
           if (!metre_type || Number.isNaN(aggregate_score)) return null
+          const metre_probability =
+            typeof h.metre_probability === 'number' && Number.isFinite(h.metre_probability)
+              ? h.metre_probability
+              : undefined
+          const metre_rank =
+            typeof h.metre_rank === 'number' && Number.isFinite(h.metre_rank) ? h.metre_rank : undefined
           return {
             metre_type,
             aggregate_score,
             violations: Array.isArray(h.violations) ? h.violations : [],
             rule_ids: Array.isArray(h.rule_ids) ? h.rule_ids : [],
+            ...(metre_probability !== undefined ? { metre_probability } : {}),
+            ...(metre_rank !== undefined ? { metre_rank } : {}),
           }
         })
         .filter((x): x is ParsedMetreHypothesis => x != null)
@@ -376,9 +384,20 @@ export function adaptWasmJsonToParsedPoem(data: unknown): ParsedPoem | null {
 
   const linesWithPresFeet = mergePresentationFeet(lines, presentation)
 
+  const entropy =
+    typeof o.metre_entropy_bits === 'number' && Number.isFinite(o.metre_entropy_bits)
+      ? o.metre_entropy_bits
+      : undefined
+  const margin =
+    typeof o.metre_epistemic_margin === 'number' && Number.isFinite(o.metre_epistemic_margin)
+      ? o.metre_epistemic_margin
+      : undefined
+
   return {
     original_text: o.original_text,
     metre_type,
+    ...(entropy !== undefined ? { metre_entropy_bits: entropy } : {}),
+    ...(margin !== undefined ? { metre_epistemic_margin: margin } : {}),
     letter_count,
     vikalpa_count,
     syllables: o.syllables,

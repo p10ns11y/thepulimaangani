@@ -13,12 +13,15 @@ pub struct ParseFeatureSnapshot {
     pub dense: Vec<f32>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
 pub struct ParseOptions {
     pub only_prosody: bool,
     pub no_detect: bool,
     pub alt_scansion: bool,
     pub uyir_u: bool,
+    /// When true, skip hybrid logit re-ranking (heuristic + dense boost only). Default false.
+    #[serde(default)]
+    pub skip_ml_metre: bool,
 }
 
 impl ParseOptions {
@@ -29,6 +32,7 @@ impl ParseOptions {
             no_detect: false,
             alt_scansion: false,
             uyir_u: true,
+            skip_ml_metre: true,
         }
     }
 }
@@ -56,6 +60,12 @@ pub struct ParseResult {
     pub parse_features: Option<ParseFeatureSnapshot>,
     #[serde(default)]
     pub confidence: i32,
+    /// Shannon entropy (bits) of the hybrid coarse-metre distribution; lower is more decisive.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub metre_entropy_bits: Option<f32>,
+    /// Top softmax minus second (hybrid head); larger means clearer top class on held-out geometry.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub metre_epistemic_margin: Option<f32>,
     #[serde(default)]
     pub provenance: Vec<RuleId>,
     pub errors: Vec<String>,
@@ -83,6 +93,12 @@ pub struct MetreHypothesis {
     pub aggregate_score: i32,
     pub violations: Vec<RuleId>,
     pub rule_ids: Vec<RuleId>,
+    /// Calibrated softmax probability for this coarse class (hybrid ML head), when present.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub metre_probability: Option<f32>,
+    /// 1-based rank after hybrid reorder (1 = most probable).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub metre_rank: Option<u8>,
 }
 
 /// Feet for legacy `ParseResult.lines` when `PoemLineNode.words` is empty but
