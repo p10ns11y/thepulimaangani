@@ -28,6 +28,7 @@ Doc drift and cleanup tasks: [GitHub issue #49](https://github.com/p10ns11y/thep
 ## Rules
 - Maintain 90%+ test coverage
 - Run `cargo test` after changes
-- Rebuild WASM with `pnpm run build:wasm`
+- Regenerate committed JSON fixtures after parser output changes: from repo root run **`pnpm run dump:test-fixtures`** (live preview `ParseResult` + kural parse-features golden).
+- Rebuild WASM with `pnpm run build:wasm` after parser or fixture changes.
 - No direct pkg/ edits (use wasm-pack)
 - Validate Tamil input handling

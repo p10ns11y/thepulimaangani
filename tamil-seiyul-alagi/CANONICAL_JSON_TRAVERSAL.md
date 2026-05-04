@@ -35,3 +35,18 @@ This document is the **language-agnostic** guide for consumers of the serde JSON
 ## Redundant fields (by design)
 
 The same logical poem appears in multiple shapes (**`poem`**, **`lines`**, **`feet`**, **`syllables`**) so **different clients** can choose the cheapest path. Prefer **`lines` + `foot_index_global`** for line-aware UIs; prefer **`feet` + `linkage`** for global prosody graphs.
+
+## Regenerating committed fixtures
+
+From the **repository root** (not only `tamil-seiyul-alagi/`):
+
+```bash
+pnpm run dump:test-fixtures
+```
+
+This runs:
+
+- `dump_live_preview_fixture` → `src/lib/__tests__/fixtures/samplePoemThreeLines.parseResult.json`
+- `dump_kural_parse_features_fixture` → `tamil-seiyul-alagi/tests/test_data/kural_venpaa_parse_features.json`
+
+Then rebuild WASM: `pnpm run build:wasm`.

@@ -328,6 +328,8 @@ mod tests {
         assert_eq!(a, b);
     }
 
+    /// Golden vector for the sample kural (Venpaa). Regenerate with:
+    /// `pnpm run dump:test-fixtures` or `cargo run --example dump_kural_parse_features_fixture`.
     #[test]
     fn golden_kural_venpaa_parse_features_match_fixture() {
         let fixture: ParseFeatureSnapshot = serde_json::from_str(include_str!(

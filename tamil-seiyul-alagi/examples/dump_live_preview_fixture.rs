@@ -3,6 +3,7 @@
 //! Mirrors `parse_poem_wasm` defaults (`uyir_u = true`, other options default).
 //! Run from repo root:
 //! `cd tamil-seiyul-alagi && cargo run --example dump_live_preview_fixture`
+//! Or regenerate all committed parser JSON fixtures: `pnpm run dump:test-fixtures` (repo root).
 
 use std::fs;
 use std::path::Path;

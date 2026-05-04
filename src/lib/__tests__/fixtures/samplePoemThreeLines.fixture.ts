@@ -1,7 +1,6 @@
 /**
  * Real parser output for {@link SAMPLE_POEM_THREE_LINES} (same defaults as `parse_poem_wasm`: `uyir_u`).
- * Regenerate after parser changes:
- * `cd tamil-seiyul-alagi && cargo run --example dump_live_preview_fixture`
+ * Regenerate committed parser JSON after Rust changes (repo root): **`pnpm run dump:test-fixtures`**, then **`pnpm run build:wasm`**.
  */
 import rawParseResult from '#/lib/__tests__/fixtures/samplePoemThreeLines.parseResult.json'
 

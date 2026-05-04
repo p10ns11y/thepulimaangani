@@ -1,7 +1,7 @@
 /**
  * Live preview layout: editor physical lines ↔ `parsed.lines` ↔ `feetPerPhysicalLine`.
  *
- * The multi-line sample uses **committed real parser output** (`samplePoemThreeLines.parseResult.json`)
+ * The multi-line sample uses **committed real parser output** (`samplePoemThreeLines.parseResult.json`; regenerate via **`pnpm run dump:test-fixtures`** from repo root).
  * so tests never hand-invent Ner/Nirai on Tamil surface forms.
  *
  * WASM integration tests run only when a bundle exists (`pnpm run build:wasm`).
