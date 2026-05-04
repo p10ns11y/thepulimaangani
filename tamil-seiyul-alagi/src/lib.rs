@@ -245,6 +245,49 @@ mod tests {
         }
     }
 
+    /// `skip_ml_metre` must suppress hybrid-only fields and ML-tagged provenance while keeping heuristics.
+    #[test]
+    fn skip_ml_metre_skips_hybrid_outputs_but_keeps_metre_detection() {
+        let text = "முற்ற உணர்ந்தானை ஏத்தி மொழிகுவன்\nகுற்றமொன்று இல்லா அறம்";
+        let mut skip = ParseOptions::default();
+        skip.skip_ml_metre = true;
+        skip.uyir_u = true;
+        let r_skip = parse_poem(text, skip).expect("parse");
+        assert!(r_skip.metre_type.is_some());
+        assert!(r_skip.metre_entropy_bits.is_none());
+        assert!(r_skip.metre_epistemic_margin.is_none());
+        for h in &r_skip.top_k_metre_hypotheses {
+            assert!(h.metre_probability.is_none());
+            assert!(h.metre_rank.is_none());
+        }
+        assert!(
+            !r_skip
+                .provenance
+                .iter()
+                .any(|rid| matches!(rid, RuleId::Other(s) if s == "MetreHybridLogit01")),
+            "skip_ml_metre should not add MetreHybridLogit01"
+        );
+
+        let mut full = ParseOptions::default();
+        full.uyir_u = true;
+        let r_full = parse_poem(text, full).expect("parse");
+        assert!(
+            metre::ml_head::hybrid_head_is_active(metre::ml_head::shipped_hybrid_metre_head()),
+            "CI expects fitted hybrid weights"
+        );
+        assert!(
+            r_full.metre_entropy_bits.is_some(),
+            "with hybrid active, entropy should be set"
+        );
+        assert!(r_full.metre_epistemic_margin.is_some());
+        assert!(
+            r_full.top_k_metre_hypotheses.iter().all(|h| {
+                h.metre_probability.is_some() && h.metre_rank.is_some()
+            }),
+            "each hypothesis should carry hybrid probability and rank"
+        );
+    }
+
     #[test]
     fn multiline_poem_pipeline_produces_stable_core_fields_and_structure() {
         let mut options = ParseOptions::default();

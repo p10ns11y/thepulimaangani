@@ -336,3 +336,146 @@ pub fn accuracy_on(xs: &[[f32; METRE_ML_FEATURE_DIM]], y_class: &[usize], head: 
     }
     correct as f64 / y_class.len().max(1) as f64
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::parse_poem;
+    use crate::types::ParseOptions;
+    use crate::types::MetreHypothesis;
+    use crate::{boost_metre_hypotheses_with_dense, detect_metre_hypotheses, sort_metre_hypotheses_by_score};
+
+    #[test]
+    fn hybrid_head_is_inactive_for_zero_weights() {
+        let head = HybridMetreHead::default();
+        assert!(!hybrid_head_is_active(&head));
+    }
+
+    #[test]
+    fn apply_hybrid_returns_none_when_head_inactive() {
+        let dense = vec![0.0f32; PARSE_FEATURE_DENSE_LEN];
+        let mut hyps = vec![
+            MetreHypothesis {
+                metre_type: MetreType::Venpaa,
+                aggregate_score: 50,
+                violations: vec![],
+                rule_ids: vec![],
+                metre_probability: None,
+                metre_rank: None,
+            },
+            MetreHypothesis {
+                metre_type: MetreType::Aciriyappaa,
+                aggregate_score: 40,
+                violations: vec![],
+                rule_ids: vec![],
+                metre_probability: None,
+                metre_rank: None,
+            },
+            MetreHypothesis {
+                metre_type: MetreType::Kalippaa,
+                aggregate_score: 30,
+                violations: vec![],
+                rule_ids: vec![],
+                metre_probability: None,
+                metre_rank: None,
+            },
+            MetreHypothesis {
+                metre_type: MetreType::Vanjippaa,
+                aggregate_score: 20,
+                violations: vec![],
+                rule_ids: vec![],
+                metre_probability: None,
+                metre_rank: None,
+            },
+        ];
+        assert!(
+            apply_hybrid_metre_head(&HybridMetreHead::default(), &dense, &mut hyps, 15.0).is_none()
+        );
+    }
+
+    #[test]
+    fn apply_hybrid_on_kural_sample_probabilities_sum_and_ranks_permute() {
+        let text = "முற்ற உணர்ந்தானை ஏத்தி மொழிகுவன்\nகுற்றமொன்று இல்லா அறம்";
+        let mut opts = ParseOptions::default();
+        opts.skip_ml_metre = true;
+        let r = parse_poem(text, opts).expect("parse");
+        let dense = &r.parse_features.as_ref().expect("features").dense;
+
+        let mut hyps = detect_metre_hypotheses(&r.feet, &r.linkage, false);
+        boost_metre_hypotheses_with_dense(&mut hyps, dense);
+        sort_metre_hypotheses_by_score(&mut hyps);
+
+        let head = shipped_hybrid_metre_head();
+        assert!(
+            hybrid_head_is_active(head),
+            "shipped hybrid head should be fitted; stub weights break ML contract tests"
+        );
+
+        let out = apply_hybrid_metre_head(head, dense, &mut hyps, 15.0).expect("hybrid should run");
+        let (_, entropy, margin) = out;
+        assert!(entropy >= 0.0 && entropy.is_finite());
+        assert!(margin >= 0.0 && margin.is_finite());
+
+        let mut sum_p = 0.0f32;
+        let mut ranks = Vec::new();
+        for h in &hyps {
+            let p = h.metre_probability.expect("metre_probability");
+            sum_p += p;
+            ranks.push(h.metre_rank.expect("metre_rank"));
+            let expected_score = (p * 100.0).round() as i32;
+            assert_eq!(
+                h.aggregate_score, expected_score,
+                "{:?} score vs probability",
+                h.metre_type
+            );
+        }
+        assert!((sum_p - 1.0).abs() < 2e-3, "softmax should sum ~1, got {sum_p}");
+        ranks.sort();
+        assert_eq!(ranks, vec![1, 2, 3, 4]);
+    }
+
+    #[test]
+    fn wrong_dense_len_skips_apply() {
+        let head = shipped_hybrid_metre_head();
+        assert!(
+            hybrid_head_is_active(head),
+            "shipped hybrid head should be fitted"
+        );
+        let mut hyps = vec![
+            MetreHypothesis {
+                metre_type: MetreType::Venpaa,
+                aggregate_score: 50,
+                violations: vec![],
+                rule_ids: vec![],
+                metre_probability: None,
+                metre_rank: None,
+            },
+            MetreHypothesis {
+                metre_type: MetreType::Aciriyappaa,
+                aggregate_score: 40,
+                violations: vec![],
+                rule_ids: vec![],
+                metre_probability: None,
+                metre_rank: None,
+            },
+            MetreHypothesis {
+                metre_type: MetreType::Kalippaa,
+                aggregate_score: 30,
+                violations: vec![],
+                rule_ids: vec![],
+                metre_probability: None,
+                metre_rank: None,
+            },
+            MetreHypothesis {
+                metre_type: MetreType::Vanjippaa,
+                aggregate_score: 20,
+                violations: vec![],
+                rule_ids: vec![],
+                metre_probability: None,
+                metre_rank: None,
+            },
+        ];
+        let short = vec![0.0f32; PARSE_FEATURE_DENSE_LEN - 1];
+        assert!(apply_hybrid_metre_head(head, &short, &mut hyps, 15.0).is_none());
+    }
+}
