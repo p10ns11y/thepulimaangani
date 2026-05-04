@@ -1,38 +1,14 @@
-use serde::{Deserialize, Serialize};
+//! Heuristic coarse-metre head: rule priors, linkage tilts, and parse-feature dense boost.
 
 use crate::foot::Foot;
-use crate::linkage::{Linkage, LinkageType};
-use crate::parse_features::{LINK_SPECIAL_FEATURE_OFFSET, LINKAGE_TYPE_FEATURE_OFFSET, PARSE_FEATURE_DENSE_LEN};
+use crate::linkage::Linkage;
+use crate::parse_features::{
+    LINK_SPECIAL_FEATURE_OFFSET, LINKAGE_TYPE_FEATURE_OFFSET, PARSE_FEATURE_DENSE_LEN,
+};
 use crate::types::{MetreHypothesis, RuleId};
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub enum MetreType {
-    Venpaa,
-    /// ஆசிரியப்பா — WASM/JSON key uses Tamil-style romanization (`aciriya`), not Sanskrit-style `asiriya`.
-    #[serde(rename = "Aciriyappaa", alias = "Asiriyappaa")]
-    Aciriyappaa,
-    Kalippaa,
-    Vanjippaa,
-    Other(String),
-}
-
-pub fn linkage_coarse_fractions(linkage: &[Linkage]) -> (f32, f32, f32, f32) {
-    let n = linkage.len().max(1) as f32;
-    let mut vent = 0f32;
-    let mut aasi = 0f32;
-    let mut kal = 0f32;
-    let mut vanj = 0f32;
-    for e in linkage {
-        match &e.linkage_type {
-            LinkageType::VenTalai => vent += 1.0,
-            LinkageType::AciriyaTalai => aasi += 1.0,
-            LinkageType::KaliTalai => kal += 1.0,
-            LinkageType::VanjiTalai => vanj += 1.0,
-            LinkageType::Other(_) => {}
-        }
-    }
-    (vent / n, aasi / n, kal / n, vanj / n)
-}
+use super::fractions::linkage_coarse_fractions;
+use super::MetreType;
 
 fn rule_prior_score(metre: &MetreType, feet_len: usize) -> i32 {
     let long = feet_len >= 4;
@@ -149,6 +125,8 @@ pub fn detect_metre_hypotheses(
                 aggregate_score: score,
                 violations: vec![],
                 rule_ids: vec![RuleId::MetreLength01, RuleId::LinkageAdjacency01],
+                metre_probability: None,
+                metre_rank: None,
             }
         })
         .collect();
@@ -252,6 +230,8 @@ mod boost_tests {
             aggregate_score: 70,
             violations: vec![],
             rule_ids: vec![RuleId::MetreLength01],
+            metre_probability: None,
+            metre_rank: None,
         }];
         boost_metre_hypotheses_with_dense(&mut hyps, &dense_venthalai_favourable_for_boost());
         assert!(hyps[0].aggregate_score > 70, "expected positive feature boost");
@@ -268,6 +248,8 @@ mod boost_tests {
             aggregate_score: 70,
             violations: vec![],
             rule_ids: vec![],
+            metre_probability: None,
+            metre_rank: None,
         }];
         boost_metre_hypotheses_with_dense(&mut hyps, &[0.0f32; 3]);
         assert_eq!(hyps[0].aggregate_score, 70);
@@ -283,6 +265,8 @@ mod boost_tests {
             aggregate_score: 50,
             violations: vec![],
             rule_ids: vec![],
+            metre_probability: None,
+            metre_rank: None,
         }];
         boost_metre_hypotheses_with_dense(&mut hyps, &d);
         assert!(hyps[0].aggregate_score > 50);

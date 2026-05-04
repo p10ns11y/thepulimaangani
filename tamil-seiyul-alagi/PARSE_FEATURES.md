@@ -8,7 +8,7 @@ Structured numeric features for metre confidence boosting and downstream small m
 | `PARSE_FEATURE_DENSE_LEN` | `51` |
 
 **Implementation:** [`src/parse_features.rs`](src/parse_features.rs) (`ParseFeatureVector`, `ParseFeatureSource::from_pipeline`, `ParseFeatureSnapshot::from(&ParseResult)`).  
-**Metre boost:** [`src/metre.rs`](src/metre.rs) `boost_metre_hypotheses_with_dense` uses indices **12–18** (linkage type) and **22–26** (linkage special) only.
+**Metre boost and coarse-metre prediction:** [`src/metre/prediction.rs`](src/metre/prediction.rs) `boost_metre_hypotheses_with_dense` uses indices **12–18** (linkage type) and **22–26** (linkage special) only. End-to-end metre prediction (heuristic + hybrid, failure modes): **[`METRE_PREDICTION.md`](METRE_PREDICTION.md)**.
 
 **Pipeline:** In `parse_poem` ([`src/lib.rs`](src/lib.rs)), when metre detection is on (`no_detect == false`), features are built from `ParseFeatureSource { letter_count, vikalpa_count, lines, syllables, feet, linkage }`, stored on [`ParseResult::parse_features`](src/types.rs), and the same dense slice is passed to the metre boost. With `no_detect == true`, `parse_features` is omitted (`None`).
 

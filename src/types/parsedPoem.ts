@@ -75,6 +75,10 @@ export interface ParsedMetreHypothesis {
   aggregate_score: number
   violations: unknown[]
   rule_ids: unknown[]
+  /** Hybrid softmax probability for this coarse class when Rust shipped weights are active. */
+  metre_probability?: number
+  /** 1 = most probable after hybrid reorder. */
+  metre_rank?: number
 }
 
 /** Dense 51-float snapshot when WASM includes `parse_features`. */
@@ -86,6 +90,10 @@ export interface ParsedParseFeatures {
 export interface ParsedPoem {
   original_text: string
   metre_type: string
+  /** Shannon entropy (bits) of hybrid coarse-metre distribution when present. */
+  metre_entropy_bits?: number
+  /** Top softmax minus second (epistemic margin) when present. */
+  metre_epistemic_margin?: number
   letter_count: string | number | Record<string, unknown>
   vikalpa_count: string | number
   syllables: unknown[]

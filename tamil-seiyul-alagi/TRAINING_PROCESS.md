@@ -1,5 +1,7 @@
 # Training on parse features (Rust-first)
 
+For **why** the metre head behaves as it does (heuristic vs hybrid, `skip_ml_metre`, second- and third-order effects), read **[`METRE_PREDICTION.md`](METRE_PREDICTION.md)** first.
+
 This document describes how to use the **51-dimensional** [`ParseFeatureSnapshot`](PARSE_FEATURES.md) from `thepulimaangani-parser` for metre or subtype classification **without** training on raw Tamil text.
 
 ## What you get from the parser
@@ -7,7 +9,7 @@ This document describes how to use the **51-dimensional** [`ParseFeatureSnapshot
 After `parse_poem` (with metre detection **on**, `no_detect: false`):
 
 - **`parse_features`**: `{ "schema_version": 1, "dense": [ … 51 floats … ] }` on [`ParseResult`](src/types.rs). Same object is serialized in WASM JSON (`parse_poem_wasm`).
-- **`top_k_metre_hypotheses`**: up to four coarse [`MetreType`](src/metre.rs) rows with `aggregate_score`, sorted descending after rule priors + linkage boost.
+- **`top_k_metre_hypotheses`**: up to four coarse [`MetreType`](src/metre/mod.rs) rows with `aggregate_score`, sorted descending after rule priors + linkage boost.
 
 Layout and index semantics: **[`PARSE_FEATURES.md`](PARSE_FEATURES.md)**.
 
@@ -38,7 +40,7 @@ On a 36-row snapshot, the built-in metre heuristic still disagrees with gold on 
 
 ## Shuffled iterations (Monte Carlo)
 
-[`aggregate_metre_monte_carlo`](src/poem_variations_training.rs) runs [`parse_label_row_for_eval`](src/poem_variations_training.rs) (same options as training export) over a label list for **deterministic** shuffles (`shuffle_labels_for_iteration` + FNV salt). The JSON aggregate includes **`total_correct`** (top-1 vs gold [`MetreType`](src/metre.rs)), **`mean_reciprocal_rank`**, **`correct_at_2`**, and **`confusion`** keys `parent_slug|PredictedDebug`.
+[`aggregate_metre_monte_carlo`](src/poem_variations_training.rs) runs [`parse_label_row_for_eval`](src/poem_variations_training.rs) (same options as training export) over a label list for **deterministic** shuffles (`shuffle_labels_for_iteration` + FNV salt). The JSON aggregate includes **`total_correct`** (top-1 vs gold [`MetreType`](src/metre/mod.rs)), **`mean_reciprocal_rank`**, **`correct_at_2`**, and **`confusion`** keys `parent_slug|PredictedDebug`.
 
 Example: [`examples/metre_monte_carlo_report.rs`](examples/metre_monte_carlo_report.rs) defaults to **20** iterations and **`special_type`** rows only. Environment:
 
@@ -70,7 +72,8 @@ Unit test `mc_twenty_iterations_special_types_majority_correct` guards regressio
 
 | Approach | When to use |
 |----------|-------------|
-| **Hand-tuned boost** (current [`boost_metre_hypotheses_with_dense`](src/metre.rs)) | Fast, no training; tune constants against a dev set. |
+| **Hand-tuned boost** (current [`boost_metre_hypotheses_with_dense`](src/metre/prediction.rs)) | Fast, no training; tune constants against a dev set. |
+| **Hybrid logit** (optional; [`src/metre/ml_head.rs`](src/metre/ml_head.rs) + generated [`metre_hybrid_weights.inc.rs`](src/metre/metre_hybrid_weights.inc.rs)) | Retune with `cargo run --example fit_metre_hybrid_weights` after corpus or feature-schema changes. |
 | **Linear / softmax on `dense`** | Few hundred parameters; fit with SGD or closed-form least squares per class. |
 | **Prototype / k-NN** | One or few examples per class; store mean vector per label. |
 
@@ -93,6 +96,7 @@ Gradient boosting (XGBoost-style) is usually **not** maintained in pure Rust at 
 The browser receives the same `ParseResult` JSON as native Rust serialization. Optional fields for the UI:
 
 - `parse_features` — plot or log the vector; compare to server golden runs.
-- `top_k_metre_hypotheses` — show alternate metre scores without re-parsing.
+- `top_k_metre_hypotheses` — show alternate metre scores without re-parsing (includes optional `metre_probability` / `metre_rank` when hybrid head ran).
+- `metre_entropy_bits` / `metre_epistemic_margin` — optional coarse-metre uncertainty from the hybrid head.
 
 See [`src/types/parsedPoem.ts`](../../src/types/parsedPoem.ts) and [`src/lib/adaptWasmParseJson.ts`](../../src/lib/adaptWasmParseJson.ts) for adapter fields.

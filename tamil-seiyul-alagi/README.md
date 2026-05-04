@@ -59,7 +59,7 @@ We maintain a **strict separation** between:
 
 1. `ParseResult` from the calculation layer is the structured JSON/WASM output (logic + **`presentation`** labels).
 2. Non-web clients should read **`presentation`** directly; the TanStack app prefers it when present.
-3. Metre detection in Rust remains heuristic vs full classical rules in `MACHINE_FIRST_SPEC.md`.
+3. Metre detection in Rust remains heuristic + optional hybrid head vs full classical rules in `MACHINE_FIRST_SPEC.md` — see **`METRE_PREDICTION.md`** for contracts, interactions, and long-range effects.
 
 See also `QUALITY_CRAP_BASELINE.md` and [issue #49](https://github.com/p10ns11y/thepulimaangani/issues/49) for doc/code alignment.
 

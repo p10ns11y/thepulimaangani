@@ -1,4 +1,4 @@
-//! Per-sample linkage coarse fractions vs gold `parent_metre` from `poem_variations.js`.
+//! Per-sample linkage coarse fractions vs gold `parent_metre` from the `poem_variations` corpus.
 //!
 //! ```text
 //! cargo run --example training_linkage_vs_gold
@@ -7,8 +7,6 @@
 //! Optional: `MC_ROW_KINDS=special_type,variation` or `MC_ROW_KINDS=all` (default: all rows).
 
 use std::collections::BTreeMap;
-use std::path::Path;
-
 use serde_json::{json, Value};
 use thepulimaangani_parser::{
     gold_metre_type_for_parent, linkage_coarse_fractions, parse_label_row_for_eval,
@@ -32,10 +30,7 @@ fn type_histogram(linkage: &[Linkage]) -> BTreeMap<String, u64> {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let js = std::fs::read_to_string(
-        Path::new(env!("CARGO_MANIFEST_DIR")).join("../data/poem_variations.js"),
-    )?;
-    let all = poem_variation_label_rows(&js);
+    let all = poem_variation_label_rows();
     let kinds_env = std::env::var("MC_ROW_KINDS").unwrap_or_else(|_| "all".into());
     let labels = if kinds_env.eq_ignore_ascii_case("all") {
         all
