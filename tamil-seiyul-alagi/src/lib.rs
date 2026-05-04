@@ -29,7 +29,10 @@ pub use letter::Letter;
 pub use linkage::{
     CirAcaiClass, FootPosition, Linkage, LinkageSpecialType, LinkageType, Talai, TalaiType,
 };
-pub use metre::{boost_metre_hypotheses_with_dense, linkage_coarse_fractions, sort_metre_hypotheses_by_score, MetreType};
+pub use metre::{
+    boost_metre_hypotheses_with_dense, classical_violations_for_metre, linkage_coarse_fractions,
+    sort_metre_hypotheses_by_score, MetreType,
+};
 pub use parse_features::{
     fnv1a_u32, ParseFeatureSource, ParseFeatureVector, FOOT_PATTERN_BIN_DIM, FOOT_PATTERN_BIN_OFFSET,
     GLOBAL_FEATURE_DIM, GLOBAL_FEATURE_OFFSET, LINE_FOOT_HIST_FEATURE_DIM, LINE_FOOT_HIST_OFFSET,
