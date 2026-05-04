@@ -1,5 +1,7 @@
-//! Coarse metre: [`MetreType`], linkage summaries, heuristic [`prediction`], and
-//! [`classical_checker`] (strict rules — placeholder until implemented).
+//! Coarse metre: [`MetreType`], linkage summaries, heuristic [`prediction`], hybrid [`ml_head`],
+//! and [`classical_checker`] (strict rules — placeholder until implemented).
+//!
+//! See **[`METRE_PREDICTION.md`](../../METRE_PREDICTION.md)** for first principles, second-order effects, and third-order consequences of changes to this stack.
 
 mod classical_checker;
 mod fractions;
