@@ -315,6 +315,46 @@ mod tests {
         }
     }
 
+    /// Every **Venpaa `special_type`** row: hybrid head must agree with gold `Venpaa` (variations
+    /// under the Venpaa tab are not all classical Venpaa metre — see integration smoke tests).
+    #[test]
+    fn hybrid_head_venpaa_special_types_top1_is_venpaa() {
+        let labels: Vec<_> = poem_variation_label_rows()
+            .into_iter()
+            .filter(|l| l.parent_metre == "venpaa" && l.row_kind == "special_type")
+            .collect();
+        assert_eq!(labels.len(), 10, "venpaa special_type row count");
+        let mut o = ParseOptions::default();
+        o.uyir_u = true;
+        for label in &labels {
+            let r = parse_poem(label.text.trim(), o).expect("parse");
+            assert!(
+                r.metre_entropy_bits.is_some(),
+                "expected hybrid entropy on {}",
+                label.sample_id
+            );
+            assert_eq!(
+                r.metre_type,
+                Some(MetreType::Venpaa),
+                "sample {}",
+                label.sample_id
+            );
+        }
+    }
+
+    /// ஒரு விகற்ப குறள் வெண்பா: coarse linkage histogram is pure `VenTalai`, so `dense[12] == 1`.
+    #[test]
+    fn venpaa_sample_kural_oru_vikarpa_dense12_is_pure_venthalai_fraction() {
+        use crate::parse_features::LINKAGE_TYPE_FEATURE_OFFSET;
+        use crate::poem_variations::ORU_VIKARPA_KURAL_VENPAA;
+        let text = crate::poem_variations::poem_variation_example(ORU_VIKARPA_KURAL_VENPAA).expect("example");
+        let mut o = ParseOptions::default();
+        o.skip_ml_metre = true;
+        let r = parse_poem(text, o).expect("parse");
+        let pf = r.parse_features.as_ref().expect("parse_features");
+        assert_eq!(pf.dense[LINKAGE_TYPE_FEATURE_OFFSET], 1.0);
+    }
+
     #[test]
     fn mc_twenty_iterations_special_types_majority_correct() {
         let labels = poem_variation_special_type_rows(&poem_variation_label_rows());
