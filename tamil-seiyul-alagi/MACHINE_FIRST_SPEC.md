@@ -22,7 +22,7 @@ Two strict layers, no leaks:
   - The web app may duplicate small maps for offline fallbacks only when `presentation` is missing (older artifacts).
 
 Naming policy:
-- Core module names use machine-first English: `linkage.rs` (not `talai.rs`), `foot.rs`, `metre.rs`, `syllable.rs`, etc.
+- Core module names use machine-first English: `linkage.rs` (not `talai.rs`), `foot.rs`, `metre/` (facade + `prediction.rs`), `syllable.rs`, etc.
 - In **English prose** (docs, UI copy), refer to தளை as **Talai** with a capital **T** at sentence start; do **not** write **Thalai** (that suggests தலை “head”). Code may keep field names like `talai` / `Talai` for JSON compatibility.
 - Core type names use machine-first English: `LinkageClass`, `FootPattern`, `MetreHypothesis`. Tamil **prose** labels for feet and தளை are **not** in core logic; they are emitted only inside **`ParseResult.presentation`** (see `presentation.rs`).
 - **Romanization:** Prefer Tamil-style keys in JSON and Rust enum variants for ஆசிரிய- words — **`aciriya`** (one *c*, *i* after *c*), not Sanskrit-style **`asiriya`**. Example WASM strings: `AciriyaTalai`, `VenTalai`, `Aciriyappaa`, `NerondriyaAciriyaTalai`. Legacy spellings (`Venthalai`, `Aciriyathalai`, `Kalithalai`, `Vanjithalai`, `Aasiriy…`, `Asiriya…`, `Asiriyappaa`) remain accepted on deserialize via `serde` aliases.
@@ -106,7 +106,7 @@ Algorithm:
 
 ### 4.3 Metre Stage
 
-Replaces the `feet.len() >= 4` heuristic in [`src/metre.rs`](src/metre.rs).
+Replaces the `feet.len() >= 4` heuristic in [`src/metre/prediction.rs`](src/metre/prediction.rs).
 
 Algorithm:
 

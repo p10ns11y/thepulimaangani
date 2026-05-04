@@ -30,8 +30,8 @@ pub use linkage::{
     CirAcaiClass, FootPosition, Linkage, LinkageSpecialType, LinkageType, Talai, TalaiType,
 };
 pub use metre::{
-    boost_metre_hypotheses_with_dense, classical_violations_for_metre, linkage_coarse_fractions,
-    sort_metre_hypotheses_by_score, MetreType,
+    boost_metre_hypotheses_with_dense, classical_violations_for_metre, detect_metre_hypotheses,
+    linkage_coarse_fractions, sort_metre_hypotheses_by_score, MetreType,
 };
 pub use parse_features::{
     fnv1a_u32, ParseFeatureSource, ParseFeatureVector, FOOT_PATTERN_BIN_DIM, FOOT_PATTERN_BIN_OFFSET,

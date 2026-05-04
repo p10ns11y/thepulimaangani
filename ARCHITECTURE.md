@@ -59,7 +59,7 @@ tamil-seiyul-alagi/
 │   ├── syllable_builder.rs # Ner/Nirai syllables
 │   ├── foot.rs / foot_pattern.rs  # One foot per word; Ner-Nirai pattern string
 │   ├── linkage.rs          # Consecutive-foot edges; table-driven Talai (தளை; issue #36)
-│   ├── metre.rs            # Metre hypotheses (heuristic)
+│   ├── metre/              # MetreType + heuristic hypotheses (`prediction.rs`, …)
 │   ├── poem_tree.rs        # Structured poem tree
 │   ├── presentation.rs     # Human labels; embedded in `ParseResult.presentation` (WASM JSON)
 ├── pkg/                # Generated WebAssembly bindings
@@ -117,7 +117,7 @@ The engine groups syllables into **one foot per linguistic word** and sets `foot
 
 ### Metre detection (current)
 
-`metre.rs` produces **hypotheses** with scores; it does **not** yet encode full classical constraints for வெண்பா, வெண்கலிப்பா, ஆசிரியப்பா, கலிப்பா, etc. Treat catalogue metres as **targets** for `MACHINE_FIRST_SPEC.md`, not guarantees from the current build.
+The `metre/` module produces **hypotheses** with scores; it does **not** yet encode full classical constraints for வெண்பா, வெண்கலிப்பா, ஆசிரியப்பா, கலிப்பா, etc. Treat catalogue metres as **targets** for `MACHINE_FIRST_SPEC.md`, not guarantees from the current build.
 
 ### Linkage / Talai (current)
 
