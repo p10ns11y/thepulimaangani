@@ -278,6 +278,7 @@ mod boost_tests {
             .map(|_| Foot {
                 syllables: vec![],
                 foot_type: String::new(),
+                foot_index_global: None,
             })
             .collect();
         let hyps = detect_metre_hypotheses(&feet, &[], false);

@@ -9,6 +9,10 @@ import {
 
 describe('wasmWireJsonSchema', () => {
   it('accepts committed real fixture and preserves extra top-level fields (passthrough)', () => {
+    expect(
+      (rawParseResult as { parse_result_schema_version?: number })
+        .parse_result_schema_version,
+    ).toBe(1)
     const withFutureKey = {
       ...rawParseResult,
       _future_wasm_field: { note: 'must survive schema for forward compatibility' },

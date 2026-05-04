@@ -37,8 +37,14 @@ impl ParseOptions {
     }
 }
 
+/// Top-level `ParseResult` JSON shape version (WASM and serde consumers). Increment when the
+/// wire contract or cross-field invariants change. Missing field on deserialize means legacy (`0`).
+pub const PARSE_RESULT_SCHEMA_VERSION: u32 = 1;
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ParseResult {
+    #[serde(default)]
+    pub parse_result_schema_version: u32,
     pub original_text: String,
     pub normalized_text: String,
     pub letter_count: usize,
@@ -101,9 +107,7 @@ pub struct MetreHypothesis {
     pub metre_rank: Option<u8>,
 }
 
-/// Feet for legacy `ParseResult.lines` when `PoemLineNode.words` is empty but
-/// `linguistic_words` holds the same syllables (some lines only populate the linguistic layer).
-fn feet_from_linguistic_words(lws: &[LinguisticWordNode]) -> Vec<Foot> {
+fn feet_from_linguistic_words(lws: &[LinguisticWordNode], next_global: &mut usize) -> Vec<Foot> {
     let mut out = Vec::new();
     for lw in lws {
         let syllables: Vec<Syllable> = lw.syllables.iter().map(|s| s.inner.clone()).collect();
@@ -111,9 +115,12 @@ fn feet_from_linguistic_words(lws: &[LinguisticWordNode]) -> Vec<Foot> {
             continue;
         }
         let foot_type = foot_pattern(&syllables);
+        let g = *next_global;
+        *next_global += 1;
         out.push(Foot {
             syllables,
             foot_type,
+            foot_index_global: Some(g),
         });
     }
     out
@@ -125,18 +132,22 @@ fn feet_from_linguistic_words(lws: &[LinguisticWordNode]) -> Vec<Foot> {
 /// physical line (matches editor rows). `PoemLineNode.words` can still mis-place feet on line 0
 /// when linkage placement disagrees with line breaks; using words alone collapsed the whole poem
 /// into the first legacy row.
+///
+/// Each [`Foot`] includes **`foot_index_global`** aligned with [`ParseResult::feet`] / linkage indices.
 pub fn flat_lines_from_poem(poem: &PoemNode) -> Vec<Line> {
+    let mut next_global = 0usize;
     poem.lines
         .iter()
         .map(|ln| {
             let feet = if !ln.linguistic_words.is_empty() {
-                feet_from_linguistic_words(&ln.linguistic_words)
+                feet_from_linguistic_words(&ln.linguistic_words, &mut next_global)
             } else if !ln.words.is_empty() {
                 ln.words
                     .iter()
                     .map(|w| Foot {
                         syllables: w.syllables.iter().map(|s| s.inner.clone()).collect(),
                         foot_type: w.foot_type.clone(),
+                        foot_index_global: Some(w.foot_index_global),
                     })
                     .collect()
             } else {
@@ -225,9 +236,10 @@ mod flat_lines_from_poem_tests {
         let lines = flat_lines_from_poem(&poem);
         assert_eq!(lines.len(), 2);
         assert_eq!(lines[0].feet.len(), 1);
-        assert_eq!(lines[0].feet[0].syllables[0].text, "a");
+        assert_eq!(lines[0].feet[0].foot_index_global, Some(0));
         assert_eq!(lines[0].feet[0].foot_type, "Ner");
-        assert_eq!(lines[1].feet[0].syllables[0].text, "b");
+        assert_eq!(lines[0].feet[0].syllables[0].text, "a");
+        assert_eq!(lines[1].feet[0].foot_index_global, Some(1));
     }
 
     #[test]
@@ -251,7 +263,7 @@ mod flat_lines_from_poem_tests {
 
         let lines = flat_lines_from_poem(&poem);
         assert_eq!(lines[0].feet.len(), 1);
-        assert_eq!(lines[0].feet[0].foot_type, "custom");
+        assert_eq!(lines[0].feet[0].foot_index_global, Some(0));
         assert_eq!(lines[0].feet[0].syllables[0].text, "x");
     }
 

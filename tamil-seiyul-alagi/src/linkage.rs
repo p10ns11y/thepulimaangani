@@ -254,6 +254,7 @@ mod tests {
                 })
                 .collect(),
             foot_type: String::new(),
+            foot_index_global: None,
         }
     }
 

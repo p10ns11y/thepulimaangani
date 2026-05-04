@@ -9,6 +9,10 @@ use crate::syllable::Syllable;
 pub struct Foot {
     pub syllables: Vec<Syllable>,
     pub foot_type: String,
+    /// Poem-wide foot index: `i` for `i == foot_index` in linkage / bond edges. Set for `ParseResult.feet`
+    /// and for each foot in `ParseResult.lines` from [`crate::types::flat_lines_from_poem`].
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub foot_index_global: Option<usize>,
 }
 
 /// A foot together with the syllable index range it covers in the poem-wide syllable list.
@@ -48,6 +52,7 @@ pub fn group_into_feet_with_ranges(syllables: &[Syllable]) -> Vec<FootPlacement>
                 foot: Foot {
                     syllables: chunk.to_vec(),
                     foot_type: foot_pattern(chunk),
+                    foot_index_global: None,
                 },
                 syllable_range: run_start..i,
             });
