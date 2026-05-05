@@ -20,6 +20,11 @@ pnpm run codegen:parse-result-client
 
 The second command emits **`src/generated/parseResult.wire.ts`** (openapi-typescript) and thin aliases in **`src/generated/parseResultWire.ts`** (`ParseResultWire`). Or run both in one step: `pnpm run codegen:parse-result`.
 
+### TypeScript vs runtime validation (later)
+
+- **Shipped today:** OpenAPI drives **static types** (`ParseResultWire`, used by `wasmWireParseResult` / `adaptWasmParseJson`). Runtime checks use a **minimal Zod** schema (`original_text` + `syllables`) plus **`.passthrough()`** so extra WASM fields do not break consumers.
+- **Future (when full-graph runtime validation is worth the cost):** generate **Zod** from the same contract (e.g. dereferenced JSON Schema + `json-schema-to-zod`, or another generator aligned with **Zod 4**), or maintain a hand-written Zod that tracks **`ParseResultWire`**. Expect larger bundles and more brittle codegen for nested **oneOf** / Rust enums; weigh against continuing minimal Zod + compile-time types.
+
 ## Recommended traversal patterns
 
 ### Poem-wide feet and தளை (linkage)

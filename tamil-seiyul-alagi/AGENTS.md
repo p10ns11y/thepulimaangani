@@ -28,6 +28,7 @@ Doc drift and cleanup tasks: [GitHub issue #49](https://github.com/p10ns11y/thep
 ## OpenAPI (generated contract)
 
 - **`ParseResult`** OpenAPI **3.0.3** document (schemas only: `paths` empty): repo root **`pnpm run codegen:parse-result-openapi`** → writes **`src/generated/parseResult.openapi.json`**. Built from Rust (`schemars` + `serde` shapes); **`$ref`** targets use **`#/components/schemas/…`** per OpenAPI 3. Regenerate when fields change on `ParseResult` or nested wire types.
+- **Frontend types:** **`pnpm run codegen:parse-result-client`** → **`src/generated/parseResult.wire.ts`** and **`parseResultWire.ts`** (`ParseResultWire`). See **`CANONICAL_JSON_TRAVERSAL.md`** (“TypeScript vs runtime validation”) for the backlog on **full-graph Zod** vs minimal runtime checks.
 
 ## Rules
 - Maintain 90%+ test coverage

@@ -11,6 +11,9 @@ export type { ParseResultWire } from '#/generated/parseResultWire'
  * Runtime validation checks only what the adapter needs first; TypeScript shape comes from
  * OpenAPI-generated {@link ParseResultWire} (`pnpm run codegen:parse-result-client`).
  *
+ * Full-graph runtime Zod aligned with OpenAPI is a future step; see
+ * `tamil-seiyul-alagi/CANONICAL_JSON_TRAVERSAL.md` (“TypeScript vs runtime validation”).
+ *
  * Uses `.passthrough()` so new Rust/WASM fields are preserved without schema churn.
  * Keys stay snake_case — same as serde JSON output.
  */
