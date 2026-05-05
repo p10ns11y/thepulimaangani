@@ -33,6 +33,24 @@ function normalizeSyllable(raw: unknown): ParsedSyllable | null {
   }
 }
 
+/** Unwrap `SyllableNode` (`inner`) or accept flat `{ text, syllable_type }` shapes. */
+function normalizeSyllableFromTree(raw: unknown): ParsedSyllable | null {
+  if (!raw || typeof raw !== 'object') return null
+  const r = raw as Record<string, unknown>
+  const inner = r.inner
+  if (inner && typeof inner === 'object') {
+    return normalizeSyllable(inner)
+  }
+  return normalizeSyllable(raw)
+}
+
+function footPatternFromSyllables(syllables: ParsedSyllable[]): string {
+  return syllables
+    .map((s) => (s.syllable_type === 'Nirai' ? 'Nirai' : 'Ner'))
+    .join('-')
+}
+
+/** Feet from WASM `lines[].feet` / top-level `feet`; preserves `foot_index_global`. */
 function normalizeFeet(raw: unknown[]): ParsedFoot[] {
   const out: ParsedFoot[] = []
   for (const item of raw) {
@@ -42,70 +60,15 @@ function normalizeFeet(raw: unknown[]): ParsedFoot[] {
       .map(normalizeSyllable)
       .filter((x): x is ParsedSyllable => x != null)
     if (syllables.length === 0) continue
-    const fig =
-      typeof row.foot_index_global === 'number' ? row.foot_index_global : undefined
+    const g =
+      typeof row.foot_index_global === 'number' ? (row.foot_index_global as number) : undefined
     out.push({
       foot_type: row.foot_type as string,
       syllables,
-      ...(fig !== undefined ? { foot_index_global: fig } : {}),
+      ...(g !== undefined ? { foot_index_global: g } : {}),
     })
   }
   return out
-}
-
-function syllablesFromSyllableNodes(syllNodes: unknown[]): ParsedSyllable[] {
-  const syllables: ParsedSyllable[] = []
-  for (const sn of syllNodes) {
-    if (!sn || typeof sn !== 'object') continue
-    const node = sn as Record<string, unknown>
-    const inner = node.inner
-    const raw = inner !== undefined && inner !== null && typeof inner === 'object' ? inner : sn
-    const syl = normalizeSyllable(raw)
-    if (syl) syllables.push(syl)
-  }
-  return syllables
-}
-
-/** Matches Rust `foot_pattern`: hyphenated Ner/Nirai tokens for one linguistic word. */
-function machineFootPatternFromSyllables(syllables: ParsedSyllable[]): string {
-  return syllables.map((s) => (s.syllable_type === 'Ner' ? 'Ner' : 'Nirai')).join('-')
-}
-
-/**
- * Fill missing `foot_index_global` only (preserve Rust indices when present).
- * Increments `g` once per foot in traversal order so mixed legacy payloads stay stable.
- */
-function ensureGlobalFootIndices(lines: ParsedLine[]): ParsedLine[] {
-  let g = 0
-  return lines.map((line) => ({
-    ...line,
-    feet: line.feet.map((foot) => {
-      const next =
-        foot.foot_index_global === undefined ? { ...foot, foot_index_global: g } : foot
-      g += 1
-      return next
-    }),
-  }))
-}
-
-/** Copy poem-wide indices from `ParseResult.lines` when structure matches `linesFromPoemNode` output. */
-function mergeFootIndicesFromFlatLines(
-  poemLines: ParsedLine[],
-  flatLines: ParsedLine[],
-): ParsedLine[] {
-  if (flatLines.length !== poemLines.length) return poemLines
-  return poemLines.map((line, li) => {
-    const flatFeet = flatLines[li]?.feet ?? []
-    if (flatFeet.length !== line.feet.length) return line
-    return {
-      ...line,
-      feet: line.feet.map((foot, fi) => {
-        const g = flatFeet[fi]?.foot_index_global
-        if (typeof g !== 'number') return foot
-        return foot.foot_index_global !== undefined ? foot : { ...foot, foot_index_global: g }
-      }),
-    }
-  })
 }
 
 function parseFootPosition(raw: unknown): ParsedFootPosition | undefined {
@@ -132,12 +95,7 @@ function normalizeLinkage(raw: unknown): ParsedLinkageEdge[] {
     const e = item as Record<string, unknown>
     const from_foot = e.from_foot
     const to_foot = e.to_foot
-    const linkage_type =
-      typeof e.linkage_type === 'string'
-        ? e.linkage_type
-        : typeof e.talai_type === 'string'
-          ? e.talai_type
-          : null
+    const linkage_type = typeof e.linkage_type === 'string' ? e.linkage_type : null
     if (typeof from_foot !== 'number' || typeof to_foot !== 'number' || linkage_type == null) {
       continue
     }
@@ -246,10 +204,75 @@ function mergePresentationFeet(
   }))
 }
 
-function normalizeLines(rawLines: unknown, feet: ParsedFoot[]): ParsedLine[] {
+/**
+ * `ParseResult.poem` hierarchical lines → legacy `ParsedLine[]`.
+ * Mirrors Rust `flat_lines_from_poem`: prefer `linguistic_words`, else `words` (feet).
+ */
+function linesFromPoemTree(poem: unknown): ParsedLine[] | null {
+  if (!poem || typeof poem !== 'object') return null
+  const root = poem as Record<string, unknown>
+  const rows = root.lines
+  if (!Array.isArray(rows) || rows.length === 0) return null
+
+  const lines: ParsedLine[] = []
+  let nextGlobal = 0
+  for (const row of rows) {
+    if (!row || typeof row !== 'object') continue
+    const L = row as Record<string, unknown>
+    const line_class = typeof L.line_class === 'string' ? L.line_class : '—'
+    const linguisticRaw = L.linguistic_words
+    const wordsRaw = L.words
+    const linguistic_words = Array.isArray(linguisticRaw) ? linguisticRaw : []
+    const words = Array.isArray(wordsRaw) ? wordsRaw : []
+
+    const feet: ParsedFoot[] = []
+    if (linguistic_words.length > 0) {
+      for (const lw of linguistic_words) {
+        if (!lw || typeof lw !== 'object') continue
+        const w = lw as Record<string, unknown>
+        const sylRaw = w.syllables
+        if (!Array.isArray(sylRaw)) continue
+        const syllables = sylRaw
+          .map(normalizeSyllableFromTree)
+          .filter((x): x is ParsedSyllable => x != null)
+        if (syllables.length === 0) continue
+        const foot_type = footPatternFromSyllables(syllables)
+        const g = nextGlobal
+        nextGlobal += 1
+        feet.push({ foot_type, syllables, foot_index_global: g })
+      }
+    } else if (words.length > 0) {
+      for (const wn of words) {
+        if (!wn || typeof wn !== 'object') continue
+        const w = wn as Record<string, unknown>
+        const foot_type = typeof w.foot_type === 'string' ? w.foot_type : ''
+        const sylRaw = w.syllables
+        if (!Array.isArray(sylRaw) || !foot_type) continue
+        const syllables = sylRaw
+          .map(normalizeSyllableFromTree)
+          .filter((x): x is ParsedSyllable => x != null)
+        if (syllables.length === 0) continue
+        const g =
+          typeof w.foot_index_global === 'number' ? (w.foot_index_global as number) : undefined
+        feet.push({
+          foot_type,
+          syllables,
+          ...(g !== undefined ? { foot_index_global: g } : {}),
+        })
+      }
+    }
+
+    if (feet.length === 0) continue
+    lines.push({ line_class, feet })
+  }
+  return lines.length > 0 ? lines : null
+}
+
+/** `ParseResult.lines` from WASM (physical lines → feet). Fallback: one line of top-level `feet`. */
+function linesFromWasm(rawLines: unknown, topFeet: ParsedFoot[]): ParsedLine[] {
   if (!Array.isArray(rawLines) || rawLines.length === 0) {
-    if (feet.length === 0) return []
-    return [{ line_class: '—', feet }]
+    if (topFeet.length === 0) return []
+    return [{ line_class: '—', feet: topFeet }]
   }
 
   const lines: ParsedLine[] = []
@@ -261,103 +284,48 @@ function normalizeLines(rawLines: unknown, feet: ParsedFoot[]): ParsedLine[] {
     if (lineFeet.length === 0) continue
     lines.push({ line_class, feet: lineFeet })
   }
-  if (lines.length === 0 && feet.length > 0) {
-    return [{ line_class: '—', feet }]
+  if (lines.length === 0 && topFeet.length > 0) {
+    return [{ line_class: '—', feet: topFeet }]
   }
   return lines
 }
 
-/** Build `ParsedLine[]` from Rust `ParseResult.poem` (WordNode feet mirror top-level `feet`). */
-function linesFromPoemNode(poem: unknown): ParsedLine[] | null {
-  if (!poem || typeof poem !== 'object') return null
-  const p = poem as Record<string, unknown>
-  const rawLines = p.lines
-  if (!Array.isArray(rawLines) || rawLines.length === 0) return null
-
-  const out: ParsedLine[] = []
-  for (const row of rawLines) {
-    if (!row || typeof row !== 'object') continue
-    const L = row as Record<string, unknown>
-    const line_class = typeof L.line_class === 'string' ? L.line_class : '—'
-    const words = L.words
-    const linguisticWords = L.linguistic_words
-
-    const lineFeet: ParsedFoot[] = []
-
-    if (Array.isArray(linguisticWords) && linguisticWords.length > 0) {
-      for (const lw of linguisticWords) {
-        if (!lw || typeof lw !== 'object') continue
-        const LW = lw as Record<string, unknown>
-        const syllNodes = LW.syllables
-        if (!Array.isArray(syllNodes)) continue
-        const syllables = syllablesFromSyllableNodes(syllNodes)
-        if (syllables.length === 0) continue
-        // Do not set `foot_index_global` from `word_index_in_line` — that is per-line (0..n-1), not
-        // poem-wide. Reusing it collides across lines and breaks `mergePresentationFeet` / talai maps.
-        lineFeet.push({
-          foot_type: machineFootPatternFromSyllables(syllables),
-          syllables,
-        })
-      }
-    } else if (Array.isArray(words) && words.length > 0) {
-      for (const w of words) {
-        if (!w || typeof w !== 'object') continue
-        const W = w as Record<string, unknown>
-        const foot_type = typeof W.foot_type === 'string' ? W.foot_type : ''
-        const syllNodes = W.syllables
-        if (!Array.isArray(syllNodes)) continue
-        const syllables = syllablesFromSyllableNodes(syllNodes)
-        if (syllables.length === 0 || !foot_type) continue
-        const fig =
-          typeof W.foot_index_global === 'number' ? W.foot_index_global : undefined
-        lineFeet.push({
-          foot_type,
-          syllables,
-          ...(fig !== undefined ? { foot_index_global: fig } : {}),
-        })
-      }
-    }
-
-    if (lineFeet.length === 0) continue
-    out.push({ line_class, feet: lineFeet })
-  }
-  return out.length > 0 ? out : null
-}
-
 /**
- * Maps Rust `ParseResult` JSON into {@link ParsedPoem}.
- *
- * Prefer Rust indices: `normalizeFeet` keeps `foot_index_global`; when building from `poem` + top-level
- * `lines`, {@link mergeFootIndicesFromFlatLines} copies missing indices from the flat `lines` feet.
- * {@link ensureGlobalFootIndices} only fills gaps for legacy JSON without those fields.
- *
- * Prefers **`poem.lines[].linguistic_words`** when present (aligned with physical lines); otherwise **`words`**; then top-level `lines` or feet fallback.
+ * WASM → {@link ParsedPoem}. Top-level **`lines`** (feet per row) or **`poem`** (tree: `linguistic_words` / `words`);
+ * otherwise one line from top-level **`feet`**. **`foot_index_global`** matches linkage / presentation.
  */
 export function adaptWasmJsonToParsedPoem(data: unknown): ParsedPoem | null {
   if (!data || typeof data !== 'object') return null
   const o = data as Record<string, unknown>
   if (typeof o.original_text !== 'string' || !Array.isArray(o.syllables)) return null
 
-  const feet = Array.isArray(o.feet) ? normalizeFeet(o.feet as unknown[]) : []
-  const flatLinesOnly =
-    Array.isArray(o.lines) && (o.lines as unknown[]).length > 0
-      ? normalizeLines(o.lines, [])
-      : []
-  const fromPoem = linesFromPoemNode(o.poem)
-  const poemLinesWithFlatIndices =
-    fromPoem && fromPoem.length > 0 && flatLinesOnly.length > 0
-      ? mergeFootIndicesFromFlatLines(fromPoem, flatLinesOnly)
-      : fromPoem
-  const linesRaw =
-    poemLinesWithFlatIndices && poemLinesWithFlatIndices.length > 0
-      ? poemLinesWithFlatIndices
-      : normalizeLines(o.lines, feet)
-  const lines = ensureGlobalFootIndices(linesRaw)
-
-  const linkageRaw = normalizeLinkage(o.linkage)
-  const linkage = linkageRaw.length > 0 ? linkageRaw : normalizeLinkage(o.talai)
-
+  const topFeet = Array.isArray(o.feet) ? normalizeFeet(o.feet as unknown[]) : []
   const presentation = normalizePresentation(o.presentation)
+
+  const metreRaw = o.metre_type
+  const metreFromPres =
+    presentation?.metre_type != null &&
+    typeof presentation.metre_type === 'string' &&
+    presentation.metre_type.length > 0
+      ? presentation.metre_type
+      : null
+  const metre_type =
+    metreFromPres ??
+    (typeof metreRaw === 'string'
+      ? metreRaw
+      : metreRaw === null || metreRaw === undefined
+        ? '—'
+        : JSON.stringify(metreRaw))
+
+  const letter_count = (o.letter_count ?? 0) as ParsedPoem['letter_count']
+  const vikalpa_count = (o.vikalpa_count ?? 0) as ParsedPoem['vikalpa_count']
+  const errors = Array.isArray(o.errors) ? (o.errors as string[]).filter((e) => typeof e === 'string') : undefined
+
+  const fromPoem = linesFromPoemTree(o.poem)
+  const linesRaw = fromPoem ?? linesFromWasm(o.lines, topFeet)
+  const lines = mergePresentationFeet(linesRaw, presentation)
+
+  const linkage = normalizeLinkage(o.linkage)
 
   const topKRaw = o.top_k_metre_hypotheses
   const top_k_metre_hypotheses = Array.isArray(topKRaw)
@@ -406,27 +374,6 @@ export function adaptWasmJsonToParsedPoem(data: unknown): ParsedPoem | null {
     }
   }
 
-  const metreRaw = o.metre_type
-  const metreFromPres =
-    presentation?.metre_type != null &&
-    typeof presentation.metre_type === 'string' &&
-    presentation.metre_type.length > 0
-      ? presentation.metre_type
-      : null
-  const metre_type =
-    metreFromPres ??
-    (typeof metreRaw === 'string'
-      ? metreRaw
-      : metreRaw === null || metreRaw === undefined
-        ? '—'
-        : JSON.stringify(metreRaw))
-
-  const letter_count = (o.letter_count ?? 0) as ParsedPoem['letter_count']
-  const vikalpa_count = (o.vikalpa_count ?? 0) as ParsedPoem['vikalpa_count']
-  const errors = Array.isArray(o.errors) ? (o.errors as string[]).filter((e) => typeof e === 'string') : undefined
-
-  const linesWithPresFeet = mergePresentationFeet(lines, presentation)
-
   const entropy =
     typeof o.metre_entropy_bits === 'number' && Number.isFinite(o.metre_entropy_bits)
       ? o.metre_entropy_bits
@@ -444,7 +391,7 @@ export function adaptWasmJsonToParsedPoem(data: unknown): ParsedPoem | null {
     letter_count,
     vikalpa_count,
     syllables: o.syllables,
-    lines: linesWithPresFeet,
+    lines,
     ...(linkage.length > 0 ? { linkage } : {}),
     ...(presentation && (presentation.feet.length > 0 || presentation.talai.length > 0)
       ? { presentation }

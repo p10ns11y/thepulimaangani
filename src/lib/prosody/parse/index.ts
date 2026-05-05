@@ -3,10 +3,10 @@
  */
 export {
   anchorPairForLinkageEdge,
-  lineWordForGlobalFootIndex,
-} from '#/lib/prosody/parse/footPositionFromLines'
-export {
+  bondDisplayLabel,
   buildLinkageOverviewRows,
+  lineWordForGlobalFootIndex,
   linkageCoarseCounts,
+  linkageRowsByFromFoot,
   type LinkageOverviewRow,
 } from '#/lib/prosody/parse/linkageOverview'

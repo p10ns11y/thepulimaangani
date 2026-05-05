@@ -5,7 +5,7 @@ import {
   getLineClassDisplay,
   getLinkageTypeDisplay,
 } from '#/components/prosody/displayLabels'
-import { bondDisplayLabel, linkageRowsByFromFoot } from '#/lib/talaiLabels'
+import { bondDisplayLabel, linkageRowsByFromFoot } from '#/lib/prosody/parse/linkageOverview'
 import { buildLinkageOverviewRows, linkageCoarseCounts } from '#/lib/prosody/parse/linkageOverview'
 import type { ParsedPoem } from '#/types/parsedPoem'
 

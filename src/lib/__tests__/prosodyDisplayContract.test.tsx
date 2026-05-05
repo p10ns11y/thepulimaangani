@@ -7,7 +7,7 @@ import { describe, expect, it } from 'vitest'
 
 import { FootTypeCaption } from '#/components/prosody/FootTypeCaption'
 import { wasmJsonToParsedPoem } from '#/lib/wasmWireParseResult'
-import { bondDisplayLabel } from '#/lib/talaiLabels'
+import { bondDisplayLabel } from '#/lib/prosody/parse/linkageOverview'
 import { buildLinkageOverviewRows, linkageCoarseCounts } from '#/lib/prosody/parse/linkageOverview'
 import { resolveFootDisplayLabel, resolveFootDisplayParts } from '#/lib/footDisplayLabel'
 import {

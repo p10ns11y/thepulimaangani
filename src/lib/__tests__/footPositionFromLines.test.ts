@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { anchorPairForLinkageEdge, lineWordForGlobalFootIndex } from '#/lib/prosody/parse/footPositionFromLines'
+import { anchorPairForLinkageEdge, lineWordForGlobalFootIndex } from '#/lib/prosody/parse/linkageOverview'
 import type { ParsedLine, ParsedLinkageEdge } from '#/types/parsedPoem'
 
 function lineWithFeet(...globals: number[]): ParsedLine {
