@@ -462,6 +462,163 @@
         ],
         "type": "object"
       },
+      "ParseResult": {
+        "properties": {
+          "confidence": {
+            "default": 0,
+            "format": "int32",
+            "type": "integer"
+          },
+          "errors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "feet": {
+            "items": {
+              "$ref": "#/components/schemas/Foot"
+            },
+            "type": "array"
+          },
+          "letter_count": {
+            "format": "uint",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "lines": {
+            "description": "Flattened lines for adapters expecting `feet` per line (mirrors `poem.lines`).",
+            "items": {
+              "$ref": "#/components/schemas/Line"
+            },
+            "type": "array"
+          },
+          "linkage": {
+            "items": {
+              "$ref": "#/components/schemas/Linkage"
+            },
+            "type": "array"
+          },
+          "metre_entropy_bits": {
+            "description": "Shannon entropy (bits) of the hybrid coarse-metre distribution; lower is more decisive.",
+            "format": "float",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "metre_epistemic_margin": {
+            "description": "Top softmax minus second (hybrid head); larger means clearer top class on held-out geometry.",
+            "format": "float",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "metre_type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MetreType"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "normalized_text": {
+            "type": "string"
+          },
+          "original_text": {
+            "type": "string"
+          },
+          "parse_features": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ParseFeatureSnapshot"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Dense parse features (`schema_version` + 51 floats); omitted from JSON when metre detection is off."
+          },
+          "parse_result_schema_version": {
+            "default": 0,
+            "format": "uint32",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "poem": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PoemNode"
+              }
+            ],
+            "description": "Root hierarchical container: Poem → Line → Word → Syllable → Letter."
+          },
+          "presentation": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DisplayResult"
+              }
+            ],
+            "default": {
+              "feet": [],
+              "metre_type": null,
+              "original_text": "",
+              "syllables": [],
+              "talai": []
+            },
+            "description": "Human-facing labels (Tamil metre name, foot mnemonics, தளை strings). Same for all WASM clients."
+          },
+          "provenance": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/RuleId"
+            },
+            "type": "array"
+          },
+          "syllables": {
+            "items": {
+              "$ref": "#/components/schemas/Syllable"
+            },
+            "type": "array"
+          },
+          "talai": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/Linkage"
+            },
+            "type": "array"
+          },
+          "top_k_metre_hypotheses": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/MetreHypothesis"
+            },
+            "type": "array"
+          },
+          "vikalpa_count": {
+            "format": "uint",
+            "minimum": 0.0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "errors",
+          "feet",
+          "letter_count",
+          "lines",
+          "linkage",
+          "normalized_text",
+          "original_text",
+          "poem",
+          "syllables",
+          "vikalpa_count"
+        ],
+        "title": "ParseResult",
+        "type": "object"
+      },
       "PoemLineNode": {
         "description": "One physical line of the normalized poem.",
         "properties": {

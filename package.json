@@ -21,6 +21,8 @@
     "dump:test-fixture": "cd tamil-seiyul-alagi && cargo run --example dump_live_preview_fixture",
     "dump:test-fixtures": "cd tamil-seiyul-alagi && cargo run --example dump_live_preview_fixture && cargo run --example dump_kural_parse_features_fixture",
     "codegen:parse-result-openapi": "cd tamil-seiyul-alagi && cargo run --example export_parse_result_openapi",
+    "codegen:parse-result-client": "node --experimental-strip-types scripts/codegen-parse-result-client.ts",
+    "codegen:parse-result": "pnpm run codegen:parse-result-openapi && pnpm run codegen:parse-result-client",
     "test:frontend": "vitest run",
     "test:frontend:coverage": "vitest run --coverage",
     "crap:report": "python3 dx/crap_report.py --lizard-xml lizard-rust.xml --rust-cov tamil-seiyul-alagi/llvm-cov-summary.json --vitest-summary coverage/coverage-summary.json --out-md crap-report.md",
@@ -72,6 +74,7 @@
     "@vitest/coverage-v8": "^3.2.4",
     "husky": "^9.1.7",
     "jsdom": "^28.1.0",
+    "openapi-typescript": "^7.13.0",
     "typescript": "^5.7.2",
     "vite": "^8.0.0",
     "vitest": "^3.0.5"
