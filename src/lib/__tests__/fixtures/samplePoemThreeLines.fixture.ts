@@ -5,7 +5,7 @@
 import rawParseResult from '#/lib/__tests__/fixtures/samplePoemThreeLines.parseResult.json'
 
 import { wasmJsonToParsedPoem } from '#/lib/wasmWireParseResult'
-import { physicalPoemLines } from '#/lib/mapFeetToPhysicalLines'
+import { physicalPoemLines } from '#/lib/prosody/layout/mapFeetToPhysicalLines'
 import type { ParsedPoem } from '#/types/parsedPoem'
 
 export const SAMPLE_POEM_THREE_LINES = rawParseResult.original_text as string

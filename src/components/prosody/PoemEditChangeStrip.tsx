@@ -1,5 +1,5 @@
 import type { LivePreviewState } from '#/types/livePreview'
-import { getChangedLineIndices, lineDiffOps, syllableCountsPerPhysicalLine } from '#/lib/poemLineDiff'
+import { getChangedLineIndices, lineDiffOps, syllableCountsPerPhysicalLine } from '#/lib/prosody/layout/poemLineDiff'
 import { cn } from '#/lib/utils'
 
 const MAX_LINES_SHOWN = 4

@@ -2,8 +2,8 @@ import { useCallback } from 'react'
 
 import { usePrefersReducedMotion } from '#/hooks/usePrefersReducedMotion'
 import { useTypewriterPaperPhysics, type TypewriterPhysicsCue } from '#/hooks/useTypewriterPaperPhysics'
-import { feetPerPhysicalLine, groupsFromFeet } from '#/lib/parserFeetLayout'
-import { physicalPoemLines } from '#/lib/mapFeetToPhysicalLines'
+import { feetPerPhysicalLine, groupsFromFeet } from '#/lib/prosody/layout/parserFeetLayout'
+import { physicalPoemLines } from '#/lib/prosody/layout/mapFeetToPhysicalLines'
 import { cn } from '#/lib/utils'
 import type { LivePreviewState } from '#/types/livePreview'
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { feetPerPhysicalLine, groupsFromFeet } from '#/lib/parserFeetLayout'
+import { feetPerPhysicalLine, groupsFromFeet } from '#/lib/prosody/layout/parserFeetLayout'
 import type { ParsedPoem } from '#/types/parsedPoem'
 
 import {

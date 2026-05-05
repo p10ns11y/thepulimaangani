@@ -4,7 +4,7 @@ import type {
   ParsedPresentationTalai,
 } from '#/types/parsedPoem'
 
-import { anchorPairForLinkageEdge } from '#/lib/footPositionFromLines'
+import { anchorPairForLinkageEdge } from '#/lib/prosody/parse/footPositionFromLines'
 
 export type LinkageOverviewRow = {
   index1: number

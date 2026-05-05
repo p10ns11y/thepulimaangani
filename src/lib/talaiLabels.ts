@@ -2,7 +2,7 @@ import {
   getLinkageSpecialDisplay,
   getLinkageTypeDisplay,
 } from '#/components/prosody/displayLabels'
-import type { LinkageOverviewRow } from '#/lib/linkageOverview'
+import type { LinkageOverviewRow } from '#/lib/prosody/parse/linkageOverview'
 
 /** Fidelity: prefer `presentation.talai` Tamil string; else `displayLabels` maps. See `prosodyDisplayContract.ts`. */
 export function bondDisplayLabel(row: LinkageOverviewRow): string {

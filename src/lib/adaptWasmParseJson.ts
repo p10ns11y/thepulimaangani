@@ -37,11 +37,18 @@ function normalizeFeet(raw: unknown[]): ParsedFoot[] {
   const out: ParsedFoot[] = []
   for (const item of raw) {
     if (!isFootish(item)) continue
-    const syllables = item.syllables
+    const row = item as unknown as Record<string, unknown>
+    const syllables = (row.syllables as unknown[])
       .map(normalizeSyllable)
       .filter((x): x is ParsedSyllable => x != null)
     if (syllables.length === 0) continue
-    out.push({ foot_type: item.foot_type, syllables })
+    const fig =
+      typeof row.foot_index_global === 'number' ? row.foot_index_global : undefined
+    out.push({
+      foot_type: row.foot_type as string,
+      syllables,
+      ...(fig !== undefined ? { foot_index_global: fig } : {}),
+    })
   }
   return out
 }
@@ -64,20 +71,41 @@ function machineFootPatternFromSyllables(syllables: ParsedSyllable[]): string {
   return syllables.map((s) => (s.syllable_type === 'Ner' ? 'Ner' : 'Nirai')).join('-')
 }
 
-/** Assign poem-wide `foot_index_global` in traversal order (line order, then foot order). */
-function assignGlobalFootIndices(lines: ParsedLine[]): ParsedLine[] {
+/**
+ * Fill missing `foot_index_global` only (preserve Rust indices when present).
+ * Increments `g` once per foot in traversal order so mixed legacy payloads stay stable.
+ */
+function ensureGlobalFootIndices(lines: ParsedLine[]): ParsedLine[] {
   let g = 0
   return lines.map((line) => ({
     ...line,
     feet: line.feet.map((foot) => {
       const next =
-        foot.foot_index_global === undefined
-          ? { ...foot, foot_index_global: g }
-          : foot
+        foot.foot_index_global === undefined ? { ...foot, foot_index_global: g } : foot
       g += 1
       return next
     }),
   }))
+}
+
+/** Copy poem-wide indices from `ParseResult.lines` when structure matches `linesFromPoemNode` output. */
+function mergeFootIndicesFromFlatLines(
+  poemLines: ParsedLine[],
+  flatLines: ParsedLine[],
+): ParsedLine[] {
+  if (flatLines.length !== poemLines.length) return poemLines
+  return poemLines.map((line, li) => {
+    const flatFeet = flatLines[li]?.feet ?? []
+    if (flatFeet.length !== line.feet.length) return line
+    return {
+      ...line,
+      feet: line.feet.map((foot, fi) => {
+        const g = flatFeet[fi]?.foot_index_global
+        if (typeof g !== 'number') return foot
+        return foot.foot_index_global !== undefined ? foot : { ...foot, foot_index_global: g }
+      }),
+    }
+  })
 }
 
 function parseFootPosition(raw: unknown): ParsedFootPosition | undefined {
@@ -298,6 +326,11 @@ function linesFromPoemNode(poem: unknown): ParsedLine[] | null {
 
 /**
  * Maps Rust `ParseResult` JSON into {@link ParsedPoem}.
+ *
+ * Prefer Rust indices: `normalizeFeet` keeps `foot_index_global`; when building from `poem` + top-level
+ * `lines`, {@link mergeFootIndicesFromFlatLines} copies missing indices from the flat `lines` feet.
+ * {@link ensureGlobalFootIndices} only fills gaps for legacy JSON without those fields.
+ *
  * Prefers **`poem.lines[].linguistic_words`** when present (aligned with physical lines); otherwise **`words`**; then top-level `lines` or feet fallback.
  */
 export function adaptWasmJsonToParsedPoem(data: unknown): ParsedPoem | null {
@@ -306,10 +339,20 @@ export function adaptWasmJsonToParsedPoem(data: unknown): ParsedPoem | null {
   if (typeof o.original_text !== 'string' || !Array.isArray(o.syllables)) return null
 
   const feet = Array.isArray(o.feet) ? normalizeFeet(o.feet as unknown[]) : []
+  const flatLinesOnly =
+    Array.isArray(o.lines) && (o.lines as unknown[]).length > 0
+      ? normalizeLines(o.lines, [])
+      : []
   const fromPoem = linesFromPoemNode(o.poem)
+  const poemLinesWithFlatIndices =
+    fromPoem && fromPoem.length > 0 && flatLinesOnly.length > 0
+      ? mergeFootIndicesFromFlatLines(fromPoem, flatLinesOnly)
+      : fromPoem
   const linesRaw =
-    fromPoem && fromPoem.length > 0 ? fromPoem : normalizeLines(o.lines, feet)
-  const lines = assignGlobalFootIndices(linesRaw)
+    poemLinesWithFlatIndices && poemLinesWithFlatIndices.length > 0
+      ? poemLinesWithFlatIndices
+      : normalizeLines(o.lines, feet)
+  const lines = ensureGlobalFootIndices(linesRaw)
 
   const linkageRaw = normalizeLinkage(o.linkage)
   const linkage = linkageRaw.length > 0 ? linkageRaw : normalizeLinkage(o.talai)

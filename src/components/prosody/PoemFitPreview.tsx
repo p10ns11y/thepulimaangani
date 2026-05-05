@@ -3,7 +3,7 @@ import { useMemo, useRef, useState } from 'react'
 import { Pencil } from 'lucide-react'
 
 import { useFitPoemFontSize, LINE_HEIGHT_FACTOR } from '#/hooks/useFitPoemFontSize'
-import { lineDiffOps } from '#/lib/poemLineDiff'
+import { lineDiffOps } from '#/lib/prosody/layout/poemLineDiff'
 import { cn } from '#/lib/utils'
 
 type PoemFitPreviewProps = {

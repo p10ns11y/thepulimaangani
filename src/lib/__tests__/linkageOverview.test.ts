@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { buildLinkageOverviewRows } from '#/lib/linkageOverview'
+import { buildLinkageOverviewRows } from '#/lib/prosody/parse/linkageOverview'
 import type { ParsedFoot, ParsedLine, ParsedPoem } from '#/types/parsedPoem'
 
 function foot(g: number, text = 'x'): ParsedFoot {

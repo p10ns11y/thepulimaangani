@@ -6,7 +6,7 @@ import {
   getLinkageTypeDisplay,
 } from '#/components/prosody/displayLabels'
 import { bondDisplayLabel, linkageRowsByFromFoot } from '#/lib/talaiLabels'
-import { buildLinkageOverviewRows, linkageCoarseCounts } from '#/lib/linkageOverview'
+import { buildLinkageOverviewRows, linkageCoarseCounts } from '#/lib/prosody/parse/linkageOverview'
 import type { ParsedPoem } from '#/types/parsedPoem'
 
 type TalaiInlineFlowProps = {

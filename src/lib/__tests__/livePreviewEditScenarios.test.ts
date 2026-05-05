@@ -9,9 +9,9 @@
 
 import { beforeAll, describe, expect, it } from 'vitest'
 
-import { feetPerPhysicalLine, groupsFromFeet } from '#/lib/parserFeetLayout'
+import { feetPerPhysicalLine, groupsFromFeet } from '#/lib/prosody/layout/parserFeetLayout'
 import { normalizePoemText } from '#/lib/poemTextNormalize'
-import { physicalPoemLines } from '#/lib/mapFeetToPhysicalLines'
+import { physicalPoemLines } from '#/lib/prosody/layout/mapFeetToPhysicalLines'
 import {
   flattenFootSyllableTexts,
   isFirstRowOnlyEntirePoemLayout,

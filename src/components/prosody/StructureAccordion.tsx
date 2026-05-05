@@ -5,7 +5,7 @@ import { getLineClassDisplay } from '#/components/prosody/displayLabels'
 import { FootTypeCaption } from '#/components/prosody/FootTypeCaption'
 import { SyllableChip } from '#/components/prosody/SyllableChip'
 import { TalaiInlineFlow } from '#/components/prosody/TalaiInlineFlow'
-import { buildLinkageOverviewRows } from '#/lib/linkageOverview'
+import { buildLinkageOverviewRows } from '#/lib/prosody/parse/linkageOverview'
 import type { ParsedPoem } from '#/types/parsedPoem'
 
 type PanelId = 'syllables' | 'bonds' | 'metre'

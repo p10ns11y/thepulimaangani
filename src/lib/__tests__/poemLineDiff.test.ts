@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { getChangedLineIndices, lineDiffOps } from '#/lib/poemLineDiff'
+import { getChangedLineIndices, lineDiffOps } from '#/lib/prosody/layout/poemLineDiff'
 
 describe('lineDiffOps', () => {
   it('returns a single equal op when lines match', () => {

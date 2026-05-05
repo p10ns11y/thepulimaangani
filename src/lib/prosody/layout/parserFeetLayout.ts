@@ -1,6 +1,6 @@
 import type { ParsedFoot, ParsedPoem } from '#/types/parsedPoem'
 
-import { physicalPoemLines } from '#/lib/mapFeetToPhysicalLines'
+import { physicalPoemLines } from '#/lib/prosody/layout/mapFeetToPhysicalLines'
 
 const TAMIL_BLOCK = /[\u0B80-\u0BFF]/
 

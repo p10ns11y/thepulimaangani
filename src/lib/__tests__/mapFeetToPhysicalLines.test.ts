@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { mapFeetToPhysicalLines, physicalPoemLines } from '#/lib/mapFeetToPhysicalLines'
+import { mapFeetToPhysicalLines, physicalPoemLines } from '#/lib/prosody/layout/mapFeetToPhysicalLines'
 import type { ParsedFoot } from '#/types/parsedPoem'
 
 const mkFoot = (id: string): ParsedFoot => ({

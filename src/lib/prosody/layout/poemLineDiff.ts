@@ -1,5 +1,5 @@
-import { feetPerPhysicalLine } from '#/lib/parserFeetLayout'
-import { physicalPoemLines } from '#/lib/mapFeetToPhysicalLines'
+import { feetPerPhysicalLine } from '#/lib/prosody/layout/parserFeetLayout'
+import { physicalPoemLines } from '#/lib/prosody/layout/mapFeetToPhysicalLines'
 import type { ParsedPoem } from '#/types/parsedPoem'
 
 /** Raw newline split (preserves structure even when a line is empty). */

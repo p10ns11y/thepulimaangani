@@ -11,6 +11,8 @@ React/TypeScript frontend using TanStack Start/Router, Vite, Tailwind CSS. Focus
 - `styles.css`: Global styles and Tailwind imports
 - `router.tsx`: Router configuration
 - `wasm/`: WebAssembly bindings (generated, gitignored)
+- `lib/prosody/layout/`: physical-line ↔ parsed feet (`mapFeetToPhysicalLines`, `parserFeetLayout`, `poemLineDiff`)
+- `lib/prosody/parse/`: linkage and foot-index helpers (`footPositionFromLines`, `linkageOverview`); use with `wasmWireParseResult` + `adaptWasmParseJson`
 
 ## Coding Style
 - Strict TypeScript: No `any`, explicit types

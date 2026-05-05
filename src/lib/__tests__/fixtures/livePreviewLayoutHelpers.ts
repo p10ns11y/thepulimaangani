@@ -1,6 +1,6 @@
 import type { ParsedFoot } from '#/types/parsedPoem'
 
-import type { feetPerPhysicalLine } from '#/lib/parserFeetLayout'
+import type { feetPerPhysicalLine } from '#/lib/prosody/layout/parserFeetLayout'
 
 type FeetBuckets = ReturnType<typeof feetPerPhysicalLine>
 

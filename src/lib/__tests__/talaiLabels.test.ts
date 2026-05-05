@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { buildLinkageOverviewRows } from '#/lib/linkageOverview'
+import { buildLinkageOverviewRows } from '#/lib/prosody/parse/linkageOverview'
 import { bondDisplayLabel, linkageRowsByFromFoot } from '#/lib/talaiLabels'
 import type { ParsedFoot } from '#/types/parsedPoem'
 
