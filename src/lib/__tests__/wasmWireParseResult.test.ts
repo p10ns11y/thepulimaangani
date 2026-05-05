@@ -40,10 +40,10 @@ describe('wasmJsonToParsedPoem', () => {
   })
 
   it('returns null with a ZodError from safeParseWasmWireJson when wire contract fails', () => {
-    const r = safeParseWasmWireJson({ original_text: 'x' })
-    expect(r.success).toBe(false)
-    if (!r.success) {
-      expect(r.error.issues.some((i) => i.path.includes('syllables'))).toBe(true)
+    const parseOutcome = safeParseWasmWireJson({ original_text: 'x' })
+    expect(parseOutcome.success).toBe(false)
+    if (!parseOutcome.success) {
+      expect(parseOutcome.error.issues.some((issue) => issue.path.includes('syllables'))).toBe(true)
     }
     expect(wasmJsonToParsedPoem({ original_text: 'x' })).toBeNull()
   })

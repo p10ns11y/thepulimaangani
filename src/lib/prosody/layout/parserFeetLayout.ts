@@ -13,15 +13,15 @@ function isBlankOnlyLine(line: string): boolean {
 }
 
 function prevNonBlankLineIndex(physical: string[], from: number): number {
-  for (let j = from - 1; j >= 0; j--) {
-    if (!isBlankOnlyLine(physical[j]!)) return j
+  for (let scanLineIndex = from - 1; scanLineIndex >= 0; scanLineIndex--) {
+    if (!isBlankOnlyLine(physical[scanLineIndex]!)) return scanLineIndex
   }
   return -1
 }
 
 function nextNonBlankLineIndex(physical: string[], from: number): number {
-  for (let j = from + 1; j < physical.length; j++) {
-    if (!isBlankOnlyLine(physical[j]!)) return j
+  for (let scanLineIndex = from + 1; scanLineIndex < physical.length; scanLineIndex++) {
+    if (!isBlankOnlyLine(physical[scanLineIndex]!)) return scanLineIndex
   }
   return physical.length
 }
@@ -41,29 +41,31 @@ function mergeFeetBucketsForBlankStanzaLines(
   if (nPhys === nStruct) return structuredFeet
 
   const out: ParsedFoot[][] = []
-  let si = 0
+  let structuredLineCursor = 0
 
-  for (let pi = 0; pi < nPhys; pi++) {
-    const line = physical[pi] ?? ''
+  for (let physicalLineIndex = 0; physicalLineIndex < nPhys; physicalLineIndex++) {
+    const line = physical[physicalLineIndex] ?? ''
     if (isBlankOnlyLine(line)) {
-      const prevI = prevNonBlankLineIndex(physical, pi)
-      const nextI = nextNonBlankLineIndex(physical, pi)
-      const prevTamil = prevI >= 0 && lineContainsTamil(physical[prevI]!)
-      const nextTamil = nextI < nPhys && lineContainsTamil(physical[nextI]!)
+      const prevNonBlankIndex = prevNonBlankLineIndex(physical, physicalLineIndex)
+      const nextNonBlankIndex = nextNonBlankLineIndex(physical, physicalLineIndex)
+      const prevTamil =
+        prevNonBlankIndex >= 0 && lineContainsTamil(physical[prevNonBlankIndex]!)
+      const nextTamil =
+        nextNonBlankIndex < nPhys && lineContainsTamil(physical[nextNonBlankIndex]!)
       // Stanza gap (between Tamil blocks) or leading blank before the first Tamil line — WASM
       // `lines()` can omit those empty physical rows.
-      if (nextTamil && (prevTamil || prevI < 0)) {
+      if (nextTamil && (prevTamil || prevNonBlankIndex < 0)) {
         out.push([])
         continue
       }
     }
 
-    if (si >= structuredFeet.length) return null
-    out.push(structuredFeet[si]!)
-    si += 1
+    if (structuredLineCursor >= structuredFeet.length) return null
+    out.push(structuredFeet[structuredLineCursor]!)
+    structuredLineCursor += 1
   }
 
-  return si === structuredFeet.length ? out : null
+  return structuredLineCursor === structuredFeet.length ? out : null
 }
 
 /**
@@ -91,7 +93,7 @@ export function feetPerPhysicalLine(parsed: ParsedPoem | null, poemText: string)
 /** One UI group per **linguistic word** (one WASM foot). Syllables stay parser order. */
 export function groupsFromFeet(lineFeet: ParsedFoot[]): { word: string; syllables: ParsedFoot['syllables'] }[] {
   return lineFeet.map((foot) => ({
-    word: foot.syllables.map((s) => s.text).join(''),
+    word: foot.syllables.map((syllable) => syllable.text).join(''),
     syllables: foot.syllables,
   }))
 }

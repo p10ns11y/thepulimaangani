@@ -111,11 +111,11 @@ export interface ParsedPoem {
 
 export function isParsedPoem(value: unknown): value is ParsedPoem {
   if (!value || typeof value !== 'object') return false
-  const o = value as Record<string, unknown>
+  const candidate = value as Record<string, unknown>
   return (
-    typeof o.original_text === 'string' &&
-    typeof o.metre_type === 'string' &&
-    Array.isArray(o.lines) &&
-    Array.isArray(o.syllables)
+    typeof candidate.original_text === 'string' &&
+    typeof candidate.metre_type === 'string' &&
+    Array.isArray(candidate.lines) &&
+    Array.isArray(candidate.syllables)
   )
 }

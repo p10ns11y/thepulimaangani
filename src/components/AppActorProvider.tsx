@@ -16,15 +16,15 @@ function readStoredLook(): AppLook | null {
   try {
     const raw = window.localStorage.getItem(LOOK_STORAGE_KEY)
     if (raw === null) return null
-    const v = normalizeStoredLookString(raw)
-    if (raw !== v) {
+    const canonicalLookKey = normalizeStoredLookString(raw)
+    if (raw !== canonicalLookKey) {
       try {
-        window.localStorage.setItem(LOOK_STORAGE_KEY, v)
+        window.localStorage.setItem(LOOK_STORAGE_KEY, canonicalLookKey)
       } catch {
         /* ignore */
       }
     }
-    return v
+    return canonicalLookKey
   } catch {
     /* ignore */
   }

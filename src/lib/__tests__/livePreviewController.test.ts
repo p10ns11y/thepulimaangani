@@ -28,49 +28,55 @@ describe('LivePreviewController', () => {
 
   it('cache key: trailing newline vs none yields different normalizePoemText(parsed.original_text)', async () => {
     const states: LivePreviewState[] = []
-    const c = new LivePreviewController(0, (s) => {
-      states.push(structuredClone(s))
+    const controller = new LivePreviewController(0, (liveState) => {
+      states.push(structuredClone(liveState))
     })
 
-    c.setSource('அ\n')
+    controller.setSource('அ\n')
     await vi.runAllTimersAsync()
 
-    const readyAfterFirst = states.filter((s) => s.status === 'ready' && s.parsed != null)
+    const readyAfterFirst = states.filter(
+      (liveState) => liveState.status === 'ready' && liveState.parsed != null,
+    )
     expect(readyAfterFirst.length).toBeGreaterThan(0)
     const normFirst = normalizePoemText(readyAfterFirst[readyAfterFirst.length - 1]!.parsed!.original_text)
 
-    c.setSource('அ')
+    controller.setSource('அ')
     await vi.runAllTimersAsync()
 
-    const readyAfterSecond = states.filter((s) => s.status === 'ready' && s.parsed != null)
+    const readyAfterSecond = states.filter(
+      (liveState) => liveState.status === 'ready' && liveState.parsed != null,
+    )
     const last = readyAfterSecond[readyAfterSecond.length - 1]!
     const normSecond = normalizePoemText(last.parsed!.original_text)
     expect(normFirst).not.toBe(normSecond)
 
-    c.dispose()
+    controller.dispose()
   })
 
   it('does not call WASM when normalized editor text matches the last ready parse (cache hit)', async () => {
     const wasmSpy = vi.mocked(runWasmParse)
 
     const states: LivePreviewState[] = []
-    const c = new LivePreviewController(0, (s) => {
-      states.push(structuredClone(s))
+    const controller = new LivePreviewController(0, (liveState) => {
+      states.push(structuredClone(liveState))
     })
 
-    c.setSource('அ')
+    controller.setSource('அ')
     await vi.runAllTimersAsync()
     expect(wasmSpy.mock.calls.length).toBe(1)
-    expect(states.some((s) => s.status === 'ready' && s.parsed != null)).toBe(true)
-    const ready = states.filter((s) => s.status === 'ready' && s.parsed != null)
+    expect(states.some((liveState) => liveState.status === 'ready' && liveState.parsed != null)).toBe(true)
+    const ready = states.filter(
+      (liveState) => liveState.status === 'ready' && liveState.parsed != null,
+    )
     expect(ready[ready.length - 1]?.rawJson).toMatch(/^\{/)
 
     wasmSpy.mockClear()
 
-    c.setSource('அ')
+    controller.setSource('அ')
     await vi.runAllTimersAsync()
     expect(wasmSpy.mock.calls.length).toBe(0)
 
-    c.dispose()
+    controller.dispose()
   })
 })

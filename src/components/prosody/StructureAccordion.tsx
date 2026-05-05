@@ -86,21 +86,24 @@ export function StructureAccordion({ data }: StructureAccordionProps) {
             <div className="border-rim/30 bg-surface-2/25 rounded-md border px-3 py-2">
               <span className="text-muted-foreground text-xs">Coarse metre candidates (WASM)</span>
               <ul className="mt-1.5 flex flex-col gap-1">
-                {sortedHypotheses.map((h) => (
+                {sortedHypotheses.map((hypothesis) => (
                   <li
-                    key={h.metre_type}
+                    key={hypothesis.metre_type}
                     className="text-foreground/92 flex items-baseline justify-between gap-2 text-[0.72rem] leading-snug"
                   >
                     <span className="min-w-0 font-tamil">
-                      {h.metre_rank != null ? (
-                        <span className="text-muted-foreground mr-1.5 tabular-nums">#{h.metre_rank}</span>
+                      {hypothesis.metre_rank != null ? (
+                        <span className="text-muted-foreground mr-1.5 tabular-nums">
+                          #{hypothesis.metre_rank}
+                        </span>
                       ) : null}
-                      {h.metre_type}
+                      {hypothesis.metre_type}
                     </span>
                     <span className="text-muted-foreground shrink-0 tabular-nums">
-                      {typeof h.metre_probability === 'number' && Number.isFinite(h.metre_probability)
-                        ? `${(h.metre_probability * 100).toFixed(1)}%`
-                        : `score ${h.aggregate_score}`}
+                      {typeof hypothesis.metre_probability === 'number' &&
+                      Number.isFinite(hypothesis.metre_probability)
+                        ? `${(hypothesis.metre_probability * 100).toFixed(1)}%`
+                        : `score ${hypothesis.aggregate_score}`}
                     </span>
                   </li>
                 ))}

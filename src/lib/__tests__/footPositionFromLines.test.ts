@@ -6,10 +6,10 @@ import type { ParsedLine, ParsedLinkageEdge } from '#/types/parsedPoem'
 function lineWithFeet(...globals: number[]): ParsedLine {
   return {
     line_class: 'Kuraladi',
-    feet: globals.map((g, i) => ({
+    feet: globals.map((globalFootIndex, wordSlotOnLine) => ({
       foot_type: 'Ner',
-      syllables: [{ text: `w${i}`, syllable_type: 'Ner' }],
-      foot_index_global: g,
+      syllables: [{ text: `w${wordSlotOnLine}`, syllable_type: 'Ner' }],
+      foot_index_global: globalFootIndex,
     })),
   }
 }
@@ -36,9 +36,9 @@ describe('footPositionFromLines', () => {
       from: { foot_index: 0, line_index: 2, word_index_in_line: 0 },
       to: { foot_index: 1, line_index: 3, word_index_in_line: 0 },
     }
-    const a = anchorPairForLinkageEdge(lines, edge)
-    expect(a.fromLine1).toBe(3)
-    expect(a.toLine1).toBe(4)
-    expect(a.crossLine).toBe(true)
+    const anchorPair = anchorPairForLinkageEdge(lines, edge)
+    expect(anchorPair.fromLine1).toBe(3)
+    expect(anchorPair.toLine1).toBe(4)
+    expect(anchorPair.crossLine).toBe(true)
   })
 })

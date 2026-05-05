@@ -12,9 +12,9 @@ export const SAMPLE_POEM_THREE_LINES = rawParseResult.original_text as string
 
 /** Full `ParsedPoem` from the committed `ParseResult` JSON (via the same adapter as WASM). */
 export function parsedSampleThreeLines(): ParsedPoem {
-  const p = wasmJsonToParsedPoem(rawParseResult)
-  if (!p) throw new Error('samplePoemThreeLines.parseResult.json failed wasmJsonToParsedPoem')
-  return p
+  const parsedPoem = wasmJsonToParsedPoem(rawParseResult)
+  if (!parsedPoem) throw new Error('samplePoemThreeLines.parseResult.json failed wasmJsonToParsedPoem')
+  return parsedPoem
 }
 
 /**
@@ -40,10 +40,10 @@ export function parsedSampleFirstTwoLines(): ParsedPoem {
 /** Sanity: editor line split matches fixture row count for the full sample. */
 export function assertSamplePhysicalLineCount(): void {
   const full = parsedSampleThreeLines()
-  const n = physicalPoemLines(SAMPLE_POEM_THREE_LINES).length
-  if (n !== full.lines.length) {
+  const physicalLineCount = physicalPoemLines(SAMPLE_POEM_THREE_LINES).length
+  if (physicalLineCount !== full.lines.length) {
     throw new Error(
-      `Fixture out of sync: physicalPoemLines=${n} vs parsed.lines=${full.lines.length}. Regenerate with cargo run --example dump_live_preview_fixture`,
+      `Fixture out of sync: physicalPoemLines=${physicalLineCount} vs parsed.lines=${full.lines.length}. Regenerate with cargo run --example dump_live_preview_fixture`,
     )
   }
 }

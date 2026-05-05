@@ -16,10 +16,10 @@ type PoemEditChangeStripProps = {
  * current syllable counts from the debounced live parse (when ready).
  */
 export function PoemEditChangeStrip({ base, draft, live, className }: PoemEditChangeStripProps) {
-  const ops = lineDiffOps(base, draft)
-  if (!ops.some((o) => o.type !== 'equal')) return null
+  const diffOps = lineDiffOps(base, draft)
+  if (!diffOps.some((lineOp) => lineOp.type !== 'equal')) return null
 
-  const nDelete = ops.filter((o) => o.type === 'delete').length
+  const deletedLineCount = diffOps.filter((lineOp) => lineOp.type === 'delete').length
   const changed = getChangedLineIndices(base, draft)
 
   const busy = live.status === 'syncing' || live.status === 'pending'
@@ -31,11 +31,11 @@ export function PoemEditChangeStrip({ base, draft, live, className }: PoemEditCh
 
   const parts = shown.map((idx) => {
     const lineNo = idx + 1
-    const n = counts?.[idx]
-    if (n === undefined) {
+    const syllableCountOnLine = counts?.[idx]
+    if (syllableCountOnLine === undefined) {
       return `அடி ${lineNo}: —`
     }
-    return `அடி ${lineNo}: ${n} சீர்`
+    return `அடி ${lineNo}: ${syllableCountOnLine} சீர்`
   })
 
   return (
@@ -47,12 +47,14 @@ export function PoemEditChangeStrip({ base, draft, live, className }: PoemEditCh
       )}
     >
       <span className="text-muted-foreground mr-1">மாற்றம்:</span>
-      {nDelete > 0 ? (
+      {deletedLineCount > 0 ? (
         <span className="text-[color:color-mix(in_oklab,var(--gem-ruby)_80%,var(--sea-ink)_20%)] mr-1">
-          நீக்கம் {nDelete} அடி
+          நீக்கம் {deletedLineCount} அடி
         </span>
       ) : null}
-      {nDelete > 0 && changed.length > 0 ? <span className="text-muted-foreground mx-0.5">·</span> : null}
+      {deletedLineCount > 0 && changed.length > 0 ? (
+        <span className="text-muted-foreground mx-0.5">·</span>
+      ) : null}
       {changed.length > 0 ? (
         <>
           {parts.join(' · ')}

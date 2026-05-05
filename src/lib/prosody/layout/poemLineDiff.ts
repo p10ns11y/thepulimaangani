@@ -14,38 +14,48 @@ export type LineDiffOp = { type: 'equal' | 'insert' | 'delete'; line: string }
  * Used for preview styling so a removed line is visible as deleted, not mis-colored as the next line.
  */
 export function lineDiffOps(base: string, draft: string): LineDiffOp[] {
-  const a = normLines(base)
-  const b = normLines(draft)
-  const m = a.length
-  const n = b.length
-  const dp: number[][] = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0))
-  for (let i = 1; i <= m; i++) {
-    for (let j = 1; j <= n; j++) {
-      if (a[i - 1] === b[j - 1]) {
-        dp[i]![j] = dp[i - 1]![j - 1]! + 1
+  const baseLines = normLines(base)
+  const draftLines = normLines(draft)
+  const baseLineCount = baseLines.length
+  const draftLineCount = draftLines.length
+  const lcsLengthTable: number[][] = Array.from({ length: baseLineCount + 1 }, () =>
+    new Array(draftLineCount + 1).fill(0),
+  )
+  for (let basePrefixLen = 1; basePrefixLen <= baseLineCount; basePrefixLen++) {
+    for (let draftPrefixLen = 1; draftPrefixLen <= draftLineCount; draftPrefixLen++) {
+      if (baseLines[basePrefixLen - 1] === draftLines[draftPrefixLen - 1]) {
+        lcsLengthTable[basePrefixLen]![draftPrefixLen] =
+          lcsLengthTable[basePrefixLen - 1]![draftPrefixLen - 1]! + 1
       } else {
-        dp[i]![j] = Math.max(dp[i - 1]![j]!, dp[i]![j - 1]!)
+        lcsLengthTable[basePrefixLen]![draftPrefixLen] = Math.max(
+          lcsLengthTable[basePrefixLen - 1]![draftPrefixLen]!,
+          lcsLengthTable[basePrefixLen]![draftPrefixLen - 1]!,
+        )
       }
     }
   }
-  const out: LineDiffOp[] = []
-  let i = m
-  let j = n
-  while (i > 0 || j > 0) {
-    if (i > 0 && j > 0 && a[i - 1] === b[j - 1]) {
-      out.push({ type: 'equal', line: a[i - 1]! })
-      i--
-      j--
-    } else if (j > 0 && (i === 0 || (dp[i]![j - 1] ?? 0) >= (dp[i - 1]![j] ?? 0))) {
-      out.push({ type: 'insert', line: b[j - 1]! })
-      j--
-    } else if (i > 0) {
-      out.push({ type: 'delete', line: a[i - 1]! })
-      i--
+  const opsReversed: LineDiffOp[] = []
+  let baseIdx = baseLineCount
+  let draftIdx = draftLineCount
+  while (baseIdx > 0 || draftIdx > 0) {
+    if (baseIdx > 0 && draftIdx > 0 && baseLines[baseIdx - 1] === draftLines[draftIdx - 1]) {
+      opsReversed.push({ type: 'equal', line: baseLines[baseIdx - 1]! })
+      baseIdx--
+      draftIdx--
+    } else if (
+      draftIdx > 0 &&
+      (baseIdx === 0 ||
+        (lcsLengthTable[baseIdx]![draftIdx - 1] ?? 0) >= (lcsLengthTable[baseIdx - 1]![draftIdx] ?? 0))
+    ) {
+      opsReversed.push({ type: 'insert', line: draftLines[draftIdx - 1]! })
+      draftIdx--
+    } else if (baseIdx > 0) {
+      opsReversed.push({ type: 'delete', line: baseLines[baseIdx - 1]! })
+      baseIdx--
     }
   }
-  out.reverse()
-  return out
+  opsReversed.reverse()
+  return opsReversed
 }
 
 /**
@@ -71,5 +81,7 @@ export function syllableCountsPerPhysicalLine(poemText: string, parsed: ParsedPo
   const lines = physicalPoemLines(poemText)
   if (lines.length === 0) return []
   const perLine = feetPerPhysicalLine(parsed, poemText)
-  return perLine.map((lineFeet) => lineFeet.reduce((n, f) => n + f.syllables.length, 0))
+  return perLine.map((lineFeet) =>
+    lineFeet.reduce((syllableTotal, foot) => syllableTotal + foot.syllables.length, 0),
+  )
 }

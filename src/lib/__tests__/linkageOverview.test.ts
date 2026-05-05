@@ -7,11 +7,11 @@ import {
 } from '#/lib/prosody/parse/linkageOverview'
 import type { ParsedFoot, ParsedLine, ParsedPoem } from '#/types/parsedPoem'
 
-function foot(g: number, text = 'x'): ParsedFoot {
+function foot(globalFootIndex: number, text = 'x'): ParsedFoot {
   return {
     foot_type: 'Ner',
     syllables: [{ text, syllable_type: 'Ner' }],
-    foot_index_global: g,
+    foot_index_global: globalFootIndex,
   }
 }
 
@@ -83,9 +83,9 @@ describe('buildLinkageOverviewRows', () => {
         },
       ],
     })
-    const m = linkageRowsByFromFoot(rows)
-    expect(m.get(0)).toBeDefined()
-    expect(m.get(0)?.edge.from_foot).toBe(0)
+    const rowBySourceFootIndex = linkageRowsByFromFoot(rows)
+    expect(rowBySourceFootIndex.get(0)).toBeDefined()
+    expect(rowBySourceFootIndex.get(0)?.edge.from_foot).toBe(0)
   })
 
   it('bondDisplayLabel prefers presentation talai string', () => {

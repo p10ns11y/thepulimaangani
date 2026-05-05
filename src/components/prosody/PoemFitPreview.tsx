@@ -32,7 +32,7 @@ export function PoemFitPreview({
   const displayText = draftForDiff !== undefined ? draftForDiff : text
   const measureText = useMemo(() => {
     if (diffOps && diffOps.length > 0) {
-      return diffOps.map((o) => o.line).join('\n')
+      return diffOps.map((lineOp) => lineOp.line).join('\n')
     }
     return displayText
   }, [diffOps, displayText])
