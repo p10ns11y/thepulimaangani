@@ -5,8 +5,8 @@ import {
   getLineClassDisplay,
   getLinkageTypeDisplay,
 } from '#/components/prosody/displayLabels'
-import { bondDisplayLabel, linkageRowsByFromFoot } from '#/lib/talaiLabels'
-import { buildLinkageOverviewRows, linkageCoarseCounts } from '#/lib/linkageOverview'
+import { bondDisplayLabel, linkageRowsByFromFoot } from '#/lib/prosody/parse/linkageOverview'
+import { buildLinkageOverviewRows, linkageCoarseCounts } from '#/lib/prosody/parse/linkageOverview'
 import type { ParsedPoem } from '#/types/parsedPoem'
 
 type TalaiInlineFlowProps = {
@@ -20,7 +20,7 @@ export function TalaiInlineFlow({ data }: TalaiInlineFlowProps) {
   const coarseHint = useMemo(() => {
     const coarse = linkageCoarseCounts(data.linkage ?? [])
     return Object.entries(coarse)
-      .map(([k, n]) => `${getLinkageTypeDisplay(k)} ×${n}`)
+      .map(([linkageFamilyKey, bondCount]) => `${getLinkageTypeDisplay(linkageFamilyKey)} ×${bondCount}`)
       .join(' · ')
   }, [data.linkage])
 
@@ -40,32 +40,38 @@ export function TalaiInlineFlow({ data }: TalaiInlineFlowProps) {
         </p>
       ) : null}
 
-      {data.lines.map((line, li) => (
-        <section key={`talai-line-${li}-${line.line_class}`} className="mb-6 last:mb-2">
+      {data.lines.map((line, physicalLineIndex) => (
+        <section
+          key={`talai-line-${physicalLineIndex}-${line.line_class}`}
+          className="mb-6 last:mb-2"
+        >
           <div className="text-muted-foreground mb-2 font-tamil text-[0.72rem] tracking-wide">
-            அடி {li + 1}{' '}
+            அடி {physicalLineIndex + 1}{' '}
             <span className="text-muted-foreground/75">({getLineClassDisplay(line.line_class)})</span>
           </div>
 
           <div className="flex flex-wrap items-end gap-x-0.5 gap-y-4">
-            {line.feet.map((foot, fj) => {
-              const g = foot.foot_index_global
+            {line.feet.map((foot, footIndexOnLine) => {
+              const globalFootIndex = foot.foot_index_global
               const bondAfter =
-                typeof g === 'number' ? byFrom.get(g) : undefined
-              const wordText = foot.syllables.map((s) => s.text).join('')
-              const alt = typeof g === 'number' && g % 2 === 0
+                typeof globalFootIndex === 'number' ? byFrom.get(globalFootIndex) : undefined
+              const wordText = foot.syllables.map((syllable) => syllable.text).join('')
+              const useAlternateScansionTone =
+                typeof globalFootIndex === 'number' && globalFootIndex % 2 === 0
 
-              const isLastOnLine = fj === line.feet.length - 1
+              const isLastOnLine = footIndexOnLine === line.feet.length - 1
               const showBetweenSameLine =
                 !isLastOnLine && bondAfter && !bondAfter.crossLine
               const showCrossLineBridge =
                 isLastOnLine && bondAfter && bondAfter.crossLine
 
               return (
-                <Fragment key={`talai-foot-${li}-${fj}-${g ?? fj}`}>
+                <Fragment
+                  key={`talai-foot-${physicalLineIndex}-${footIndexOnLine}-${globalFootIndex ?? footIndexOnLine}`}
+                >
                   <div
                     className={`flex min-w-0 max-w-[min(100%,13rem)] flex-col items-center gap-0.5 px-0.5 ${
-                      alt ? 'text-syllable-ner' : 'text-syllable-nirai'
+                      useAlternateScansionTone ? 'text-syllable-ner' : 'text-syllable-nirai'
                     }`}
                   >
                     <span className="font-tamil text-[1.06rem] leading-[1.38] tracking-tight">{wordText}</span>

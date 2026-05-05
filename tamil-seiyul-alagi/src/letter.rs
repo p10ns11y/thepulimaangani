@@ -1,5 +1,6 @@
 //! Letter classification and conversion to ProsodicUnit using the official Tamil character matrix.
 
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use unicode_segmentation::UnicodeSegmentation;
 
@@ -92,7 +93,7 @@ impl Consonant {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, JsonSchema)]
 pub enum LetterType {
     Uyir,
     Mei,
@@ -100,7 +101,7 @@ pub enum LetterType {
     Aaytham,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, JsonSchema)]
 pub struct Letter {
     pub text: String,
     pub letter_type: LetterType,

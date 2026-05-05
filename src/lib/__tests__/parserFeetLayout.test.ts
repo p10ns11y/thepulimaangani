@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { feetPerPhysicalLine, groupsFromFeet } from '#/lib/parserFeetLayout'
+import { feetPerPhysicalLine, groupsFromFeet } from '#/lib/prosody/layout/parserFeetLayout'
 import type { ParsedPoem } from '#/types/parsedPoem'
 
 import {
@@ -31,14 +31,14 @@ describe('feetPerPhysicalLine', () => {
   })
 
   it('returns empty feet per line when parser line count mismatches (avoid wrong-row slices)', () => {
-    const p = poem([
+    const mismatchParsedPoem = poem([
       {
         line_class: '—',
         feet: [{ foot_type: 'Ner', syllables: [{ text: 'only', syllable_type: 'Ner' }] }],
       },
     ])
     const text = 'line one\nline two'
-    const buckets = feetPerPhysicalLine(p, text)
+    const buckets = feetPerPhysicalLine(mismatchParsedPoem, text)
     expect(buckets).toHaveLength(2)
     expect(buckets[0]).toEqual([])
     expect(buckets[1]).toEqual([])
@@ -97,9 +97,9 @@ describe('groupsFromFeet', () => {
   it('one UI group per foot; word label is syllable texts joined (real parser feet)', () => {
     const sample = parsedSampleThreeLines()
     const feet = sample.lines[0]!.feet.slice(0, 2)
-    const g = groupsFromFeet(feet)
-    expect(g).toHaveLength(2)
-    expect(g[0]!.word).toBe(feet[0]!.syllables.map((s) => s.text).join(''))
-    expect(g[1]!.word).toBe(feet[1]!.syllables.map((s) => s.text).join(''))
+    const linguisticWordGroups = groupsFromFeet(feet)
+    expect(linguisticWordGroups).toHaveLength(2)
+    expect(linguisticWordGroups[0]!.word).toBe(feet[0]!.syllables.map((syllable) => syllable.text).join(''))
+    expect(linguisticWordGroups[1]!.word).toBe(feet[1]!.syllables.map((syllable) => syllable.text).join(''))
   })
 })

@@ -1,4 +1,4 @@
-import { adaptWasmJsonToParsedPoem } from '#/lib/adaptWasmParseJson'
+import { wasmJsonToParsedPoem } from '#/lib/wasmWireParseResult'
 import { normalizePoemText } from '#/lib/poemTextNormalize'
 import type { LivePreviewState } from '#/types/livePreview'
 
@@ -17,9 +17,9 @@ export function resolveSyncedParseJson(args: ResolveSyncedParseJsonArgs): string
 
   const normForRaw = (raw: string): string | null => {
     try {
-      const data: unknown = JSON.parse(raw)
-      const p = adaptWasmJsonToParsedPoem(data)
-      return p ? normalizePoemText(p.original_text) : null
+      const wirePayload: unknown = JSON.parse(raw)
+      const parsedPoem = wasmJsonToParsedPoem(wirePayload)
+      return parsedPoem ? normalizePoemText(parsedPoem.original_text) : null
     } catch {
       return null
     }
@@ -40,8 +40,8 @@ export function resolveSyncedParseJson(args: ResolveSyncedParseJsonArgs): string
   if (args.manualResult) candidates.push(args.manualResult)
 
   for (const raw of candidates) {
-    const n = normForRaw(raw)
-    if (n === previewNorm) return raw
+    const normalizedOriginalFromCandidate = normForRaw(raw)
+    if (normalizedOriginalFromCandidate === previewNorm) return raw
   }
 
   return null

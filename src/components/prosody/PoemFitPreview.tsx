@@ -3,7 +3,7 @@ import { useMemo, useRef, useState } from 'react'
 import { Pencil } from 'lucide-react'
 
 import { useFitPoemFontSize, LINE_HEIGHT_FACTOR } from '#/hooks/useFitPoemFontSize'
-import { lineDiffOps } from '#/lib/poemLineDiff'
+import { lineDiffOps } from '#/lib/prosody/layout/poemLineDiff'
 import { cn } from '#/lib/utils'
 
 type PoemFitPreviewProps = {
@@ -32,7 +32,7 @@ export function PoemFitPreview({
   const displayText = draftForDiff !== undefined ? draftForDiff : text
   const measureText = useMemo(() => {
     if (diffOps && diffOps.length > 0) {
-      return diffOps.map((o) => o.line).join('\n')
+      return diffOps.map((lineOp) => lineOp.line).join('\n')
     }
     return displayText
   }, [diffOps, displayText])

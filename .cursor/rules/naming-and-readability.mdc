@@ -1,0 +1,18 @@
+---
+description: Prefer domain-specific, explicit semantic names in code; avoid single-letter identifiers and opaque technical jargon.
+alwaysApply: true
+---
+
+# Naming and readability (Thepulimaangani)
+
+When writing or editing code in this repo:
+
+1. **Domain-first names** — Tie identifiers to the problem space: poem lines, feet, syllables, linkage bonds, WASM wire payloads, metre hypotheses, Tamil presentation labels, etc. Use the same vocabulary as `ParsedPoem`, Rust `ParseResult`, and prosody UI (அடி, தளை patterns already appear in copy; code names stay English but **semantic**, e.g. `globalFootIndex`, `linkageEdge`, `normalizedPoemText`).
+
+2. **No single-letter or ultra-short locals** — Do not use `a`, `b`, `n`, `p`, `g`, `o`, `s`, `t`, `x`, `y`, `ft`, `idx` (etc.) for anything that carries business meaning. Spell out intent: `parsedPoem`, `physicalLineIndex`, `syllableCountOnLine`, `wireValidation`. Short names are not “free” performance — bundlers minify; readability is the default.
+
+3. **Avoid opaque jargon** — Prefer plain, structural descriptions over insider abbreviations or framework slang in names (`lastEmittedLiveState` over `prev`; `canonicalLookKey` over `v`). Reserve well-known acronyms only when universal in-file (e.g. `URL`, `JSON` in strings/comments).
+
+4. **Loops and helpers** — Even in `map`/`filter`/`reduce`, prefer `syllable`, `foot`, `lineOp`, `hypothesis` over `s`, `f`, `o`, `h`. For algorithms where tradition uses `i`/`j` (e.g. tight DP tables), keep the **table** well-named (`lcsLengthTable`, `baseLineCount`) so indices stay understandable in context.
+
+5. **Consistency** — Match existing modules in the same folder (`adaptWasmParseJson`, `linkageOverview`, prosody layout). When touching a file, upgrade nearby terse names only if you are already editing that region — avoid drive-by renames across unrelated code.

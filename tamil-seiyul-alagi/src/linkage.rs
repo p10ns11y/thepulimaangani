@@ -1,3 +1,4 @@
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::foot::{Foot, FootPlacement};
@@ -9,7 +10,7 @@ use crate::syllable::SyllableType;
 /// For 1–2 acai per foot: last acai maps to **Maa** (Ner) / **Vilam** (Nirai, விளம்).  
 /// For 3+ acai: last acai maps to **Kaai** (Ner) / **Kani** (Nirai).  
 /// Matches the transition table in [GitHub issue #36](https://github.com/p10ns11y/thepulimaangani/issues/36).
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, JsonSchema)]
 pub enum CirAcaiClass {
     Maa,
     Vilam,
@@ -18,7 +19,7 @@ pub enum CirAcaiClass {
 }
 
 /// Coarse **Talai** (தளை) family for metre-facing logic (Venpaa vs Kalippaa hints, etc.).
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, JsonSchema)]
 pub enum LinkageType {
     /// JSON: `VenTalai` (legacy `Venthalai` on deserialize).
     #[serde(rename = "VenTalai", alias = "Venthalai")]
@@ -39,7 +40,7 @@ pub enum LinkageType {
 }
 
 /// Nuanced bond name within a [`LinkageType`] family (issue #36 row names).
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, JsonSchema)]
 pub enum LinkageSpecialType {
     #[serde(
         rename = "NerondriyaAciriyaTalai",
@@ -73,7 +74,7 @@ impl Default for LinkageSpecialType {
 }
 
 /// Where a foot (word) sits in the poem: global index, line, and position within that line.
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, JsonSchema)]
 pub struct FootPosition {
     /// Index of this foot in the poem-wide `feet` list (0-based).
     pub foot_index: usize,
@@ -83,7 +84,7 @@ pub struct FootPosition {
     pub word_index_in_line: usize,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, JsonSchema)]
 pub struct Linkage {
     pub from_foot: usize,
     pub to_foot: usize,
@@ -254,6 +255,7 @@ mod tests {
                 })
                 .collect(),
             foot_type: String::new(),
+            foot_index_global: None,
         }
     }
 

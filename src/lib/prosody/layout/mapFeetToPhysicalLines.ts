@@ -2,9 +2,9 @@ import type { ParsedFoot } from '#/types/parsedPoem'
 
 /** Split editor text into physical lines — aligned with Rust `str::lines()` on normalized `\n` text. */
 export function physicalPoemLines(poemText: string): string[] {
-  const t = poemText.replace(/\r\n/g, '\n')
-  if (!t.trim()) return []
-  const parts = t.split('\n')
+  const normalizedPoemText = poemText.replace(/\r\n/g, '\n')
+  if (!normalizedPoemText.trim()) return []
+  const parts = normalizedPoemText.split('\n')
   // Rust `lines()` does not yield an extra empty line solely because the string ends with `\n`;
   // JS `split('\n')` adds a trailing `''` in that case → off-by-one vs WASM `ParseResult.lines`.
   if (parts.length > 1 && parts[parts.length - 1] === '') {
@@ -31,12 +31,12 @@ export function mapFeetToPhysicalLines(poemText: string, feet: ParsedFoot[]): Pa
     const core = line.replace(/\s/g, '')
     return Math.max(1, [...core].length)
   })
-  const totalW = weights.reduce((a, b) => a + b, 0)
+  const totalWeightAcrossLines = weights.reduce((sum, lineWeight) => sum + lineWeight, 0)
 
   const boundaries: number[] = [0]
   for (let i = 0; i < nLines; i++) {
-    const cumWeight = weights.slice(0, i + 1).reduce((a, b) => a + b, 0)
-    const pos = Math.round((cumWeight / totalW) * nFeet)
+    const cumulativeWeight = weights.slice(0, i + 1).reduce((sum, w) => sum + w, 0)
+    const pos = Math.round((cumulativeWeight / totalWeightAcrossLines) * nFeet)
     boundaries.push(Math.min(nFeet, pos))
   }
   boundaries[boundaries.length - 1] = nFeet

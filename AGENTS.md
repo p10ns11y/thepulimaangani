@@ -12,6 +12,7 @@ Thepulimaangani is a Tamil prosody analysis web application with React/TypeScrip
 - Development: `pnpm run dev`
 - Build: `pnpm run build` (includes WASM)
 - WASM Build: `pnpm run build:wasm`
+- **ParseResult contract (Rust → OpenAPI → TS):** `pnpm run codegen:parse-result` (runs OpenAPI export + `openapi-typescript`). Full-graph runtime Zod from the same schema is **not** wired yet; see **`tamil-seiyul-alagi/CANONICAL_JSON_TRAVERSAL.md`** (“TypeScript vs runtime validation”).
 - Test: `pnpm run test` (Vitest) + `cargo test` (Rust)
 - Typecheck: `pnpm run typecheck`
 - **Fast commit hook (Husky):** `pnpm run precommit` — typecheck + Vitest only (needs WASM present once under `public/wasm/` or `src/wasm/` for integration tests).

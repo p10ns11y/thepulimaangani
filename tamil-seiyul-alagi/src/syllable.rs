@@ -1,14 +1,15 @@
 //! Syllable types (minimal for now)
 
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, JsonSchema)]
 pub enum SyllableType {
     Ner,
     Nirai,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct Syllable {
     pub text: String,
     pub syllable_type: SyllableType,

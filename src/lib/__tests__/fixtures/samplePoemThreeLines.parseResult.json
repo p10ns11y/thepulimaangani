@@ -1,4 +1,5 @@
 {
+  "parse_result_schema_version": 1,
   "original_text": "சுடர்த்தொடீஇ கேளாய் தெருவில்நாம்\nமணற்சிற்றில் காலில் சிதையா அடை\nகோதை பரிந்து வரிப்பந்து கொண்டோ\n",
   "normalized_text": "சுடர்த்தொடீஇ கேளாய் தெருவில்நாம்\nமணற்சிற்றில் காலில் சிதையா அடை\nகோதை பரிந்து வரிப்பந்து கொண்டோ",
   "letter_count": 56,
@@ -2149,7 +2150,8 @@
           "word_index_in_line": 0
         }
       ],
-      "foot_type": "Nirai-Nirai-Ner"
+      "foot_type": "Nirai-Nirai-Ner",
+      "foot_index_global": 0
     },
     {
       "syllables": [
@@ -2172,7 +2174,8 @@
           "word_index_in_line": 1
         }
       ],
-      "foot_type": "Ner-Ner"
+      "foot_type": "Ner-Ner",
+      "foot_index_global": 1
     },
     {
       "syllables": [
@@ -2204,7 +2207,8 @@
           "word_index_in_line": 2
         }
       ],
-      "foot_type": "Nirai-Ner-Ner"
+      "foot_type": "Nirai-Ner-Ner",
+      "foot_index_global": 2
     },
     {
       "syllables": [
@@ -2236,7 +2240,8 @@
           "word_index_in_line": 0
         }
       ],
-      "foot_type": "Nirai-Ner-Ner"
+      "foot_type": "Nirai-Ner-Ner",
+      "foot_index_global": 3
     },
     {
       "syllables": [
@@ -2259,7 +2264,8 @@
           "word_index_in_line": 1
         }
       ],
-      "foot_type": "Ner-Ner"
+      "foot_type": "Ner-Ner",
+      "foot_index_global": 4
     },
     {
       "syllables": [
@@ -2282,7 +2288,8 @@
           "word_index_in_line": 2
         }
       ],
-      "foot_type": "Nirai-Ner"
+      "foot_type": "Nirai-Ner",
+      "foot_index_global": 5
     },
     {
       "syllables": [
@@ -2296,7 +2303,8 @@
           "word_index_in_line": 3
         }
       ],
-      "foot_type": "Nirai"
+      "foot_type": "Nirai",
+      "foot_index_global": 6
     },
     {
       "syllables": [
@@ -2319,7 +2327,8 @@
           "word_index_in_line": 0
         }
       ],
-      "foot_type": "Ner-Ner"
+      "foot_type": "Ner-Ner",
+      "foot_index_global": 7
     },
     {
       "syllables": [
@@ -2342,7 +2351,8 @@
           "word_index_in_line": 1
         }
       ],
-      "foot_type": "Nirai-Ner"
+      "foot_type": "Nirai-Ner",
+      "foot_index_global": 8
     },
     {
       "syllables": [
@@ -2374,7 +2384,8 @@
           "word_index_in_line": 2
         }
       ],
-      "foot_type": "Nirai-Ner-Ner"
+      "foot_type": "Nirai-Ner-Ner",
+      "foot_index_global": 9
     },
     {
       "syllables": [
@@ -2397,7 +2408,8 @@
           "word_index_in_line": 3
         }
       ],
-      "foot_type": "Ner-Ner"
+      "foot_type": "Ner-Ner",
+      "foot_index_global": 10
     }
   ],
   "linkage": [
@@ -2777,7 +2789,8 @@
               "word_index_in_line": 0
             }
           ],
-          "foot_type": "Nirai-Nirai-Ner"
+          "foot_type": "Nirai-Nirai-Ner",
+          "foot_index_global": 0
         },
         {
           "syllables": [
@@ -2800,7 +2813,8 @@
               "word_index_in_line": 1
             }
           ],
-          "foot_type": "Ner-Ner"
+          "foot_type": "Ner-Ner",
+          "foot_index_global": 1
         },
         {
           "syllables": [
@@ -2832,7 +2846,8 @@
               "word_index_in_line": 2
             }
           ],
-          "foot_type": "Nirai-Ner-Ner"
+          "foot_type": "Nirai-Ner-Ner",
+          "foot_index_global": 2
         }
       ],
       "line_class": "—"
@@ -2869,7 +2884,8 @@
               "word_index_in_line": 0
             }
           ],
-          "foot_type": "Nirai-Ner-Ner"
+          "foot_type": "Nirai-Ner-Ner",
+          "foot_index_global": 3
         },
         {
           "syllables": [
@@ -2892,7 +2908,8 @@
               "word_index_in_line": 1
             }
           ],
-          "foot_type": "Ner-Ner"
+          "foot_type": "Ner-Ner",
+          "foot_index_global": 4
         },
         {
           "syllables": [
@@ -2915,7 +2932,8 @@
               "word_index_in_line": 2
             }
           ],
-          "foot_type": "Nirai-Ner"
+          "foot_type": "Nirai-Ner",
+          "foot_index_global": 5
         },
         {
           "syllables": [
@@ -2929,7 +2947,8 @@
               "word_index_in_line": 3
             }
           ],
-          "foot_type": "Nirai"
+          "foot_type": "Nirai",
+          "foot_index_global": 6
         }
       ],
       "line_class": "—"
@@ -2957,7 +2976,8 @@
               "word_index_in_line": 0
             }
           ],
-          "foot_type": "Ner-Ner"
+          "foot_type": "Ner-Ner",
+          "foot_index_global": 7
         },
         {
           "syllables": [
@@ -2980,7 +3000,8 @@
               "word_index_in_line": 1
             }
           ],
-          "foot_type": "Nirai-Ner"
+          "foot_type": "Nirai-Ner",
+          "foot_index_global": 8
         },
         {
           "syllables": [
@@ -3012,7 +3033,8 @@
               "word_index_in_line": 2
             }
           ],
-          "foot_type": "Nirai-Ner-Ner"
+          "foot_type": "Nirai-Ner-Ner",
+          "foot_index_global": 9
         },
         {
           "syllables": [
@@ -3035,7 +3057,8 @@
               "word_index_in_line": 3
             }
           ],
-          "foot_type": "Ner-Ner"
+          "foot_type": "Ner-Ner",
+          "foot_index_global": 10
         }
       ],
       "line_class": "—"
@@ -3045,28 +3068,35 @@
   "top_k_metre_hypotheses": [
     {
       "metre_type": "Venpaa",
-      "aggregate_score": 89,
+      "aggregate_score": 100,
       "violations": [],
       "rule_ids": [
         "MetreLength01",
         "LinkageAdjacency01",
         {
           "Other": "MetreParseFeatures01"
+        },
+        {
+          "Other": "MetreHybridLogit01"
         }
-      ]
+      ],
+      "metre_probability": 0.9969495,
+      "metre_rank": 1
     },
     {
       "metre_type": "Aciriyappaa",
-      "aggregate_score": 58,
+      "aggregate_score": 0,
       "violations": [],
       "rule_ids": [
         "MetreLength01",
         "LinkageAdjacency01"
-      ]
+      ],
+      "metre_probability": 0.0002967781,
+      "metre_rank": 4
     },
     {
       "metre_type": "Kalippaa",
-      "aggregate_score": 58,
+      "aggregate_score": 0,
       "violations": [],
       "rule_ids": [
         "MetreLength01",
@@ -3074,16 +3104,20 @@
         {
           "Other": "MetreParseFeatures01"
         }
-      ]
+      ],
+      "metre_probability": 0.0021388514,
+      "metre_rank": 2
     },
     {
       "metre_type": "Vanjippaa",
-      "aggregate_score": 55,
+      "aggregate_score": 0,
       "violations": [],
       "rule_ids": [
         "MetreLength01",
         "LinkageAdjacency01"
-      ]
+      ],
+      "metre_probability": 0.00061494973,
+      "metre_rank": 3
     }
   ],
   "parse_features": {
@@ -3142,12 +3176,17 @@
       0.0
     ]
   },
-  "confidence": 89,
+  "confidence": 100,
+  "metre_entropy_bits": 0.033401158,
+  "metre_epistemic_margin": 0.99481064,
   "provenance": [
     "MetreLength01",
     "LinkageAdjacency01",
     {
       "Other": "MetreParseFeatures01"
+    },
+    {
+      "Other": "MetreHybridLogit01"
     }
   ],
   "errors": [],

@@ -1,6 +1,6 @@
-import { adaptWasmJsonToParsedPoem } from '#/lib/adaptWasmParseJson'
 import { normalizePoemText } from '#/lib/poemTextNormalize'
 import { runWasmParse } from '#/lib/wasmParse'
+import { wasmJsonToParsedPoem } from '#/lib/wasmWireParseResult'
 import type { ParsedPoem } from '#/types/parsedPoem'
 import type { LivePreviewState } from '#/types/livePreview'
 import { DEFAULT_LIVE_PREVIEW } from '#/types/livePreview'
@@ -22,7 +22,8 @@ export class LivePreviewController {
   private lastRawJson: string | null = null
   private layoutVersion = 0
   private debounceMs: number
-  private prev: LivePreviewState = DEFAULT_LIVE_PREVIEW
+  /** Last state passed to `onUpdate`; updated on every transition. */
+  private lastEmittedLiveState: LivePreviewState = DEFAULT_LIVE_PREVIEW
   private readonly onUpdate: Listener
 
   constructor(debounceMs: number, onUpdate: Listener) {
@@ -51,8 +52,8 @@ export class LivePreviewController {
       this.lastReadyParsed = null
       this.lastRawJson = null
       this.layoutVersion = 0
-      this.prev = DEFAULT_LIVE_PREVIEW
-      this.onUpdate(this.prev)
+      this.lastEmittedLiveState = DEFAULT_LIVE_PREVIEW
+      this.onUpdate(this.lastEmittedLiveState)
       return
     }
 
@@ -60,26 +61,26 @@ export class LivePreviewController {
     const cached = this.lastReadyParsed
     if (cached && normalizePoemText(cached.original_text) === norm) {
       this.lastParsedNorm = norm
-      this.prev = {
+      this.lastEmittedLiveState = {
         status: 'ready',
         parsed: cached,
         rawJson: this.lastRawJson,
         message: null,
         layoutVersion: this.layoutVersion,
       }
-      this.onUpdate(this.prev)
+      this.onUpdate(this.lastEmittedLiveState)
       return
     }
 
     if (this.lastParsedNorm === null || norm !== this.lastParsedNorm) {
-      this.prev = {
+      this.lastEmittedLiveState = {
         status: 'syncing',
-        parsed: this.lastReadyParsed ?? this.prev.parsed,
-        rawJson: this.lastRawJson ?? this.prev.rawJson,
+        parsed: this.lastReadyParsed ?? this.lastEmittedLiveState.parsed,
+        rawJson: this.lastRawJson ?? this.lastEmittedLiveState.rawJson,
         message: null,
-        layoutVersion: this.prev.layoutVersion,
+        layoutVersion: this.lastEmittedLiveState.layoutVersion,
       }
-      this.onUpdate(this.prev)
+      this.onUpdate(this.lastEmittedLiveState)
     }
 
     this.timer = window.setTimeout(() => {
@@ -91,50 +92,50 @@ export class LivePreviewController {
     if (this.cancelled) return
     if (normalizePoemText(this.latestText) !== norm) return
 
-    this.prev = {
+    this.lastEmittedLiveState = {
       status: 'pending',
-      parsed: this.lastReadyParsed ?? this.prev.parsed,
-      rawJson: this.lastRawJson ?? this.prev.rawJson,
+      parsed: this.lastReadyParsed ?? this.lastEmittedLiveState.parsed,
+      rawJson: this.lastRawJson ?? this.lastEmittedLiveState.rawJson,
       message: null,
-      layoutVersion: this.prev.layoutVersion,
+      layoutVersion: this.lastEmittedLiveState.layoutVersion,
     }
-    this.onUpdate(this.prev)
+    this.onUpdate(this.lastEmittedLiveState)
 
     try {
-      const raw = await runWasmParse(poemText)
+      const wasmJsonString = await runWasmParse(poemText)
       if (this.cancelled) return
       if (normalizePoemText(this.latestText) !== norm) return
 
-      const rawJson: unknown = JSON.parse(raw)
-      const data = adaptWasmJsonToParsedPoem(rawJson)
-      if (!data) {
+      const wirePayload: unknown = JSON.parse(wasmJsonString)
+      const parsedPoem = wasmJsonToParsedPoem(wirePayload)
+      if (!parsedPoem) {
         this.lastReadyParsed = null
         this.lastParsedNorm = null
         this.lastRawJson = null
         this.layoutVersion = 0
-        this.prev = {
+        this.lastEmittedLiveState = {
           status: 'error',
           parsed: null,
           rawJson: null,
           message: 'Unexpected parser output.',
           layoutVersion: 0,
         }
-        this.onUpdate(this.prev)
+        this.onUpdate(this.lastEmittedLiveState)
         return
       }
 
-      this.lastParsedNorm = normalizePoemText(data.original_text)
-      this.lastReadyParsed = data
-      this.lastRawJson = raw
+      this.lastParsedNorm = normalizePoemText(parsedPoem.original_text)
+      this.lastReadyParsed = parsedPoem
+      this.lastRawJson = wasmJsonString
       this.layoutVersion += 1
-      this.prev = {
+      this.lastEmittedLiveState = {
         status: 'ready',
-        parsed: data,
-        rawJson: raw,
+        parsed: parsedPoem,
+        rawJson: wasmJsonString,
         message: null,
         layoutVersion: this.layoutVersion,
       }
-      this.onUpdate(this.prev)
+      this.onUpdate(this.lastEmittedLiveState)
     } catch (e) {
       if (this.cancelled) return
       if (normalizePoemText(this.latestText) !== norm) return
@@ -145,14 +146,14 @@ export class LivePreviewController {
       this.layoutVersion = 0
       const message = e instanceof Error ? e.message : 'Parse failed.'
       const isValidation = VALIDATION_ERR_RE.test(message)
-      this.prev = {
+      this.lastEmittedLiveState = {
         status: isValidation ? 'invalid' : 'error',
         parsed: null,
         rawJson: null,
         message,
         layoutVersion: 0,
       }
-      this.onUpdate(this.prev)
+      this.onUpdate(this.lastEmittedLiveState)
     }
   }
 

@@ -1,7 +1,7 @@
 /**
  * Live preview layout: editor physical lines ↔ `parsed.lines` ↔ `feetPerPhysicalLine`.
  *
- * The multi-line sample uses **committed real parser output** (`samplePoemThreeLines.parseResult.json`)
+ * The multi-line sample uses **committed real parser output** (`samplePoemThreeLines.parseResult.json`; regenerate via **`pnpm run dump:test-fixtures`** from repo root).
  * so tests never hand-invent Ner/Nirai on Tamil surface forms.
  *
  * WASM integration tests run only when a bundle exists (`pnpm run build:wasm`).
@@ -9,9 +9,9 @@
 
 import { beforeAll, describe, expect, it } from 'vitest'
 
-import { feetPerPhysicalLine, groupsFromFeet } from '#/lib/parserFeetLayout'
+import { feetPerPhysicalLine, groupsFromFeet } from '#/lib/prosody/layout/parserFeetLayout'
 import { normalizePoemText } from '#/lib/poemTextNormalize'
-import { physicalPoemLines } from '#/lib/mapFeetToPhysicalLines'
+import { physicalPoemLines } from '#/lib/prosody/layout/mapFeetToPhysicalLines'
 import {
   flattenFootSyllableTexts,
   isFirstRowOnlyEntirePoemLayout,
@@ -32,7 +32,7 @@ import {
   type WasmParseFn,
   type WasmParseRawFn,
 } from '#/lib/__tests__/wasmParseHarness'
-import { adaptWasmJsonToParsedPoem } from '#/lib/adaptWasmParseJson'
+import { wasmJsonToParsedPoem } from '#/lib/wasmWireParseResult'
 
 export { SAMPLE_POEM_THREE_LINES }
 
@@ -200,7 +200,7 @@ describe.skipIf(!isWasmPkgBuilt())('live preview + WASM integration', () => {
     const text = SAMPLE_POEM_THREE_LINES
     const raw = await parseRaw(text)
     expect(raw).not.toBeNull()
-    const viaAdapter = adaptWasmJsonToParsedPoem(raw!)
+    const viaAdapter = wasmJsonToParsedPoem(raw!)
     const fixture = parsedSampleThreeLines()
     expect(viaAdapter).not.toBeNull()
     expect(viaAdapter!.lines.length).toBe(fixture.lines.length)

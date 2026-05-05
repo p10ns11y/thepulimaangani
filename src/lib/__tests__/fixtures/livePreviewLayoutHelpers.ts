@@ -1,22 +1,24 @@
 import type { ParsedFoot } from '#/types/parsedPoem'
 
-import type { feetPerPhysicalLine } from '#/lib/parserFeetLayout'
+import type { feetPerPhysicalLine } from '#/lib/prosody/layout/parserFeetLayout'
 
 type FeetBuckets = ReturnType<typeof feetPerPhysicalLine>
 
 export function totalFeet(buckets: FeetBuckets): number {
-  return buckets.reduce((n, row) => n + row.length, 0)
+  return buckets.reduce((totalFeetOnPoem, feetOnLine) => totalFeetOnPoem + feetOnLine.length, 0)
 }
 
 export function totalSyllablesFromBuckets(buckets: FeetBuckets): number {
   return buckets.reduce(
-    (n, row) => n + row.reduce((m, ft) => m + ft.syllables.length, 0),
+    (totalSyllablesOnPoem, feetOnLine) =>
+      totalSyllablesOnPoem +
+      feetOnLine.reduce((syllablesOnLine, foot) => syllablesOnLine + foot.syllables.length, 0),
     0,
   )
 }
 
 export function flattenFootSyllableTexts(lineFeet: ParsedFoot[]): string[] {
-  return lineFeet.flatMap((ft) => ft.syllables.map((s) => s.text))
+  return lineFeet.flatMap((foot) => foot.syllables.map((syllable) => syllable.text))
 }
 
 /**
@@ -28,9 +30,14 @@ export function isFirstRowOnlyEntirePoemLayout(
   totalSyllablesInParse: number,
 ): boolean {
   if (buckets.length < 2) return false
-  const s0 = flattenFootSyllableTexts(buckets[0] ?? []).length
-  const sRest = buckets
+  const syllablesOnFirstPhysicalLine = flattenFootSyllableTexts(buckets[0] ?? []).length
+  const syllablesOnRemainingLines = buckets
     .slice(1)
-    .reduce((n, row) => n + flattenFootSyllableTexts(row).length, 0)
-  return s0 > 0 && sRest === 0 && s0 === totalSyllablesInParse && totalSyllablesInParse > 4
+    .reduce((totalSyllables, feetOnLine) => totalSyllables + flattenFootSyllableTexts(feetOnLine).length, 0)
+  return (
+    syllablesOnFirstPhysicalLine > 0 &&
+    syllablesOnRemainingLines === 0 &&
+    syllablesOnFirstPhysicalLine === totalSyllablesInParse &&
+    totalSyllablesInParse > 4
+  )
 }

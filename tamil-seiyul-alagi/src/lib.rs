@@ -61,7 +61,8 @@ pub use prosodic_unit::{Consonant, ProsodicUnit, Vowel};
 pub use syllable::{Syllable, SyllableType};
 pub use syllable_builder::SyllableBuilder;
 pub use types::{
-    flat_lines_from_poem, MetreHypothesis, ParseFeatureSnapshot, ParseOptions, ParseResult, RuleId,
+    flat_lines_from_poem, MetreHypothesis, ParseFeatureSnapshot, ParseOptions, ParseResult,
+    RuleId, PARSE_RESULT_SCHEMA_VERSION,
 };
 
 use unicode_segmentation::UnicodeSegmentation;
@@ -81,7 +82,10 @@ pub fn parse_poem(text: &str, options: ParseOptions) -> Result<ParseResult, Pars
     let syllable_lines = line_scope::syllable_line_indices(&normalized_clone, &syllables)
         .unwrap_or_else(|| vec![0; syllables.len()]);
     let foot_placements = foot::group_into_feet_with_ranges(&syllables);
-    let feet: Vec<Foot> = foot_placements.iter().map(|p| p.foot.clone()).collect();
+    let mut feet: Vec<Foot> = foot_placements.iter().map(|p| p.foot.clone()).collect();
+    for (i, f) in feet.iter_mut().enumerate() {
+        f.foot_index_global = Some(i);
+    }
     let foot_positions = linkage::foot_positions_for_poem(&foot_placements, &syllable_lines);
     let linkage = linkage::analyze_linkage(&foot_positions, &feet);
     let poem = poem_tree::build_poem_tree(
@@ -142,6 +146,7 @@ pub fn parse_poem(text: &str, options: ParseOptions) -> Result<ParseResult, Pars
     let metre = metre_hypotheses.first().map(|h| h.metre_type.clone());
 
     Ok(ParseResult {
+        parse_result_schema_version: types::PARSE_RESULT_SCHEMA_VERSION,
         original_text: text.to_string(),
         normalized_text: normalized_clone,
         letter_count: graphemes.len(),
@@ -212,6 +217,18 @@ mod tests {
             "expected MetreParseFeatures01 in rule_ids, got {:?}",
             h.rule_ids
         );
+    }
+
+    #[test]
+    fn parse_result_sets_schema_version_and_global_foot_indices() {
+        let r = parse_poem("கற்றது", ParseOptions::default()).expect("parse");
+        assert_eq!(r.parse_result_schema_version, types::PARSE_RESULT_SCHEMA_VERSION);
+        assert!(!r.feet.is_empty());
+        assert!(r
+            .feet
+            .iter()
+            .enumerate()
+            .all(|(i, f)| f.foot_index_global == Some(i)));
     }
 
     #[test]

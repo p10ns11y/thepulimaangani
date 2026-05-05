@@ -6,9 +6,9 @@ import { render } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
 import { FootTypeCaption } from '#/components/prosody/FootTypeCaption'
-import { adaptWasmJsonToParsedPoem } from '#/lib/adaptWasmParseJson'
-import { bondDisplayLabel } from '#/lib/talaiLabels'
-import { buildLinkageOverviewRows, linkageCoarseCounts } from '#/lib/linkageOverview'
+import { wasmJsonToParsedPoem } from '#/lib/wasmWireParseResult'
+import { bondDisplayLabel } from '#/lib/prosody/parse/linkageOverview'
+import { buildLinkageOverviewRows, linkageCoarseCounts } from '#/lib/prosody/parse/linkageOverview'
 import { resolveFootDisplayLabel, resolveFootDisplayParts } from '#/lib/footDisplayLabel'
 import {
   wasmParseJsonFixture,
@@ -60,7 +60,7 @@ describe('prosody display contract: WASM text ↔ UI helpers', () => {
       },
     })
 
-    const poem = adaptWasmJsonToParsedPoem(wasm)
+    const poem = wasmJsonToParsedPoem(wasm)
     expect(poem).not.toBeNull()
     const foot = poem!.lines[0]!.feet[0]!
     expect(resolveFootDisplayLabel(foot)).toBe(poem!.presentation!.feet[0]!.foot_type)

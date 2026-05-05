@@ -13,36 +13,36 @@ export function alignSyllablesToWords(
   syllables: ParsedSyllable[],
 ): { word: string; syllables: ParsedSyllable[] }[] {
   const normalized = lineText.replace(/\r\n/g, '\n')
-  const rawWords = normalized.split(/\s+/).filter((w) => w.length > 0)
+  const rawWords = normalized.split(/\s+/).filter((token) => token.length > 0)
 
   if (rawWords.length === 0) {
     if (!normalized.trim()) return []
     return [{ word: normalized, syllables: syllables.slice() }]
   }
 
-  const out: { word: string; syllables: ParsedSyllable[] }[] = []
-  let si = 0
+  const wordGroups: { word: string; syllables: ParsedSyllable[] }[] = []
+  let syllableCursorIndex = 0
 
   for (const word of rawWords) {
-    const target = wordChars(word)
-    const chunk: ParsedSyllable[] = []
-    let acc = ''
+    const targetCharRun = wordChars(word)
+    const syllablesForWord: ParsedSyllable[] = []
+    let concatenatedSyllableText = ''
 
-    while (si < syllables.length && acc.length < target.length) {
-      chunk.push(syllables[si]!)
-      acc += syllables[si]!.text
-      si++
+    while (syllableCursorIndex < syllables.length && concatenatedSyllableText.length < targetCharRun.length) {
+      syllablesForWord.push(syllables[syllableCursorIndex]!)
+      concatenatedSyllableText += syllables[syllableCursorIndex]!.text
+      syllableCursorIndex++
     }
 
-    out.push({ word, syllables: chunk })
+    wordGroups.push({ word, syllables: syllablesForWord })
   }
 
-  if (si < syllables.length && out.length > 0) {
-    const last = out[out.length - 1]!
-    last.syllables.push(...syllables.slice(si))
-  } else if (si < syllables.length && out.length === 0) {
-    out.push({ word: normalized.trim() || '—', syllables: syllables.slice(si) })
+  if (syllableCursorIndex < syllables.length && wordGroups.length > 0) {
+    const lastWordGroup = wordGroups[wordGroups.length - 1]!
+    lastWordGroup.syllables.push(...syllables.slice(syllableCursorIndex))
+  } else if (syllableCursorIndex < syllables.length && wordGroups.length === 0) {
+    wordGroups.push({ word: normalized.trim() || '—', syllables: syllables.slice(syllableCursorIndex) })
   }
 
-  return out.filter((g) => g.syllables.length > 0)
+  return wordGroups.filter((wordGroup) => wordGroup.syllables.length > 0)
 }

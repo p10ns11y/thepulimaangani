@@ -68,10 +68,10 @@ export const prosodyLabMachine = setup({
       if (event.type !== 'prosody.METRE.SET') return {}
       const key = event.metreKey
       const flat = getFlatRows(key)
-      const ens = new Set(flat.map((r) => r.en))
+      const englishSampleIdsForMetre = new Set(flat.map((sampleRow) => sampleRow.en))
       let selectedEn = context.selectedEn
       let poemText = context.poemText
-      if (!ens.has(selectedEn)) {
+      if (!englishSampleIdsForMetre.has(selectedEn)) {
         const first = flat[0]
         if (first) {
           selectedEn = first.en

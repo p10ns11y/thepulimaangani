@@ -11,6 +11,13 @@ React/TypeScript frontend using TanStack Start/Router, Vite, Tailwind CSS. Focus
 - `styles.css`: Global styles and Tailwind imports
 - `router.tsx`: Router configuration
 - `wasm/`: WebAssembly bindings (generated, gitignored)
+- `lib/prosody/layout/`: physical-line ↔ parsed feet (`mapFeetToPhysicalLines`, `parserFeetLayout`, `poemLineDiff`)
+- `lib/prosody/parse/`: linkage and foot-index helpers in `linkageOverview`; use with `wasmWireParseResult` + `adaptWasmParseJson`
+
+## WASM JSON wire (`ParseResult`)
+
+- **Types:** OpenAPI-generated **`ParseResultWire`** — `#/generated/parseResultWire`, **`pnpm run codegen:parse-result-client`** (after **`pnpm run codegen:parse-result-openapi`**).
+- **Runtime:** `wasmWireParseResult` uses minimal Zod + passthrough; **`adaptWasmJsonToParsedPoem`** maps to **`ParsedPoem`**. Upgrading to **full OpenAPI-shaped Zod** at runtime is documented as a later step in **`tamil-seiyul-alagi/CANONICAL_JSON_TRAVERSAL.md`**.
 
 ## Coding Style
 - Strict TypeScript: No `any`, explicit types

@@ -1,6 +1,6 @@
 import type { LivePreviewState } from '#/types/livePreview'
-import { feetPerPhysicalLine, groupsFromFeet } from '#/lib/parserFeetLayout'
-import { physicalPoemLines } from '#/lib/mapFeetToPhysicalLines'
+import { feetPerPhysicalLine, groupsFromFeet } from '#/lib/prosody/layout/parserFeetLayout'
+import { physicalPoemLines } from '#/lib/prosody/layout/mapFeetToPhysicalLines'
 import { cn } from '#/lib/utils'
 
 import { PretextLineViewport } from './PretextLineViewport'

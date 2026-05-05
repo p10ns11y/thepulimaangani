@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { adaptWasmJsonToParsedPoem } from '#/lib/adaptWasmParseJson'
+import { wasmJsonToParsedPoem } from '#/lib/wasmWireParseResult'
 import {
   wasmLinguisticWord,
   wasmParseJsonFixture,
@@ -10,7 +10,7 @@ import {
   wasmWordFoot,
 } from '#/lib/__tests__/fixtures/wasmParseJsonBuilders'
 
-describe('adaptWasmJsonToParsedPoem', () => {
+describe('wasmJsonToParsedPoem', () => {
   it('synthesizes one legacy line from top-level feet when lines is empty', () => {
     const wasm = wasmParseJsonFixture({
       original_text: 'அஃகு',
@@ -29,7 +29,7 @@ describe('adaptWasmJsonToParsedPoem', () => {
       errors: [],
     })
 
-    const out = adaptWasmJsonToParsedPoem(wasm)
+    const out = wasmJsonToParsedPoem(wasm)
     expect(out).not.toBeNull()
     expect(out!.lines).toHaveLength(1)
     expect(out!.lines[0]!.feet).toHaveLength(1)
@@ -65,7 +65,7 @@ describe('adaptWasmJsonToParsedPoem', () => {
       ]),
     })
 
-    const out = adaptWasmJsonToParsedPoem(wasm)
+    const out = wasmJsonToParsedPoem(wasm)
     expect(out).not.toBeNull()
     expect(out!.lines[0]!.feet).toHaveLength(1)
     expect(out!.lines[0]!.feet[0]!.syllables[0]!.text).toBe('only')
@@ -101,7 +101,7 @@ describe('adaptWasmJsonToParsedPoem', () => {
       ]),
     })
 
-    const out = adaptWasmJsonToParsedPoem(wasm)
+    const out = wasmJsonToParsedPoem(wasm)
     expect(out).not.toBeNull()
     expect(out!.lines).toHaveLength(2)
     expect(out!.lines[0]!.feet[0]!.syllables[0]!.text).toBe('x')
@@ -145,7 +145,7 @@ describe('adaptWasmJsonToParsedPoem', () => {
       ]),
     })
 
-    const out = adaptWasmJsonToParsedPoem(wasm)
+    const out = wasmJsonToParsedPoem(wasm)
     expect(out).not.toBeNull()
     expect(out!.lines).toHaveLength(2)
     expect(out!.lines[0]!.feet[0]!.foot_index_global).toBe(0)
@@ -183,7 +183,7 @@ describe('adaptWasmJsonToParsedPoem', () => {
       ]),
     })
 
-    const out = adaptWasmJsonToParsedPoem(wasm)
+    const out = wasmJsonToParsedPoem(wasm)
     expect(out).not.toBeNull()
     expect(out!.lines).toHaveLength(2)
     expect(out!.lines[1]!.feet[0]!.foot_type).toBe('Ner-Nirai')
@@ -224,7 +224,7 @@ describe('adaptWasmJsonToParsedPoem', () => {
       ],
     })
 
-    const out = adaptWasmJsonToParsedPoem(wasm)
+    const out = wasmJsonToParsedPoem(wasm)
     expect(out).not.toBeNull()
     expect(out!.lines[0]!.feet[0]!.foot_index_global).toBe(0)
     expect(out!.lines[0]!.feet[1]!.foot_index_global).toBe(1)
@@ -266,7 +266,7 @@ describe('adaptWasmJsonToParsedPoem', () => {
       },
     })
 
-    const out = adaptWasmJsonToParsedPoem(wasm)
+    const out = wasmJsonToParsedPoem(wasm)
     expect(out).not.toBeNull()
     expect(out!.lines[0]!.feet[0]!.display_foot_type).toBe('மா · ma')
     expect(out!.lines[0]!.feet[0]!.display_foot_type_tamil).toBe('மா')
@@ -299,7 +299,7 @@ describe('adaptWasmJsonToParsedPoem', () => {
       },
     })
 
-    const out = adaptWasmJsonToParsedPoem(wasm)
+    const out = wasmJsonToParsedPoem(wasm)
     expect(out).not.toBeNull()
     expect(out!.metre_type).toBe('வெண்பா')
     expect(out!.presentation?.feet[0]?.foot_type).toBe('மா (ma) — from Rust')
@@ -348,7 +348,7 @@ describe('adaptWasmJsonToParsedPoem', () => {
       },
     })
 
-    const out = adaptWasmJsonToParsedPoem(wasm)
+    const out = wasmJsonToParsedPoem(wasm)
     expect(out).not.toBeNull()
     expect(out!.linkage).toBeUndefined()
     expect(out!.presentation?.talai).toHaveLength(1)
@@ -364,7 +364,7 @@ describe('adaptWasmJsonToParsedPoem', () => {
       letter_count: 2,
     })
 
-    const out = adaptWasmJsonToParsedPoem(wasm)
+    const out = wasmJsonToParsedPoem(wasm)
     expect(out).not.toBeNull()
     expect(out!.metre_type).toBe('—')
     expect(out!.lines).toHaveLength(0)
