@@ -14,12 +14,12 @@ export function lineWordForGlobalFootIndex(
   lines: ParsedLine[],
   globalFootIndex: number,
 ): { line1: number; word1: number } | null {
-  for (let li = 0; li < lines.length; li++) {
-    const feet = lines[li].feet
-    for (let wi = 0; wi < feet.length; wi++) {
-      const g = feet[wi].foot_index_global
-      if (g === globalFootIndex) {
-        return { line1: li + 1, word1: wi + 1 }
+  for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+    const feetOnLine = lines[lineIndex].feet
+    for (let wordIndexOnLine = 0; wordIndexOnLine < feetOnLine.length; wordIndexOnLine++) {
+      const footGlobalIndex = feetOnLine[wordIndexOnLine].foot_index_global
+      if (footGlobalIndex === globalFootIndex) {
+        return { line1: lineIndex + 1, word1: wordIndexOnLine + 1 }
       }
     }
   }
@@ -83,9 +83,11 @@ function presentationRowForEdge(
   data: ParsedPoem,
   edge: ParsedLinkageEdge,
 ): ParsedPresentationTalai | undefined {
-  const rows = data.presentation?.talai
-  if (!rows) return undefined
-  return rows.find((t) => t.from === edge.from_foot && t.to === edge.to_foot)
+  const presentationTalaiRows = data.presentation?.talai
+  if (!presentationTalaiRows) return undefined
+  return presentationTalaiRows.find(
+    (talaiRow) => talaiRow.from === edge.from_foot && talaiRow.to === edge.to_foot,
+  )
 }
 
 /**
@@ -93,52 +95,52 @@ function presentationRowForEdge(
  * (matches Avalokitam-style line breaks); fall back to `linkage.from`/`to` or foot layout.
  */
 export function buildLinkageOverviewRows(data: ParsedPoem): LinkageOverviewRow[] {
-  const edges = data.linkage ?? []
-  const lines = data.lines
-  return edges.map((edge, i) => {
-    const pres = presentationRowForEdge(data, edge)
-    const base = anchorPairForLinkageEdge(lines, edge)
+  const linkageEdges = data.linkage ?? []
+  const physicalLines = data.lines
+  return linkageEdges.map((edge, edgeOrdinalZero) => {
+    const presentationTalaiRow = presentationRowForEdge(data, edge)
+    const anchorPair = anchorPairForLinkageEdge(physicalLines, edge)
 
-    let fromLine1 = base.fromLine1
-    let toLine1 = base.toLine1
-    let crossLine = base.crossLine
+    let fromLine1 = anchorPair.fromLine1
+    let toLine1 = anchorPair.toLine1
+    let crossLine = anchorPair.crossLine
 
-    if (pres) {
-      fromLine1 = pres.from_line + 1
-      toLine1 = pres.to_line + 1
-      crossLine = pres.from_line !== pres.to_line
+    if (presentationTalaiRow) {
+      fromLine1 = presentationTalaiRow.from_line + 1
+      toLine1 = presentationTalaiRow.to_line + 1
+      crossLine = presentationTalaiRow.from_line !== presentationTalaiRow.to_line
     }
 
     return {
-      index1: i + 1,
+      index1: edgeOrdinalZero + 1,
       edge,
       fromLine1,
-      fromWord1: base.fromWord1,
+      fromWord1: anchorPair.fromWord1,
       toLine1,
-      toWord1: base.toWord1,
+      toWord1: anchorPair.toWord1,
       crossLine,
-      presentationTalaiType: pres?.talai_type,
+      presentationTalaiType: presentationTalaiRow?.talai_type,
     }
   })
 }
 
 /** Count coarse linkage_type keys for summary chips. */
 export function linkageCoarseCounts(edges: ParsedLinkageEdge[]): Record<string, number> {
-  const m: Record<string, number> = {}
-  for (const e of edges) {
-    const k = e.linkage_type || '—'
-    m[k] = (m[k] ?? 0) + 1
+  const countsByLinkageType: Record<string, number> = {}
+  for (const edge of edges) {
+    const linkageFamilyKey = edge.linkage_type || '—'
+    countsByLinkageType[linkageFamilyKey] = (countsByLinkageType[linkageFamilyKey] ?? 0) + 1
   }
-  return m
+  return countsByLinkageType
 }
 
 /** Map bond-after-from-foot index → row (one edge per consecutive pair). */
 export function linkageRowsByFromFoot(rows: LinkageOverviewRow[]): Map<number, LinkageOverviewRow> {
-  const m = new Map<number, LinkageOverviewRow>()
-  for (const r of rows) {
-    m.set(r.edge.from_foot, r)
+  const rowBySourceFootIndex = new Map<number, LinkageOverviewRow>()
+  for (const overviewRow of rows) {
+    rowBySourceFootIndex.set(overviewRow.edge.from_foot, overviewRow)
   }
-  return m
+  return rowBySourceFootIndex
 }
 
 /**
@@ -146,11 +148,11 @@ export function linkageRowsByFromFoot(rows: LinkageOverviewRow[]): Map<number, L
  * Fidelity contract: `prosodyDisplayContract` tests.
  */
 export function bondDisplayLabel(row: LinkageOverviewRow): string {
-  const pres = row.presentationTalaiType?.trim()
-  if (pres && pres.length > 0) return pres
-  const e = row.edge
-  if (e.linkage_special_type && e.linkage_special_type !== 'Unknown') {
-    return getLinkageSpecialDisplay(e.linkage_special_type)
+  const tamilFromPresentation = row.presentationTalaiType?.trim()
+  if (tamilFromPresentation && tamilFromPresentation.length > 0) return tamilFromPresentation
+  const linkageEdge = row.edge
+  if (linkageEdge.linkage_special_type && linkageEdge.linkage_special_type !== 'Unknown') {
+    return getLinkageSpecialDisplay(linkageEdge.linkage_special_type)
   }
-  return getLinkageTypeDisplay(e.linkage_type)
+  return getLinkageTypeDisplay(linkageEdge.linkage_type)
 }

@@ -24,11 +24,11 @@ export type SafeParseWasmWireResult =
   | { success: false; error: z.ZodError }
 
 export function safeParseWasmWireJson(data: unknown): SafeParseWasmWireResult {
-  const result = wasmWireJsonSchema.safeParse(data)
-  if (result.success) {
-    return { success: true, data: result.data }
+  const wireValidation = wasmWireJsonSchema.safeParse(data)
+  if (wireValidation.success) {
+    return { success: true, data: wireValidation.data }
   }
-  return { success: false, error: result.error }
+  return { success: false, error: wireValidation.error }
 }
 
 /**
@@ -36,7 +36,7 @@ export function safeParseWasmWireJson(data: unknown): SafeParseWasmWireResult {
  * Prefer this over calling {@link adaptWasmJsonToParsedPoem} on raw `unknown`.
  */
 export function wasmJsonToParsedPoem(data: unknown): ParsedPoem | null {
-  const parsed = safeParseWasmWireJson(data)
-  if (!parsed.success) return null
-  return adaptWasmJsonToParsedPoem(parsed.data)
+  const wireParseOutcome = safeParseWasmWireJson(data)
+  if (!wireParseOutcome.success) return null
+  return adaptWasmJsonToParsedPoem(wireParseOutcome.data)
 }
