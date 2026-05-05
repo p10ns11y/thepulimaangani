@@ -15,7 +15,10 @@ Regenerate from the crate root after changing **`ParseResult`** or nested serde 
 
 ```bash
 pnpm run codegen:parse-result-openapi
+pnpm run codegen:parse-result-client
 ```
+
+The second command emits **`src/generated/parseResult.wire.ts`** (openapi-typescript) and thin aliases in **`src/generated/parseResultWire.ts`** (`ParseResultWire`). Or run both in one step: `pnpm run codegen:parse-result`.
 
 ## Recommended traversal patterns
 

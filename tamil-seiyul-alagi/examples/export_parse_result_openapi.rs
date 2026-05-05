@@ -59,11 +59,33 @@ fn openapi_schemas_from_root_schema(root_value: &Value) -> Value {
         }
     }
 
-    if let Some(schema_obj) = root_value.get("schema") {
-        map.insert("ParseResult".to_string(), schema_obj.clone());
-    }
+    // Root schema body: schemars uses either `schema` or [`flatten`](https://serde.rs/attributes.html#flatten)
+    // into the root object alongside `definitions`.
+    map.insert(
+        "ParseResult".to_string(),
+        parse_result_schema_fragment(root_value),
+    );
 
     Value::Object(map)
+}
+
+/// Body JSON Schema for [`ParseResult`] from `schema_for!(ParseResult)` root JSON.
+fn parse_result_schema_fragment(root_value: &Value) -> Value {
+    if let Some(schema_obj) = root_value.get("schema") {
+        return schema_obj.clone();
+    }
+    const STRIP_TOP_LEVEL_KEYS: &[&str] = &["definitions", "$defs", "$schema"];
+    let Value::Object(root_map) = root_value else {
+        return Value::Object(serde_json::Map::new());
+    };
+    let mut out = serde_json::Map::new();
+    for (key, value) in root_map {
+        if STRIP_TOP_LEVEL_KEYS.contains(&key.as_str()) {
+            continue;
+        }
+        out.insert(key.clone(), value.clone());
+    }
+    Value::Object(out)
 }
 
 /// Schemars emits `$ref` as `#/definitions/Foo`; OpenAPI 3 expects `#/components/schemas/Foo`.
