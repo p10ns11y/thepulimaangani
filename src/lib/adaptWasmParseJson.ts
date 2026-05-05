@@ -1,3 +1,4 @@
+import type { ParseResultWire } from '#/generated/parseResultWire'
 import type {
   ParsedFoot,
   ParsedFootPosition,
@@ -312,8 +313,12 @@ function linesFromWasm(rawLines: unknown, topLevelFeet: ParsedFoot[]): ParsedLin
 /**
  * WASM → {@link ParsedPoem}. Top-level **`lines`** (feet per row) or **`poem`** (tree: `linguistic_words` / `words`);
  * otherwise one line from top-level **`feet`**. **`foot_index_global`** matches linkage / presentation.
+ *
+ * Input shape matches OpenAPI **`ParseResult`** (`#/generated/parseResultWire`); extra keys are allowed at runtime.
  */
-export function adaptWasmJsonToParsedPoem(data: unknown): ParsedPoem | null {
+export function adaptWasmJsonToParsedPoem(
+  data: ParseResultWire & Record<string, unknown>,
+): ParsedPoem | null {
   if (!data || typeof data !== 'object') return null
   const parseResult = data as Record<string, unknown>
   if (typeof parseResult.original_text !== 'string' || !Array.isArray(parseResult.syllables)) {
