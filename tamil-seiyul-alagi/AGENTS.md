@@ -25,6 +25,10 @@ Rust WebAssembly parser for high-performance Tamil prosody analysis. Implements 
 
 Doc drift and cleanup tasks: [GitHub issue #49](https://github.com/p10ns11y/thepulimaangani/issues/49).
 
+## OpenAPI (generated contract)
+
+- **`ParseResult`** OpenAPI **3.0.3** document (schemas only: `paths` empty): repo root **`pnpm run codegen:parse-result-openapi`** → writes **`src/generated/parseResult.openapi.json`**. Built from Rust (`schemars` + `serde` shapes); **`$ref`** targets use **`#/components/schemas/…`** per OpenAPI 3. Regenerate when fields change on `ParseResult` or nested wire types.
+
 ## Rules
 - Maintain 90%+ test coverage
 - Run `cargo test` after changes

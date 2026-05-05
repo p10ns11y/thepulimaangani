@@ -1,11 +1,12 @@
 use std::ops::Range;
 
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::foot_pattern::foot_pattern;
 use crate::syllable::Syllable;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct Foot {
     pub syllables: Vec<Syllable>,
     pub foot_type: String,

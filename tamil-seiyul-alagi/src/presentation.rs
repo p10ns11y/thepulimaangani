@@ -4,12 +4,13 @@
 //! for classical foot names and தளை labels so WASM JSON can ship **`presentation`**
 //! alongside logic fields for any client (web, CLI, other hosts).
 
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::linkage::{Linkage, LinkageSpecialType, LinkageType};
 use crate::{Foot, MetreType, Syllable};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct DisplayResult {
     pub original_text: String,
     pub metre_type: Option<String>,
@@ -18,7 +19,7 @@ pub struct DisplayResult {
     pub talai: Vec<DisplayTalai>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct DisplaySyllable {
     pub text: String,
     pub syllable_type: String,
@@ -26,7 +27,7 @@ pub struct DisplaySyllable {
 }
 
 /// One foot in `DisplayResult` (WASM `presentation.feet[]`).
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct DisplayFoot {
     pub text: String,
     /// Classical Tamil foot name when the pattern is in the table (e.g. தேமா).
@@ -39,7 +40,7 @@ pub struct DisplayFoot {
     pub foot_type: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct DisplayTalai {
     pub from: usize,
     pub to: usize,

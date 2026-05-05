@@ -1,0 +1,674 @@
+{
+  "components": {
+    "schemas": {
+      "DisplayFoot": {
+        "description": "One foot in `DisplayResult` (WASM `presentation.feet[]`).",
+        "properties": {
+          "foot_type": {
+            "description": "Stable combined label for older clients: `தமிழ் · latin`, or pattern / em dash when unknown.",
+            "type": "string"
+          },
+          "foot_type_latin": {
+            "description": "Simple Latin gloss when known (e.g. thema).",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "foot_type_tamil": {
+            "description": "Classical Tamil foot name when the pattern is in the table (e.g. தேமா).",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "foot_type",
+          "text"
+        ],
+        "type": "object"
+      },
+      "DisplayResult": {
+        "properties": {
+          "feet": {
+            "items": {
+              "$ref": "#/components/schemas/DisplayFoot"
+            },
+            "type": "array"
+          },
+          "metre_type": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "original_text": {
+            "type": "string"
+          },
+          "syllables": {
+            "items": {
+              "$ref": "#/components/schemas/DisplaySyllable"
+            },
+            "type": "array"
+          },
+          "talai": {
+            "items": {
+              "$ref": "#/components/schemas/DisplayTalai"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "feet",
+          "original_text",
+          "syllables",
+          "talai"
+        ],
+        "type": "object"
+      },
+      "DisplaySyllable": {
+        "properties": {
+          "hint": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "syllable_type": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "syllable_type",
+          "text"
+        ],
+        "type": "object"
+      },
+      "DisplayTalai": {
+        "properties": {
+          "from": {
+            "format": "uint",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "from_line": {
+            "format": "uint",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "is_valid": {
+            "type": "boolean"
+          },
+          "talai_type": {
+            "type": "string"
+          },
+          "to": {
+            "format": "uint",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "to_line": {
+            "format": "uint",
+            "minimum": 0.0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "from",
+          "from_line",
+          "is_valid",
+          "talai_type",
+          "to",
+          "to_line"
+        ],
+        "type": "object"
+      },
+      "Foot": {
+        "properties": {
+          "foot_index_global": {
+            "description": "Poem-wide foot index: `i` for `i == foot_index` in linkage / bond edges. Set for `ParseResult.feet` and for each foot in `ParseResult.lines` from [`crate::types::flat_lines_from_poem`].",
+            "format": "uint",
+            "minimum": 0.0,
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "foot_type": {
+            "type": "string"
+          },
+          "syllables": {
+            "items": {
+              "$ref": "#/components/schemas/Syllable"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "foot_type",
+          "syllables"
+        ],
+        "type": "object"
+      },
+      "FootPosition": {
+        "description": "Where a foot (word) sits in the poem: global index, line, and position within that line.",
+        "properties": {
+          "foot_index": {
+            "description": "Index of this foot in the poem-wide `feet` list (0-based).",
+            "format": "uint",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "line_index": {
+            "description": "Physical line in the normalized poem (0-based).",
+            "format": "uint",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "word_index_in_line": {
+            "description": "0-based index among feet that **start** on `line_index`.",
+            "format": "uint",
+            "minimum": 0.0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "foot_index",
+          "line_index",
+          "word_index_in_line"
+        ],
+        "type": "object"
+      },
+      "Letter": {
+        "properties": {
+          "letter_type": {
+            "$ref": "#/components/schemas/LetterType"
+          },
+          "matra": {
+            "format": "uint8",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "letter_type",
+          "matra",
+          "text"
+        ],
+        "type": "object"
+      },
+      "LetterNode": {
+        "description": "Leaf: one grapheme cluster under a syllable (எழுத்து / prosodic surface segment).",
+        "properties": {
+          "inner": {
+            "$ref": "#/components/schemas/Letter"
+          }
+        },
+        "required": [
+          "inner"
+        ],
+        "type": "object"
+      },
+      "LetterType": {
+        "enum": [
+          "Uyir",
+          "Mei",
+          "Uyirmei",
+          "Aaytham"
+        ],
+        "type": "string"
+      },
+      "Line": {
+        "properties": {
+          "feet": {
+            "items": {
+              "$ref": "#/components/schemas/Foot"
+            },
+            "type": "array"
+          },
+          "line_class": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "feet",
+          "line_class"
+        ],
+        "type": "object"
+      },
+      "LinguisticWordNode": {
+        "description": "Syllables belonging to one **linguistic** word (whitespace-separated token).",
+        "properties": {
+          "syllables": {
+            "items": {
+              "$ref": "#/components/schemas/SyllableNode"
+            },
+            "type": "array"
+          },
+          "word_index_in_line": {
+            "format": "uint",
+            "minimum": 0.0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "syllables",
+          "word_index_in_line"
+        ],
+        "type": "object"
+      },
+      "Linkage": {
+        "properties": {
+          "from": {
+            "$ref": "#/components/schemas/FootPosition"
+          },
+          "from_foot": {
+            "format": "uint",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "is_valid": {
+            "type": "boolean"
+          },
+          "linkage_special_type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LinkageSpecialType"
+              }
+            ],
+            "default": "Unknown"
+          },
+          "linkage_type": {
+            "$ref": "#/components/schemas/LinkageType"
+          },
+          "to": {
+            "$ref": "#/components/schemas/FootPosition"
+          },
+          "to_foot": {
+            "format": "uint",
+            "minimum": 0.0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "from",
+          "from_foot",
+          "is_valid",
+          "linkage_type",
+          "to",
+          "to_foot"
+        ],
+        "type": "object"
+      },
+      "LinkageSpecialType": {
+        "description": "Nuanced bond name within a [`LinkageType`] family (issue #36 row names).",
+        "enum": [
+          "NerondriyaAciriyaTalai",
+          "NiraiondriyaAciriyaTalai",
+          "IyarcirVenTalai",
+          "VencirVenTalai",
+          "KaliTalai",
+          "OndriyaVanjiTalai",
+          "OndrathaVanjiTalai",
+          "Unknown"
+        ],
+        "type": "string"
+      },
+      "LinkageType": {
+        "description": "Coarse **Talai** (தளை) family for metre-facing logic (Venpaa vs Kalippaa hints, etc.).",
+        "oneOf": [
+          {
+            "enum": [
+              "KaliTalai",
+              "VanjiTalai"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "JSON: `VenTalai` (legacy `Venthalai` on deserialize).",
+            "enum": [
+              "VenTalai"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Coarse ஆசிரியத்தளை (JSON: `AciriyaTalai`; legacy `Aciriyathalai` / `Aasiriyathalai` / `AsiriyaTalai`).",
+            "enum": [
+              "AciriyaTalai"
+            ],
+            "type": "string"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "Other": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "Other"
+            ],
+            "type": "object"
+          }
+        ]
+      },
+      "MetreHypothesis": {
+        "properties": {
+          "aggregate_score": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "metre_probability": {
+            "description": "Calibrated softmax probability for this coarse class (hybrid ML head), when present.",
+            "format": "float",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "metre_rank": {
+            "description": "1-based rank after hybrid reorder (1 = most probable).",
+            "format": "uint8",
+            "minimum": 0.0,
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "metre_type": {
+            "$ref": "#/components/schemas/MetreType"
+          },
+          "rule_ids": {
+            "items": {
+              "$ref": "#/components/schemas/RuleId"
+            },
+            "type": "array"
+          },
+          "violations": {
+            "items": {
+              "$ref": "#/components/schemas/RuleId"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "aggregate_score",
+          "metre_type",
+          "rule_ids",
+          "violations"
+        ],
+        "type": "object"
+      },
+      "MetreType": {
+        "oneOf": [
+          {
+            "enum": [
+              "Venpaa",
+              "Kalippaa",
+              "Vanjippaa"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "ஆசிரியப்பா — WASM/JSON key uses Tamil-style romanization (`aciriya`), not Sanskrit-style `asiriya`.",
+            "enum": [
+              "Aciriyappaa"
+            ],
+            "type": "string"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "Other": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "Other"
+            ],
+            "type": "object"
+          }
+        ]
+      },
+      "ParseFeatureSnapshot": {
+        "description": "Serializable 51-float prosody vector (same layout as [`crate::parse_features`](crate::parse_features)). Present on [`ParseResult`] for WASM/JSON consumers and training export.",
+        "properties": {
+          "dense": {
+            "items": {
+              "format": "float",
+              "type": "number"
+            },
+            "type": "array"
+          },
+          "schema_version": {
+            "format": "uint32",
+            "minimum": 0.0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "dense",
+          "schema_version"
+        ],
+        "type": "object"
+      },
+      "PoemLineNode": {
+        "description": "One physical line of the normalized poem.",
+        "properties": {
+          "line_class": {
+            "type": "string"
+          },
+          "line_index": {
+            "format": "uint",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "linguistic_words": {
+            "description": "Linguistic words on this line (Ner/Nirai per word; does not merge across spaces).",
+            "items": {
+              "$ref": "#/components/schemas/LinguisticWordNode"
+            },
+            "type": "array"
+          },
+          "words": {
+            "items": {
+              "$ref": "#/components/schemas/WordNode"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "line_class",
+          "line_index",
+          "linguistic_words",
+          "words"
+        ],
+        "type": "object"
+      },
+      "PoemNode": {
+        "description": "Root aggregate: input text, tree lines, flat syllables (parallel legacy surface), linkages.",
+        "properties": {
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/PoemLineNode"
+            },
+            "type": "array"
+          },
+          "linkage": {
+            "items": {
+              "$ref": "#/components/schemas/Linkage"
+            },
+            "type": "array"
+          },
+          "normalized_text": {
+            "type": "string"
+          },
+          "syllables_flat": {
+            "items": {
+              "$ref": "#/components/schemas/Syllable"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "lines",
+          "linkage",
+          "normalized_text",
+          "syllables_flat"
+        ],
+        "type": "object"
+      },
+      "RuleId": {
+        "oneOf": [
+          {
+            "enum": [
+              "MetreLength01",
+              "LinkageAdjacency01"
+            ],
+            "type": "string"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "Other": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "Other"
+            ],
+            "type": "object"
+          }
+        ]
+      },
+      "Syllable": {
+        "properties": {
+          "alt_split": {
+            "type": "boolean"
+          },
+          "line_index": {
+            "default": 0,
+            "description": "Physical line in normalized poem (0-based); linguistic word boundary used during segmentation.",
+            "format": "uint",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "rule_ref": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "split_hint": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "syllable_type": {
+            "$ref": "#/components/schemas/SyllableType"
+          },
+          "text": {
+            "type": "string"
+          },
+          "word_index_in_line": {
+            "default": 0,
+            "description": "Index of the linguistic word within `line_index` (whitespace-separated).",
+            "format": "uint",
+            "minimum": 0.0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "alt_split",
+          "syllable_type",
+          "text"
+        ],
+        "type": "object"
+      },
+      "SyllableNode": {
+        "description": "Syllable node with nested letters.",
+        "properties": {
+          "global_index": {
+            "description": "Poem-wide syllable index (matches `ParseResult.syllables` order).",
+            "format": "uint",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "inner": {
+            "$ref": "#/components/schemas/Syllable"
+          },
+          "letters": {
+            "items": {
+              "$ref": "#/components/schemas/LetterNode"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "global_index",
+          "inner",
+          "letters"
+        ],
+        "type": "object"
+      },
+      "SyllableType": {
+        "enum": [
+          "Ner",
+          "Nirai"
+        ],
+        "type": "string"
+      },
+      "WordNode": {
+        "description": "Word (foot / seer): syllables grouped by foot rule.",
+        "properties": {
+          "foot_index_global": {
+            "description": "Poem-wide foot index (matches `ParseResult.feet` order).",
+            "format": "uint",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "foot_type": {
+            "type": "string"
+          },
+          "syllables": {
+            "items": {
+              "$ref": "#/components/schemas/SyllableNode"
+            },
+            "type": "array"
+          },
+          "word_index_in_line": {
+            "description": "Index among feet on this physical line (0-based).",
+            "format": "uint",
+            "minimum": 0.0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "foot_index_global",
+          "foot_type",
+          "syllables",
+          "word_index_in_line"
+        ],
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Machine-readable contract for `ParseResult` as produced by serde JSON from the Tamil parser / WASM. Regenerated from Rust via schemars; `components.schemas` holds JSON Schema keyword objects per OpenAPI 3.",
+    "title": "Thepulimaangani ParseResult (WASM JSON)",
+    "version": "0.1.0"
+  },
+  "openapi": "3.0.3",
+  "paths": {}
+}

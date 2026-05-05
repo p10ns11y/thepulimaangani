@@ -7,6 +7,16 @@ This document is the **language-agnostic** guide for consumers of the serde JSON
 - **`parse_result_schema_version`** (top-level): Bump when cross-field wire invariants change. Introduced at **`1`**. Older payloads omit this field; treat missing as legacy (`0`) if needed.
 - **`parse_features.schema_version`**: Independent — dense float layout for ML / metre features only (see `PARSE_FEATURES.md`).
 
+## OpenAPI 3 contract (generated)
+
+A standard **OpenAPI 3.0.3** document with **`components.schemas`** (JSON Schema fragments for each Rust wire type) lives at **`src/generated/parseResult.openapi.json`**. **`paths`** is empty — this file is for tooling and docs, not HTTP routes. Internal **`$ref`** values use **`#/components/schemas/<TypeName>`**.
+
+Regenerate from the crate root after changing **`ParseResult`** or nested serde types:
+
+```bash
+pnpm run codegen:parse-result-openapi
+```
+
 ## Recommended traversal patterns
 
 ### Poem-wide feet and தளை (linkage)

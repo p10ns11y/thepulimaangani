@@ -1,3 +1,4 @@
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::foot_pattern::foot_pattern;
@@ -7,13 +8,13 @@ use crate::{Foot, Linkage, MetreType, Syllable, Talai};
 
 /// Serializable 51-float prosody vector (same layout as [`crate::parse_features`](crate::parse_features)).
 /// Present on [`ParseResult`] for WASM/JSON consumers and training export.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, JsonSchema)]
 pub struct ParseFeatureSnapshot {
     pub schema_version: u32,
     pub dense: Vec<f32>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default, JsonSchema)]
 pub struct ParseOptions {
     pub only_prosody: bool,
     pub no_detect: bool,
@@ -41,7 +42,7 @@ impl ParseOptions {
 /// wire contract or cross-field invariants change. Missing field on deserialize means legacy (`0`).
 pub const PARSE_RESULT_SCHEMA_VERSION: u32 = 1;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct ParseResult {
     #[serde(default)]
     pub parse_result_schema_version: u32,
@@ -80,20 +81,20 @@ pub struct ParseResult {
     pub presentation: DisplayResult,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct Line {
     pub feet: Vec<Foot>,
     pub line_class: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub enum RuleId {
     MetreLength01,
     LinkageAdjacency01,
     Other(String),
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct MetreHypothesis {
     pub metre_type: MetreType,
     pub aggregate_score: i32,

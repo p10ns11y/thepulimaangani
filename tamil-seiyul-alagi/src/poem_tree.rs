@@ -2,6 +2,7 @@
 //!
 //! Trait contracts describe what each layer exposes upward for traversal and batch tooling.
 
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::letter::{letters_from_syllable_text, Letter};
@@ -12,7 +13,7 @@ use crate::syllable::{Syllable, SyllableType};
 pub type SyllableGlobalIndex = usize;
 
 /// Leaf: one grapheme cluster under a syllable (எழுத்து / prosodic surface segment).
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct LetterNode {
     pub inner: Letter,
 }
@@ -20,7 +21,7 @@ pub struct LetterNode {
 impl LetterLayer for LetterNode {}
 
 /// Syllable node with nested letters.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct SyllableNode {
     pub inner: Syllable,
     pub letters: Vec<LetterNode>,
@@ -47,14 +48,14 @@ impl SyllableLayer for SyllableNode {
 }
 
 /// Syllables belonging to one **linguistic** word (whitespace-separated token).
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct LinguisticWordNode {
     pub word_index_in_line: usize,
     pub syllables: Vec<SyllableNode>,
 }
 
 /// Word (foot / seer): syllables grouped by foot rule.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct WordNode {
     pub foot_type: String,
     pub syllables: Vec<SyllableNode>,
@@ -83,7 +84,7 @@ impl WordLayer for WordNode {
 }
 
 /// One physical line of the normalized poem.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct PoemLineNode {
     pub line_index: usize,
     pub line_class: String,
@@ -107,7 +108,7 @@ impl LineLayer for PoemLineNode {
 }
 
 /// Root aggregate: input text, tree lines, flat syllables (parallel legacy surface), linkages.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct PoemNode {
     pub normalized_text: String,
     pub lines: Vec<PoemLineNode>,

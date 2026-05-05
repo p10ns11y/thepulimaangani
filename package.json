@@ -20,6 +20,7 @@
     "test:rust": "cd tamil-seiyul-alagi  && cargo test",
     "dump:test-fixture": "cd tamil-seiyul-alagi && cargo run --example dump_live_preview_fixture",
     "dump:test-fixtures": "cd tamil-seiyul-alagi && cargo run --example dump_live_preview_fixture && cargo run --example dump_kural_parse_features_fixture",
+    "codegen:parse-result-openapi": "cd tamil-seiyul-alagi && cargo run --example export_parse_result_openapi",
     "test:frontend": "vitest run",
     "test:frontend:coverage": "vitest run --coverage",
     "crap:report": "python3 dx/crap_report.py --lizard-xml lizard-rust.xml --rust-cov tamil-seiyul-alagi/llvm-cov-summary.json --vitest-summary coverage/coverage-summary.json --out-md crap-report.md",
