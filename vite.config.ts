@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite'
-import { devtools } from '@tanstack/devtools-vite'
+// import { devtools } from '@tanstack/devtools-vite'
 import { nitro } from 'nitro/vite'
 
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
@@ -11,7 +11,7 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vercel.com/docs/frameworks/full-stack/tanstack-start — preset is chosen via env / `NITRO_PRESET` (see `vercel.json` buildCommand).
 const config = defineConfig({
   resolve: { tsconfigPaths: true },
-  plugins: [devtools(), tailwindcss(), tanstackStart(), nitro(), viteReact()],
+  plugins: [/* devtools(), */ tailwindcss(), tanstackStart(), nitro(), viteReact()],
 })
 
 export default config

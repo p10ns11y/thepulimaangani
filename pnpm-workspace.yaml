@@ -1,0 +1,64 @@
+# Workspace roots: explicit paths so new folders under packages/ are not picked up by mistake.
+packages:
+  - .
+
+overrides:
+  semver: ^7.8.0
+  undici-types: ^8.2.0
+  glob: 13.0.6
+  node-domexception: npm:@nolyfill/domexception@1.0.28
+  # whatwg-encoding: npm:@exodus/bytes@1.15.0
+  encoding-sniffer: ^1.0.2
+
+# --- Lifecycle scripts (pnpm v11+) ---
+allowBuilds:
+  esbuild: true
+  msw: true
+  # lightningcss: true
+
+# --- Supply chain ---
+# Transitive deps must resolve from the registry / workspace (not arbitrary git URLs or tarballs).
+blockExoticSubdeps: true
+
+# Fail immediately if node_modules is out of sync with pnpm-lock.yaml before running any script.
+# This protects against running code with missing, stale, or potentially tampered dependencies
+# (strong defense against supply chain attacks like Shai-Hulud).
+verifyDepsBeforeRun: error
+
+# Do not install newly published versions until they are at least this many minutes old (supply-chain window).
+# Two days in minutes
+minimumReleaseAge: 2880
+
+# If nothing in range satisfies minimumReleaseAge, fail instead of silently picking a too-new tarball.
+minimumReleaseAgeStrict: true
+
+# Registries that omit publish timestamps cannot bypass the release-age rule.
+minimumReleaseAgeIgnoreMissingTime: false
+
+# Fail when trust signals regress versus an older release (e.g. publisher / provenance weakening).
+trustPolicy: no-downgrade
+
+# --- Store integrity ---
+verifyStoreIntegrity: true
+strictStorePkgContentCheck: true
+
+# --- Toolchain ---
+# Match the exact pnpm from root package.json "packageManager" (pin CI and local installs).
+pmOnFail: error
+
+# Honor dependency engines against the running Node (see root package.json "engines").
+nodeVersion: 24.0.0 # Minimum supported version
+engineStrict: true
+
+# --- Lifecycle scripts ---
+strictDepBuilds: true
+dangerouslyAllowAllBuilds: false
+
+# ============================================================
+# Peer Dependencies & Isolation
+# ============================================================
+strict-peer-dependencies: true
+dedupe-peer-dependents: true
+shamefully-hoist: false
+public-hoist-pattern: []
+
