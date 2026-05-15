@@ -2,6 +2,10 @@
 packages:
   - .
 
+overrides:
+  semver: ^7.8.0
+  undici-types: ^8.2.0
+
 # --- Lifecycle scripts (pnpm v11+) ---
 allowBuilds:
   esbuild: true
@@ -29,8 +33,6 @@ minimumReleaseAgeIgnoreMissingTime: false
 
 # Fail when trust signals regress versus an older release (e.g. publisher / provenance weakening).
 trustPolicy: no-downgrade
-trustPolicyExclude:
-  - 'semver@6.3.1'
 
 # --- Store integrity ---
 verifyStoreIntegrity: true
