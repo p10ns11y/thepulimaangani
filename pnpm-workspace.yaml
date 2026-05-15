@@ -2,6 +2,12 @@
 packages:
   - .
 
+# --- Lifecycle scripts (pnpm v11+) ---
+allowBuilds:
+  esbuild: true
+  msw: true
+  # lightningcss: true
+
 # --- Supply chain ---
 # Transitive deps must resolve from the registry / workspace (not arbitrary git URLs or tarballs).
 blockExoticSubdeps: true
