@@ -46,8 +46,8 @@ importers:
         specifier: ^12.38.0
         version: 12.38.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       nitro:
-        specifier: 3.0.260415-beta
-        version: 3.0.260415-beta(dotenv@17.4.2)(jiti@2.7.0)(lru-cache@11.3.6)(rollup@4.60.3)(vite@8.0.12(@types/node@24.12.4)(esbuild@0.27.7)(jiti@2.7.0))
+        specifier: 3.0.260429-beta
+        version: 3.0.260429-beta(dotenv@17.4.2)(jiti@2.7.0)(lru-cache@11.3.6)(rollup@4.60.3)(vite@8.0.12(@types/node@24.12.4)(esbuild@0.27.7)(jiti@2.7.0))
       radix-ui:
         specifier: ^1.4.3
         version: 1.4.3(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -3253,16 +3253,16 @@ packages:
   nf3@0.3.17:
     resolution: {integrity: sha512-N9zEWySuJFw+gR0lhS5863YsvNeudOdqRyFvNb+jMXbeTJOdrjDqkCpDginIZfUm0LzT1t1nCRiDeqQm/8kirQ==}
 
-  nitro@3.0.260415-beta:
-    resolution: {integrity: sha512-J0ntJERWtIdvweZdmkCiF8eOFvP9fIAJR2gpeIDrHbAlYavK41WQfADo/YoZ/LF7RMTZBiPaH/pt2s/nPru9Iw==}
+  nitro@3.0.260429-beta:
+    resolution: {integrity: sha512-KweLVCUN5X9v9g+4yxAyRcz3FcOlnjmt9FyrAIWDxJETJmNT7I0JV0clgsONjo2nI0U5gwedXYA3RaNtF5XWzg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
     peerDependencies:
-      '@vercel/queue': ^0.1.4
+      '@vercel/queue': ^0.1.6
       dotenv: '*'
       giget: '*'
       jiti: ^2.6.1
-      rollup: ^4.60.1
+      rollup: ^4.60.2
       vite: ^7 || ^8
       xml2js: ^0.6.2
       zephyr-agent: ^0.2.0
@@ -7242,7 +7242,7 @@ snapshots:
 
   nf3@0.3.17: {}
 
-  nitro@3.0.260415-beta(dotenv@17.4.2)(jiti@2.7.0)(lru-cache@11.3.6)(rollup@4.60.3)(vite@8.0.12(@types/node@24.12.4)(esbuild@0.27.7)(jiti@2.7.0)):
+  nitro@3.0.260429-beta(dotenv@17.4.2)(jiti@2.7.0)(lru-cache@11.3.6)(rollup@4.60.3)(vite@8.0.12(@types/node@24.12.4)(esbuild@0.27.7)(jiti@2.7.0)):
     dependencies:
       consola: 3.4.2
       crossws: 0.4.5(srvx@0.11.15)
