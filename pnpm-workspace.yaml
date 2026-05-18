@@ -9,6 +9,12 @@ overrides:
   node-domexception: npm:@nolyfill/domexception@1.0.28
   # whatwg-encoding: npm:@exodus/bytes@1.15.0
   encoding-sniffer: ^1.0.2
+  # Security overrides from kulavi-security-audit (to address Dependabot findings)
+  fast-uri: ^3.1.2
+  hono: ^4.12.18
+  "@tanstack/start-server-core": ^1.167.30
+  "brace-expansion": ^5.0.6
+  "ip-address": ^10.1.1
 
 # --- Lifecycle scripts (pnpm v11+) ---
 allowBuilds:
@@ -61,4 +67,3 @@ strict-peer-dependencies: true
 dedupe-peer-dependents: true
 shamefully-hoist: false
 public-hoist-pattern: []
-
