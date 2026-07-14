@@ -17,7 +17,9 @@ mod parse;
 mod resolve;
 mod types;
 
-pub use display::{scene_line, wallpaper_fallback_names, wallpaper_hint};
+pub use display::{
+    nazhigai_ordinal, nazhigai_running_copy, scene_line, wallpaper_fallback_names, wallpaper_hint,
+};
 pub use error::TamilTimeError;
 pub use infer::infer_tinai;
 pub use jaamam::{

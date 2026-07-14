@@ -3,6 +3,32 @@
 use crate::jaamam::{jaamam_detail_for, JaamamDetail};
 use crate::labels::tinai_meta;
 use crate::types::{Perum, Siru, Tinai, NAZHIGAI_MINUTES};
+use crate::TamilTimeError;
+
+/// 1-based Nazhigai ordinal for UI (storage index 0 → 1 … index 9 → 10).
+///
+/// API/storage stays 0-based; humans read ordinals. Index 1 at ≈24 min elapsed
+/// means *Running Nazhigai 2*, not “first nazhigai”.
+pub fn nazhigai_ordinal(index: i32) -> Result<i32, TamilTimeError> {
+    if !(0..=9).contains(&index) {
+        return Err(TamilTimeError::InvalidNazhigai(index));
+    }
+    Ok(index + 1)
+}
+
+/// Plain-language `Running Nazhigai N (…)` for tooltips and scene lines.
+pub fn nazhigai_running_copy(index: i32) -> Result<String, TamilTimeError> {
+    let ordinal = nazhigai_ordinal(index)?;
+    let into_min = index * NAZHIGAI_MINUTES;
+    Ok(match ordinal {
+        1 => format!("Running Nazhigai 1 (first {NAZHIGAI_MINUTES} minutes of this Siru)"),
+        2 => format!("Running Nazhigai 2 (after {into_min} minutes, first nazhigai over)"),
+        n => format!(
+            "Running Nazhigai {n} (after {into_min} minutes, first {} nazhigai over)",
+            n - 1
+        ),
+    })
+}
 
 /// Filename hint for Karu Porul wallpaper sets.
 ///
@@ -47,7 +73,7 @@ pub fn wallpaper_fallback_names(hint: &str) -> Vec<String> {
 
 /// One-line delight string for CLI / status (never blocks the task).
 ///
-/// Nazhigai step N ≈ N × 24 min into the current Siru.
+/// `nazhigai` is the 0-based step index; copy uses 1-based ordinals.
 /// Jaamam detail is the Siru's derived 3 h-grid split (jaamam ≡ saamam).
 pub fn scene_line(
     tinai: Tinai,
@@ -57,10 +83,7 @@ pub fn scene_line(
     jaamam: Option<&JaamamDetail>,
 ) -> Result<String, crate::TamilTimeError> {
     let meta = tinai_meta(tinai);
-    let into_min = nazhigai * NAZHIGAI_MINUTES;
-    let nazh = format!(
-        "nazhigai {nazhigai} (≈{nazhigai}×{NAZHIGAI_MINUTES} min ≈ {into_min} min elapsed)"
-    );
+    let nazh = nazhigai_running_copy(nazhigai)?;
     let owned;
     let jam = match jaamam {
         Some(j) => j,

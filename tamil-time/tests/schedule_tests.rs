@@ -3,8 +3,9 @@
 use chrono::NaiveDate;
 use tamil_time::{
     infer_tinai, jaamam_detail_for, jaamam_index_at, jaamam_split_for_siru, nazhigai_in_siru,
-    nazhigai_of_day, parse_siru, parse_tinai, perum_for_date, resolve_tamil_at, scene_line,
-    siru_for_hour, wallpaper_fallback_names, Perum, ResolveInput, Siru, Tinai, TinaiSource, SIRU,
+    nazhigai_of_day, nazhigai_ordinal, nazhigai_running_copy, parse_siru, parse_tinai,
+    perum_for_date, resolve_tamil_at, scene_line, siru_for_hour, wallpaper_fallback_names, Perum,
+    ResolveInput, Siru, Tinai, TinaiSource, SIRU,
 };
 
 #[test]
@@ -73,6 +74,13 @@ fn nazhigai_steps() {
     assert_eq!(nazhigai_of_day(0, 0), 0);
     assert_eq!(nazhigai_of_day(0, 24), 1);
     assert_eq!(nazhigai_of_day(23, 59), 59);
+    assert_eq!(nazhigai_ordinal(0).unwrap(), 1);
+    assert_eq!(nazhigai_ordinal(1).unwrap(), 2);
+    assert_eq!(nazhigai_ordinal(9).unwrap(), 10);
+    assert_eq!(
+        nazhigai_running_copy(1).unwrap(),
+        "Running Nazhigai 2 (after 24 minutes, first nazhigai over)"
+    );
 }
 
 #[test]
@@ -183,7 +191,7 @@ fn resolve_flags_and_scene() {
     .unwrap();
     assert!(s3
         .scene
-        .contains("nazhigai 3 (≈3×24 min ≈ 72 min elapsed)"));
+        .contains("Running Nazhigai 4 (after 72 minutes, first 3 nazhigai over)"));
 
     let s5 = resolve_tamil_at(
         &ResolveInput {
@@ -199,7 +207,7 @@ fn resolve_flags_and_scene() {
     .unwrap();
     assert!(s5
         .scene
-        .contains("nazhigai 5 (≈5×24 min ≈ 120 min elapsed)"));
+        .contains("Running Nazhigai 6 (after 120 minutes, first 5 nazhigai over)"));
 }
 
 #[test]

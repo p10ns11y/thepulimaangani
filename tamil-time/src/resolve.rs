@@ -23,7 +23,7 @@ pub struct TamilState {
     pub perum: Perum,
     /// Current Siru / Pozhuthu.
     pub siru: Siru,
-    /// Soft Nazhigai step 0–9 within Siru.
+    /// Soft Nazhigai step index 0–9 within Siru (UI ordinal = index + 1).
     pub nazhigai: i32,
     /// Host theme id, e.g. `eye-comfort-tn-neythal`.
     pub theme: String,
