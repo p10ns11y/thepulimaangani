@@ -31,8 +31,10 @@ jobs:
           pnpm install --frozen-lockfile --ignore-scripts
 
       - name: Rust (wasm32)
-        uses: dtolnay/rust-toolchain@fa04a1451ff1842e2626ccb99004d0195b455a88
+        uses: dtolnay/rust-toolchain@fa04a1451ff1842e2626ccb99004d0195b455a88 # stable
         with:
+          # Required when the action is SHA-pinned (ref name is not "stable").
+          toolchain: stable
           targets: wasm32-unknown-unknown
 
       - name: Rust dependency cache
@@ -71,8 +73,10 @@ jobs:
           pnpm install --frozen-lockfile --ignore-scripts
 
       - name: Rust (llvm-cov + wasm32 for build:wasm)
-        uses: dtolnay/rust-toolchain@fa04a1451ff1842e2626ccb99004d0195b455a88
+        uses: dtolnay/rust-toolchain@fa04a1451ff1842e2626ccb99004d0195b455a88 # stable
         with:
+          # Required when the action is SHA-pinned (ref name is not "stable").
+          toolchain: stable
           components: llvm-tools-preview
           targets: wasm32-unknown-unknown
 
