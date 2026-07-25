@@ -1,12 +1,7 @@
 {
   "profile": "thepulimaangani",
-  "source_drafts": "/home/sustainableabundance/Work/personal/agent-prompt-tuning-lab/data/distill/20260725-153622/drafts",
-  "installed_at": "2026-07-25T16:36:10.816Z",
-  "workflows": [
-    "docs-canvas-architecture-alignment",
-    "github-cards-dashboard-sync",
-    "portfolio-daily-update"
-  ],
+  "workflows": [],
   "skills": [],
-  "rules": []
+  "rules": [],
+  "note": "No domain-fitting distill drafts yet; portfolio/ghcards/archy dumps removed"
 }
