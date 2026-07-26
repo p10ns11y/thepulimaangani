@@ -1,7 +1,14 @@
 {
   "profile": "thepulimaangani",
-  "workflows": [],
+  "distill_run": "20260725-153622",
+  "source_drafts": "data/distill/20260725-153622/drafts",
+  "installed_at": "2026-07-26T04:10:36.215Z",
+  "note": "Poem variations domain: poem-variations-constant-refactor workflow + one-sample-per-type rule.",
+  "workflows": [
+    "poem-variations-constant-refactor"
+  ],
   "skills": [],
-  "rules": [],
-  "note": "No domain-fitting distill drafts yet; portfolio/ghcards/archy dumps removed"
+  "rules": [
+    "one-sample-per-type.mdc"
+  ]
 }
