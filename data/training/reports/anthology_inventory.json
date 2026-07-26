@@ -1,0 +1,294 @@
+{
+  "step_id": "S02_anthology_inventory",
+  "generated_at": "2026-07-27T20:06:00Z",
+  "status": "ADOPT",
+  "improved": true,
+  "soa_ok": true,
+  "anthology_inventory_version": 1,
+  "machine_module": "tamil-seiyul-alagi/src/anthology_inventory.rs",
+  "portfolio_ref": "tamil-seiyul-alagi/METRE_ML_METHODS_PORTFOLIO.md §5.0 S02, §5.2 Anthology",
+  "training_process_ref": "tamil-seiyul-alagi/TRAINING_PROCESS.md",
+  "sources": {
+    "canonical_rust_tables": "tamil-seiyul-alagi/src/poem_variations.rs",
+    "training_helpers": "tamil-seiyul-alagi/src/poem_variations_training.rs",
+    "inventory_pins": "tamil-seiyul-alagi/src/anthology_inventory.rs",
+    "js_mirror": "data/poem_variations.js",
+    "csv_export": "data/training/poem_variations_training.csv",
+    "jsonl_export": "data/training/poem_variations_training.jsonl",
+    "kural_golden_fixture": "tamil-seiyul-alagi/tests/test_data/kural_venpaa_parse_features.json"
+  },
+  "totals": {
+    "all_rows": 36,
+    "special_type": 17,
+    "variation": 19,
+    "parse_ok": 36,
+    "feature_schema_version": [
+      "1"
+    ]
+  },
+  "by_parent_metre": {
+    "aciriyappa": {
+      "special_type": 3,
+      "variation": 5,
+      "total": 8,
+      "heuristic_top1_match_special_type": 3,
+      "heuristic_top1_match_variation": 0,
+      "sample_ids_special_type": [
+        "nerisai_aciriyappaa",
+        "inaikkural_aciriyappaa",
+        "nilaimandila_aciriyappaa"
+      ],
+      "sample_ids_variation": [
+        "aciriya_thazhisai",
+        "aciriya_thurai",
+        "arucir_kazhinediladi_aciriya_virutham",
+        "elucir_kazhinediladi_aciriya_virutham",
+        "encir_kazhinediladi_aciriya_virutham"
+      ]
+    },
+    "kalippaa": {
+      "special_type": 2,
+      "variation": 5,
+      "total": 7,
+      "heuristic_top1_match_special_type": 2,
+      "heuristic_top1_match_variation": 0,
+      "sample_ids_special_type": [
+        "tharavukocha_kalippaa",
+        "venkalippaa"
+      ],
+      "sample_ids_variation": [
+        "kalithazhisai",
+        "kalithurai",
+        "kattalai_kalippaa",
+        "kattalai_kalithurai",
+        "kalivirutham"
+      ]
+    },
+    "vanjippaa": {
+      "special_type": 2,
+      "variation": 3,
+      "total": 5,
+      "heuristic_top1_match_special_type": 2,
+      "heuristic_top1_match_variation": 0,
+      "sample_ids_special_type": [
+        "kuraladi_vanjippaa",
+        "sinthadi_aciriyappaa"
+      ],
+      "sample_ids_variation": [
+        "vanjithazhisai",
+        "vanjithurai",
+        "vanjivirutham"
+      ]
+    },
+    "venpaa": {
+      "special_type": 10,
+      "variation": 6,
+      "total": 16,
+      "heuristic_top1_match_special_type": 10,
+      "heuristic_top1_match_variation": 3,
+      "sample_ids_special_type": [
+        "oru_vikarpa_kural_venpaa",
+        "iru_vikarpa_kural_venpaa",
+        "nerisai_sinthiyal_venpaa",
+        "inisai_sinthiyal_venpaa",
+        "oru_vikarpa_nerisai_venpaa",
+        "iru_vikarpa_nerisai_venpaa",
+        "oru_vikarpa_inisai_venpaa",
+        "pala_vikarpa_inisai_venpaa",
+        "paqrodai_venpaa",
+        "kalivenpaa"
+      ],
+      "sample_ids_variation": [
+        "kurattazhisai",
+        "kural_vensenthurai",
+        "ventazhisai",
+        "vellathazhisai",
+        "vendurai",
+        "velivirutham"
+      ]
+    }
+  },
+  "class_balance_special_type": {
+    "aciriyappa": 3,
+    "kalippaa": 2,
+    "vanjippaa": 2,
+    "venpaa": 10
+  },
+  "class_balance_notes": [
+    "special_type is primary gold (N=17); variation is stress-only (N=19).",
+    "Venpaa dominates special_type (10/17 ≈ 58.8%); Kalippaa and Vanjippaa have only 2 each.",
+    "Vanjippaa special_type includes sample_id sinthadi_aciriyappaa under parent_metre=vanjippaa (tree placement, not aciriyappa gold).",
+    "Heuristic top-1 matches all 17 special_type rows in current CSV; only 3/19 variation rows match parent (stress set is hard).",
+    "MC regression evaluates 17 special_type × 20 iterations = 340 (floor ≥280/340)."
+  ],
+  "splits_policy": {
+    "primary_train_eval": "special_type",
+    "stress_only": "variation",
+    "declared_filter_helpers": [
+      "poem_variation_special_type_rows",
+      "poem_variation_rows_by_kinds",
+      "MC_ROW_KINDS env (special_type|variation|all)"
+    ],
+    "no_held_out_split_yet": true,
+    "recommended_validation": [
+      "leave-one-sample-out or bootstrap on special_type",
+      "stratify by parent_metre",
+      "report variation metrics separately; never sole adopt criterion"
+    ]
+  },
+  "export_commands": {
+    "csv": "cargo run --manifest-path tamil-seiyul-alagi/Cargo.toml --example export_poem_variations_training_csv",
+    "jsonl": "cargo run --manifest-path tamil-seiyul-alagi/Cargo.toml --example export_poem_variations_training_jsonl",
+    "csv_alt_package": "cargo run -p thepulimaangani-parser --example export_poem_variations_training_csv",
+    "jsonl_alt_package": "cargo run -p thepulimaangani-parser --example export_poem_variations_training_jsonl",
+    "outputs": {
+      "csv": "data/training/poem_variations_training.csv",
+      "jsonl": "data/training/poem_variations_training.jsonl"
+    }
+  },
+  "golden_kural_fixture": {
+    "path": "tamil-seiyul-alagi/tests/test_data/kural_venpaa_parse_features.json",
+    "role": "Parse-feature regression golden for schema dense[51]; not a multi-class training set",
+    "sample_text_source": "oru_vikarpa_kural_venpaa (ஒரு விகற்ப குறள் வெண்பா)",
+    "regenerate": "cd tamil-seiyul-alagi && cargo run --example dump_kural_parse_features_fixture",
+    "or_all_fixtures": "pnpm run dump:test-fixtures",
+    "test": "golden_kural_venpaa_parse_features_match_fixture in parse_features.rs",
+    "parse_options_note": "no_detect=true for fixture dump (features without metre head side effects)"
+  },
+  "fingerprints": {
+    "poem_variations_training.csv": {
+      "path": "data/training/poem_variations_training.csv",
+      "bytes": 29923,
+      "sha256": "ba662c50ab7c1f64b7f27e7bd29efe90d03ab5e0fe8b01ed531ff7de0041a4f0",
+      "mtime_unix": 1785096167
+    },
+    "poem_variations_training.jsonl": {
+      "path": "data/training/poem_variations_training.jsonl",
+      "bytes": 198632,
+      "sha256": "64e24eb07e578f2ee550935c596e4d84c3fc871eb7a80d3c8cf625d0107f4183",
+      "mtime_unix": 1785096168
+    },
+    "poem_variations.js": {
+      "path": "data/poem_variations.js",
+      "bytes": 27306,
+      "sha256": "bab20f8752451dcf61e66cb83bf488b58f92fc892fb8a938ea14d80704306cf5",
+      "mtime_unix": 1779126295
+    },
+    "kural_venpaa_parse_features.json": {
+      "path": "tamil-seiyul-alagi/tests/test_data/kural_venpaa_parse_features.json",
+      "bytes": 560,
+      "sha256": "6f8fcfd04db7beb2c3668230595ddf2283922d93cbaf1443af0b53c5f4e294c0",
+      "mtime_unix": 1779126295
+    }
+  },
+  "forbidden_training_use_ids": [
+    "bulk_train_variation_without_relabel",
+    "variation_as_sole_adopt_criterion",
+    "kural_fixture_as_multiclass_train",
+    "raw_text_as_dense_linear_input",
+    "train_outside_declared_split_without_rebaseline",
+    "invent_ontology_or_relabel_dense_semantics",
+    "fuse_classical_into_ml_score",
+    "predicted_metre_as_gold",
+    "reparent_sinthadi_from_id_string",
+    "external_poems_without_inventory_policy"
+  ],
+  "forbidden_training_uses": [
+    "Bulk-train on all variation rows without relabel (portfolio §3.8, §5.2)",
+    "Use variation metrics as sole ADOPT criterion",
+    "Train multi-class head primarily on kural golden fixture alone",
+    "Use raw original_text as model input for the small linear dense head",
+    "Train on anthology rows outside declared split without schema/docs bump and re-baseline",
+    "Invent new ontology terms or relabel dense semantics during training",
+    "Silently fuse classical violations into the same integer ML score",
+    "Merge predicted_metre heuristic labels as gold (they are weak baseline only)",
+    "Treat sinthadi_aciriyappaa as Aciriyappaa gold — parent_metre is vanjippaa in the tree",
+    "Grow external poems into train set without inventory + label policy (Tier C active learning gate)"
+  ],
+  "export_path_pins": {
+    "csv": "data/training/poem_variations_training.csv",
+    "jsonl": "data/training/poem_variations_training.jsonl",
+    "js_mirror": "data/poem_variations.js",
+    "kural_golden_fixture": "tamil-seiyul-alagi/tests/test_data/kural_venpaa_parse_features.json",
+    "kural_fixture_role": "parse_feature_regression_not_multiclass_train"
+  },
+  "mc_special_type": {
+    "iterations": 20,
+    "total_evaluations": 340,
+    "total_correct": 340,
+    "top1_accuracy": 1.0,
+    "mean_reciprocal_rank": 1.0,
+    "correct_at_2": 340,
+    "formula": "special_type_n * iterations"
+  },
+  "mc_variation": {
+    "iterations": 20,
+    "total_evaluations": 380,
+    "total_correct": 60,
+    "top1_accuracy": 0.1579,
+    "mean_reciprocal_rank": 0.4956,
+    "correct_at_2": 220,
+    "note": "Stress only; never sole adopt criterion"
+  },
+  "risks_for_ml": [
+    "Severe class imbalance on special_type (10 venpaa vs 2 kalippaa / 2 vanjippaa / 3 aciriyappa)",
+    "N=17 primary gold is tiny; models can memorize; prefer linear heads + LOO/bootstrap",
+    "variation set is adversarial/noisy relative to parent_metre (16/19 heuristic mismatches)",
+    "No formal train/dev/test split checked in; leakage risk if same rows used for fit + adopt",
+    "CSV/JSONL are derived; re-export after parser or feature schema changes or dense_* drift",
+    "Hybrid/heuristic scores in export are not gold — supervision is parent_metre + sample_id"
+  ],
+  "ontology_entities_touched": [
+    "MetreType (4 fixed) via parent_metre gold map",
+    "Poem/Line/Foot/Syllable (parse hierarchy on each sample)",
+    "LinkageType / LinkageSpecialType (JSONL export; not gold)",
+    "Dual-truth channels named; classical_checker empty pre-D01",
+    "ParseFeatureSnapshot dense[51] schema_version=1"
+  ],
+  "semantic_invariants_to_test": [
+    "total_label_rows == 36",
+    "special_type_n == 17 && variation_n == 19",
+    "block_lengths venpaa 10/6, aciriyappa 3/5, kalippaa 2/5, vanjippaa 2/3",
+    "poem_variation_special_type_rows isolates only special_type",
+    "gold_parent_metre_slugs only venpaa|aciriyappa|kalippaa|vanjippaa",
+    "sinthadi_aciriyappaa parent_metre == vanjippaa",
+    "kural golden fixture schema_version=1 dense_len=51",
+    "classical_violations_for_metre always empty pre-D01",
+    "ParseOptions::poem_variations_training().skip_ml_metre == true",
+    "MC special_type evals == 340 (17*20) with floor >=280"
+  ],
+  "anthology_split_allowed_s02": {
+    "allowed": [
+      "Count and roster special_type and variation",
+      "Document export paths, fingerprints, forbidden uses",
+      "Reference kural golden path (not as multi-class train)",
+      "Read CSV/JSONL for balance and heuristic baseline notes",
+      "Assert row_kind isolation helpers",
+      "Stratified balance tables for LOO/bootstrap design"
+    ],
+    "forbidden": [
+      "Bulk-train on variation without relabel",
+      "variation as sole ADOPT criterion",
+      "kural fixture as multi-class train set",
+      "predicted_metre as gold",
+      "Add/remove rows without inventory bump + re-baseline",
+      "Fill classical_checker (D01 only)",
+      "Fuse classical into ML score channel"
+    ],
+    "declared_split": "special_type primary gold N=17; variation stress only N=19"
+  },
+  "existing_pin_tests": [
+    "anthology_inventory::* (lib unit pins)",
+    "tests/test_anthology_inventory_s02.rs (10 integration)",
+    "poem_variations::tests::blocks_match_expected_counts",
+    "poem_variations_training::tests::label_row_count_matches_poem_variations",
+    "poem_variations_training::tests::mc_twenty_iterations_special_types_majority_correct",
+    "poem_variations_training::tests::hybrid_head_special_type_top1_matches_gold",
+    "poem_variations_training::tests::hybrid_head_venpaa_special_types_top1_is_venpaa",
+    "semantics_contract::tests::primary_gold_is_special_type_variation_is_stress_only",
+    "tests/test_semantics_contract_s01.rs::s01_primary_gold_special_type_isolates_variation",
+    "semantics_contract::tests::golden_fixture_schema_version_matches_constant"
+  ],
+  "decision": "ADOPT",
+  "note": "S02 measure ADOPT: complete anthology inventory freeze + unique interpretability; primary special_type top-1 remains 1.0 (no damage). improved=true for SOA-foundation value."
+}

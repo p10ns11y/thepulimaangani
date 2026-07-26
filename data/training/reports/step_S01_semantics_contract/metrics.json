@@ -1,0 +1,126 @@
+{
+  "step_id": "S01_semantics_contract",
+  "date": "2026-07-27",
+  "status": "ADOPT",
+  "improved": true,
+  "primary_gold": "special_type",
+  "semantics_contract_version": 1,
+  "parse_feature_schema_version": 1,
+  "parse_feature_dense_len": 51,
+  "tests": {
+    "cargo_test_crate": {
+      "lib_and_integration": "ok",
+      "lib_tests_passed": 105,
+      "integration_test_semantics_contract_s01_passed": 8,
+      "integration_test_ontology_map_s00_passed": 9,
+      "poem_variations_passed": 5,
+      "poem_variations_ignored": 1,
+      "doc_tests": 0
+    },
+    "semantics_contract_lib_filter": {
+      "passed": 13,
+      "failed": 0
+    },
+    "semantics_contract_integration": {
+      "passed": 8,
+      "failed": 0
+    }
+  },
+  "special_type": {
+    "n_rows": 17,
+    "parse_ok": 17,
+    "top1_accuracy": 1.0,
+    "top1_correct": 17,
+    "per_gold_top1": {
+      "Venpaa": "10/10",
+      "Aciriyappaa": "3/3",
+      "Kalippaa": "2/2",
+      "Vanjippaa": "2/2"
+    },
+    "monte_carlo": {
+      "iterations": 20,
+      "total_evaluations": 340,
+      "total_correct": 340,
+      "top1_accuracy": 1.0,
+      "mean_reciprocal_rank": 1.0,
+      "correct_at_2": 340,
+      "confusion": {
+        "aciriyappa|Aciriyappaa": 60,
+        "kalippaa|Kalippaa": 40,
+        "vanjippaa|Vanjippaa": 40,
+        "venpaa|Venpaa": 200
+      }
+    }
+  },
+  "variation": {
+    "n_rows": 19,
+    "parse_ok": 19,
+    "top1_accuracy": 0.1579,
+    "top1_correct": 3,
+    "note": "Stress only; never sole adopt criterion",
+    "monte_carlo": {
+      "iterations": 20,
+      "total_evaluations": 380,
+      "total_correct": 60,
+      "top1_accuracy": 0.1579,
+      "mean_reciprocal_rank": 0.4956,
+      "correct_at_2": 220
+    }
+  },
+  "all_rows_stress": {
+    "n_rows": 36,
+    "monte_carlo": {
+      "iterations": 20,
+      "total_evaluations": 720,
+      "total_correct": 400,
+      "top1_accuracy": 0.5556,
+      "mean_reciprocal_rank": 0.7338,
+      "correct_at_2": 560
+    }
+  },
+  "exports": {
+    "csv_rows": 36,
+    "jsonl_lines": 36,
+    "csv_path": "data/training/poem_variations_training.csv",
+    "jsonl_path": "data/training/poem_variations_training.jsonl"
+  },
+  "pca": {
+    "n_rows": 36,
+    "singular_value_0": 178.50324478596602,
+    "top_pc1_dense_indices": [4, 3, 11, 2, 0],
+    "top_abs_corr_dense_indices": [12, 45, 20, 21, 44]
+  },
+  "hybrid_fit": {
+    "ran": true,
+    "full_data_train": 1.0,
+    "loocv": 1.0,
+    "hybrid_active": true,
+    "weights_file_side_effect": "comment-only rewrite in metre_hybrid_weights.inc.rs (no numeric weight change for this S01 measure)"
+  },
+  "invariants_pinned": {
+    "dense_blocks": [12, 7, 8, 16, 8],
+    "gold_slugs": ["venpaa", "aciriyappa", "kalippaa", "vanjippaa"],
+    "training_skip_ml_metre": true,
+    "classical_violations_empty": true,
+    "primary_gold": "special_type",
+    "variation_role": "stress_only",
+    "semantics_contract_version": 1
+  },
+  "baseline_delta": {
+    "note": "S01 is SOA semantics freeze only — no head/weights/dense-formula change. Primary special_type top-1 remains 1.0 (no damage). improved=true for SOA-foundation value.",
+    "top1_special_type_delta_pp": 0.0
+  },
+  "commands_run": [
+    "cargo test --manifest-path tamil-seiyul-alagi/Cargo.toml",
+    "cargo test --manifest-path tamil-seiyul-alagi/Cargo.toml --lib semantics_contract",
+    "cargo test --manifest-path tamil-seiyul-alagi/Cargo.toml --test test_semantics_contract_s01",
+    "cargo run --manifest-path tamil-seiyul-alagi/Cargo.toml --example metre_monte_carlo_report",
+    "MC_ROW_KINDS=variation cargo run --example metre_monte_carlo_report",
+    "MC_ROW_KINDS=all cargo run --example metre_monte_carlo_report",
+    "cargo run --example fit_metre_hybrid_weights",
+    "cargo run --example parse_features_pca_metre",
+    "cargo run --example training_linkage_vs_gold",
+    "cargo run --example export_poem_variations_training_csv",
+    "cargo run --example export_poem_variations_training_jsonl"
+  ]
+}

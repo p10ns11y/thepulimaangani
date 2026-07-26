@@ -466,4 +466,133 @@ mod tests {
             LinkageSpecialType::IyarcirVenthalai
         );
     }
+
+    /// Ontology lock (S00): closed variant set + wire renames for all special bonds.
+    #[test]
+    fn linkage_special_type_serde_canonical_and_legacy_all_variants() {
+        let cases: &[(LinkageSpecialType, &str, &[&str])] = &[
+            (
+                LinkageSpecialType::NerondriyaAciriyathalai,
+                "NerondriyaAciriyaTalai",
+                &["NerondriyaAciriyathalai", "NerondriyaAasiriyathalai"],
+            ),
+            (
+                LinkageSpecialType::NiraiondriyaAciriyathalai,
+                "NiraiondriyaAciriyaTalai",
+                &["NiraiondriyaAciriyathalai", "NiraiondriyaAasiriyathalai"],
+            ),
+            (
+                LinkageSpecialType::IyarcirVenthalai,
+                "IyarcirVenTalai",
+                &["IyarcirVenthalai"],
+            ),
+            (
+                LinkageSpecialType::VencirVenthalai,
+                "VencirVenTalai",
+                &["VencirVenthalai"],
+            ),
+            (
+                LinkageSpecialType::Kalithalai,
+                "KaliTalai",
+                &["Kalithalai"],
+            ),
+            (
+                LinkageSpecialType::OndriyaVanchithalai,
+                "OndriyaVanjiTalai",
+                &["OndriyaVanchithalai"],
+            ),
+            (
+                LinkageSpecialType::OndrathaVanchithalai,
+                "OndrathaVanjiTalai",
+                &["OndrathaVanchithalai"],
+            ),
+            (LinkageSpecialType::Unknown, "Unknown", &[]),
+        ];
+        assert_eq!(cases.len(), 8, "LinkageSpecialType must stay 8 variants");
+        for (variant, canonical, aliases) in cases {
+            let json = serde_json::to_string(variant).unwrap();
+            assert_eq!(json, format!("\"{canonical}\""));
+            assert_eq!(
+                serde_json::from_str::<LinkageSpecialType>(&json).unwrap(),
+                *variant
+            );
+            for alias in *aliases {
+                let raw = format!("\"{alias}\"");
+                assert_eq!(
+                    serde_json::from_str::<LinkageSpecialType>(&raw).unwrap(),
+                    *variant,
+                    "alias {alias}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn linkage_type_serde_all_named_families() {
+        let cases: &[(LinkageType, &str, &[&str])] = &[
+            (LinkageType::VenTalai, "VenTalai", &["Venthalai"]),
+            (
+                LinkageType::AciriyaTalai,
+                "AciriyaTalai",
+                &["Aciriyathalai", "Aasiriyathalai", "AsiriyaTalai"],
+            ),
+            (LinkageType::KaliTalai, "KaliTalai", &["Kalithalai"]),
+            (LinkageType::VanjiTalai, "VanjiTalai", &["Vanjithalai"]),
+        ];
+        for (variant, canonical, aliases) in cases {
+            assert_eq!(
+                serde_json::to_string(variant).unwrap(),
+                format!("\"{canonical}\"")
+            );
+            for alias in *aliases {
+                let raw = format!("\"{alias}\"");
+                assert_eq!(
+                    serde_json::from_str::<LinkageType>(&raw).unwrap(),
+                    *variant
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn cir_acai_class_covers_maa_vilam_kaai_kani() {
+        // Exhaustive match: new CirAcaiClass variant must update this test.
+        let classes = [
+            CirAcaiClass::Maa,
+            CirAcaiClass::Vilam,
+            CirAcaiClass::Kaai,
+            CirAcaiClass::Kani,
+        ];
+        assert_eq!(classes.len(), 4);
+        for c in classes {
+            let _ = match c {
+                CirAcaiClass::Maa | CirAcaiClass::Vilam => "1-2",
+                CirAcaiClass::Kaai | CirAcaiClass::Kani => "3+",
+            };
+        }
+        assert_eq!(
+            cir_class_for_foot(&foot_with(&[SyllableType::Ner])),
+            Some(CirAcaiClass::Maa)
+        );
+        assert_eq!(
+            cir_class_for_foot(&foot_with(&[SyllableType::Nirai])),
+            Some(CirAcaiClass::Vilam)
+        );
+        assert_eq!(
+            cir_class_for_foot(&foot_with(&[
+                SyllableType::Ner,
+                SyllableType::Ner,
+                SyllableType::Ner,
+            ])),
+            Some(CirAcaiClass::Kaai)
+        );
+        assert_eq!(
+            cir_class_for_foot(&foot_with(&[
+                SyllableType::Ner,
+                SyllableType::Ner,
+                SyllableType::Nirai,
+            ])),
+            Some(CirAcaiClass::Kani)
+        );
+    }
 }
