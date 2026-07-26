@@ -88,6 +88,7 @@ Third order = **consequences outside the immediate function** — time, people, 
 
 - [`PARSE_FEATURES.md`](PARSE_FEATURES.md) — `dense` layout and metre boost indices  
 - [`TRAINING_PROCESS.md`](TRAINING_PROCESS.md) — CSV / JSONL, Monte Carlo, hybrid fitter example  
+- [`METRE_ML_METHODS_PORTFOLIO.md`](METRE_ML_METHODS_PORTFOLIO.md) — methods Tier A–D, **semantics / ontology / anthology**, progressive TDD workflow  
 - [`MACHINE_FIRST_SPEC.md`](MACHINE_FIRST_SPEC.md) — classical target behaviour vs current heuristics  
 - [`QUALITY_CRAP_BASELINE.md`](QUALITY_CRAP_BASELINE.md) — risk register row for metre head  
 

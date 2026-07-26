@@ -1,0 +1,271 @@
+{
+  "step_id": "S03_soa_ledger",
+  "generated_at": "2026-07-27T23:30:00Z",
+  "status": "ADOPT",
+  "measure_decision": "ADOPT",
+  "improved": true,
+  "soa_ok": true,
+  "soa_ledger_version": 1,
+  "machine_module": "tamil-seiyul-alagi/src/soa_ledger.rs",
+  "public_api": [
+    "SOA_LEDGER_VERSION",
+    "soa_schema_ids",
+    "soa_schema_fingerprint_string",
+    "soa_corpus_fingerprints",
+    "soa_report_paths",
+    "soa_primary_gold_row_kind",
+    "soa_stress_only_row_kind",
+    "soa_dual_truth_channel_ids",
+    "soa_classical_checker_active"
+  ],
+  "portfolio_ref": "tamil-seiyul-alagi/METRE_ML_METHODS_PORTFOLIO.md §5.0 S03, §5.2",
+  "schema_fingerprint": "soa=1;ont=1;sem=1;anth=1;dense_schema=1;dense_len=51;parse_result=1;ml_weight=3",
+  "schema_ids": {
+    "SOA_LEDGER_VERSION": 1,
+    "ONTOLOGY_MAP_VERSION": 1,
+    "SEMANTICS_CONTRACT_VERSION": 1,
+    "ANTHOLOGY_INVENTORY_VERSION": 1,
+    "PARSE_FEATURE_SCHEMA_VERSION": 1,
+    "PARSE_FEATURE_DENSE_LEN": 51,
+    "PARSE_RESULT_SCHEMA_VERSION": 1,
+    "METRE_ML_WEIGHT_SCHEMA": 3
+  },
+  "constituent_steps": {
+    "S00_ontology_map": {
+      "version": 1,
+      "report": "data/training/reports/ontology_map.md",
+      "module": "tamil-seiyul-alagi/src/ontology_map.rs",
+      "decision": "ADOPT"
+    },
+    "S01_semantics_contract": {
+      "version": 1,
+      "report": "data/training/reports/semantics_contract.md",
+      "module": "tamil-seiyul-alagi/src/semantics_contract.rs",
+      "decision": "ADOPT"
+    },
+    "S02_anthology_inventory": {
+      "version": 1,
+      "report": "data/training/reports/anthology_inventory.md",
+      "report_json": "data/training/reports/anthology_inventory.json",
+      "module": "tamil-seiyul-alagi/src/anthology_inventory.rs",
+      "decision": "ADOPT"
+    }
+  },
+  "ontology": {
+    "structural_entity_ids": ["Poem", "Line", "Foot", "Syllable", "Letter"],
+    "syllable_type_ids": ["Ner", "Nirai"],
+    "cir_class_ids": ["Maa", "Vilam", "Kaai", "Kani"],
+    "metre_type_fixed_ids": ["Venpaa", "Aciriyappaa", "Kalippaa", "Vanjippaa"],
+    "linkage_type_fixed_ids": ["VenTalai", "AciriyaTalai", "KaliTalai", "VanjiTalai"],
+    "linkage_special_ids": [
+      "NerondriyaAciriyaTalai",
+      "NiraiondriyaAciriyaTalai",
+      "IyarcirVenTalai",
+      "VencirVenTalai",
+      "KaliTalai",
+      "OndriyaVanjiTalai",
+      "OndrathaVanjiTalai",
+      "Unknown"
+    ],
+    "issue36_bond_table_len": 8,
+    "dual_truth_channel_ids": ["ml_metre", "classical_metre"],
+    "classical_checker_active": false,
+    "foot_equals_word_v1": true,
+    "features_are_derived_observables": true
+  },
+  "semantics": {
+    "parse_feature_schema_version": 1,
+    "parse_feature_dense_len": 51,
+    "dense_block_lengths_v1": [12, 7, 8, 16, 8],
+    "dense_block_offsets": {
+      "global": 0,
+      "linkage_type": 12,
+      "linkage_special": 19,
+      "foot_pattern_bins": 27,
+      "line_foot_hist": 43
+    },
+    "special_slot_order_matches_ontology": true,
+    "gold_parent_metre_slugs": ["venpaa", "aciriyappa", "kalippaa", "vanjippaa"],
+    "gold_slug_wire_asymmetry": {
+      "aciriyappa": "Aciriyappaa"
+    },
+    "primary_gold_row_kind": "special_type",
+    "stress_only_row_kind": "variation",
+    "score_scale_ids": [
+      "aggregate_score_pre_hybrid_integer",
+      "aggregate_score_post_hybrid_approx_100x_prob",
+      "metre_probability",
+      "metre_rank",
+      "metre_entropy_bits",
+      "metre_epistemic_margin",
+      "confidence_legacy_integer"
+    ],
+    "training_parse_options": {
+      "skip_ml_metre": true,
+      "uyir_u": true
+    },
+    "machine_keys_snake_case_for_dense_scores": [
+      "special_type_score",
+      "variation_score",
+      "venpa_score"
+    ],
+    "presentation_keys_not_for_training_matrices": [
+      "specialTypeScore",
+      "variationScore",
+      "venpaScore"
+    ]
+  },
+  "anthology": {
+    "totals": {
+      "all_rows": 36,
+      "special_type": 17,
+      "variation": 19
+    },
+    "block_counts": [
+      { "parent_metre": "venpaa", "special_type": 10, "variation": 6 },
+      { "parent_metre": "aciriyappa", "special_type": 3, "variation": 5 },
+      { "parent_metre": "kalippaa", "special_type": 2, "variation": 5 },
+      { "parent_metre": "vanjippaa", "special_type": 2, "variation": 3 }
+    ],
+    "class_balance_special_type": {
+      "venpaa": 10,
+      "aciriyappa": 3,
+      "kalippaa": 2,
+      "vanjippaa": 2
+    },
+    "tree_pins": {
+      "sinthadi_aciriyappaa": "vanjippaa"
+    },
+    "export_paths": {
+      "csv": "data/training/poem_variations_training.csv",
+      "jsonl": "data/training/poem_variations_training.jsonl",
+      "js_mirror": "data/poem_variations.js",
+      "kural_golden_fixture": "tamil-seiyul-alagi/tests/test_data/kural_venpaa_parse_features.json",
+      "kural_fixture_role": "parse_feature_regression_not_multiclass_train",
+      "canonical_rust_tables": "tamil-seiyul-alagi/src/poem_variations.rs"
+    },
+    "fingerprints": {
+      "machine_pin": "soa_corpus_fingerprints()",
+      "order": ["csv", "jsonl", "js", "kural"],
+      "poem_variations_training.csv": {
+        "path": "data/training/poem_variations_training.csv",
+        "bytes": 29923,
+        "sha256": "ba662c50ab7c1f64b7f27e7bd29efe90d03ab5e0fe8b01ed531ff7de0041a4f0"
+      },
+      "poem_variations_training.jsonl": {
+        "path": "data/training/poem_variations_training.jsonl",
+        "bytes": 198632,
+        "sha256": "64e24eb07e578f2ee550935c596e4d84c3fc871eb7a80d3c8cf625d0107f4183"
+      },
+      "poem_variations.js": {
+        "path": "data/poem_variations.js",
+        "bytes": 27306,
+        "sha256": "bab20f8752451dcf61e66cb83bf488b58f92fc892fb8a938ea14d80704306cf5"
+      },
+      "kural_venpaa_parse_features.json": {
+        "path": "tamil-seiyul-alagi/tests/test_data/kural_venpaa_parse_features.json",
+        "bytes": 560,
+        "sha256": "6f8fcfd04db7beb2c3668230595ddf2283922d93cbaf1443af0b53c5f4e294c0"
+      }
+    },
+    "forbidden_training_use_ids": [
+      "bulk_train_variation_without_relabel",
+      "variation_as_sole_adopt_criterion",
+      "kural_fixture_as_multiclass_train",
+      "raw_text_as_dense_linear_input",
+      "train_outside_declared_split_without_rebaseline",
+      "invent_ontology_or_relabel_dense_semantics",
+      "fuse_classical_into_ml_score",
+      "predicted_metre_as_gold",
+      "reparent_sinthadi_from_id_string",
+      "external_poems_without_inventory_policy"
+    ],
+    "mc_special_type": {
+      "iterations": 20,
+      "total_evaluations": 340,
+      "top1_accuracy": 1.0,
+      "mean_reciprocal_rank": 1.0
+    },
+    "mc_variation": {
+      "iterations": 20,
+      "total_evaluations": 380,
+      "top1_accuracy": 0.1579,
+      "mean_reciprocal_rank": 0.4956,
+      "note": "Stress only; never sole adopt criterion"
+    },
+    "no_held_out_split_yet": true
+  },
+  "ontology_entities_touched": [
+    "Poem",
+    "Line",
+    "Foot",
+    "Syllable",
+    "Letter",
+    "SyllableType (Ner/Nirai)",
+    "CirAcaiClass (Maa/Vilam/Kaai/Kani)",
+    "LinkageType fixed four + Other",
+    "LinkageSpecialType 8 wire keys",
+    "MetreType fixed four + Other",
+    "dual_truth (ml_metre, classical_metre)",
+    "ParseFeatureSnapshot dense[51] as derived observables"
+  ],
+  "semantic_invariants_to_test": [
+    "soa_schema_fingerprint_string exact match",
+    "soa_corpus_fingerprints 4× (path,bytes,sha256) match §3.3 freeze",
+    "PARSE_FEATURE_SCHEMA_VERSION==1 && PARSE_FEATURE_DENSE_LEN==51",
+    "dense_block_lengths_v1 sum to 51 and equal [12,7,8,16,8]",
+    "dense_linkage_special_slot_ids == ontology_linkage_special_ids order",
+    "special_type N==17 && variation N==19 && total==36",
+    "block_counts venpaa 10/6 aciriyappa 3/5 kalippaa 2/5 vanjippaa 2/3",
+    "gold_parent_metre_slugs only venpaa|aciriyappa|kalippaa|vanjippaa",
+    "sinthadi_aciriyappaa parent_metre == vanjippaa",
+    "primary gold isolable via poem_variation_special_type_rows",
+    "classical_violations_for_metre always empty pre-D01",
+    "soa_classical_checker_active() == false",
+    "forbidden training use catalog >= 10 machine ids",
+    "presentation keys not used as training matrix machine keys"
+  ],
+  "anthology_split_allowed_s03": {
+    "allowed": [
+      "Read and fingerprint S00–S02 artifacts into this composite ledger",
+      "Assert schema id freeze and dual-truth / classical isolation",
+      "Use special_type as primary gold for adopt metrics",
+      "Report variation metrics separately as stress",
+      "Reference export paths and corpus sha256 hashes",
+      "Gate A00+ require_soa on SOA_LEDGER_VERSION + schema fingerprint",
+      "Plan LOO/bootstrap stratified by parent_metre (no formal holdout yet)"
+    ],
+    "forbidden": [
+      "Bulk-train variation without relabel",
+      "variation as sole ADOPT criterion",
+      "kural fixture as multi-class train set",
+      "predicted_metre as gold",
+      "Invent ontology terms or relabel dense semantics mid-step",
+      "Fuse classical into ML score channel",
+      "Fill classical_checker (D01 + allow_classical only)",
+      "Add/remove/relabel anthology rows without inventory + ledger bump",
+      "Train outside declared split without docs bump and re-baseline",
+      "Start A00 without this ledger present"
+    ],
+    "declared_split": "special_type primary gold N=17; variation stress only N=19"
+  },
+  "report_paths": {
+    "ontology_map": "data/training/reports/ontology_map.md",
+    "semantics_contract": "data/training/reports/semantics_contract.md",
+    "anthology_inventory": "data/training/reports/anthology_inventory.md",
+    "anthology_inventory_json": "data/training/reports/anthology_inventory.json",
+    "soa_ledger": "data/training/reports/soa_ledger.md",
+    "soa_ledger_json": "data/training/reports/soa_ledger.json"
+  },
+  "existing_pin_tests": [
+    "soa_ledger::* (lib unit pins)",
+    "tests/test_soa_ledger_s03.rs (integration)",
+    "ontology_map::* + tests/test_ontology_map_s00.rs",
+    "semantics_contract::* + tests/test_semantics_contract_s01.rs",
+    "anthology_inventory::* + tests/test_anthology_inventory_s02.rs",
+    "poem_variations_training special_type / MC floors",
+    "classical_checker_stays_empty (ontology_map + s03)"
+  ],
+  "decision": "ADOPT",
+  "note": "S03 measure ADOPT: composite SOA ledger freeze complete (soa_ledger.md + .json + soa_corpus_fingerprints). No head/weights/dense-formula change. improved=true for SOA-foundation value (require_soa). Primary special_type top-1 remains 1.0 (MC 340/340); variation stress 0.1579."
+}

@@ -2,6 +2,8 @@
 
 For **why** the metre head behaves as it does (heuristic vs hybrid, `skip_ml_metre`, second- and third-order effects), read **[`METRE_PREDICTION.md`](METRE_PREDICTION.md)** first.
 
+For the full ML methods portfolio (Tier A–D), **semantics · ontology · anthology** foundations, TDD protocol, and progressive workflow, see **[`METRE_ML_METHODS_PORTFOLIO.md`](METRE_ML_METHODS_PORTFOLIO.md)** and `.grok/workflows/metre-ml-tier-progression.rhai`.
+
 This document describes how to use the **51-dimensional** [`ParseFeatureSnapshot`](PARSE_FEATURES.md) from `thepulimaangani-parser` for metre or subtype classification **without** training on raw Tamil text.
 
 ## What you get from the parser

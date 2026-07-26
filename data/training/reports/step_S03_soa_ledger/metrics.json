@@ -1,0 +1,155 @@
+{
+  "step_id": "S03_soa_ledger",
+  "date": "2026-07-27",
+  "status": "ADOPT",
+  "improved": true,
+  "soa_ok": true,
+  "primary_gold": "special_type",
+  "variation_role": "stress_only",
+  "soa_ledger_version": 1,
+  "schema_fingerprint": "soa=1;ont=1;sem=1;anth=1;dense_schema=1;dense_len=51;parse_result=1;ml_weight=3",
+  "schema_ids": {
+    "SOA_LEDGER_VERSION": 1,
+    "ONTOLOGY_MAP_VERSION": 1,
+    "SEMANTICS_CONTRACT_VERSION": 1,
+    "ANTHOLOGY_INVENTORY_VERSION": 1,
+    "PARSE_FEATURE_SCHEMA_VERSION": 1,
+    "PARSE_FEATURE_DENSE_LEN": 51,
+    "PARSE_RESULT_SCHEMA_VERSION": 1,
+    "METRE_ML_WEIGHT_SCHEMA": 3
+  },
+  "classical_checker": "empty_pre_d01",
+  "tests": {
+    "cargo_test_crate": {
+      "lib_and_integration": "ok",
+      "lib_tests_passed": 121,
+      "integration_test_soa_ledger_s03_passed": 13,
+      "integration_test_anthology_inventory_s02_passed": 10,
+      "integration_test_ontology_map_s00_passed": 9,
+      "integration_test_semantics_contract_s01_passed": 8,
+      "poem_variations_passed": 5,
+      "poem_variations_ignored": 1,
+      "doc_tests": 0
+    },
+    "soa_ledger_lib_filter": {
+      "passed": 7,
+      "failed": 0
+    },
+    "soa_ledger_integration": {
+      "passed": 13,
+      "failed": 0
+    }
+  },
+  "anthology_totals": {
+    "all_rows": 36,
+    "special_type": 17,
+    "variation": 19
+  },
+  "special_type": {
+    "n_rows": 17,
+    "monte_carlo": {
+      "iterations": 20,
+      "total_evaluations": 340,
+      "total_correct": 340,
+      "top1_accuracy": 1.0,
+      "mean_reciprocal_rank": 1.0,
+      "correct_at_2": 340,
+      "confusion": {
+        "aciriyappa|Aciriyappaa": 60,
+        "kalippaa|Kalippaa": 40,
+        "vanjippaa|Vanjippaa": 40,
+        "venpaa|Venpaa": 200
+      }
+    }
+  },
+  "variation": {
+    "n_rows": 19,
+    "note": "Stress only; never sole adopt criterion",
+    "monte_carlo": {
+      "iterations": 20,
+      "total_evaluations": 380,
+      "total_correct": 60,
+      "top1_accuracy": 0.1579,
+      "mean_reciprocal_rank": 0.4956,
+      "correct_at_2": 220
+    }
+  },
+  "all_rows_stress": {
+    "n_rows": 36,
+    "monte_carlo": {
+      "iterations": 20,
+      "total_evaluations": 720,
+      "total_correct": 400,
+      "top1_accuracy": 0.5556,
+      "mean_reciprocal_rank": 0.7338,
+      "correct_at_2": 560
+    }
+  },
+  "exports": {
+    "csv_rows": 36,
+    "jsonl_lines": 36,
+    "csv_path": "data/training/poem_variations_training.csv",
+    "jsonl_path": "data/training/poem_variations_training.jsonl",
+    "js_mirror": "data/poem_variations.js",
+    "kural_golden_fixture": "tamil-seiyul-alagi/tests/test_data/kural_venpaa_parse_features.json",
+    "fingerprints_match_ledger": true
+  },
+  "fingerprints": {
+    "poem_variations_training.csv": {
+      "bytes": 29923,
+      "sha256": "ba662c50ab7c1f64b7f27e7bd29efe90d03ab5e0fe8b01ed531ff7de0041a4f0"
+    },
+    "poem_variations_training.jsonl": {
+      "bytes": 198632,
+      "sha256": "64e24eb07e578f2ee550935c596e4d84c3fc871eb7a80d3c8cf625d0107f4183"
+    },
+    "poem_variations.js": {
+      "bytes": 27306,
+      "sha256": "bab20f8752451dcf61e66cb83bf488b58f92fc892fb8a938ea14d80704306cf5"
+    },
+    "kural_venpaa_parse_features.json": {
+      "bytes": 560,
+      "sha256": "6f8fcfd04db7beb2c3668230595ddf2283922d93cbaf1443af0b53c5f4e294c0"
+    }
+  },
+  "pca": {
+    "n_rows": 36,
+    "singular_value_0": 178.50324478596602,
+    "top_pc1_dense_indices": [4, 3, 11, 2, 0],
+    "top_abs_corr_dense_indices": [12, 45, 20, 21, 44]
+  },
+  "hybrid_fit": {
+    "ran": true,
+    "full_data_train": 1.0,
+    "loocv": 1.0,
+    "hybrid_active": true,
+    "weights_file_side_effect": "comment-only rewrite in metre_hybrid_weights.inc.rs (no numeric weight change for this S03 measure)"
+  },
+  "linkage_vs_gold": {
+    "ran": true,
+    "special_type_rows_observed": 17,
+    "note": "special_type top-1 consistent with MC; variation mispredictions expected as stress"
+  },
+  "baseline_delta": {
+    "note": "S03 is SOA composite freeze only — no head/weights/dense-formula change. Primary special_type top-1 remains 1.0 (no damage). improved=true for SOA-foundation value (require_soa surface).",
+    "top1_special_type_delta_pp": 0.0
+  },
+  "ledger_written": {
+    "soa_ledger_md": "data/training/reports/soa_ledger.md",
+    "soa_ledger_json": "data/training/reports/soa_ledger.json",
+    "machine_module": "tamil-seiyul-alagi/src/soa_ledger.rs"
+  },
+  "commands_run": [
+    "cargo test --manifest-path tamil-seiyul-alagi/Cargo.toml",
+    "cargo test --manifest-path tamil-seiyul-alagi/Cargo.toml --lib soa_ledger",
+    "cargo test --manifest-path tamil-seiyul-alagi/Cargo.toml --test test_soa_ledger_s03",
+    "cargo run --manifest-path tamil-seiyul-alagi/Cargo.toml --example metre_monte_carlo_report",
+    "MC_ROW_KINDS=variation cargo run --example metre_monte_carlo_report",
+    "MC_ROW_KINDS=all cargo run --example metre_monte_carlo_report",
+    "cargo run --example fit_metre_hybrid_weights",
+    "cargo run --example parse_features_pca_metre",
+    "cargo run --example training_linkage_vs_gold",
+    "cargo run --example export_poem_variations_training_csv",
+    "cargo run --example export_poem_variations_training_jsonl"
+  ]
+}

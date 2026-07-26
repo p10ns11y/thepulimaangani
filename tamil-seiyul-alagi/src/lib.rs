@@ -5,7 +5,15 @@ mod letter;
 mod line_scope;
 mod linkage;
 pub mod metre;
+/// S00 ontology map — public catalog + exhaustiveness (see `data/training/reports/ontology_map.md`).
+pub mod ontology_map;
 mod parse_features;
+/// S01 semantics contract — dense glossary / gold / score pins (see `data/training/reports/semantics_contract.md`).
+pub mod semantics_contract;
+/// S02 anthology inventory — corpus counts / split / export pins (see `data/training/reports/anthology_inventory.md`).
+pub mod anthology_inventory;
+/// S03 SOA ledger — composite ontology + semantics + anthology fingerprint (see `data/training/reports/soa_ledger.md`).
+pub mod soa_ledger;
 mod poem_variations;
 mod poem_variations_training;
 mod poem_tree;
@@ -33,11 +41,33 @@ pub use metre::{
     boost_metre_hypotheses_with_dense, classical_violations_for_metre, detect_metre_hypotheses,
     linkage_coarse_fractions, ml_head, sort_metre_hypotheses_by_score, MetreType,
 };
+pub use ontology_map::{
+    ontology_cir_class_ids, ontology_dual_truth_channel_ids, ontology_issue36_bond_table_len,
+    ontology_linkage_special_ids, ontology_linkage_type_fixed_ids, ontology_metre_type_fixed_ids,
+    ontology_structural_entity_ids, ontology_syllable_type_ids, ONTOLOGY_MAP_VERSION,
+};
 pub use parse_features::{
     fnv1a_u32, ParseFeatureSource, ParseFeatureVector, FOOT_PATTERN_BIN_DIM, FOOT_PATTERN_BIN_OFFSET,
     GLOBAL_FEATURE_DIM, GLOBAL_FEATURE_OFFSET, LINE_FOOT_HIST_FEATURE_DIM, LINE_FOOT_HIST_OFFSET,
     LINKAGE_TYPE_FEATURE_DIM, LINKAGE_TYPE_FEATURE_OFFSET, LINK_SPECIAL_FEATURE_DIM,
     LINK_SPECIAL_FEATURE_OFFSET, PARSE_FEATURE_DENSE_LEN, PARSE_FEATURE_SCHEMA_VERSION,
+};
+pub use semantics_contract::{
+    dense_block_lengths_v1, dense_global_feature_ids, dense_linkage_special_slot_ids,
+    dense_linkage_type_slot_ids, gold_parent_metre_slugs, score_scale_ids, SEMANTICS_CONTRACT_VERSION,
+};
+pub use anthology_inventory::{
+    anthology_block_counts, anthology_class_balance_special_type, anthology_export_csv_path,
+    anthology_export_jsonl_path, anthology_forbidden_training_use_ids, anthology_js_mirror_path,
+    anthology_kural_fixture_role, anthology_kural_golden_fixture_path,
+    anthology_mc_special_type_eval_count, anthology_primary_gold_row_kind,
+    anthology_sample_parent_metre, anthology_special_type_count, anthology_stress_only_row_kind,
+    anthology_total_row_count, anthology_variation_count, ANTHOLOGY_INVENTORY_VERSION,
+};
+pub use soa_ledger::{
+    soa_classical_checker_active, soa_corpus_fingerprints, soa_dual_truth_channel_ids,
+    soa_primary_gold_row_kind, soa_report_paths, soa_schema_fingerprint_string, soa_schema_ids,
+    soa_stress_only_row_kind, SOA_LEDGER_VERSION,
 };
 pub use poem_variations::{
     poem_variation_example, poem_variations_blocks, poem_variations_for_metre, tamil_label_for_sample,
