@@ -1,0 +1,16 @@
+---
+description: Enforce exactly one example row per variation key; remove or comment duplicate samples
+alwaysApply: false
+---
+
+# one-sample-per-type
+
+Enforce exactly one example row per variation key; remove or comment duplicate samples
+
+## Constraints
+
+- identify duplicate en values
+- keep single row
+- move extras to trailing block comment
+
+Evidence: turns 2-5: user insistence on no duplicates + final StrReplace adding archived comments
