@@ -9,7 +9,11 @@ import { Route as AboutTimelineRoute } from '#/routes/about.timeline'
 import { Route as AboutRoute } from '#/routes/about'
 import { Route as DeveloperEvaluationRoute } from '#/routes/developer-evaluation'
 import { Route as HomeRoute } from '#/routes/index'
-import { DEFAULT_OG_IMAGE_URL } from '#/lib/seo'
+import {
+  DEFAULT_OG_IMAGE_URL,
+  PAGE_OG_IMAGE_PATHS,
+  absoluteAssetUrl,
+} from '#/lib/seo'
 
 type MetaEntry =
   | { title?: string; name?: string; property?: string; content?: string }
@@ -53,7 +57,8 @@ function prop(meta: MetaEntry[], property: string): string | undefined {
   return undefined
 }
 
-function expectFullShareMeta(meta: MetaEntry[]) {
+function expectFullShareMeta(meta: MetaEntry[], expectedImage?: string) {
+  const image = expectedImage ?? DEFAULT_OG_IMAGE_URL
   expect(titleOf(meta)?.length).toBeGreaterThan(8)
   expect(named(meta, 'description')?.length).toBeGreaterThan(40)
   // X.com large card (primary)
@@ -62,12 +67,12 @@ function expectFullShareMeta(meta: MetaEntry[]) {
   expect(named(meta, 'twitter:creator')).toBe('@peramanathan')
   expect(named(meta, 'twitter:title')?.length).toBeGreaterThan(8)
   expect(named(meta, 'twitter:description')?.length).toBeGreaterThan(20)
-  expect(named(meta, 'twitter:image')).toBe(DEFAULT_OG_IMAGE_URL)
+  expect(named(meta, 'twitter:image')).toBe(image)
   expect(named(meta, 'twitter:image')).toMatch(/^https:\/\//)
   expect(named(meta, 'twitter:image:alt')?.length).toBeGreaterThan(8)
   // OG mirrors + dimensions for crawlers
   expect(prop(meta, 'og:title')).toBe(named(meta, 'twitter:title'))
-  expect(prop(meta, 'og:image')).toBe(DEFAULT_OG_IMAGE_URL)
+  expect(prop(meta, 'og:image')).toBe(image)
   expect(prop(meta, 'og:image:width')).toBe('1200')
   expect(prop(meta, 'og:image:height')).toBe('600')
 }
@@ -84,13 +89,19 @@ describe('route head builders (shipped routes)', () => {
     const simple = callHead(DeveloperEvaluationRoute, {
       match: { search: { tab: 'simple' } },
     })
-    expectFullShareMeta(simple)
+    expectFullShareMeta(
+      simple,
+      absoluteAssetUrl(PAGE_OG_IMAGE_PATHS['developer-evaluation']),
+    )
     expect(titleOf(simple)).toMatch(/Developer Evaluation/i)
 
     const research = callHead(DeveloperEvaluationRoute, {
       match: { search: { tab: 'research' } },
     })
-    expectFullShareMeta(research)
+    expectFullShareMeta(
+      research,
+      absoluteAssetUrl(PAGE_OG_IMAGE_PATHS['dev-eval-research']),
+    )
     expect(titleOf(research)).toMatch(/Research fields/i)
     expect(prop(research, 'og:url')).toContain('tab=research')
     expect(named(research, 'twitter:description')).toMatch(/Research/i)
@@ -98,15 +109,27 @@ describe('route head builders (shipped routes)', () => {
     const docs = callHead(DeveloperEvaluationRoute, {
       match: { search: { tab: 'docs' } },
     })
+    expectFullShareMeta(
+      docs,
+      absoluteAssetUrl(PAGE_OG_IMAGE_PATHS['dev-eval-docs']),
+    )
     expect(titleOf(docs)).toMatch(/Training & docs/i)
     expect(prop(docs, 'og:url')).toContain('tab=docs')
   })
 
   it('about family routes define page-level title and description', () => {
-    for (const route of [AboutRoute, AboutHistoryRoute, AboutTimelineRoute]) {
-      const meta = callHead(route, {})
-      expectFullShareMeta(meta)
-    }
+    expectFullShareMeta(
+      callHead(AboutRoute, {}),
+      absoluteAssetUrl(PAGE_OG_IMAGE_PATHS.about),
+    )
+    expectFullShareMeta(
+      callHead(AboutHistoryRoute, {}),
+      absoluteAssetUrl(PAGE_OG_IMAGE_PATHS['about-history']),
+    )
+    expectFullShareMeta(
+      callHead(AboutTimelineRoute, {}),
+      absoluteAssetUrl(PAGE_OG_IMAGE_PATHS['about-timeline']),
+    )
     const titles = [
       titleOf(callHead(AboutRoute, {})),
       titleOf(callHead(AboutHistoryRoute, {})),

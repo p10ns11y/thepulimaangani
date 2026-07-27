@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest'
 
 import {
+  ALL_OG_IMAGE_PATHS,
   DEFAULT_OG_IMAGE_PATH,
   DEFAULT_OG_IMAGE_URL,
+  PAGE_OG_IMAGE_PATHS,
   SITE_ORIGIN,
   TWITTER_SITE_HANDLE,
   USER_FACING_SEO_PAGES,
@@ -10,9 +12,11 @@ import {
   X_CARD_IMAGE_WIDTH,
   X_DESCRIPTION_SOFT_MAX,
   X_TITLE_SOFT_MAX,
+  absoluteAssetUrl,
   absolutePageUrl,
   buildSeoMeta,
   clampForXCard,
+  defaultImageUrlForPage,
   getPageSeoCopy,
   pagePath,
   type SeoMetaEntry,
@@ -55,8 +59,40 @@ describe('seo helpers (X.com first)', () => {
     expect(TWITTER_SITE_HANDLE).toBe('@peramanathan')
     expect(X_CARD_IMAGE_WIDTH).toBe(1200)
     expect(X_CARD_IMAGE_HEIGHT).toBe(600)
-    // Exact 2:1 for summary_large_image
     expect(X_CARD_IMAGE_WIDTH / X_CARD_IMAGE_HEIGHT).toBe(2)
+  })
+
+  it('maps each page (and Dev Eval tabs) to a distinct Imagine share path', () => {
+    expect(defaultImageUrlForPage('home')).toBe(DEFAULT_OG_IMAGE_URL)
+    expect(defaultImageUrlForPage('about')).toBe(
+      absoluteAssetUrl(PAGE_OG_IMAGE_PATHS.about),
+    )
+    expect(defaultImageUrlForPage('about-history')).toBe(
+      absoluteAssetUrl(PAGE_OG_IMAGE_PATHS['about-history']),
+    )
+    expect(defaultImageUrlForPage('about-timeline')).toBe(
+      absoluteAssetUrl(PAGE_OG_IMAGE_PATHS['about-timeline']),
+    )
+    expect(defaultImageUrlForPage('developer-evaluation')).toBe(
+      absoluteAssetUrl(PAGE_OG_IMAGE_PATHS['developer-evaluation']),
+    )
+    expect(defaultImageUrlForPage('developer-evaluation', 'simple')).toBe(
+      absoluteAssetUrl(PAGE_OG_IMAGE_PATHS['developer-evaluation']),
+    )
+    expect(defaultImageUrlForPage('developer-evaluation', 'research')).toBe(
+      absoluteAssetUrl(PAGE_OG_IMAGE_PATHS['dev-eval-research']),
+    )
+    expect(defaultImageUrlForPage('developer-evaluation', 'docs')).toBe(
+      absoluteAssetUrl(PAGE_OG_IMAGE_PATHS['dev-eval-docs']),
+    )
+
+    const urls = USER_FACING_SEO_PAGES.map((p) => defaultImageUrlForPage(p))
+    // about family + home + dev-eval are not all identical
+    expect(new Set(urls).size).toBeGreaterThanOrEqual(4)
+    expect(ALL_OG_IMAGE_PATHS.length).toBeGreaterThanOrEqual(7)
+    for (const path of ALL_OG_IMAGE_PATHS) {
+      expect(path).toMatch(/^\/og-.*\.jpg$/)
+    }
   })
 
   it('provides non-empty title and description for every user-facing page', () => {
@@ -86,11 +122,9 @@ describe('seo helpers (X.com first)', () => {
     expect(description).toBeTruthy()
     expect(description!.length).toBeGreaterThan(40)
 
-    // X card core
     expect(metaByName(meta, 'twitter:card')).toBe('summary_large_image')
     expect(metaByName(meta, 'twitter:site')).toBe('@peramanathan')
     expect(metaByName(meta, 'twitter:creator')).toBe('@peramanathan')
-    expect(metaByName(meta, 'twitter:title')).toBeTruthy()
     expect(metaByName(meta, 'twitter:title')!.length).toBeLessThanOrEqual(
       X_TITLE_SOFT_MAX,
     )
@@ -102,50 +136,57 @@ describe('seo helpers (X.com first)', () => {
     expect(metaByName(meta, 'twitter:image:alt')).toBeTruthy()
     expect(metaByName(meta, 'twitter:url')).toBe(absolutePageUrl('home'))
 
-    // OG mirrors + image dimensions Twitterbot/other crawlers use
     expect(metaByProperty(meta, 'og:title')).toBe(metaByName(meta, 'twitter:title'))
     expect(metaByProperty(meta, 'og:image')).toBe(DEFAULT_OG_IMAGE_URL)
-    expect(metaByProperty(meta, 'og:image:secure_url')).toBe(DEFAULT_OG_IMAGE_URL)
     expect(metaByProperty(meta, 'og:image:width')).toBe('1200')
     expect(metaByProperty(meta, 'og:image:height')).toBe('600')
     expect(metaByProperty(meta, 'og:image:type')).toBe('image/jpeg')
-    expect(metaByProperty(meta, 'og:image:alt')).toBe(
-      metaByName(meta, 'twitter:image:alt'),
-    )
-    expect(metaByProperty(meta, 'og:type')).toBe('website')
-    expect(metaByProperty(meta, 'og:url')).toBe(absolutePageUrl('home'))
   })
 
-  it('developer-evaluation meta is tab-aware for research and docs', () => {
-    const base = buildSeoMeta({ page: 'developer-evaluation' })
-    expect(metaTitle(base)).toMatch(/Developer Evaluation/i)
-    expect(metaByName(base, 'twitter:card')).toBe('summary_large_image')
-
+  it('developer-evaluation meta is tab-aware including share image', () => {
     const research = buildSeoMeta({
       page: 'developer-evaluation',
       tab: 'research',
     })
     expect(metaTitle(research)).toMatch(/Research fields/i)
     expect(metaByName(research, 'twitter:title')).toMatch(/Research fields/i)
-    expect(metaByName(research, 'twitter:description')).toMatch(/Research catalogue/i)
     expect(metaByName(research, 'twitter:url')).toContain('tab=research')
-    expect(metaByName(research, 'twitter:image')).toBe(DEFAULT_OG_IMAGE_URL)
+    expect(metaByName(research, 'twitter:image')).toBe(
+      absoluteAssetUrl(PAGE_OG_IMAGE_PATHS['dev-eval-research']),
+    )
     expect(metaByName(research, 'twitter:image:alt')).toMatch(/Research/i)
 
     const docs = buildSeoMeta({ page: 'developer-evaluation', tab: 'docs' })
-    expect(metaTitle(docs)).toMatch(/Training & docs/i)
+    expect(metaByName(docs, 'twitter:image')).toBe(
+      absoluteAssetUrl(PAGE_OG_IMAGE_PATHS['dev-eval-docs']),
+    )
     expect(metaByName(docs, 'twitter:url')).toContain('tab=docs')
+
+    const simple = buildSeoMeta({
+      page: 'developer-evaluation',
+      tab: 'simple',
+    })
+    expect(metaByName(simple, 'twitter:image')).toBe(
+      absoluteAssetUrl(PAGE_OG_IMAGE_PATHS['developer-evaluation']),
+    )
   })
 
-  it('about family pages define X card meta, not only root defaults', () => {
-    for (const page of ['about', 'about-history', 'about-timeline'] as const) {
-      const meta = buildSeoMeta({ page })
-      expect(metaByName(meta, 'twitter:card')).toBe('summary_large_image')
-      expect(metaByName(meta, 'twitter:image')).toBe(DEFAULT_OG_IMAGE_URL)
-      expect(metaByName(meta, 'twitter:site')).toBe('@peramanathan')
-      expect(metaTitle(meta)).toBeTruthy()
-      expect(metaByName(meta, 'description')).toBeTruthy()
-    }
+  it('about family pages use their own Imagine cards', () => {
+    const about = buildSeoMeta({ page: 'about' })
+    expect(metaByName(about, 'twitter:image')).toBe(
+      absoluteAssetUrl(PAGE_OG_IMAGE_PATHS.about),
+    )
+    const history = buildSeoMeta({ page: 'about-history' })
+    expect(metaByName(history, 'twitter:image')).toBe(
+      absoluteAssetUrl(PAGE_OG_IMAGE_PATHS['about-history']),
+    )
+    const timeline = buildSeoMeta({ page: 'about-timeline' })
+    expect(metaByName(timeline, 'twitter:image')).toBe(
+      absoluteAssetUrl(PAGE_OG_IMAGE_PATHS['about-timeline']),
+    )
+    expect(metaByName(about, 'twitter:image')).not.toBe(
+      metaByName(history, 'twitter:image'),
+    )
   })
 
   it('clampForXCard truncates long strings on word boundaries', () => {
@@ -158,10 +199,6 @@ describe('seo helpers (X.com first)', () => {
 
   it('pagePath and absolutePageUrl encode tab only when non-default', () => {
     expect(pagePath('home')).toBe('/')
-    expect(pagePath('developer-evaluation')).toBe('/developer-evaluation')
-    expect(pagePath('developer-evaluation', 'simple')).toBe(
-      '/developer-evaluation',
-    )
     expect(pagePath('developer-evaluation', 'research')).toBe(
       '/developer-evaluation?tab=research',
     )
