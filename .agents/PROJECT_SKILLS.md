@@ -11,7 +11,8 @@
 | Skill | Why |
 |-------|-----|
 | `ai-optimization` | Token/context discipline on Rust+TS monorepo |
-| `fusion-sage` | Architecture synthesis after fission |
+| `architecture-synthesis` | Architecture synthesis after fission (preferred; was fusion-sage) |
+| `fusion-sage` | Legacy alias — prefer architecture-synthesis |
 | `control-graph` | Bounded multi-step agent loops |
 | `agent-orchestrator` | Triage single-shot vs multi-agent |
 | `adversarial-audit` | Evidence before “done” / PR quality |
@@ -37,7 +38,7 @@ Chrome extensions, Tauri desktop, Solana, MongoDB, shell-kernel ontology, skill-
 
 ```bash
 npx skills add p10ns11y/skills \
-  -s ai-optimization -s fusion-sage -s control-graph \
+  -s ai-optimization -s architecture-synthesis -s fusion-sage -s control-graph \
   -s adversarial-audit -s higher-order-decision-architect \
   -s react-client-expert -s stellar-spacemap -s agent-orchestrator \
   -s peram_senior_mlai_engineer \

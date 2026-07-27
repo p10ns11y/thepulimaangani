@@ -19,6 +19,12 @@
       "skillPath": "ai-optimization/SKILL.md",
       "computedHash": "ef93b6c6cc9e89620d7793c951fdfe029dbc91a437e97bc7172d54893d7ffe3c"
     },
+    "architecture-synthesis": {
+      "source": "p10ns11y/skills",
+      "sourceType": "github",
+      "skillPath": "architecture-synthesis/SKILL.md",
+      "computedHash": "3e06ea0860d079a694f3df1860e2b74cbbb481952739a6231683c2031a092eaa"
+    },
     "control-graph": {
       "source": "p10ns11y/skills",
       "sourceType": "github",
