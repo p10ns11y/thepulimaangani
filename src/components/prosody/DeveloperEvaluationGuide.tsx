@@ -2,19 +2,38 @@ import type { ReactNode } from 'react'
 import { Link } from '@tanstack/react-router'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs'
+import {
+  DEFAULT_DEV_EVAL_TAB,
+  parseDevEvalTab,
+  type DevEvalTab,
+} from '#/lib/devEvalTabs'
 
 const GITHUB_BLOB =
   'https://github.com/p10ns11y/thepulimaangani/blob/malar/tamil-seiyul-alagi'
 
+export type DeveloperEvaluationGuideProps = {
+  /** Active tab from URL search (`?tab=…`). Defaults to Simple guide. */
+  tab?: DevEvalTab
+  /** Called when the user selects a tab (parent updates shareable URL). */
+  onTabChange?: (tab: DevEvalTab) => void
+}
+
 /**
  * Guide for Developer Evaluation: plain-language story + research field catalogue.
  * Content aligned with METRE_ML_BEGINNER_GUIDE.md and METRE_ML_METHODS_PORTFOLIO.md.
+ * Tab state is controlled so `/developer-evaluation?tab=` is shareable.
  */
-export function DeveloperEvaluationGuide() {
+export function DeveloperEvaluationGuide({
+  tab = DEFAULT_DEV_EVAL_TAB,
+  onTabChange,
+}: DeveloperEvaluationGuideProps = {}) {
+  const activeTab = parseDevEvalTab(tab)
+
   return (
     <article
       className="island-shell mx-auto max-w-3xl rounded-2xl p-6 sm:p-10"
       data-testid="developer-evaluation-guide"
+      data-active-tab={activeTab}
     >
       <p className="island-kicker mb-2">Developer Evaluation</p>
       <h1 className="display-title mb-3 text-3xl font-bold tracking-tight text-[var(--sea-ink)] sm:text-4xl">
@@ -28,7 +47,13 @@ export function DeveloperEvaluationGuide() {
         <em>separate</em> — they never secretly rewrite the model score.
       </p>
 
-      <Tabs defaultValue="simple" className="w-full">
+      <Tabs
+        value={activeTab}
+        onValueChange={(value) => {
+          onTabChange?.(parseDevEvalTab(value))
+        }}
+        className="w-full"
+      >
         <TabsList className="bg-surface-3/80 border-rim/40 mb-6 h-auto w-full flex-wrap justify-start gap-0.5 border p-1 sm:w-fit">
           <TabsTrigger
             value="simple"

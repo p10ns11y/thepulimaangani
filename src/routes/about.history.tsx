@@ -2,6 +2,7 @@ import { Link, createFileRoute } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
 
 import { AboutSectionNav } from '#/components/about/AboutSectionNav'
+import { buildSeoMeta } from '#/lib/seo'
 
 type HistoryLang = 'en' | 'ta'
 
@@ -442,6 +443,9 @@ function buildGrokipediaUrl(term: string): string {
 export const Route = createFileRoute('/about/history')({
   validateSearch: (search: Record<string, unknown>) => ({
     lang: search.lang === 'ta' ? 'ta' : 'en',
+  }),
+  head: () => ({
+    meta: buildSeoMeta({ page: 'about-history' }),
   }),
   component: AboutHistory,
 })

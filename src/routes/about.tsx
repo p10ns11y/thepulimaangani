@@ -2,8 +2,12 @@ import { Outlet, createFileRoute, useLocation } from '@tanstack/react-router'
 
 import { AboutSectionNav } from '#/components/about/AboutSectionNav'
 import { SOCIAL_GITHUB_HREF, SOCIAL_X_HREF } from '#/components/SocialLinks'
+import { buildSeoMeta } from '#/lib/seo'
 
 export const Route = createFileRoute('/about')({
+  head: () => ({
+    meta: buildSeoMeta({ page: 'about' }),
+  }),
   component: About,
 })
 

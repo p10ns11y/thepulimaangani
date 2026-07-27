@@ -3,6 +3,7 @@ import { Link, createFileRoute } from '@tanstack/react-router'
 import { AboutSectionNav } from '#/components/about/AboutSectionNav'
 import timelineEnglish from '#/data/timeline_english.json'
 import timelineTamil from '#/data/timeline_tamil.json'
+import { buildSeoMeta } from '#/lib/seo'
 
 type TimelineLang = 'en' | 'ta'
 
@@ -18,6 +19,9 @@ type TimelineItem = {
 export const Route = createFileRoute('/about/timeline')({
   validateSearch: (search: Record<string, unknown>) => ({
     lang: search.lang === 'ta' ? 'ta' : 'en',
+  }),
+  head: () => ({
+    meta: buildSeoMeta({ page: 'about-timeline' }),
   }),
   component: AboutTimeline,
 })

@@ -92,6 +92,7 @@ export default function Header() {
             </Link>
             <Link
               to="/developer-evaluation"
+              search={{ tab: 'simple' }}
               title="Developer Evaluation — how metre ML works"
               className="nav-link rounded-md px-2.5 py-1.5 text-sm font-medium sm:px-2.5"
               activeProps={{

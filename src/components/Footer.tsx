@@ -47,6 +47,7 @@ export default function Footer() {
           </span>
           <Link
             to="/developer-evaluation"
+            search={{ tab: 'simple' }}
             className={footerNavClass}
             title="How metre ML works"
           >
