@@ -1,6 +1,4 @@
-import { Button } from '#/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
-import { Separator } from '#/components/ui/separator'
+import { Card, CardContent } from '#/components/ui/card'
 
 import { PoemFitPreview } from './PoemFitPreview'
 
@@ -10,49 +8,35 @@ type PoemAndParseCardProps = {
   poemText: string
   editorOpen: boolean
   poemDraft: string
+  /** Pre-edit snapshot for live + post-Done line highlighting. */
+  poemEditBaseline: string | null
   validationError: string | null
-  loading: boolean
-  onOpenEditor: () => void
-  onParse: () => void
 }
 
+/**
+ * Left rail: read-only poem with optional line-diff vs edit baseline.
+ * Edit is on the results tab bar; parse is driven by live preview (no Refresh).
+ */
 export function PoemAndParseCard({
   poemText,
   editorOpen,
   poemDraft,
+  poemEditBaseline,
   validationError,
-  loading,
-  onOpenEditor,
-  onParse,
 }: PoemAndParseCardProps) {
+  const base = poemEditBaseline ?? poemText
+  const current = editorOpen ? poemDraft : poemText
+  const showDiff = base !== current
+
   return (
     <Card className={cardClass}>
-      <CardHeader className="px-4 py-3 pb-2">
-        <CardTitle className="text-balance text-base font-semibold tracking-tight">Poem &amp; parse</CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-3 px-4 pb-4 pt-0">
-        <PoemFitPreview
-          text={poemText}
-          draftForDiff={editorOpen ? poemDraft : undefined}
-          onOpenEditor={onOpenEditor}
-        />
+      <CardContent className="flex flex-col gap-3 px-3 py-3 sm:px-4 sm:py-4">
+        <PoemFitPreview text={base} draftForDiff={showDiff ? current : undefined} />
         {validationError ? (
           <div className="border-destructive/35 bg-destructive/8 rounded-lg border px-3 py-2">
             <p className="text-destructive m-0 text-sm">{validationError}</p>
           </div>
         ) : null}
-        <Separator />
-        <div className="flex justify-end">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onParse}
-            disabled={loading}
-            className="h-9 w-fit min-w-[7.5rem] shrink-0 rounded-md px-4 text-sm font-medium"
-          >
-            {loading ? 'Parsing…' : 'Refresh'}
-          </Button>
-        </div>
       </CardContent>
     </Card>
   )

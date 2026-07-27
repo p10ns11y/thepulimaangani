@@ -184,8 +184,10 @@ export function PoemEditDialog({
             size="sm"
             className="h-9"
             onClick={() => {
+              // APPLY closes the editor in the machine and keeps poemEditBaseline for
+              // left-preview diff. Do not call onOpenChange(false) — that fires CLOSE
+              // and clears the baseline (regression after Done).
               onApply()
-              onOpenChange(false)
             }}
           >
             Done
