@@ -1,0 +1,12 @@
+{
+  "bootstrap_top1_ci_95": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "disagreement": [],
+  "disagreement_n": 0,
+  "mrr": 1.0,
+  "n": 17,
+  "top1": 1.0
+}

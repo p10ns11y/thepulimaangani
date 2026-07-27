@@ -428,6 +428,80 @@ export function adaptWasmJsonToParsedPoem(
       ? parseResult.metre_epistemic_margin
       : undefined
 
+  const metreMlRaw = parseResult.metre_ml
+  let metre_ml: import('#/types/parsedPoem').ParsedMetreMlSurface | undefined
+  if (metreMlRaw && typeof metreMlRaw === 'object') {
+    const ml = metreMlRaw as Record<string, unknown>
+    const honesty_label = typeof ml.honesty_label === 'string' ? ml.honesty_label : ''
+    const uncertainty_blurb =
+      typeof ml.uncertainty_blurb === 'string' ? ml.uncertainty_blurb : ''
+    const dualRaw = ml.dual_truth
+    const dual =
+      dualRaw && typeof dualRaw === 'object'
+        ? (dualRaw as Record<string, unknown>)
+        : null
+    const patternRaw = Array.isArray(ml.pattern_features) ? ml.pattern_features : []
+    const headsRaw = Array.isArray(ml.head_votes) ? ml.head_votes : []
+    if (honesty_label && dual) {
+      const classical_violations = Array.isArray(dual.classical_violations)
+        ? (dual.classical_violations as unknown[]).filter(
+            (v): v is string => typeof v === 'string',
+          )
+        : []
+      const pattern_features = patternRaw
+        .map((raw) => {
+          if (!raw || typeof raw !== 'object') return null
+          const r = raw as Record<string, unknown>
+          if (typeof r.feature_id !== 'string' || typeof r.dense_index !== 'number') return null
+          return {
+            dense_index: r.dense_index,
+            feature_id: r.feature_id,
+            weight: typeof r.weight === 'number' ? r.weight : 0,
+            direction: typeof r.direction === 'string' ? r.direction : '',
+          }
+        })
+        .filter((x): x is NonNullable<typeof x> => x != null)
+      const head_votes = headsRaw
+        .map((raw) => {
+          if (!raw || typeof raw !== 'object') return null
+          const r = raw as Record<string, unknown>
+          if (typeof r.head_id !== 'string' || typeof r.metre_type !== 'string') return null
+          return {
+            head_id: r.head_id,
+            metre_type: r.metre_type,
+            score: typeof r.score === 'number' ? r.score : 0,
+            note: typeof r.note === 'string' ? r.note : '',
+          }
+        })
+        .filter((x): x is NonNullable<typeof x> => x != null)
+      metre_ml = {
+        dual_truth: {
+          ml_metre_type:
+            typeof dual.ml_metre_type === 'string' ? dual.ml_metre_type : null,
+          classical_metre_type:
+            typeof dual.classical_metre_type === 'string'
+              ? dual.classical_metre_type
+              : null,
+          classical_ok_for_ml_top:
+            typeof dual.classical_ok_for_ml_top === 'boolean'
+              ? dual.classical_ok_for_ml_top
+              : null,
+          classical_violations,
+          separation_policy:
+            typeof dual.separation_policy === 'string'
+              ? dual.separation_policy
+              : 'ml_scores_parallel_to_classical_violations',
+        },
+        pattern_features,
+        head_votes,
+        honesty_label,
+        uncertainty_blurb,
+        a12_freeze_date:
+          typeof ml.a12_freeze_date === 'string' ? ml.a12_freeze_date : null,
+      }
+    }
+  }
+
   return {
     original_text: parseResult.original_text,
     metre_type,
@@ -445,6 +519,7 @@ export function adaptWasmJsonToParsedPoem(
       ? { top_k_metre_hypotheses }
       : {}),
     ...(parse_features ? { parse_features } : {}),
+    ...(metre_ml ? { metre_ml } : {}),
     ...(errors && errors.length > 0 ? { errors } : {}),
   }
 }

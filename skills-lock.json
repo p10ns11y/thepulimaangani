@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "skills": {
+    "adversarial-audit": {
+      "source": "p10ns11y/skills",
+      "sourceType": "github",
+      "skillPath": "adversarial-audit/SKILL.md",
+      "computedHash": "98dbc29c7dbdf1c5f9fb250adfae22a58f56d21b2687d51bf7a4453579ac0f5e"
+    },
+    "agent-orchestrator": {
+      "source": "p10ns11y/skills",
+      "sourceType": "github",
+      "skillPath": "agent-orchestrator/SKILL.md",
+      "computedHash": "1e11ae0e4b281b0cb34b88ebf3d694e1374f510aff2a55c66995a38a5a9fe7a8"
+    },
+    "ai-optimization": {
+      "source": "p10ns11y/skills",
+      "sourceType": "github",
+      "skillPath": "ai-optimization/SKILL.md",
+      "computedHash": "ef93b6c6cc9e89620d7793c951fdfe029dbc91a437e97bc7172d54893d7ffe3c"
+    },
+    "architecture-synthesis": {
+      "source": "p10ns11y/skills",
+      "sourceType": "github",
+      "skillPath": "architecture-synthesis/SKILL.md",
+      "computedHash": "3e06ea0860d079a694f3df1860e2b74cbbb481952739a6231683c2031a092eaa"
+    },
+    "control-graph": {
+      "source": "p10ns11y/skills",
+      "sourceType": "github",
+      "skillPath": "control-graph/SKILL.md",
+      "computedHash": "1cba5db1801d7c045b5b0613736a18c486ea2404abf3790c752dacef9de37326"
+    },
+    "fusion-sage": {
+      "source": "p10ns11y/skills",
+      "sourceType": "github",
+      "skillPath": "fusion-sage/SKILL.md",
+      "computedHash": "e6d4d906cab2e833856d1125d6726e305a28d5a723409e82e8ecde0085e33c84"
+    },
+    "higher-order-decision-architect": {
+      "source": "p10ns11y/skills",
+      "sourceType": "github",
+      "skillPath": "higher-order-decision-architect/SKILL.md",
+      "computedHash": "2143caa5aab6f3d310e3939a920b7846e201f6b7515d044aa4210e9b8ddf963e"
+    },
+    "peram_senior_mlai_engineer": {
+      "source": "p10ns11y/skills",
+      "sourceType": "github",
+      "skillPath": "peram_senior_mlai_engineer/SKILL.md",
+      "computedHash": "34b2aface3bac1e80408df2794a851d0f976c40d03f5d8977d5966d0b860aa27"
+    },
+    "react-client-expert": {
+      "source": "p10ns11y/skills",
+      "sourceType": "github",
+      "skillPath": "react-client-expert/SKILL.md",
+      "computedHash": "c879e59ab7b15a6a06f008dbbd1ff209166be75ab87c5932cdc68cd484350bd3"
+    },
+    "stellar-spacemap": {
+      "source": "p10ns11y/skills",
+      "sourceType": "github",
+      "skillPath": "stellar-spacemap/SKILL.md",
+      "computedHash": "dbecefb10f93a14bbfc550248c98885356f873b7159889198bec3c51f5f98a18"
+    }
+  }
+}

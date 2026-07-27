@@ -1,0 +1,32 @@
+{
+  "heads": [
+    {
+      "correct_at_2": 1.0,
+      "head_id": "heuristic_or_hybrid",
+      "mrr": 1.0,
+      "n": 17,
+      "top1": 1.0
+    },
+    {
+      "correct_at_2": 1.0,
+      "head_id": "dense_logistic",
+      "mrr": 1.0,
+      "n": 17,
+      "top1": 1.0
+    },
+    {
+      "correct_at_2": 0.8823529411764706,
+      "head_id": "prototype",
+      "mrr": 0.5931372549019607,
+      "n": 17,
+      "top1": 0.23529411764705882
+    },
+    {
+      "correct_at_2": 0.7647058823529411,
+      "head_id": "knn_k3",
+      "mrr": 0.7843137254901962,
+      "n": 17,
+      "top1": 0.6470588235294118
+    }
+  ]
+}

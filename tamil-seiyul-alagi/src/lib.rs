@@ -14,6 +14,8 @@ pub mod semantics_contract;
 pub mod anthology_inventory;
 /// S03 SOA ledger — composite ontology + semantics + anthology fingerprint (see `data/training/reports/soa_ledger.md`).
 pub mod soa_ledger;
+/// Tier A–D metre ML eval heads + product surface (portfolio).
+pub mod ml_eval;
 mod poem_variations;
 mod poem_variations_training;
 mod poem_tree;
@@ -39,7 +41,8 @@ pub use linkage::{
 };
 pub use metre::{
     boost_metre_hypotheses_with_dense, classical_violations_for_metre, detect_metre_hypotheses,
-    linkage_coarse_fractions, ml_head, sort_metre_hypotheses_by_score, MetreType,
+    dual_compare_label, linkage_coarse_fractions, ml_head, sort_metre_hypotheses_by_score,
+    MetreType,
 };
 pub use ontology_map::{
     ontology_cir_class_ids, ontology_dual_truth_channel_ids, ontology_issue36_bond_table_len,
@@ -69,6 +72,7 @@ pub use soa_ledger::{
     soa_primary_gold_row_kind, soa_report_paths, soa_schema_fingerprint_string, soa_schema_ids,
     soa_stress_only_row_kind, SOA_LEDGER_VERSION,
 };
+pub use ml_eval::{A12_FREEZE_DATE, A12_PATTERN_FREEZE, TIER_STEP_IDS};
 pub use poem_variations::{
     poem_variation_example, poem_variations_blocks, poem_variations_for_metre, tamil_label_for_sample,
     variation_row, PoemVariationRow, PoemVariationsBlock, ACIRIYAPPA, KALIPPAA, VANJIPPAA, VENPAA,
@@ -91,11 +95,18 @@ pub use prosodic_unit::{Consonant, ProsodicUnit, Vowel};
 pub use syllable::{Syllable, SyllableType};
 pub use syllable_builder::SyllableBuilder;
 pub use types::{
-    flat_lines_from_poem, MetreHypothesis, ParseFeatureSnapshot, ParseOptions, ParseResult,
-    RuleId, PARSE_RESULT_SCHEMA_VERSION,
+    flat_lines_from_poem, DualTruthSurface, HeadVote, MetreHypothesis, MetreMlProductSurface,
+    ParseFeatureSnapshot, ParseOptions, ParseResult, PatternFeatureHit, RuleId,
+    PARSE_RESULT_SCHEMA_VERSION,
 };
 
+use std::cell::Cell;
 use unicode_segmentation::UnicodeSegmentation;
+
+thread_local! {
+    /// Avoid re-entrant product-surface training while building special_type XY cache.
+    static BUILDING_SPECIAL_TYPE_TRAIN: Cell<bool> = const { Cell::new(false) };
+}
 
 pub fn parse_poem(text: &str, options: ParseOptions) -> Result<ParseResult, ParseError> {
     if text.trim().is_empty() {
@@ -175,6 +186,27 @@ pub fn parse_poem(text: &str, options: ParseOptions) -> Result<ParseResult, Pars
 
     let metre = metre_hypotheses.first().map(|h| h.metre_type.clone());
 
+    let classical_violations = if let Some(ref m) = metre {
+        metre::classical_violations_for_metre(m, &feet, &linkage)
+    } else {
+        vec![]
+    };
+
+    let building_train = BUILDING_SPECIAL_TYPE_TRAIN.with(|c| c.get());
+    let metre_ml = if options.no_detect || building_train {
+        None
+    } else {
+        // Hot path: predict with OnceLock-cached fitted heads (no per-parse refit).
+        let heads = cached_product_heads();
+        Some(ml_eval::product_surface::build_product_surface_with_heads(
+            metre.as_ref(),
+            &metre_hypotheses,
+            parse_features.as_ref().map(|p| p.dense.as_slice()),
+            classical_violations,
+            Some(heads),
+        ))
+    };
+
     Ok(ParseResult {
         parse_result_schema_version: types::PARSE_RESULT_SCHEMA_VERSION,
         original_text: text.to_string(),
@@ -198,6 +230,43 @@ pub fn parse_poem(text: &str, options: ParseOptions) -> Result<ParseResult, Pars
         parse_features,
         presentation: presentation::to_display(text, &metre, &syllables, &feet, &linkage),
         errors: vec![],
+        metre_ml,
+    })
+}
+
+/// Build special_type dense/gold once (used only while fitting the product-head cache).
+fn special_type_train_xy() -> (Vec<Vec<f32>>, Vec<usize>) {
+    BUILDING_SPECIAL_TYPE_TRAIN.with(|c| c.set(true));
+    let all = poem_variation_label_rows();
+    let labels = poem_variation_special_type_rows(&all);
+    let mut xs = Vec::new();
+    let mut ys = Vec::new();
+    for label in labels {
+        let mut opts = ParseOptions::poem_variations_training();
+        opts.skip_ml_metre = true;
+        if let Ok(r) = parse_poem(&label.text, opts) {
+            if let (Some(pf), Some(gold)) = (
+                r.parse_features.as_ref(),
+                gold_metre_type_for_parent(&label.parent_metre),
+            ) {
+                if let Some(yi) = metre::ml_head::class_index_for_metre(&gold) {
+                    xs.push(pf.dense.clone());
+                    ys.push(yi);
+                }
+            }
+        }
+    }
+    BUILDING_SPECIAL_TYPE_TRAIN.with(|c| c.set(false));
+    (xs, ys)
+}
+
+/// Cached fitted multi-head bundle (logistic + z-prototypes). Fit once; predict on every parse.
+fn cached_product_heads() -> &'static ml_eval::product_surface::CachedProductHeads {
+    use std::sync::OnceLock;
+    static CACHE: OnceLock<ml_eval::product_surface::CachedProductHeads> = OnceLock::new();
+    CACHE.get_or_init(|| {
+        let (xs, ys) = special_type_train_xy();
+        ml_eval::product_surface::fit_product_heads(&xs, &ys)
     })
 }
 
@@ -259,6 +328,90 @@ mod tests {
             .iter()
             .enumerate()
             .all(|(i, f)| f.foot_index_global == Some(i)));
+    }
+
+    #[test]
+    fn parse_result_includes_metre_ml_product_surface() {
+        let r = parse_poem(
+            "முற்ற உணர்ந்தானை ஏத்தி மொழிகுவன்\nகுற்றமொன்று இல்லா அறம்",
+            ParseOptions::default(),
+        )
+        .expect("parse");
+        let ml = r.metre_ml.as_ref().expect("metre_ml surface");
+        assert!(
+            ml.honesty_label.contains("Statistical"),
+            "honesty={}",
+            ml.honesty_label
+        );
+        assert_eq!(
+            ml.dual_truth.separation_policy,
+            "ml_scores_parallel_to_classical_violations"
+        );
+        assert!(ml.dual_truth.ml_metre_type.is_some());
+        assert!(!ml.pattern_features.is_empty() || r.parse_features.is_some());
+        assert!(!ml.head_votes.is_empty());
+        assert_eq!(r.parse_result_schema_version, types::PARSE_RESULT_SCHEMA_VERSION);
+    }
+
+    /// Live multi-head must not collapse to always Vanjippaa @ score≈1.0 (saturated wrong class).
+    #[test]
+    fn multi_head_dense_logistic_not_always_vanjippaa_saturated() {
+        use crate::poem_variations_training::{
+            gold_metre_type_for_parent, poem_variation_label_rows, poem_variation_special_type_rows,
+        };
+        let all = poem_variation_label_rows();
+        let labels = poem_variation_special_type_rows(&all);
+        let mut logistic_votes: Vec<(String, f32)> = Vec::new();
+        let mut saturations = 0u32;
+        for label in &labels {
+            let r = parse_poem(&label.text, ParseOptions::default()).expect("parse");
+            let ml = r.metre_ml.as_ref().expect("metre_ml");
+            let logi = ml
+                .head_votes
+                .iter()
+                .find(|h| h.head_id == "dense_logistic")
+                .expect("dense_logistic vote");
+            logistic_votes.push((logi.metre_type.clone(), logi.score));
+            if logi.score >= 0.999 {
+                saturations += 1;
+            }
+        }
+        assert_eq!(logistic_votes.len(), labels.len());
+        // Not every sample should saturate.
+        assert!(
+            saturations < labels.len() as u32,
+            "dense_logistic saturated on all {} samples: {logistic_votes:?}",
+            labels.len()
+        );
+        // Not a single class on every row.
+        let classes: std::collections::BTreeSet<_> =
+            logistic_votes.iter().map(|(c, _)| c.as_str()).collect();
+        assert!(
+            classes.len() >= 2,
+            "dense_logistic always predicted one class {classes:?}; votes={logistic_votes:?}"
+        );
+        // Prefer tracking gold for Venpaa special_types when hybrid also says Venpaa.
+        let mut ven_ok = 0u32;
+        let mut ven_n = 0u32;
+        for label in &labels {
+            if gold_metre_type_for_parent(&label.parent_metre) != Some(MetreType::Venpaa) {
+                continue;
+            }
+            ven_n += 1;
+            let r = parse_poem(&label.text, ParseOptions::default()).expect("parse");
+            let ml = r.metre_ml.as_ref().unwrap();
+            if ml
+                .head_votes
+                .iter()
+                .any(|h| h.head_id == "dense_logistic" && h.metre_type == "Venpaa")
+            {
+                ven_ok += 1;
+            }
+        }
+        assert!(
+            ven_n > 0 && ven_ok * 2 >= ven_n,
+            "dense_logistic should agree with Venpaa gold on ≥50% of venpaa special_type (ok={ven_ok}/{ven_n})"
+        );
     }
 
     #[test]

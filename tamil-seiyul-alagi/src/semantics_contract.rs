@@ -272,16 +272,18 @@ mod tests {
     }
 
     #[test]
-    fn classical_channel_stays_empty_pre_d01() {
+    fn classical_channel_active_after_a12_freeze() {
+        // D01 is gated by A12 freeze; empty feet yields a structural classical flag.
         for m in [
             MetreType::Venpaa,
             MetreType::Aciriyappaa,
             MetreType::Kalippaa,
             MetreType::Vanjippaa,
         ] {
+            let v = classical_violations_for_metre(&m, &[], &[]);
             assert!(
-                classical_violations_for_metre(&m, &[], &[]).is_empty(),
-                "classical must stay empty until D01+allow_classical"
+                v.iter().any(|s| s.contains("empty_feet")),
+                "classical D01 should flag empty feet for {m:?}, got {v:?}"
             );
         }
     }

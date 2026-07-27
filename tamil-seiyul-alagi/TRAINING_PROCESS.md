@@ -4,6 +4,8 @@ For **why** the metre head behaves as it does (heuristic vs hybrid, `skip_ml_met
 
 For the full ML methods portfolio (Tier A–D), **semantics · ontology · anthology** foundations, TDD protocol, and progressive workflow, see **[`METRE_ML_METHODS_PORTFOLIO.md`](METRE_ML_METHODS_PORTFOLIO.md)** and `.grok/workflows/metre-ml-tier-progression.rhai`.
 
+**Beginner-friendly story of the live path + how steps feed each other:** [`METRE_ML_BEGINNER_GUIDE.md`](METRE_ML_BEGINNER_GUIDE.md).
+
 This document describes how to use the **51-dimensional** [`ParseFeatureSnapshot`](PARSE_FEATURES.md) from `thepulimaangani-parser` for metre or subtype classification **without** training on raw Tamil text.
 
 ## What you get from the parser

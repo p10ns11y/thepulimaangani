@@ -5,7 +5,7 @@
 //!
 //! Gates Tier A (`require_soa`): ontology + semantics + anthology versions,
 //! schema ids, and **corpus fingerprints** must stay coherent; classical
-//! remains empty pre-D01.
+//! is active after A12 freeze (D01 dual path; never fused into hybrid scores).
 //!
 //! ## Contract surface
 //!
@@ -45,7 +45,7 @@ fn s03_constituent_versions_are_one() {
     assert_eq!(ONTOLOGY_MAP_VERSION, 1);
     assert_eq!(SEMANTICS_CONTRACT_VERSION, 1);
     assert_eq!(ANTHOLOGY_INVENTORY_VERSION, 1);
-    assert_eq!(SOA_LEDGER_VERSION, 1);
+    assert_eq!(SOA_LEDGER_VERSION, 2);
 }
 
 #[test]
@@ -61,6 +61,7 @@ fn s03_schema_ids_match_production_constants() {
     assert_eq!(map["PARSE_RESULT_SCHEMA_VERSION"], PARSE_RESULT_SCHEMA_VERSION);
     assert_eq!(map["PARSE_FEATURE_SCHEMA_VERSION"], 1);
     assert_eq!(map["PARSE_FEATURE_DENSE_LEN"], 51);
+    assert_eq!(map["PARSE_RESULT_SCHEMA_VERSION"], 2);
     assert_eq!(map["METRE_ML_WEIGHT_SCHEMA"], 3);
 }
 
@@ -69,7 +70,7 @@ fn s03_schema_fingerprint_string_includes_all_ids() {
     let fp = soa_schema_fingerprint_string();
     assert_eq!(
         fp,
-        "soa=1;ont=1;sem=1;anth=1;dense_schema=1;dense_len=51;parse_result=1;ml_weight=3"
+        "soa=2;ont=1;sem=1;anth=1;dense_schema=1;dense_len=51;parse_result=2;ml_weight=3"
     );
 }
 
@@ -142,18 +143,19 @@ fn s03_dense_layout_and_special_order_coherent() {
 }
 
 #[test]
-fn s03_dual_truth_classical_empty_pre_d01() {
+fn s03_dual_truth_classical_active_after_a12() {
     assert_eq!(soa_dual_truth_channel_ids(), &["ml_metre", "classical_metre"]);
-    assert!(!soa_classical_checker_active());
+    assert!(soa_classical_checker_active());
     for m in [
         MetreType::Venpaa,
         MetreType::Aciriyappaa,
         MetreType::Kalippaa,
         MetreType::Vanjippaa,
     ] {
+        let v = classical_violations_for_metre(&m, &[], &[]);
         assert!(
-            classical_violations_for_metre(&m, &[], &[]).is_empty(),
-            "classical must stay empty pre-D01 for {m:?}"
+            v.iter().any(|s| s.contains("empty_feet")),
+            "classical D01 flags empty feet for {m:?}, got {v:?}"
         );
     }
 }

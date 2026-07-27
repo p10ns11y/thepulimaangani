@@ -130,6 +130,43 @@
         ],
         "type": "object"
       },
+      "DualTruthSurface": {
+        "description": "Dual-truth channels for UI (ML vs classical never fused into one score).",
+        "properties": {
+          "classical_metre_type": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "classical_ok_for_ml_top": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "classical_violations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "ml_metre_type": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "separation_policy": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "classical_violations",
+          "separation_policy"
+        ],
+        "type": "object"
+      },
       "Foot": {
         "properties": {
           "foot_index_global": {
@@ -183,6 +220,31 @@
           "foot_index",
           "line_index",
           "word_index_in_line"
+        ],
+        "type": "object"
+      },
+      "HeadVote": {
+        "description": "One head's vote for multi-head comparison UI.",
+        "properties": {
+          "head_id": {
+            "type": "string"
+          },
+          "metre_type": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "score": {
+            "format": "float",
+            "type": "number"
+          }
+        },
+        "required": [
+          "head_id",
+          "metre_type",
+          "note",
+          "score"
         ],
         "type": "object"
       },
@@ -409,6 +471,46 @@
         ],
         "type": "object"
       },
+      "MetreMlProductSurface": {
+        "description": "Learner-facing ML product block on ParseResult (WASM JSON `metre_ml`).",
+        "properties": {
+          "a12_freeze_date": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "dual_truth": {
+            "$ref": "#/components/schemas/DualTruthSurface"
+          },
+          "head_votes": {
+            "items": {
+              "$ref": "#/components/schemas/HeadVote"
+            },
+            "type": "array"
+          },
+          "honesty_label": {
+            "type": "string"
+          },
+          "pattern_features": {
+            "items": {
+              "$ref": "#/components/schemas/PatternFeatureHit"
+            },
+            "type": "array"
+          },
+          "uncertainty_blurb": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "dual_truth",
+          "head_votes",
+          "honesty_label",
+          "pattern_features",
+          "uncertainty_blurb"
+        ],
+        "type": "object"
+      },
       "MetreType": {
         "oneOf": [
           {
@@ -515,6 +617,17 @@
               "null"
             ]
           },
+          "metre_ml": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MetreMlProductSurface"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Learner/product ML surface: dual-truth, pattern features, multi-head votes (never fused scores)."
+          },
           "metre_type": {
             "anyOf": [
               {
@@ -617,6 +730,33 @@
           "vikalpa_count"
         ],
         "title": "ParseResult",
+        "type": "object"
+      },
+      "PatternFeatureHit": {
+        "description": "One ranked dense feature for UI pattern cards.",
+        "properties": {
+          "dense_index": {
+            "format": "uint32",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "direction": {
+            "type": "string"
+          },
+          "feature_id": {
+            "type": "string"
+          },
+          "weight": {
+            "format": "float",
+            "type": "number"
+          }
+        },
+        "required": [
+          "dense_index",
+          "direction",
+          "feature_id",
+          "weight"
+        ],
         "type": "object"
       },
       "PoemLineNode": {

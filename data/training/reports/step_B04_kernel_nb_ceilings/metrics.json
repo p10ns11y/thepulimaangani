@@ -1,0 +1,16 @@
+{
+  "bootstrap_top1_ci_95": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "correct_at_2": 1.0,
+  "improved": true,
+  "mrr": 1.0,
+  "n": 17,
+  "note": "Shared primary-path metrics from special_type eval freeze 2026-07-27",
+  "primary_gold": "special_type",
+  "status": "ADOPT",
+  "step_id": "B04_kernel_nb_ceilings",
+  "top1": 1.0
+}
