@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs'
 import type { ParsedPoem } from '#/types/parsedPoem'
 import type { LivePreviewState } from '#/types/livePreview'
 
+import { DeveloperEvaluationPanel } from '../DeveloperEvaluationPanel'
 import { StructuredParseResult } from '../StructuredParseResult'
 import { TextualInsights } from '../TextualInsights'
 
@@ -72,6 +73,12 @@ export function ParseResultTabsView({
               >
                 Text flow
               </TabsTrigger>
+              <TabsTrigger
+                value="developer-evaluation"
+                className="luxe-gem-focus text-xs data-active:border-rim/55 data-active:bg-surface-1/95 data-active:shadow-sm sm:text-sm"
+              >
+                Developer Evaluation
+              </TabsTrigger>
             </TabsList>
             <div className="flex shrink-0 flex-wrap items-center gap-1.5">
               {onOpenNew ? (
@@ -115,6 +122,13 @@ export function ParseResultTabsView({
           </TabsContent>
           <TabsContent value="flow" className="mt-3 pb-1 outline-none" {...(forceMount ?? {})}>
             <TextualInsights data={parsed} />
+          </TabsContent>
+          <TabsContent
+            value="developer-evaluation"
+            className="mt-3 pb-1 outline-none"
+            {...(forceMount ?? {})}
+          >
+            <DeveloperEvaluationPanel data={parsed} />
           </TabsContent>
         </Tabs>
       </div>

@@ -1,17 +1,13 @@
-import { ChevronDown } from 'lucide-react'
 import { useMemo } from 'react'
 
 import {
   CERTAINTY_HELP,
   FALLBACK_METRE_EXPLAINER,
-  IN_SAMPLE_ADOPT_NOTE,
   certaintyLabel,
   certaintyLevel,
   certaintySurfaceClass,
   classicalCheckSummary,
-  formatSoftScore,
   hasMetreTechNotesFromPoem,
-  headDisplayName,
   hypothesisScoreView,
   resolveHonestyLine,
   sortMetreHypotheses,
@@ -23,8 +19,8 @@ type MetrePanelBodyProps = {
 }
 
 /**
- * Learner-default Metre surface + progressive Technical notes.
- * Pure policy/copy stays in metrePanelCopy; this file only composes DOM.
+ * Learner-default Metre surface (Structure accordion).
+ * Developer Evaluation (heads, features, metrics) lives in its own results tab.
  */
 export function MetrePanelBody({ data }: MetrePanelBodyProps) {
   const sortedHypotheses = useMemo(
@@ -38,7 +34,7 @@ export function MetrePanelBody({ data }: MetrePanelBodyProps) {
   )
 
   const dual = data.metre_ml?.dual_truth
-  const showTech = hasMetreTechNotesFromPoem(data)
+  const hasDevEval = hasMetreTechNotesFromPoem(data)
 
   return (
     <div className="flex flex-col gap-3 pt-1">
@@ -123,124 +119,11 @@ export function MetrePanelBody({ data }: MetrePanelBodyProps) {
         </div>
       ) : null}
 
-      {showTech ? (
-        <details
-          className="border-rim/30 bg-surface-2/15 group structure-disclosure rounded-md border"
-          data-testid="metre-ml-tech-notes"
-        >
-          <summary className="structure-disclosure-summary text-muted-foreground hover:text-foreground cursor-pointer list-none rounded-md px-3 py-2 text-[0.72rem] font-medium outline-none select-none [&::-webkit-details-marker]:hidden">
-            <span className="inline-flex items-center gap-1.5">
-              <ChevronDown
-                className="structure-accordion-chevron size-3.5 shrink-0 group-open:rotate-180"
-                aria-hidden
-              />
-              Technical notes
-              <span className="text-muted-foreground/80 font-normal">
-                · multi-head, features, metrics
-              </span>
-            </span>
-          </summary>
-          <div className="border-rim/20 flex flex-col gap-2.5 border-t px-3 py-2.5">
-            {(typeof data.metre_entropy_bits === 'number' &&
-              Number.isFinite(data.metre_entropy_bits)) ||
-            (typeof data.metre_epistemic_margin === 'number' &&
-              Number.isFinite(data.metre_epistemic_margin)) ? (
-              <dl className="grid grid-cols-2 gap-2 text-[0.68rem]">
-                {typeof data.metre_entropy_bits === 'number' &&
-                Number.isFinite(data.metre_entropy_bits) ? (
-                  <div>
-                    <dt className="text-muted-foreground">Entropy</dt>
-                    <dd className="text-foreground tabular-nums">
-                      {data.metre_entropy_bits.toFixed(2)} bits
-                    </dd>
-                  </div>
-                ) : null}
-                {typeof data.metre_epistemic_margin === 'number' &&
-                Number.isFinite(data.metre_epistemic_margin) ? (
-                  <div>
-                    <dt className="text-muted-foreground">Top1 − top2</dt>
-                    <dd className="text-foreground tabular-nums">
-                      {(data.metre_epistemic_margin * 100).toFixed(0)} pp
-                    </dd>
-                  </div>
-                ) : null}
-              </dl>
-            ) : null}
-
-            {data.metre_ml && data.metre_ml.head_votes.length > 0 ? (
-              <div data-testid="metre-ml-head-votes">
-                <span className="text-muted-foreground text-[0.65rem]">
-                  Model heads (soft mass 0–1, not calibrated %)
-                </span>
-                <ul className="mt-1 flex flex-col gap-1">
-                  {data.metre_ml.head_votes.map((vote) => (
-                    <li
-                      key={vote.head_id}
-                      className="text-foreground/92 flex flex-col gap-0.5 text-[0.72rem] leading-snug sm:flex-row sm:items-baseline sm:justify-between"
-                      title={vote.note || undefined}
-                    >
-                      <span>
-                        <span className="text-muted-foreground mr-1.5">
-                          {headDisplayName(vote.head_id)}
-                        </span>
-                        {vote.metre_type}
-                      </span>
-                      <span className="text-muted-foreground shrink-0 tabular-nums">
-                        {formatSoftScore(vote.score)}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-
-            {data.metre_ml && data.metre_ml.pattern_features.length > 0 ? (
-              <div data-testid="metre-ml-pattern-features">
-                <span className="text-muted-foreground text-[0.65rem]">
-                  Pattern features (dense signals)
-                </span>
-                <ul className="mt-1 flex flex-col gap-1">
-                  {data.metre_ml.pattern_features.map((f) => (
-                    <li
-                      key={`${f.dense_index}-${f.feature_id}`}
-                      className="text-foreground/92 flex items-baseline justify-between gap-2 text-[0.72rem]"
-                    >
-                      <span className="min-w-0 font-mono text-[0.65rem]">
-                        [{f.dense_index}] {f.feature_id}
-                        <span className="text-muted-foreground ml-1">{f.direction}</span>
-                      </span>
-                      <span className="text-muted-foreground shrink-0 tabular-nums">
-                        {f.weight.toFixed(3)}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-
-            {data.metre_ml?.a12_freeze_date ? (
-              <p className="text-muted-foreground m-0 text-[0.65rem] tabular-nums">
-                Pattern freeze {data.metre_ml.a12_freeze_date}
-              </p>
-            ) : null}
-
-            {dual?.separation_policy ? (
-              <p className="text-muted-foreground m-0 font-mono text-[0.62rem]">
-                policy: {dual.separation_policy}
-              </p>
-            ) : null}
-
-            {data.metre_ml?.uncertainty_blurb ? (
-              <p className="text-muted-foreground m-0 text-[0.65rem] leading-relaxed">
-                {data.metre_ml.uncertainty_blurb}
-              </p>
-            ) : (
-              <p className="text-muted-foreground m-0 text-[0.65rem] leading-relaxed">
-                {IN_SAMPLE_ADOPT_NOTE}
-              </p>
-            )}
-          </div>
-        </details>
+      {hasDevEval ? (
+        <p className="text-muted-foreground m-0 text-[0.68rem] leading-relaxed">
+          Multi-head votes, pattern features, and metrics are under{' '}
+          <span className="text-foreground/85 font-medium">Developer Evaluation</span>.
+        </p>
       ) : (
         <p className="text-muted-foreground m-0 text-[0.68rem] leading-relaxed">
           {FALLBACK_METRE_EXPLAINER}
