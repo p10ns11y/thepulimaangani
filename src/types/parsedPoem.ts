@@ -87,6 +87,44 @@ export interface ParsedParseFeatures {
   dense: number[]
 }
 
+/** One ranked dense feature from WASM `metre_ml.pattern_features`. */
+export interface ParsedPatternFeatureHit {
+  dense_index: number
+  feature_id: string
+  weight: number
+  direction: string
+}
+
+/** Dual-truth block from WASM `metre_ml.dual_truth`. */
+export interface ParsedDualTruthSurface {
+  ml_metre_type?: string | null
+  classical_metre_type?: string | null
+  classical_ok_for_ml_top?: boolean | null
+  classical_violations: string[]
+  separation_policy: string
+}
+
+/** Multi-head vote from WASM `metre_ml.head_votes`. */
+export interface ParsedHeadVote {
+  head_id: string
+  metre_type: string
+  score: number
+  note: string
+}
+
+/**
+ * Learner-facing ML product surface from WASM `metre_ml` (schema v2+).
+ * Classical violations are parallel — never fused into hybrid scores.
+ */
+export interface ParsedMetreMlSurface {
+  dual_truth: ParsedDualTruthSurface
+  pattern_features: ParsedPatternFeatureHit[]
+  head_votes: ParsedHeadVote[]
+  honesty_label: string
+  uncertainty_blurb: string
+  a12_freeze_date?: string | null
+}
+
 export interface ParsedPoem {
   original_text: string
   metre_type: string
@@ -106,6 +144,8 @@ export interface ParsedPoem {
   top_k_metre_hypotheses?: ParsedMetreHypothesis[]
   /** When present: 51-dim parse feature vector (WASM `parse_features`). */
   parse_features?: ParsedParseFeatures
+  /** Product ML surface: honesty, dual-truth, pattern features, multi-head votes. */
+  metre_ml?: ParsedMetreMlSurface
   errors?: string[]
 }
 

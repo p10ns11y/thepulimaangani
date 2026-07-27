@@ -41,6 +41,14 @@ export interface components {
             /** Format: uint */
             to_line: number;
         };
+        /** @description Dual-truth channels for UI (ML vs classical never fused into one score). */
+        DualTruthSurface: {
+            classical_metre_type?: string | null;
+            classical_ok_for_ml_top?: boolean | null;
+            classical_violations: string[];
+            ml_metre_type?: string | null;
+            separation_policy: string;
+        };
         Foot: {
             /**
              * Format: uint
@@ -67,6 +75,14 @@ export interface components {
              * @description 0-based index among feet that **start** on `line_index`.
              */
             word_index_in_line: number;
+        };
+        /** @description One head's vote for multi-head comparison UI. */
+        HeadVote: {
+            head_id: string;
+            metre_type: string;
+            note: string;
+            /** Format: float */
+            score: number;
         };
         Letter: {
             letter_type: components["schemas"]["LetterType"];
@@ -128,6 +144,15 @@ export interface components {
             rule_ids: components["schemas"]["RuleId"][];
             violations: components["schemas"]["RuleId"][];
         };
+        /** @description Learner-facing ML product block on ParseResult (WASM JSON `metre_ml`). */
+        MetreMlProductSurface: {
+            a12_freeze_date?: string | null;
+            dual_truth: components["schemas"]["DualTruthSurface"];
+            head_votes: components["schemas"]["HeadVote"][];
+            honesty_label: string;
+            pattern_features: components["schemas"]["PatternFeatureHit"][];
+            uncertainty_blurb: string;
+        };
         MetreType: ("Venpaa" | "Kalippaa" | "Vanjippaa") | "Aciriyappaa" | {
             Other: string;
         };
@@ -161,6 +186,8 @@ export interface components {
              * @description Top softmax minus second (hybrid head); larger means clearer top class on held-out geometry.
              */
             metre_epistemic_margin?: number | null;
+            /** @description Learner/product ML surface: dual-truth, pattern features, multi-head votes (never fused scores). */
+            metre_ml?: components["schemas"]["MetreMlProductSurface"] | null;
             metre_type?: components["schemas"]["MetreType"] | null;
             normalized_text: string;
             original_text: string;
@@ -193,6 +220,15 @@ export interface components {
             top_k_metre_hypotheses: components["schemas"]["MetreHypothesis"][];
             /** Format: uint */
             vikalpa_count: number;
+        };
+        /** @description One ranked dense feature for UI pattern cards. */
+        PatternFeatureHit: {
+            /** Format: uint32 */
+            dense_index: number;
+            direction: string;
+            feature_id: string;
+            /** Format: float */
+            weight: number;
         };
         /** @description One physical line of the normalized poem. */
         PoemLineNode: {

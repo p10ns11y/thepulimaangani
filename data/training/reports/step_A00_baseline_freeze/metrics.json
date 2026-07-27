@@ -1,0 +1,12 @@
+{
+  "bootstrap_top1_ci_95": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "correct_at_2": 1.0,
+  "mrr": 1.0,
+  "n": 17,
+  "status": "ADOPT",
+  "top1": 1.0
+}

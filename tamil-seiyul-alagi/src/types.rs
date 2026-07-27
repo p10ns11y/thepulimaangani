@@ -40,7 +40,8 @@ impl ParseOptions {
 
 /// Top-level `ParseResult` JSON shape version (WASM and serde consumers). Increment when the
 /// wire contract or cross-field invariants change. Missing field on deserialize means legacy (`0`).
-pub const PARSE_RESULT_SCHEMA_VERSION: u32 = 1;
+/// v2: optional `metre_ml` product surface (dual-truth, pattern features, multi-head votes).
+pub const PARSE_RESULT_SCHEMA_VERSION: u32 = 2;
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct ParseResult {
@@ -79,6 +80,9 @@ pub struct ParseResult {
     /// Human-facing labels (Tamil metre name, foot mnemonics, தளை strings). Same for all WASM clients.
     #[serde(default)]
     pub presentation: DisplayResult,
+    /// Learner/product ML surface: dual-truth, pattern features, multi-head votes (never fused scores).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub metre_ml: Option<MetreMlProductSurface>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
@@ -106,6 +110,45 @@ pub struct MetreHypothesis {
     /// 1-based rank after hybrid reorder (1 = most probable).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub metre_rank: Option<u8>,
+}
+
+/// One ranked dense feature for UI pattern cards.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema)]
+pub struct PatternFeatureHit {
+    pub dense_index: u32,
+    pub feature_id: String,
+    pub weight: f32,
+    pub direction: String,
+}
+
+/// Dual-truth channels for UI (ML vs classical never fused into one score).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema, Default)]
+pub struct DualTruthSurface {
+    pub ml_metre_type: Option<String>,
+    pub classical_metre_type: Option<String>,
+    pub classical_ok_for_ml_top: Option<bool>,
+    pub classical_violations: Vec<String>,
+    pub separation_policy: String,
+}
+
+/// One head's vote for multi-head comparison UI.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema)]
+pub struct HeadVote {
+    pub head_id: String,
+    pub metre_type: String,
+    pub score: f32,
+    pub note: String,
+}
+
+/// Learner-facing ML product block on ParseResult (WASM JSON `metre_ml`).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema, Default)]
+pub struct MetreMlProductSurface {
+    pub dual_truth: DualTruthSurface,
+    pub pattern_features: Vec<PatternFeatureHit>,
+    pub head_votes: Vec<HeadVote>,
+    pub honesty_label: String,
+    pub uncertainty_blurb: String,
+    pub a12_freeze_date: Option<String>,
 }
 
 fn feet_from_linguistic_words(lws: &[LinguisticWordNode], next_global: &mut usize) -> Vec<Foot> {

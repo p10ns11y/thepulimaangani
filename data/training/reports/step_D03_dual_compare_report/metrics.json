@@ -1,0 +1,6 @@
+{
+  "mrr": 1.0,
+  "n": 17,
+  "separation_policy": "ml_scores_parallel_to_classical_violations",
+  "top1": 1.0
+}

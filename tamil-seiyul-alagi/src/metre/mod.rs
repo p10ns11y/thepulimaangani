@@ -8,7 +8,7 @@ mod fractions;
 pub mod ml_head;
 mod prediction;
 
-pub use classical_checker::classical_violations_for_metre;
+pub use classical_checker::{classical_violations_for_metre, dual_compare_label};
 pub use fractions::linkage_coarse_fractions;
 pub use prediction::{
     boost_metre_hypotheses_with_dense, detect_metre_hypotheses, sort_metre_hypotheses_by_score,
@@ -113,15 +113,17 @@ mod ontology_enum_tests {
     }
 
     #[test]
-    fn classical_channel_placeholder_returns_no_violations() {
+    fn classical_channel_empty_feet_flagged_when_active() {
         use crate::foot::Foot;
         use crate::linkage::Linkage;
         let empty_feet: &[Foot] = &[];
         let empty_link: &[Linkage] = &[];
+        // D01 active after A12 freeze: empty feet is a classical structural flag.
         for m in &METRE_TYPE_NAMED {
+            let v = classical_violations_for_metre(m, empty_feet, empty_link);
             assert!(
-                classical_violations_for_metre(m, empty_feet, empty_link).is_empty(),
-                "classical checker must stay empty until D01 for {m:?}"
+                v.iter().any(|s| s.contains("empty_feet")),
+                "expected empty_feet flag for {m:?}, got {v:?}"
             );
         }
     }

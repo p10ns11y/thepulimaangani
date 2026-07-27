@@ -27,7 +27,7 @@ use crate::types::PARSE_RESULT_SCHEMA_VERSION;
 /// Bump when the published ledger freeze set changes: constituent version
 /// policy, schema-id set, dual-truth / classical isolation, or split policy
 /// summary that A\* steps are allowed to read.
-pub const SOA_LEDGER_VERSION: u32 = 1;
+pub const SOA_LEDGER_VERSION: u32 = 2;
 
 /// Schema / catalog ids frozen by this ledger (machine keys for reports).
 ///
@@ -75,9 +75,9 @@ pub fn soa_dual_truth_channel_ids() -> &'static [&'static str] {
 
 /// Whether classical_checker is allowed to emit non-empty violations in this freeze.
 ///
-/// Always `false` until D01+ with explicit `allow_classical`.
+/// True after A12 pattern freeze (gates D01 classical dual path).
 pub fn soa_classical_checker_active() -> bool {
-    false
+    crate::ml_eval::classical_path_allowed()
 }
 
 /// Compact fingerprint string of schema ids (stable for logs / metrics JSON).
@@ -166,17 +166,18 @@ mod tests {
         assert_eq!(ANTHOLOGY_INVENTORY_VERSION, 1);
         assert_eq!(PARSE_FEATURE_SCHEMA_VERSION, 1);
         assert_eq!(PARSE_FEATURE_DENSE_LEN, 51);
-        assert_eq!(PARSE_RESULT_SCHEMA_VERSION, 1);
+        assert_eq!(PARSE_RESULT_SCHEMA_VERSION, 2);
         assert_eq!(METRE_ML_WEIGHT_SCHEMA, 3);
+        assert_eq!(SOA_LEDGER_VERSION, 2);
     }
 
     #[test]
     fn schema_fingerprint_string_stable_shape() {
         let fp = soa_schema_fingerprint_string();
-        assert!(fp.starts_with("soa=1;ont=1;sem=1;anth=1;"));
+        assert!(fp.starts_with("soa=2;ont=1;sem=1;anth=1;"));
         assert!(fp.contains("dense_schema=1"));
         assert!(fp.contains("dense_len=51"));
-        assert!(fp.contains("parse_result=1"));
+        assert!(fp.contains("parse_result=2"));
         assert!(fp.contains("ml_weight=3"));
     }
 
@@ -211,16 +212,18 @@ mod tests {
     fn dual_truth_and_classical_isolation() {
         assert_eq!(soa_dual_truth_channel_ids(), ontology_dual_truth_channel_ids());
         assert_eq!(soa_dual_truth_channel_ids(), &["ml_metre", "classical_metre"]);
-        assert!(!soa_classical_checker_active());
+        // A12 freeze unlocks D01 classical path (violations annotate; never fuse into hybrid score).
+        assert!(soa_classical_checker_active());
         for m in [
             MetreType::Venpaa,
             MetreType::Aciriyappaa,
             MetreType::Kalippaa,
             MetreType::Vanjippaa,
         ] {
+            let v = classical_violations_for_metre(&m, &[], &[]);
             assert!(
-                classical_violations_for_metre(&m, &[], &[]).is_empty(),
-                "classical_checker must stay empty pre-D01 for {m:?}"
+                v.iter().any(|s| s.contains("empty_feet")),
+                "classical D01 flags empty feet for {m:?}, got {v:?}"
             );
         }
     }
