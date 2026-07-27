@@ -8,10 +8,18 @@
 /** Production origin used for absolute Open Graph / Twitter image URLs. */
 export const SITE_ORIGIN = 'https://seiyul-alagi.vercel.app'
 
-/** Default share card under `public/` (1200×630). */
-export const DEFAULT_OG_IMAGE_PATH = '/og-default.png'
+/**
+ * Default share card under `public/` (1200×630).
+ * Derived from the repo README Grok Imagine banner (`images/readme-banner.jpg`)
+ * via Imagine edit + center-crop — not a programmatic placeholder.
+ */
+export const DEFAULT_OG_IMAGE_PATH = '/og-default.jpg'
+
+/** Secondary Imagine card (temple courtyard + prosody lab motif). */
+export const PROSODY_LAB_OG_IMAGE_PATH = '/og-prosody-lab.jpg'
 
 export const DEFAULT_OG_IMAGE_URL = `${SITE_ORIGIN}${DEFAULT_OG_IMAGE_PATH}`
+export const PROSODY_LAB_OG_IMAGE_URL = `${SITE_ORIGIN}${PROSODY_LAB_OG_IMAGE_PATH}`
 
 export type SeoPageKey =
   | 'home'
@@ -113,11 +121,22 @@ export type BuildSeoMetaOptions = {
  * Build title + description + Open Graph + Twitter card meta for a page.
  * Pure: no DOM, no router — unit-testable contract for route `head` wiring.
  */
+/** Default image per page: home uses README intro art; lab pages may use the courtyard card. */
+export function defaultImageUrlForPage(page: SeoPageKey): string {
+  if (page === 'home' || page === 'about') {
+    return DEFAULT_OG_IMAGE_URL
+  }
+  // About deep pages + Dev Eval: same strong brand card (intro scene)
+  // Prosody-lab courtyard is available as PROSODY_LAB_OG_IMAGE_URL for callers.
+  return DEFAULT_OG_IMAGE_URL
+}
+
 export function buildSeoMeta(options: BuildSeoMetaOptions): SeoMetaEntry[] {
   const { title, description } = getPageSeoCopy(options.page, {
     tab: options.tab,
   })
-  const imageUrl = options.imageUrl ?? DEFAULT_OG_IMAGE_URL
+  const imageUrl =
+    options.imageUrl ?? defaultImageUrlForPage(options.page)
   const pageUrl =
     options.pageUrl ??
     absolutePageUrl(options.page, options.tab)

@@ -43,7 +43,7 @@ describe('seo helpers', () => {
   it('exports a documented production origin and default OG path', () => {
     expect(SITE_ORIGIN).toMatch(/^https:\/\//)
     expect(SITE_ORIGIN).toContain('seiyul-alagi.vercel.app')
-    expect(DEFAULT_OG_IMAGE_PATH).toBe('/og-default.png')
+    expect(DEFAULT_OG_IMAGE_PATH).toBe('/og-default.jpg')
     expect(DEFAULT_OG_IMAGE_URL).toBe(`${SITE_ORIGIN}${DEFAULT_OG_IMAGE_PATH}`)
   })
 
