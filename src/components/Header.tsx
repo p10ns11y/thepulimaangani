@@ -90,6 +90,16 @@ export default function Header() {
             >
               About
             </Link>
+            <Link
+              to="/developer-evaluation"
+              title="Developer Evaluation — how metre ML works"
+              className="nav-link rounded-md px-2.5 py-1.5 text-sm font-medium sm:px-2.5"
+              activeProps={{
+                className: 'nav-link is-active rounded-md px-2.5 py-1.5 text-sm font-medium sm:px-2.5',
+              }}
+            >
+              Dev Eval
+            </Link>
           </div>
 
           <div className="hidden h-5 w-px shrink-0 bg-[var(--line)] sm:block" aria-hidden />

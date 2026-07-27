@@ -1,4 +1,9 @@
+import { Link } from '@tanstack/react-router'
+
 import { SocialLinks } from '#/components/SocialLinks'
+
+const footerNavClass =
+  'text-[var(--sea-ink-soft)] text-sm font-medium no-underline transition hover:text-[var(--sea-ink)] focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lagoon)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-base)]'
 
 export default function Footer() {
   const year = new Date().getFullYear()
@@ -23,6 +28,31 @@ export default function Footer() {
             .
           </p>
         </div>
+
+        <nav
+          aria-label="Site"
+          className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1"
+        >
+          <Link to="/" className={footerNavClass}>
+            Home
+          </Link>
+          <span className="text-[var(--line)] select-none" aria-hidden>
+            ·
+          </span>
+          <Link to="/about" className={footerNavClass}>
+            About
+          </Link>
+          <span className="text-[var(--line)] select-none" aria-hidden>
+            ·
+          </span>
+          <Link
+            to="/developer-evaluation"
+            className={footerNavClass}
+            title="How metre ML works"
+          >
+            Developer Evaluation
+          </Link>
+        </nav>
 
         <SocialLinks
           iconSize={22}
