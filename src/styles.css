@@ -542,7 +542,8 @@ html[data-look="redpill"] .nav-link::after {
 
 .site-footer {
   border-top: 1px solid var(--line);
-  background: color-mix(in oklab, var(--header-bg) 84%, transparent 16%);
+  background: color-mix(in oklab, var(--header-bg) 88%, transparent 12%);
+  color: var(--sea-ink-soft);
 }
 
 .rise-in {
