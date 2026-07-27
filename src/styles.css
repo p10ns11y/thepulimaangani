@@ -13,119 +13,120 @@
   --font-heading: "Geist Variable", "Manrope", ui-sans-serif, system-ui, sans-serif;
 }
 
-/* ——— Real (default) ——— */
+/* ——— Real (default) — eye-comfort restraint: warm paper / warm charcoal / sage–amber ——— */
+/* Identity locks inspired by arch-machine eye-comfort light (not pure #FFF / cool cyber night). */
 :root {
-  --sea-ink: #173a40;
-  --sea-ink-soft: #416166;
-  --lagoon: #4fb8b2;
-  --lagoon-deep: #328f97;
-  --palm: #2f6a4a;
+  --motion-fast: 180ms;
+  --motion-medium: 240ms;
+  --motion-ease: cubic-bezier(0.16, 1, 0.3, 1);
 
-  --metal-gold-50: #faf6ef;
-  --metal-gold-200: #e8dcc4;
-  --metal-gold-400: #c4a24a;
-  --metal-gold-600: #8f6f2a;
-  --metal-silver-100: #f4f4f2;
-  --metal-silver-300: #c9cbc8;
-  --metal-silver-500: #8e918c;
+  /* Warm charcoal ink + sage structure (H≈164°) + amber attention (H≈80°) */
+  --sea-ink: #2a2622;
+  --sea-ink-soft: #6e665c;
+  --lagoon: #5f8f7e;
+  --lagoon-deep: #4a6b5c;
+  --palm: #4a6b5c;
+
+  --metal-gold-50: #f5f0e8;
+  --metal-gold-200: #e0d9ce;
+  --metal-gold-400: #c9a66b;
+  --metal-gold-600: #8a6030;
+  --metal-silver-100: #f0ebe3;
+  --metal-silver-300: #c4bbb0;
+  --metal-silver-500: #8a8278;
   --metal-bronze-200: #e5d2c2;
-  --metal-bronze-500: #8b5e3c;
+  --metal-bronze-500: #8b6b4e;
   --metal-bronze-700: #5c3d24;
-  --diamond-ice: #f4fbff;
-  --diamond-glint: rgba(255, 255, 255, 0.85);
-  --diamond-cool: rgba(186, 220, 255, 0.45);
-  --diamond-bloom: rgba(200, 230, 255, 0.28);
-  --gem-diamond: #7aa8d8;
-  --gem-ruby: #c43b4b;
-  --gem-pearl: #e8e4dc;
-  --gem-coral: #c75c3a;
-  --gem-emerald: #2f8f6a;
-  --gem-yellow-sapphire: #c9a227;
-  --gem-blue-sapphire: #2a5f9a;
-  --gem-hessonite: #8b4d2a;
+  /* Soft parchment ice — warm, not cyan slab */
+  --diamond-ice: #f7f3ec;
+  --diamond-glint: rgba(255, 250, 242, 0.82);
+  --diamond-cool: rgba(200, 214, 204, 0.42);
+  --diamond-bloom: rgba(232, 214, 180, 0.32);
+  --gem-diamond: #6d8f9a;
+  --gem-ruby: #b54a40;
+  --gem-pearl: #e8e2d8;
+  --gem-coral: #8b6020;
+  --gem-emerald: #4a6b5c;
+  --gem-yellow-sapphire: #8a6030;
+  --gem-blue-sapphire: #4a6470;
+  --gem-hessonite: #8b6b4e;
   --gem-cats-eye: #5a5c4e;
 
-  --sand: color-mix(in oklab, #e7f0e8 93%, var(--gem-ruby) 2%);
-  --foam: color-mix(in oklab, #f3faf5 94%, var(--gem-ruby) 1.3%);
-  --surface: color-mix(in oklab, rgba(255, 255, 255, 0.74) 96%, var(--gem-ruby) 1.5%);
-  --surface-strong: color-mix(in oklab, rgba(255, 255, 255, 0.9) 95%, var(--metal-gold-50) 3%);
-  --line: color-mix(in oklab, rgba(23, 58, 64, 0.14) 90%, var(--gem-ruby) 1.1%);
-  --inset-glint: rgba(255, 255, 255, 0.82);
-  --kicker: rgba(47, 106, 74, 0.9);
-  --bg-base: color-mix(in oklab, #eef1ec 86%, var(--gem-ruby) 2.1%);
-  --header-bg: color-mix(in oklab, rgba(255, 255, 255, 0.92) 88%, var(--metal-gold-50) 9%);
-  --brand-mark-a: #56c6be;
-  --brand-mark-b: #3d9a94;
-  --brand-mark-glow: rgba(30, 90, 72, 0.07);
-  --island-shadow-deep: rgba(30, 90, 72, 0.1);
-  --island-shadow-mid: rgba(23, 58, 64, 0.08);
-  --chip-bg: color-mix(in oklab, rgba(255, 255, 255, 0.8) 92%, var(--metal-gold-50) 5%);
-  --chip-line: color-mix(in oklab, rgba(47, 106, 74, 0.18) 88%, var(--gem-ruby) 0.5%);
-  --link-bg-hover: color-mix(in oklab, rgba(255, 255, 255, 0.9) 94%, var(--metal-gold-50) 4%);
-  --surface-1: color-mix(in oklab, var(--metal-silver-100) 88%, var(--metal-gold-50) 12%);
-  --surface-2: color-mix(in oklab, white 76%, var(--metal-gold-200) 24%);
-  --surface-3: color-mix(in oklab, var(--diamond-ice) 70%, var(--gem-pearl) 30%);
-  --rim: color-mix(in oklab, var(--metal-gold-400) 32%, var(--line) 68%);
+  --sand: color-mix(in oklab, #f0ebe3 94%, var(--metal-bronze-500) 4%);
+  --foam: color-mix(in oklab, #f8f4ed 96%, var(--metal-gold-200) 3%);
+  --surface: color-mix(in oklab, rgba(255, 250, 242, 0.78) 94%, var(--metal-gold-50) 5%);
+  --surface-strong: color-mix(in oklab, rgba(255, 251, 245, 0.92) 93%, var(--metal-gold-50) 6%);
+  --line: color-mix(in oklab, rgba(42, 38, 34, 0.12) 92%, var(--metal-bronze-500) 4%);
+  --inset-glint: rgba(255, 251, 245, 0.78);
+  --kicker: color-mix(in oklab, var(--palm) 88%, var(--metal-gold-600) 12%);
+  --bg-base: #f5f0e8;
+  --header-bg: color-mix(in oklab, rgba(255, 251, 245, 0.94) 86%, var(--metal-gold-50) 12%);
+  --brand-mark-a: #5f8f7e;
+  --brand-mark-b: #4a6b5c;
+  --brand-mark-glow: rgba(74, 107, 92, 0.08);
+  --island-shadow-deep: rgba(42, 38, 34, 0.09);
+  --island-shadow-mid: rgba(42, 38, 34, 0.06);
+  --chip-bg: color-mix(in oklab, rgba(255, 251, 245, 0.86) 90%, var(--metal-gold-50) 8%);
+  --chip-line: color-mix(in oklab, rgba(74, 107, 92, 0.18) 90%, var(--metal-bronze-500) 4%);
+  --link-bg-hover: color-mix(in oklab, rgba(255, 251, 245, 0.94) 92%, var(--metal-gold-200) 6%);
+  --surface-1: color-mix(in oklab, var(--metal-silver-100) 82%, var(--metal-gold-50) 18%);
+  --surface-2: color-mix(in oklab, #faf6ef 72%, var(--metal-gold-200) 28%);
+  --surface-3: color-mix(in oklab, var(--diamond-ice) 74%, var(--gem-pearl) 26%);
+  --rim: color-mix(in oklab, var(--metal-gold-400) 28%, var(--line) 72%);
   --accent-primary: var(--gem-yellow-sapphire);
-  --accent-secondary: var(--gem-blue-sapphire);
-  --sparkle: color-mix(in oklab, var(--diamond-cool) 55%, var(--diamond-bloom) 45%);
-  --sparkle-veil: color-mix(in oklab, var(--foreground) 7%, transparent);
+  --accent-secondary: var(--lagoon-deep);
+  --sparkle: color-mix(in oklab, var(--diamond-cool) 48%, var(--diamond-bloom) 52%);
+  --sparkle-veil: color-mix(in oklab, var(--foreground) 6%, transparent);
   --status-error: var(--gem-ruby);
   --status-warning: var(--gem-coral);
   --status-success: var(--gem-emerald);
   --status-neutral: var(--gem-pearl);
 
-  --syllable-ner-border: color-mix(in oklab, var(--gem-blue-sapphire) 42%, var(--lagoon-deep) 58%);
-  --syllable-ner-bg: color-mix(in oklab, var(--lagoon) 18%, white 82%);
-  --syllable-ner-text: color-mix(in oklab, var(--gem-blue-sapphire) 22%, var(--lagoon-deep) 78%);
-  --syllable-ner-tint-to: color-mix(in oklab, var(--lagoon) 10%, white 90%);
-  --syllable-nirai-border: color-mix(in oklab, var(--gem-emerald) 40%, var(--palm) 60%);
-  --syllable-nirai-bg: color-mix(in oklab, var(--palm) 14%, white 86%);
-  --syllable-nirai-text: color-mix(in oklab, var(--palm) 92%, var(--gem-hessonite) 8%);
-  --syllable-nirai-tint-to: color-mix(in oklab, var(--palm) 7%, white 93%);
-  --syllable-ner-swatch: color-mix(in oklab, var(--gem-blue-sapphire) 32%, var(--lagoon) 68%);
-  --syllable-nirai-swatch: color-mix(in oklab, var(--gem-emerald) 45%, var(--palm) 55%);
+  /* நேர் vs நிரை — distinct cool slate-teal vs warm olive (eye-comfort paper, scannable) */
+  --syllable-ner-border: #3d6f8c;
+  --syllable-ner-bg: color-mix(in oklab, #5a8fad 18%, var(--metal-gold-50) 82%);
+  --syllable-ner-text: #2a5568;
+  --syllable-ner-tint-to: color-mix(in oklab, #5a8fad 8%, var(--metal-gold-50) 92%);
+  --syllable-ner-swatch: #4a7f9a;
+  --syllable-nirai-border: #5f7a3d;
+  --syllable-nirai-bg: color-mix(in oklab, #6a8f52 16%, var(--metal-gold-50) 84%);
+  --syllable-nirai-text: #3a5228;
+  --syllable-nirai-tint-to: color-mix(in oklab, #6a8f52 7%, var(--metal-gold-50) 93%);
+  --syllable-nirai-swatch: #5f8a48;
 
-  --background: color-mix(in oklab, white 94.5%, var(--gem-ruby) 2.2%);
-  --foreground: oklch(0.145 0 0);
-  --card: color-mix(
-    in oklab,
-    color-mix(in oklab, white 90%, var(--metal-gold-50) 8%) 97%,
-    var(--gem-ruby) 1.6%
-  );
-  --card-foreground: oklch(0.145 0 0);
-  --popover: color-mix(
-    in oklab,
-    color-mix(in oklab, white 91%, var(--metal-gold-50) 7%) 97.2%,
-    var(--gem-ruby) 1.2%
-  );
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: color-mix(in oklab, oklch(0.97 0 0) 96%, var(--metal-gold-50) 2.2%);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: color-mix(in oklab, oklch(0.97 0 0) 97%, var(--gem-ruby) 0.45%);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: color-mix(in oklab, oklch(0.97 0 0) 96%, var(--metal-gold-200) 2.5%);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: color-mix(in oklab, oklch(0.922 0 0) 94%, var(--gem-ruby) 0.4%);
-  --input: color-mix(in oklab, oklch(0.922 0 0) 95%, var(--metal-gold-50) 1.5%);
-  --ring: color-mix(in oklab, oklch(0.708 0 0) 92%, var(--gem-yellow-sapphire) 1.2%);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  /* Warm paper canvas — never pure white / pure black */
+  --background: #f5f0e8;
+  --foreground: #2a2622;
+  --card: color-mix(in oklab, #faf6ef 92%, var(--metal-gold-200) 8%);
+  --card-foreground: #2a2622;
+  --popover: color-mix(in oklab, #faf6ef 94%, var(--metal-gold-50) 6%);
+  --popover-foreground: #2a2622;
+  --primary: #2a2622;
+  --primary-foreground: #f5f0e8;
+  --secondary: color-mix(in oklab, #f0ebe3 94%, var(--metal-gold-200) 6%);
+  --secondary-foreground: #2a2622;
+  --muted: color-mix(in oklab, #ebe4da 96%, var(--metal-bronze-500) 2%);
+  --muted-foreground: #6e665c;
+  --accent: color-mix(in oklab, #f0ebe3 88%, var(--metal-gold-200) 12%);
+  --accent-foreground: #2a2622;
+  --destructive: #b54a40;
+  --border: color-mix(in oklab, #e0d9ce 88%, rgba(42, 38, 34, 0.14) 12%);
+  --input: color-mix(in oklab, #ebe4da 94%, var(--metal-gold-50) 6%);
+  --ring: color-mix(in oklab, var(--metal-gold-400) 55%, var(--lagoon-deep) 45%);
+  --chart-1: color-mix(in oklab, var(--metal-gold-200) 70%, var(--metal-gold-400) 30%);
+  --chart-2: #6e665c;
+  --chart-3: #4a6b5c;
+  --chart-4: #8a6030;
+  --chart-5: #2a2622;
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: #faf6ef;
+  --sidebar-foreground: #2a2622;
+  --sidebar-primary: #4a6b5c;
+  --sidebar-primary-foreground: #f5f0e8;
+  --sidebar-accent: #f0ebe3;
+  --sidebar-accent-foreground: #2a2622;
+  --sidebar-border: #e0d9ce;
+  --sidebar-ring: var(--ring);
 }
 
 /* ——— Redpill ——— */
@@ -285,11 +286,12 @@ body {
 }
 
 html[data-look="real"] body {
+  /* Soft vertical wash — warm paper, residual gold at base (eye-comfort day) */
   background-image: linear-gradient(
     180deg,
-    color-mix(in oklab, var(--foam) 100%, var(--gem-ruby) 0.2%) 0%,
-    var(--bg-base) 42%,
-    color-mix(in oklab, var(--bg-base) 91%, var(--metal-gold-200) 5%) 100%
+    color-mix(in oklab, var(--foam) 96%, var(--metal-gold-50) 4%) 0%,
+    var(--bg-base) 46%,
+    color-mix(in oklab, var(--bg-base) 90%, var(--metal-gold-200) 10%) 100%
   );
 }
 
@@ -413,10 +415,76 @@ button,
 .island-shell,
 a {
   transition:
-    background-color 180ms ease,
-    color 180ms ease,
-    border-color 180ms ease,
-    transform 180ms ease;
+    background-color var(--motion-fast, 180ms) ease,
+    color var(--motion-fast, 180ms) ease,
+    border-color var(--motion-fast, 180ms) ease,
+    transform var(--motion-fast, 180ms) ease,
+    box-shadow var(--motion-fast, 180ms) ease;
+}
+
+/* Structure accordion — purposeful expand chevron + focus, no page-load spectacle */
+.structure-accordion-trigger {
+  transition:
+    background-color var(--motion-fast, 180ms) ease,
+    color var(--motion-fast, 180ms) ease;
+}
+
+.structure-accordion-chevron {
+  transition: transform var(--motion-fast, 180ms) var(--motion-ease, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.structure-accordion-panel {
+  animation: structure-panel-in var(--motion-medium, 240ms) var(--motion-ease, cubic-bezier(0.16, 1, 0.3, 1)) both;
+}
+
+/* Certainty chips — semantic surfaces (Metre panel); keep hex out of components */
+.certainty-surface--clear {
+  background: color-mix(in oklab, var(--status-success) 12%, var(--surface-2) 88%);
+}
+
+.certainty-surface--mixed {
+  background: color-mix(in oklab, var(--status-warning) 14%, var(--surface-2) 86%);
+}
+
+.certainty-surface--uncertain {
+  background: color-mix(in oklab, var(--surface-2) 88%, transparent);
+}
+
+.structure-disclosure-summary {
+  transition: color var(--motion-fast, 180ms) ease;
+}
+
+.structure-disclosure-summary:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--surface-1),
+    0 0 0 4px color-mix(in oklab, var(--ring) 60%, transparent);
+}
+
+@keyframes structure-panel-in {
+  from {
+    opacity: 0.55;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button,
+  .island-shell,
+  a,
+  .structure-accordion-trigger,
+  .structure-accordion-chevron,
+  .structure-disclosure-summary {
+    transition: none;
+  }
+
+  .structure-accordion-panel {
+    animation: none;
+  }
 }
 
 .island-kicker {
@@ -502,7 +570,7 @@ html[data-look="redpill"] .nav-link::after {
 
 .prosody-metre-grid {
   min-height: 0;
-  align-items: stretch;
+  align-items: center;
   height: auto;
 }
 
@@ -519,6 +587,26 @@ html[data-look="redpill"] .nav-link::after {
 .prosody-poem-input::-webkit-scrollbar-thumb {
   border-radius: 4px;
   background: color-mix(in oklab, var(--rim) 42%, transparent);
+}
+
+/* Left-rail poem preview: no h-scroll chrome; thin themed v-scroll if content is tall */
+.prosody-poem-preview-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--rim) 45%, transparent) transparent;
+}
+
+.prosody-poem-preview-scroll::-webkit-scrollbar {
+  width: 5px;
+  height: 0; /* hide horizontal track */
+}
+
+.prosody-poem-preview-scroll::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: color-mix(in oklab, var(--rim) 48%, transparent);
+}
+
+.prosody-poem-preview-scroll::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .prosody-poem-editor-dock-outer {
@@ -738,23 +826,23 @@ html[data-look="redpill"] .luxe-prosody-card {
     0 4px 24px color-mix(in oklab, var(--gem-diamond) 8%, transparent);
 }
 
-/* Select dropdown — real (light): same language as .luxe-prosody-card + cool lagoon air */
+/* Select dropdown — real (light): warm paper + sage rim (eye-comfort) */
 .luxe-select-content {
   isolation: isolate;
   background-color: var(--card);
   background-image: linear-gradient(
     165deg,
-    color-mix(in oklab, var(--diamond-ice) 28%, var(--surface-1) 72%) 0%,
-    color-mix(in oklab, var(--surface-1) 55%, var(--surface-2) 45%) 45%,
-    color-mix(in oklab, var(--surface-2) 90%, var(--gem-ruby) 0.8%) 100%
+    color-mix(in oklab, var(--diamond-ice) 32%, var(--surface-1) 68%) 0%,
+    color-mix(in oklab, var(--surface-1) 58%, var(--surface-2) 42%) 48%,
+    color-mix(in oklab, var(--surface-2) 92%, var(--metal-gold-200) 8%) 100%
   );
   color: var(--popover-foreground);
   border: 1px solid var(--rim);
   box-shadow:
     0 1px 0 var(--diamond-glint) inset,
     0 10px 32px color-mix(in oklab, var(--foreground) 3.2%, transparent),
-    0 0 0 1px color-mix(in oklab, var(--lagoon) 7%, var(--rim) 38%, transparent 55%),
-    0 4px 18px color-mix(in oklab, var(--lagoon) 4.5%, transparent);
+    0 0 0 1px color-mix(in oklab, var(--lagoon-deep) 8%, var(--rim) 40%, transparent 52%),
+    0 4px 18px color-mix(in oklab, var(--lagoon-deep) 4%, transparent);
 }
 
 html[data-look="redpill"] .luxe-select-content {

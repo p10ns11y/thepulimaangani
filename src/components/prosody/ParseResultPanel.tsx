@@ -20,6 +20,10 @@ type ParseResultPanelProps = {
   pinLiveEndWhileEditing?: boolean
   /** Explicit opt-in for follow mode; default keeps editing calm with no forced scrolling. */
   autoFollowLivePreview?: boolean
+  /** Opens bottom poem editor (shown next to Live / Structure / Text flow). */
+  onOpenEditor?: () => void
+  /** Opens empty typewriter for a new poem. */
+  onOpenNew?: () => void
   className?: string
 }
 
@@ -32,6 +36,8 @@ export function ParseResultPanel({
   live,
   pinLiveEndWhileEditing = false,
   autoFollowLivePreview = false,
+  onOpenEditor,
+  onOpenNew,
   className,
 }: ParseResultPanelProps) {
   const syncedJson = useMemo(
@@ -97,6 +103,8 @@ export function ParseResultPanel({
           pinLiveEndWhileEditing={pinLiveEndWhileEditing}
           autoFollowLivePreview={autoFollowLivePreview}
           hasText={hasText}
+          onOpenEditor={onOpenEditor}
+          onOpenNew={onOpenNew}
         />
       </CardContent>
     </Card>
