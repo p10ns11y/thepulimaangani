@@ -4,18 +4,20 @@
  * Target card: `summary_large_image` with absolute HTTPS `twitter:image`.
  * Image: 1200×600 (2:1) baseline JPEG under `public/` (X large-card crop).
  * Site origin is the production homepage (absolute image URLs for Twitterbot).
+ *
+ * Page-specific Imagine share cards live under `public/og-*.jpg`.
  */
 
 /** Production origin used for absolute Open Graph / X image URLs. */
 export const SITE_ORIGIN = 'https://seiyul-alagi.vercel.app'
 
 /**
- * Default X large card under `public/` (1200×600, 2:1).
+ * Default / home X large card (1200×600, 2:1).
  * Derived from the README Grok Imagine banner via Imagine edit + crop.
  */
 export const DEFAULT_OG_IMAGE_PATH = '/og-default.jpg'
 
-/** Secondary Imagine card (temple courtyard + prosody lab motif). */
+/** Secondary home/lab motif (temple courtyard + floating syllables). */
 export const PROSODY_LAB_OG_IMAGE_PATH = '/og-prosody-lab.jpg'
 
 /** X summary_large_image recommended dimensions (exact 2:1). */
@@ -40,6 +42,18 @@ export type SeoPageKey =
 
 export type DevEvalTabKey = 'simple' | 'research' | 'docs'
 
+/** Static paths for Imagine-generated page share cards (under `public/`). */
+export const PAGE_OG_IMAGE_PATHS = {
+  home: DEFAULT_OG_IMAGE_PATH,
+  about: '/og-about.jpg',
+  'about-history': '/og-about-history.jpg',
+  'about-timeline': '/og-about-timeline.jpg',
+  'developer-evaluation': '/og-developer-evaluation.jpg',
+  /** Dev Eval tab overrides (research / docs); simple uses page default. */
+  'dev-eval-research': '/og-dev-eval-research.jpg',
+  'dev-eval-docs': '/og-dev-eval-docs.jpg',
+} as const
+
 export type PageSeoCopy = {
   title: string
   description: string
@@ -59,25 +73,29 @@ const PAGE_COPY: Record<SeoPageKey, PageSeoCopy> = {
     title: 'About — Thepulimaangani',
     description:
       'Tamil prosody on the open web: Sangam metre rules, WebAssembly parsing, and tools inspired by Avalokitam — rebuilt for the modern browser.',
-    imageAlt: 'About Thepulimaangani — Tamil prosody on the open web',
+    imageAlt:
+      'About Thepulimaangani — temple library with palm-leaf manuscripts and open-web glow',
   },
   'about-history': {
     title: 'History of Tamil Prosody — Thepulimaangani',
     description:
       'How Tamil Yappu relates to Sanskrit, Greek, and Latin prosody — comparative history of metre, acai, and literary contact.',
-    imageAlt: 'History of Tamil prosody — Thepulimaangani',
+    imageAlt:
+      'History of Tamil prosody — meeting of palm-leaf, manuscript, and classical stone traditions',
   },
   'about-timeline': {
     title: 'Timeline of Tamil Prosody — Thepulimaangani',
     description:
       'Key milestones in Tamil grammar and prosody across historical periods — from foundational texts to comparative traditions.',
-    imageAlt: 'Timeline of Tamil prosody — Thepulimaangani',
+    imageAlt:
+      'Timeline of Tamil prosody — luminous milestones over a temple silhouette',
   },
   'developer-evaluation': {
     title: 'Developer Evaluation · Metre ML — Thepulimaangani',
     description:
       'First-principles guide to metre ML: dense features, multi-head votes, entropy, dual-truth, and ADOPT — without classical over-claim.',
-    imageAlt: 'Developer Evaluation: how metre ML works in Thepulimaangani',
+    imageAlt:
+      'Developer Evaluation — classical prosody and metre ML dual-truth side by side',
   },
 }
 
@@ -89,19 +107,22 @@ const DEV_EVAL_TAB_COPY: Record<
     titleSuffix: 'Simple guide',
     description:
       'Plain-language story of how metre guessing works: structure engine, small model votes, and classical flags kept separate.',
-    imageAlt: 'Simple guide — how metre guessing works in Thepulimaangani',
+    imageAlt:
+      'Simple guide — classical prosody and metre ML dual-truth side by side',
   },
   research: {
     titleSuffix: 'Research fields',
     description:
       'Research catalogue of control, ML, information, and mining fields behind the Prosody Lab developer evaluation panel.',
-    imageAlt: 'Research fields — metre ML catalogue in Thepulimaangani',
+    imageAlt:
+      'Research fields — holographic research panels under a temple colonnade',
   },
   docs: {
     titleSuffix: 'Training & docs',
     description:
       'How metre models are trained and where the portfolio docs live: beginner guide, methods portfolio, and PARSE_FEATURES.',
-    imageAlt: 'Training and docs — metre ML portfolio in Thepulimaangani',
+    imageAlt:
+      'Training and docs — palm-leaf manuscripts and a glowing training ledger',
   },
 }
 
@@ -140,6 +161,33 @@ export function getPageSeoCopy(
   return { ...PAGE_COPY[page] }
 }
 
+/** Absolute HTTPS URL for a public path. */
+export function absoluteAssetUrl(path: string): string {
+  if (path.startsWith('http://') || path.startsWith('https://')) return path
+  const normalized = path.startsWith('/') ? path : `/${path}`
+  return `${SITE_ORIGIN}${normalized}`
+}
+
+/**
+ * Pick the Imagine share image for a page (and optional Dev Eval tab).
+ * Home uses the README banner card; other routes use page-specific art.
+ */
+export function defaultImageUrlForPage(
+  page: SeoPageKey,
+  tab?: DevEvalTabKey,
+): string {
+  if (page === 'developer-evaluation') {
+    if (tab === 'research') {
+      return absoluteAssetUrl(PAGE_OG_IMAGE_PATHS['dev-eval-research'])
+    }
+    if (tab === 'docs') {
+      return absoluteAssetUrl(PAGE_OG_IMAGE_PATHS['dev-eval-docs'])
+    }
+    return absoluteAssetUrl(PAGE_OG_IMAGE_PATHS['developer-evaluation'])
+  }
+  return absoluteAssetUrl(PAGE_OG_IMAGE_PATHS[page])
+}
+
 /** TanStack Router / HeadContent-compatible meta entries. */
 export type SeoMetaEntry =
   | { title: string }
@@ -150,16 +198,10 @@ export type BuildSeoMetaOptions = {
   page: SeoPageKey
   /** Active Dev Eval tab when page is developer-evaluation. */
   tab?: DevEvalTabKey
-  /** Absolute HTTPS image URL; defaults to production X card. */
+  /** Absolute HTTPS image URL; defaults to page-specific X card. */
   imageUrl?: string
   /** Full page URL for og:url / twitter:url (optional). */
   pageUrl?: string
-}
-
-/** Default image per page (absolute HTTPS for Twitterbot). */
-export function defaultImageUrlForPage(page: SeoPageKey): string {
-  void page
-  return DEFAULT_OG_IMAGE_URL
 }
 
 /**
@@ -171,13 +213,14 @@ export function defaultImageUrlForPage(page: SeoPageKey): string {
  * - absolute HTTPS `twitter:image` (+ alt, dimensions via og:image:*)
  * - `twitter:title` / `twitter:description` / `twitter:url`
  * - `twitter:site` / `twitter:creator` (@handle)
+ * - page-specific Imagine share images where available
  */
 export function buildSeoMeta(options: BuildSeoMetaOptions): SeoMetaEntry[] {
   const copy = getPageSeoCopy(options.page, { tab: options.tab })
   const title = clampForXCard(copy.title, X_TITLE_SOFT_MAX)
   const description = clampForXCard(copy.description, X_DESCRIPTION_SOFT_MAX)
   const imageUrl =
-    options.imageUrl ?? defaultImageUrlForPage(options.page)
+    options.imageUrl ?? defaultImageUrlForPage(options.page, options.tab)
   const pageUrl =
     options.pageUrl ?? absolutePageUrl(options.page, options.tab)
   const imageAlt = copy.imageAlt
@@ -253,4 +296,16 @@ export const USER_FACING_SEO_PAGES: readonly SeoPageKey[] = [
   'about-history',
   'about-timeline',
   'developer-evaluation',
+] as const
+
+/** All public share-card paths that must exist for X previews. */
+export const ALL_OG_IMAGE_PATHS: readonly string[] = [
+  PAGE_OG_IMAGE_PATHS.home,
+  PROSODY_LAB_OG_IMAGE_PATH,
+  PAGE_OG_IMAGE_PATHS.about,
+  PAGE_OG_IMAGE_PATHS['about-history'],
+  PAGE_OG_IMAGE_PATHS['about-timeline'],
+  PAGE_OG_IMAGE_PATHS['developer-evaluation'],
+  PAGE_OG_IMAGE_PATHS['dev-eval-research'],
+  PAGE_OG_IMAGE_PATHS['dev-eval-docs'],
 ] as const
