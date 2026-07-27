@@ -1,6 +1,6 @@
 # Fusion Sage — companion files
 
-See [SKILL.md](SKILL.md) for the full fusion reactor workflow (including **Secondary files** trust rules and marketplace-scanner notes).
+See [SKILL.md](SKILL.md) for the agent workflow (**Secondary files** + **Persist** trust rules). This README holds installer/human notes only — agents should **not** load it by default (token budget).
 
 ## Quick start
 
@@ -21,6 +21,8 @@ Optional project playbooks under [examples/](../examples/README.md) are user-opt
 
 ## Marketplace scanners (Gen Agent Trust Hub and similar)
 
+> **Audience:** humans / installers / badge readers. **Not** agent SoT — operational trust rules live in [SKILL.md](SKILL.md) (Secondary files, Guardrails, Persist). Claim-by-claim rebuttal is **only here** so it does not waste agent tokens.
+
 Public badge example: [skills.sh · fusion-sage · agent-trust-hub](https://www.skills.sh/p10ns11y/skills/fusion-sage/security/agent-trust-hub).
 
 ### What the scanner actually does (and does not)
@@ -32,7 +34,7 @@ Public badge example: [skills.sh · fusion-sage · agent-trust-hub](https://www.
 | **Warn / MEDIUM** as a coarse risk bucket | “This skill is compromised” or “do not install” |
 | Cheap, high-recall signal shared by many coding skills | High-effort audit with evidence of an attack path |
 
-Treat the badge as a **low-effort static warning**, not a security incident report. Hardening below targets **real** mines only; overclaims are called out so installers are not misled.
+Treat the badge as a **low-effort static warning**, not a security incident report. Hardening in [SKILL.md](SKILL.md) targets **real** mines only; overclaims are called out here so installers are not misled.
 
 Agent-side mitigations (read-only skill trees, human approval for writes, project `AGENTS.md` overrides) dominate real safety and are **outside** what the scanner models.
 

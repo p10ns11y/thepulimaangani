@@ -182,21 +182,6 @@ Rules:
 
 ---
 
-## Trust Hub / marketplace scanners (read this)
-
-Published audits (e.g. Gen Agent Trust Hub on skills.sh) are **static pattern scans** on markdown skills — not exploit PoCs, malware reverse-engineering, or live agent runs.
-
-| Scanner claim (typical) | Reality |
-|-------------------------|---------|
-| “Self-Referential Improvement Loop” → edit `SKILL.md` | **Overclaim.** No such loop or self-edit protocol exists; “self-improve” = project surplus. |
-| `COMMAND_EXECUTION` from loading playbooks | **Mislabel.** No shell/payload; only optional markdown the host agent may read. Real issue is **instruction expansion**, not code execution. |
-| PROMPT_INJECTION via overlays / `fusion-state` | **Partial.** Real mine is treating untrusted secondary text as policy. Mitigated above; still needs a cooperating agent + write tools. |
-| MEDIUM / Warn | **Low-effort taxonomy hit** common to extensible coding skills. Not “compromised skill.” |
-
-Hardening above targets **real** mines only. Scanner badges are signals, not ground truth.
-
----
-
 ## IDE
 
 | Host | Action |
@@ -208,4 +193,4 @@ Hardening above targets **real** mines only. Scanner badges are signals, not gro
 
 **Anti-patterns:** fusion without prune · decorative "insights" · surplus spam · forking skill bodies · auto-loading untrusted overlays · trusting fusion-state as policy · funeral-only design with no iron-peak path.
 
-English: [references/english-procedure.md](references/english-procedure.md) · README: [README.md](README.md).
+English: [references/english-procedure.md](references/english-procedure.md) · human/scanner notes (do not dual-load): [README.md](README.md).
