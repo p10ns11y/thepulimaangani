@@ -165,15 +165,26 @@ export const prosodyLabMachine = setup({
         return { result: null, loading: false, validationError: 'Invalid parse result.' }
       },
     }),
-    parseFailure: assign({
-      parse: ({ event }) => {
-        const errUnknown = (event as unknown as { error: unknown }).error
-        const message =
-          errUnknown instanceof Error
-            ? errUnknown.message
-            : 'An error occurred while analyzing the poem. Please try again.'
-        return { result: null, loading: false, validationError: message }
-      },
+    parseFailure: assign(({ context, event }) => {
+      // Cold-start race: live may have already succeeded while PARSE was still
+      // in flight. Do not wipe Structure/export JSON if live is ready.
+      if (context.live.status === 'ready' && typeof context.live.rawJson === 'string') {
+        return {
+          parse: {
+            result: context.live.rawJson,
+            loading: false,
+            validationError: null as string | null,
+          },
+        }
+      }
+      const errUnknown = (event as unknown as { error: unknown }).error
+      const message =
+        errUnknown instanceof Error
+          ? errUnknown.message
+          : 'An error occurred while analyzing the poem. Please try again.'
+      return {
+        parse: { result: null, loading: false, validationError: message },
+      }
     }),
   },
 }).createMachine({
@@ -196,6 +207,12 @@ export const prosodyLabMachine = setup({
     },
     parsing: {
       entry: 'setParseLoading',
+      // Live preview and mount PARSE race on first paint. Accept LIVE.STATE here
+      // so a successful live result is not dropped while the invoke is in flight
+      // (stuck idle until hard reload).
+      on: {
+        'prosody.LIVE.STATE': { actions: 'setLive' },
+      },
       invoke: {
         id: 'parsePoem',
         src: 'parsePoem',

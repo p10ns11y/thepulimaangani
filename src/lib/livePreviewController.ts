@@ -22,6 +22,8 @@ export class LivePreviewController {
   private lastRawJson: string | null = null
   private layoutVersion = 0
   private debounceMs: number
+  /** Transient WASM load failures after deploy — one automatic retry per source text. */
+  private loadRetryForNorm: string | null = null
   /** Last state passed to `onUpdate`; updated on every transition. */
   private lastEmittedLiveState: LivePreviewState = DEFAULT_LIVE_PREVIEW
   private readonly onUpdate: Listener
@@ -52,6 +54,7 @@ export class LivePreviewController {
       this.lastReadyParsed = null
       this.lastRawJson = null
       this.layoutVersion = 0
+      this.loadRetryForNorm = null
       this.lastEmittedLiveState = DEFAULT_LIVE_PREVIEW
       this.onUpdate(this.lastEmittedLiveState)
       return
@@ -128,6 +131,7 @@ export class LivePreviewController {
       this.lastReadyParsed = parsedPoem
       this.lastRawJson = wasmJsonString
       this.layoutVersion += 1
+      this.loadRetryForNorm = null
       this.lastEmittedLiveState = {
         status: 'ready',
         parsed: parsedPoem,
@@ -154,6 +158,23 @@ export class LivePreviewController {
         layoutVersion: 0,
       }
       this.onUpdate(this.lastEmittedLiveState)
+
+      // Cold deploy / CDN: first WASM fetch can fail once. Retry once without
+      // requiring a full page reload (validation errors are not retried).
+      const canRetry =
+        !isValidation &&
+        this.loadRetryForNorm !== norm &&
+        !this.cancelled &&
+        normalizePoemText(this.latestText) === norm
+      if (canRetry) {
+        this.loadRetryForNorm = norm
+        this.clearTimer()
+        this.timer = window.setTimeout(() => {
+          if (this.cancelled) return
+          if (normalizePoemText(this.latestText) !== norm) return
+          void this.afterTimeout(poemText, norm)
+        }, 600)
+      }
     }
   }
 

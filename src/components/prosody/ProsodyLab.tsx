@@ -1,5 +1,5 @@
 import { ChevronRight, PanelLeftOpen } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSelector } from '@xstate/react'
 
 import { useProsodyActorRefFromApp } from '#/components/AppActorProvider'
@@ -40,7 +40,6 @@ function previewSource(editorOpen: boolean, poemText: string, poemDraft: string)
 }
 
 export function ProsodyLab() {
-  const initialParseSentRef = useRef(false)
   const [editorFocusLine, setEditorFocusLine] = useState(0)
   const [paperPhysicsOn, setPaperPhysicsOn] = useState(() => readPaperPhysicsEnabled())
   const [typewriterSoundOn, setTypewriterSoundOn] = useState(() => readTypewriterSoundEnabled())
@@ -69,14 +68,9 @@ export function ProsodyLab() {
     [playCue],
   )
 
+  // Live bridge seeds parse.result on ready (setLive). Avoid a mount-time PARSE
+  // invoke that races the first live WASM load and can drop LIVE.STATE.
   useLivePreviewBridge(prosodyRef, previewSrc, debounceMs)
-
-  /** Seed manual parse JSON once so Structure/Text flow match CI until live preview completes. */
-  useEffect(() => {
-    if (!prosodyRef || initialParseSentRef.current) return
-    initialParseSentRef.current = true
-    prosodyRef.send({ type: 'prosody.PARSE' })
-  }, [prosodyRef])
 
   useEffect(() => {
     if (!ctx?.editorOpen) return
