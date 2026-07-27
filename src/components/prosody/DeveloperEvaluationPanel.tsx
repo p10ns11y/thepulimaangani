@@ -1,3 +1,6 @@
+import { Link } from '@tanstack/react-router'
+import { BookOpen } from 'lucide-react'
+
 import {
   FALLBACK_METRE_EXPLAINER,
   IN_SAMPLE_ADOPT_NOTE,
@@ -11,10 +14,35 @@ type DeveloperEvaluationPanelProps = {
   data: ParsedPoem
 }
 
+function DeveloperEvaluationHeader() {
+  return (
+    <header className="flex flex-col gap-1.5 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+      <div className="flex min-w-0 flex-col gap-0.5">
+        <h2 className="text-foreground m-0 text-sm font-semibold tracking-tight">
+          Developer Evaluation
+        </h2>
+        <p className="text-muted-foreground m-0 text-[0.72rem] leading-snug">
+          Entropy and confidence gap describe how peaked the four-way ML distribution is — not classical
+          proof. Multi-head soft masses are relative votes (often in-sample on anthology poems); ADOPT
+          lives in freeze reports. Soft classical sketch flags the ML top guess in parallel only.
+        </p>
+      </div>
+      <Link
+        to="/developer-evaluation"
+        className="border-rim/45 bg-surface-1/90 text-foreground hover:bg-surface-2/90 inline-flex shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[0.7rem] font-medium no-underline transition-colors"
+        data-testid="developer-evaluation-guide-link"
+      >
+        <BookOpen className="size-3.5 opacity-80" aria-hidden />
+        How this works
+      </Link>
+    </header>
+  )
+}
+
 /**
  * Full-pane developer surface: multi-head votes, dense features, epistemic metrics.
  * Learner Structure → Metre stays free of this detail (see MetrePanelBody).
- * Room to grow with more eval instrumentation later.
+ * Guide: `/developer-evaluation`.
  */
 export function DeveloperEvaluationPanel({ data }: DeveloperEvaluationPanelProps) {
   const dual = data.metre_ml?.dual_truth
@@ -23,14 +51,7 @@ export function DeveloperEvaluationPanel({ data }: DeveloperEvaluationPanelProps
   if (!hasNotes) {
     return (
       <div className="flex flex-col gap-3" data-testid="developer-evaluation-panel">
-        <header className="flex flex-col gap-0.5">
-          <h2 className="text-foreground m-0 text-sm font-semibold tracking-tight">
-            Developer Evaluation
-          </h2>
-          <p className="text-muted-foreground m-0 text-[0.72rem] leading-snug">
-            Multi-head metre votes, pattern features, and epistemic metrics for model debugging.
-          </p>
-        </header>
+        <DeveloperEvaluationHeader />
         <p
           className="text-muted-foreground border-rim/30 bg-surface-2/20 m-0 rounded-md border px-3 py-2.5 text-[0.72rem] leading-relaxed"
           data-testid="developer-evaluation-empty"
@@ -43,14 +64,7 @@ export function DeveloperEvaluationPanel({ data }: DeveloperEvaluationPanelProps
 
   return (
     <div className="flex flex-col gap-3.5" data-testid="developer-evaluation-panel">
-      <header className="flex flex-col gap-0.5">
-        <h2 className="text-foreground m-0 text-sm font-semibold tracking-tight">
-          Developer Evaluation
-        </h2>
-        <p className="text-muted-foreground m-0 text-[0.72rem] leading-snug">
-          Technical notes · multi-head, features, metrics — expand later with richer eval detail.
-        </p>
-      </header>
+      <DeveloperEvaluationHeader />
 
       <div
         className="border-rim/30 bg-surface-2/15 flex flex-col gap-3 rounded-md border px-3 py-2.5"
@@ -63,19 +77,31 @@ export function DeveloperEvaluationPanel({ data }: DeveloperEvaluationPanelProps
           <dl className="grid grid-cols-2 gap-2 text-[0.72rem] sm:grid-cols-3">
             {typeof data.metre_entropy_bits === 'number' &&
             Number.isFinite(data.metre_entropy_bits) ? (
-              <div className="bg-surface-2/40 rounded-md px-2.5 py-2">
+              <div
+                className="bg-surface-2/40 rounded-md px-2.5 py-2"
+                title="How mixed the four-way ML mass is. Low = one metre stands out. Not classical proof."
+              >
                 <dt className="text-muted-foreground text-[0.65rem]">Entropy</dt>
                 <dd className="text-foreground mt-0.5 tabular-nums">
                   {data.metre_entropy_bits.toFixed(2)} bits
+                </dd>
+                <dd className="text-muted-foreground mt-0.5 text-[0.6rem] leading-snug">
+                  Peakedness of 4-way guess
                 </dd>
               </div>
             ) : null}
             {typeof data.metre_epistemic_margin === 'number' &&
             Number.isFinite(data.metre_epistemic_margin) ? (
-              <div className="bg-surface-2/40 rounded-md px-2.5 py-2">
-                <dt className="text-muted-foreground text-[0.65rem]">Top1 − top2</dt>
+              <div
+                className="bg-surface-2/40 rounded-md px-2.5 py-2"
+                title="Top class mass minus second. Large gap = leader is clear among ML votes only."
+              >
+                <dt className="text-muted-foreground text-[0.65rem]">Confidence gap</dt>
                 <dd className="text-foreground mt-0.5 tabular-nums">
                   {(data.metre_epistemic_margin * 100).toFixed(0)} pp
+                </dd>
+                <dd className="text-muted-foreground mt-0.5 text-[0.6rem] leading-snug">
+                  Top1 − top2 (ML only)
                 </dd>
               </div>
             ) : null}
@@ -93,7 +119,7 @@ export function DeveloperEvaluationPanel({ data }: DeveloperEvaluationPanelProps
         {data.metre_ml && data.metre_ml.head_votes.length > 0 ? (
           <div data-testid="metre-ml-head-votes">
             <span className="text-muted-foreground text-[0.7rem] font-medium">
-              Model heads (soft mass 0–1, not calibrated %)
+              Model heads · soft mass 0–1 (relative vote, not calibrated %)
             </span>
             <ul className="mt-1.5 flex flex-col gap-1.5">
               {data.metre_ml.head_votes.map((vote) => (
@@ -120,7 +146,7 @@ export function DeveloperEvaluationPanel({ data }: DeveloperEvaluationPanelProps
         {data.metre_ml && data.metre_ml.pattern_features.length > 0 ? (
           <div data-testid="metre-ml-pattern-features">
             <span className="text-muted-foreground text-[0.7rem] font-medium">
-              Pattern features (dense signals)
+              Pattern features (dense signals for this poem)
             </span>
             <ul className="mt-1.5 flex flex-col gap-1">
               {data.metre_ml.pattern_features.map((f) => (
@@ -143,13 +169,21 @@ export function DeveloperEvaluationPanel({ data }: DeveloperEvaluationPanelProps
 
         {data.metre_ml?.a12_freeze_date ? (
           <p className="text-muted-foreground m-0 text-[0.68rem] tabular-nums">
-            Pattern freeze {data.metre_ml.a12_freeze_date}
+            Pattern freeze {data.metre_ml.a12_freeze_date} · ADOPT baseline era (reports, not live %)
           </p>
         ) : null}
 
         {dual?.separation_policy ? (
           <p className="text-muted-foreground m-0 font-mono text-[0.65rem]">
-            policy: {dual.separation_policy}
+            dual-truth policy: {dual.separation_policy}
+          </p>
+        ) : null}
+
+        {dual != null ? (
+          <p className="text-muted-foreground m-0 text-[0.68rem] leading-relaxed">
+            Soft classical sketch reports flags for the ML top guess only (parallel dual-truth). Research
+            dual-compare uses buckets such as <span className="font-mono">ml_only_classical_flags</span> —
+            not full classical proof.
           </p>
         ) : null}
 

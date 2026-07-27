@@ -9,11 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as DeveloperEvaluationRouteImport } from './routes/developer-evaluation'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutTimelineRouteImport } from './routes/about.timeline'
 import { Route as AboutHistoryRouteImport } from './routes/about.history'
 
+const DeveloperEvaluationRoute = DeveloperEvaluationRouteImport.update({
+  id: '/developer-evaluation',
+  path: '/developer-evaluation',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -38,12 +44,14 @@ const AboutHistoryRoute = AboutHistoryRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRouteWithChildren
+  '/developer-evaluation': typeof DeveloperEvaluationRoute
   '/about/history': typeof AboutHistoryRoute
   '/about/timeline': typeof AboutTimelineRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRouteWithChildren
+  '/developer-evaluation': typeof DeveloperEvaluationRoute
   '/about/history': typeof AboutHistoryRoute
   '/about/timeline': typeof AboutTimelineRoute
 }
@@ -51,24 +59,49 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRouteWithChildren
+  '/developer-evaluation': typeof DeveloperEvaluationRoute
   '/about/history': typeof AboutHistoryRoute
   '/about/timeline': typeof AboutTimelineRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/about/history' | '/about/timeline'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/developer-evaluation'
+    | '/about/history'
+    | '/about/timeline'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/about/history' | '/about/timeline'
-  id: '__root__' | '/' | '/about' | '/about/history' | '/about/timeline'
+  to:
+    | '/'
+    | '/about'
+    | '/developer-evaluation'
+    | '/about/history'
+    | '/about/timeline'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/developer-evaluation'
+    | '/about/history'
+    | '/about/timeline'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRouteWithChildren
+  DeveloperEvaluationRoute: typeof DeveloperEvaluationRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/developer-evaluation': {
+      id: '/developer-evaluation'
+      path: '/developer-evaluation'
+      fullPath: '/developer-evaluation'
+      preLoaderRoute: typeof DeveloperEvaluationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -115,6 +148,7 @@ const AboutRouteWithChildren = AboutRoute._addFileChildren(AboutRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRouteWithChildren,
+  DeveloperEvaluationRoute: DeveloperEvaluationRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

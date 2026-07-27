@@ -183,13 +183,13 @@ export function hasMetreTechNotesFromPoem(data: ParsedPoem): boolean {
 export const HONESTY_SHORT = 'Statistical estimate — not classical proof'
 
 export const CERTAINTY_HELP =
-  'How peaked the metre guess is. Clear means one metre stands out; uncertain means several look plausible. Not a formal accuracy percentage.'
+  'How peaked the four-way ML distribution is (entropy / confidence gap). Clear = one metre stands out among ML votes; uncertain = several look plausible. Not classical proof and not a calibrated accuracy %.'
 
 export const SOFT_SCORE_HELP =
-  'Soft score among metre candidates (0–1 mass). Not a calibrated accuracy percentage.'
+  'Soft mass among four metre candidates (0–1 relative strength for that head). Not a calibrated “% chance correct”.'
 
 export const FALLBACK_METRE_EXPLAINER =
-  'The parser ranks coarse metres from rules and bond patterns. When hybrid weights are active, scores are soft estimates — not classical proof.'
+  'The parser ranks coarse metres from structure and bond patterns. Hybrid/ML scores are soft estimates — not classical proof. Open Developer Evaluation when multi-head signals are present.'
 
 export const IN_SAMPLE_ADOPT_NOTE =
-  'Live multi-head votes can be in-sample on anthology poems. Held-out ADOPT metrics live in training reports, not as UI confidence.'
+  'Live multi-head dense/prototype votes are fitted on special_type anthology rows (in-sample if you parse those poems). ADOPT evidence is the baseline freeze in training reports — not live head agreement in this tab.'
