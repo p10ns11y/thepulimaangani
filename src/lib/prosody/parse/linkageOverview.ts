@@ -93,6 +93,8 @@ function presentationRowForEdge(
 /**
  * Build bond rows in WASM order. Prefer **`presentation.talai` physical lines** for span/cross-line
  * (matches Avalokitam-style line breaks); fall back to `linkage.from`/`to` or foot layout.
+ *
+ * Never demote a layout cross-line bond to same-line (UI was dropping last-of-line bonds).
  */
 export function buildLinkageOverviewRows(data: ParsedPoem): LinkageOverviewRow[] {
   const linkageEdges = data.linkage ?? []
@@ -103,25 +105,65 @@ export function buildLinkageOverviewRows(data: ParsedPoem): LinkageOverviewRow[]
 
     let fromLine1 = anchorPair.fromLine1
     let toLine1 = anchorPair.toLine1
+    let fromWord1 = anchorPair.fromWord1
+    let toWord1 = anchorPair.toWord1
+    // Layout is authoritative for “does this span physical lines?”
     let crossLine = anchorPair.crossLine
 
     if (presentationTalaiRow) {
-      fromLine1 = presentationTalaiRow.from_line + 1
-      toLine1 = presentationTalaiRow.to_line + 1
-      crossLine = presentationTalaiRow.from_line !== presentationTalaiRow.to_line
+      const presentationCross =
+        presentationTalaiRow.from_line !== presentationTalaiRow.to_line
+      if (presentationCross) {
+        // Avalokitam-style explicit cross-line: adopt presentation line indices
+        fromLine1 = presentationTalaiRow.from_line + 1
+        toLine1 = presentationTalaiRow.to_line + 1
+        crossLine = true
+      } else if (!crossLine) {
+        // Same-line in both layout and presentation
+        fromLine1 = presentationTalaiRow.from_line + 1
+        toLine1 = presentationTalaiRow.to_line + 1
+      }
+      // else: layout says cross, presentation says same → keep layout (do not hide bond)
+    }
+
+    // Last foot on line → first foot on next line is always a cross-line join
+    if (!crossLine) {
+      const fromLayout = lineWordForGlobalFootIndex(physicalLines, edge.from_foot)
+      const toLayout = lineWordForGlobalFootIndex(physicalLines, edge.to_foot)
+      if (fromLayout && toLayout && fromLayout.line1 !== toLayout.line1) {
+        crossLine = true
+        fromLine1 = fromLayout.line1
+        toLine1 = toLayout.line1
+        fromWord1 = fromLayout.word1
+        toWord1 = toLayout.word1
+      }
     }
 
     return {
       index1: edgeOrdinalZero + 1,
       edge,
       fromLine1,
-      fromWord1: anchorPair.fromWord1,
+      fromWord1,
       toLine1,
-      toWord1: anchorPair.toWord1,
+      toWord1,
       crossLine,
       presentationTalaiType: presentationTalaiRow?.talai_type,
     }
   })
+}
+
+/**
+ * Whether the bond after this foot should use the cross-line join UI.
+ * Last foot on a line with a following line never uses the mid-line chip path.
+ */
+export function bondUsesCrossLineUi(
+  bond: LinkageOverviewRow | undefined,
+  isLastFootOnLine: boolean,
+  hasFollowingPhysicalLine: boolean,
+): boolean {
+  if (!bond) return false
+  if (bond.crossLine) return true
+  return isLastFootOnLine && hasFollowingPhysicalLine
 }
 
 /** Count coarse linkage_type keys for summary chips. */

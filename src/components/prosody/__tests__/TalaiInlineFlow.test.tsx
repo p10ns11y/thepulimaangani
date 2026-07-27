@@ -103,6 +103,46 @@ describe('TalaiInlineFlow', () => {
     render(<TalaiInlineFlow data={data} />)
     expect(document.body.textContent).toContain('கடல் கடந்த தளை')
     expect(document.body.textContent).toContain('↓')
+    expect(document.body.querySelector('[data-testid="talai-line-join"]')).toBeTruthy()
+    expect(document.body.querySelector('[data-testid="talai-bond-cross"]')).toBeTruthy()
+  })
+
+  it('still shows line join when presentation wrongly marks same-line (layout says cross)', () => {
+    const lines: ParsedLine[] = [
+      { line_class: 'Kuraladi', feet: [footG(0, 'a'), footG(1, 'b')] },
+      { line_class: 'Kuraladi', feet: [footG(2, 'c')] },
+    ]
+    const data = parsedPoem({
+      original_text: 'a b\nc',
+      lines,
+      linkage: [
+        {
+          from_foot: 1,
+          to_foot: 2,
+          linkage_type: 'VenTalai',
+          linkage_special_type: 'IyarcirVenTalai',
+          is_valid: true,
+          from: { foot_index: 1, line_index: 0, word_index_in_line: 1 },
+          to: { foot_index: 2, line_index: 1, word_index_in_line: 0 },
+        },
+      ],
+      presentation: {
+        feet: [],
+        talai: [
+          {
+            from: 1,
+            to: 2,
+            from_line: 0,
+            to_line: 0,
+            talai_type: 'இணைப்பு தளை',
+            is_valid: true,
+          },
+        ],
+      },
+    })
+    render(<TalaiInlineFlow data={data} />)
+    expect(document.body.textContent).toContain('இணைப்பு தளை')
+    expect(document.body.querySelector('[data-testid="talai-line-join"]')).toBeTruthy()
   })
 
   it('shows invalid marker on bad bond', () => {
@@ -125,11 +165,13 @@ describe('TalaiInlineFlow', () => {
 })
 
 describe('SyllableChip', () => {
-  it('renders Ner and Nirai variants', () => {
+  it('renders Ner and Nirai variants with distinct type markers', () => {
     const { unmount } = render(<SyllableChip syllableType="Ner" text="நே" variant="compact" />)
     expect(document.body.textContent).toContain('நேர்')
+    expect(document.body.querySelector('[data-syllable-type="ner"]')).toBeTruthy()
     unmount()
     render(<SyllableChip syllableType="Nirai" text="ரை" variant="comfortable" />)
     expect(document.body.textContent).toContain('நிரை')
+    expect(document.body.querySelector('[data-syllable-type="nirai"]')).toBeTruthy()
   })
 })
