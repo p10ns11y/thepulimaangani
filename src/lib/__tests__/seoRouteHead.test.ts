@@ -56,12 +56,20 @@ function prop(meta: MetaEntry[], property: string): string | undefined {
 function expectFullShareMeta(meta: MetaEntry[]) {
   expect(titleOf(meta)?.length).toBeGreaterThan(8)
   expect(named(meta, 'description')?.length).toBeGreaterThan(40)
-  expect(prop(meta, 'og:title')).toBe(titleOf(meta))
-  expect(prop(meta, 'og:description')).toBe(named(meta, 'description'))
-  expect(prop(meta, 'og:image')).toBe(DEFAULT_OG_IMAGE_URL)
+  // X.com large card (primary)
   expect(named(meta, 'twitter:card')).toBe('summary_large_image')
-  expect(named(meta, 'twitter:title')).toBe(titleOf(meta))
+  expect(named(meta, 'twitter:site')).toBe('@peramanathan')
+  expect(named(meta, 'twitter:creator')).toBe('@peramanathan')
+  expect(named(meta, 'twitter:title')?.length).toBeGreaterThan(8)
+  expect(named(meta, 'twitter:description')?.length).toBeGreaterThan(20)
   expect(named(meta, 'twitter:image')).toBe(DEFAULT_OG_IMAGE_URL)
+  expect(named(meta, 'twitter:image')).toMatch(/^https:\/\//)
+  expect(named(meta, 'twitter:image:alt')?.length).toBeGreaterThan(8)
+  // OG mirrors + dimensions for crawlers
+  expect(prop(meta, 'og:title')).toBe(named(meta, 'twitter:title'))
+  expect(prop(meta, 'og:image')).toBe(DEFAULT_OG_IMAGE_URL)
+  expect(prop(meta, 'og:image:width')).toBe('1200')
+  expect(prop(meta, 'og:image:height')).toBe('600')
 }
 
 describe('route head builders (shipped routes)', () => {
