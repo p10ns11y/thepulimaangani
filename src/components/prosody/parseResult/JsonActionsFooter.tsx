@@ -1,11 +1,24 @@
 import { Button } from '#/components/ui/button'
+import {
+  buildPrintableHtml,
+  downloadHtmlFile,
+  openPrintableView,
+} from '#/lib/prosody/printView'
 import { cn } from '#/lib/utils'
+import type { ParsedPoem } from '#/types/parsedPoem'
 
 type JsonActionsFooterProps = {
   jsonString: string
+  poemText: string
+  parsed: ParsedPoem | null
 }
 
-export function JsonActionsFooter({ jsonString }: JsonActionsFooterProps) {
+/**
+ * Learner-first download row (right-aligned). Blob + window.open + window.print only.
+ */
+export function JsonActionsFooter({ jsonString, poemText, parsed }: JsonActionsFooterProps) {
+  const printable = () => buildPrintableHtml(poemText, parsed)
+
   return (
     <div
       className={cn(
@@ -15,18 +28,19 @@ export function JsonActionsFooter({ jsonString }: JsonActionsFooterProps) {
     >
       <Button
         type="button"
-        variant="outline"
+        variant="ghost"
         size="sm"
-        className="h-8 text-xs transition-[transform,box-shadow] duration-200 hover:shadow-sm active:scale-[0.98]"
+        className="text-muted-foreground h-8 text-xs"
         onClick={() => void navigator.clipboard.writeText(jsonString)}
+        title="Full analysis JSON for tools"
       >
         Copy JSON
       </Button>
       <Button
         type="button"
-        variant="outline"
+        variant="ghost"
         size="sm"
-        className="h-8 text-xs transition-[transform,box-shadow] duration-200 hover:shadow-sm active:scale-[0.98]"
+        className="text-muted-foreground h-8 text-xs"
         onClick={() => {
           const blob = new Blob([jsonString], { type: 'application/json' })
           const url = URL.createObjectURL(blob)
@@ -36,8 +50,30 @@ export function JsonActionsFooter({ jsonString }: JsonActionsFooterProps) {
           a.click()
           URL.revokeObjectURL(url)
         }}
+        title="Full analysis JSON for tools"
       >
-        Export JSON
+        JSON file
+      </Button>
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className="h-8 text-xs"
+        onClick={() => downloadHtmlFile(printable())}
+      >
+        Download HTML
+      </Button>
+      <Button
+        type="button"
+        variant="default"
+        size="sm"
+        className="h-8 text-xs font-medium"
+        onClick={() => {
+          const ok = openPrintableView(printable())
+          if (!ok) downloadHtmlFile(printable())
+        }}
+      >
+        Print / PDF
       </Button>
     </div>
   )

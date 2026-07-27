@@ -1,3 +1,4 @@
+import { isNerSyllableType } from '#/lib/prosody/syllableType'
 import { cn } from '#/lib/utils'
 
 type SyllableAnnotationCellProps = {
@@ -15,7 +16,7 @@ export function SyllableAnnotationCell({
   staggerMs = 0,
   motionVariant = 'default',
 }: SyllableAnnotationCellProps) {
-  const isNer = syllableType === 'Ner'
+  const isNer = isNerSyllableType(syllableType)
   const motionClass =
     motionVariant === 'live'
       ? 'live-syllable-pop motion-reduce:animate-none motion-reduce:opacity-100 motion-reduce:translate-y-0 motion-reduce:scale-100'
@@ -28,16 +29,17 @@ export function SyllableAnnotationCell({
         motionClass,
         'border',
         isNer
-          ? '[border-color:color-mix(in_oklab,var(--syllable-ner-border),transparent_25%)] bg-gradient-to-b from-[color:var(--syllable-ner-bg)] to-[color:var(--syllable-ner-tint-to)] text-[color:var(--syllable-ner-text)]'
-          : '[border-color:color-mix(in_oklab,var(--syllable-nirai-border),transparent_22%)] bg-gradient-to-b from-[color:var(--syllable-nirai-bg)] to-[color:var(--syllable-nirai-tint-to)] text-[color:var(--syllable-nirai-text)]',
+          ? 'syllable-chip-ner [border-color:color-mix(in_oklab,var(--syllable-ner-border),transparent_18%)] bg-gradient-to-b from-[color:var(--syllable-ner-bg)] to-[color:var(--syllable-ner-tint-to)] text-[color:var(--syllable-ner-text)]'
+          : 'syllable-chip-nirai [border-color:color-mix(in_oklab,var(--syllable-nirai-border),transparent_15%)] bg-gradient-to-b from-[color:var(--syllable-nirai-bg)] to-[color:var(--syllable-nirai-tint-to)] text-[color:var(--syllable-nirai-text)]',
       )}
+      data-syllable-type={isNer ? 'ner' : 'nirai'}
       style={{ animationDelay: `${staggerMs}ms` }}
     >
       <span className="max-w-[6rem] break-words">{text}</span>
       <span
         className={cn(
           'font-sans tracking-wide opacity-90',
-          'text-[0.56rem]',
+          'text-[0.56rem] font-medium',
           isNer ? 'text-[color:var(--syllable-ner-text)]' : 'text-[color:var(--syllable-nirai-text)]',
         )}
       >

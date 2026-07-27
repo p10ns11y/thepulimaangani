@@ -86,7 +86,7 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
     await waitForDocText(/Prosodic structure/)
   })
 
-  it('opens editor from poem preview and applies draft', async () => {
+  it('opens editor from Edit next to Live/Structure/Text flow tabs and applies draft', async () => {
     render(
       <AppActorProvider>
         <ProsodyLab />
@@ -110,26 +110,6 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
     await waitForParseTabs()
   })
 
-  it('refresh parse completes without error', async () => {
-    render(
-      <AppActorProvider>
-        <ProsodyLab />
-      </AppActorProvider>,
-    )
-
-    await waitFor(() => {
-      const b = screen.getByRole('button', { name: /^Refresh$/i }) as HTMLButtonElement
-      expect(b.disabled).toBe(false)
-    }, SYNC_OPTIONS)
-
-    fireEvent.click(screen.getByRole('button', { name: /^Refresh$/i }))
-
-    await waitFor(() => {
-      const b = screen.getByRole('button', { name: /^Refresh$/i }) as HTMLButtonElement
-      expect(b.disabled).toBe(false)
-    }, SYNC_OPTIONS)
-  })
-
   it('Text flow tab shows Textual insights', async () => {
     render(
       <AppActorProvider>
@@ -142,5 +122,39 @@ describe('ProsodyLab integration (real WASM from public/wasm)', () => {
     fireEvent.click(screen.getByRole('tab', { name: /Text flow/i }))
 
     await waitForDocText(/Textual insights/)
+  })
+
+  it('collapses left Learn rail for full-width Structure reading, then expands', async () => {
+    render(
+      <AppActorProvider>
+        <ProsodyLab />
+      </AppActorProvider>,
+    )
+
+    await waitForParseTabs()
+
+    expect(screen.getByTestId('prosody-input-rail')).toBeTruthy()
+    expect(screen.getByTestId('samples-card')).toBeTruthy()
+    expect(screen.getByText(/^Learn$/)).toBeTruthy()
+    expect(screen.queryByText(/^Samples$/)).toBeNull()
+    expect(screen.queryByText(/Poem & parse/i)).toBeNull()
+
+    // Selector container expands/hides independently of the left rail
+    expect(screen.getByTestId('samples-picker-body')).toBeTruthy()
+    fireEvent.click(screen.getByTestId('samples-selector-toggle'))
+    expect(screen.queryByTestId('samples-picker-body')).toBeNull()
+    fireEvent.click(screen.getByTestId('samples-selector-toggle'))
+    expect(screen.getByTestId('samples-picker-body')).toBeTruthy()
+
+    fireEvent.click(screen.getByTestId('prosody-input-rail-collapse'))
+
+    expect(screen.getByTestId('prosody-input-rail-collapsed')).toBeTruthy()
+    expect(screen.queryByTestId('prosody-input-rail')).toBeNull()
+    fireEvent.click(screen.getByRole('tab', { name: /^Structure$/i }))
+    await waitForDocText(/Prosodic structure/)
+
+    fireEvent.click(screen.getByTestId('prosody-input-rail-expand'))
+    expect(screen.getByTestId('prosody-input-rail')).toBeTruthy()
+    expect(screen.queryByRole('button', { name: /^Refresh$/i })).toBeNull()
   })
 })

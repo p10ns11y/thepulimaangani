@@ -1,18 +1,17 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { ChevronRight, PanelLeftOpen } from 'lucide-react'
+import { useCallback, useMemo, useState } from 'react'
 import { useSelector } from '@xstate/react'
 
 import { useProsodyActorRefFromApp } from '#/components/AppActorProvider'
+import { Button } from '#/components/ui/button'
 import { useLivePreviewBridge } from '#/hooks/useLivePreviewBridge'
 import { usePrefersReducedMotion } from '#/hooks/usePrefersReducedMotion'
+import { useProsodyLabChrome } from '#/hooks/useProsodyLabChrome'
 import type { TypewriterPhysicsCue } from '#/hooks/useTypewriterPaperPhysics'
 import { useTypewriterSound } from '#/hooks/useTypewriterSound'
-import {
-  readPaperPhysicsEnabled,
-  readTypewriterSoundEnabled,
-  writePaperPhysicsEnabled,
-  writeTypewriterSoundEnabled,
-} from '#/lib/typewriterEditorPreferences'
+import { prosodyLabGridClass } from '#/lib/prosodyLabLayoutPreferences'
 import { cn } from '#/lib/utils'
+import { getFlatRows, METRE_TAB_LABEL } from '#/machines/prosodyLab.defaults'
 
 import { ParseResultPanel } from './ParseResultPanel'
 import { PoemAndParseCard } from './PoemAndParseCard'
@@ -32,10 +31,16 @@ function previewSource(editorOpen: boolean, poemText: string, poemDraft: string)
 }
 
 export function ProsodyLab() {
-  const initialParseSentRef = useRef(false)
+  // Ephemeral editor cursor → live context rail (not a persisted pref).
   const [editorFocusLine, setEditorFocusLine] = useState(0)
-  const [paperPhysicsOn, setPaperPhysicsOn] = useState(() => readPaperPhysicsEnabled())
-  const [typewriterSoundOn, setTypewriterSoundOn] = useState(() => readTypewriterSoundEnabled())
+  const {
+    inputRailExpanded,
+    paperPhysicsOn,
+    typewriterSoundOn,
+    setInputRail,
+    setPaperPhysicsOn,
+    setTypewriterSoundOn,
+  } = useProsodyLabChrome()
   const reducedMotion = usePrefersReducedMotion()
   const prosodyRef = useProsodyActorRefFromApp()
   const ctx = useSelector(prosodyRef, (s) => s?.context)
@@ -54,20 +59,9 @@ export function ProsodyLab() {
     [playCue],
   )
 
+  // Live bridge seeds parse.result on ready (setLive). Avoid a mount-time PARSE
+  // invoke that races the first live WASM load and can drop LIVE.STATE.
   useLivePreviewBridge(prosodyRef, previewSrc, debounceMs)
-
-  /** Seed manual parse JSON once so Structure/Text flow match CI until live preview completes (same as Refresh). */
-  useEffect(() => {
-    if (!prosodyRef || initialParseSentRef.current) return
-    initialParseSentRef.current = true
-    prosodyRef.send({ type: 'prosody.PARSE' })
-  }, [prosodyRef])
-
-  useEffect(() => {
-    if (!ctx?.editorOpen) return
-    setPaperPhysicsOn(readPaperPhysicsEnabled())
-    setTypewriterSoundOn(readTypewriterSoundEnabled())
-  }, [ctx?.editorOpen])
 
   if (!prosodyRef || !ctx) {
     return null
@@ -75,6 +69,18 @@ export function ProsodyLab() {
 
   const send = prosodyRef.send.bind(prosodyRef)
   const poemTextForResults = previewSource(ctx.editorOpen, ctx.poemText, ctx.poemDraft)
+  /** Tamil metre · variation label (same as sample selector summary). */
+  const sampleSummaryTa = useMemo(() => {
+    const rows = getFlatRows(ctx.metreKey)
+    const variationTa = rows.find((r) => r.en === ctx.selectedEn)?.ta ?? ctx.selectedEn
+    return `${METRE_TAB_LABEL[ctx.metreKey]} · ${variationTa}`
+  }, [ctx.metreKey, ctx.selectedEn])
+  const openEditor = () => {
+    send({ type: 'prosody.EDITOR.OPEN' })
+  }
+  const openNewPoem = () => {
+    send({ type: 'prosody.EDITOR.NEW' })
+  }
 
   return (
     <main
@@ -83,32 +89,66 @@ export function ProsodyLab() {
         ctx.editorOpen ? 'pb-[min(52vh,32rem)] sm:pb-[min(50vh,30rem)]' : 'pb-8',
       )}
     >
-      <div className="mx-auto grid max-w-[min(1200px,100%)] gap-5 lg:grid-cols-[minmax(0,38.2fr)_minmax(0,61.8fr)] lg:items-start lg:gap-6">
-        <div className="flex min-h-0 min-w-0 flex-col gap-4">
-          <SamplesCard
-            metreKey={ctx.metreKey}
-            selectedEn={ctx.selectedEn}
-            onMetreChange={(k) => {
-              send({ type: 'prosody.METRE.SET', metreKey: k })
-            }}
-            onSampleSelect={(en) => {
-              send({ type: 'prosody.SAMPLE.SELECT', en })
-            }}
-          />
-          <PoemAndParseCard
-            poemText={ctx.poemText}
-            editorOpen={ctx.editorOpen}
-            poemDraft={ctx.poemDraft}
-            validationError={ctx.parse.validationError}
-            loading={ctx.parse.loading}
-            onOpenEditor={() => {
-              send({ type: 'prosody.EDITOR.OPEN' })
-            }}
-            onParse={() => {
-              send({ type: 'prosody.PARSE' })
-            }}
-          />
-        </div>
+      {/*
+        Both columns start at the same top edge (items-start).
+        Learn + More space live inside the first left card — no floating header row.
+      */}
+      <div
+        className={cn(
+          'mx-auto grid max-w-[min(1200px,100%)] gap-4 lg:items-start lg:gap-5',
+          prosodyLabGridClass(inputRailExpanded),
+          !inputRailExpanded && 'max-w-[min(1400px,100%)]',
+        )}
+      >
+        {inputRailExpanded ? (
+          <div
+            className="prosody-input-rail flex min-h-0 min-w-0 flex-col gap-3"
+            data-testid="prosody-input-rail"
+            id="prosody-input-rail-body"
+          >
+            <SamplesCard
+              metreKey={ctx.metreKey}
+              selectedEn={ctx.selectedEn}
+              onMetreChange={(k) => {
+                send({ type: 'prosody.METRE.SET', metreKey: k })
+              }}
+              onSampleSelect={(en) => {
+                send({ type: 'prosody.SAMPLE.SELECT', en })
+              }}
+              onCollapseRail={() => setInputRail(false)}
+            />
+            <PoemAndParseCard
+              poemText={ctx.poemText}
+              editorOpen={ctx.editorOpen}
+              poemDraft={ctx.poemDraft}
+              poemEditBaseline={ctx.poemEditBaseline}
+              validationError={ctx.parse.validationError}
+            />
+          </div>
+        ) : (
+          <div
+            className="prosody-input-rail-collapsed border-rim/40 bg-surface-1/70 flex min-h-[2.75rem] flex-wrap items-center gap-2 rounded-xl border px-3 py-2 lg:col-span-1"
+            data-testid="prosody-input-rail-collapsed"
+          >
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              className="h-8 gap-1.5 text-xs font-medium"
+              aria-expanded={false}
+              data-testid="prosody-input-rail-expand"
+              onClick={() => setInputRail(true)}
+            >
+              <PanelLeftOpen className="size-3.5" aria-hidden />
+              <span className="font-semibold">Learn</span>
+              <ChevronRight className="size-3.5 opacity-70" aria-hidden />
+            </Button>
+            <span className="text-muted-foreground min-w-0 flex-1 truncate text-[0.72rem] leading-snug">
+              <span className="text-foreground/90 font-tamil font-medium">{sampleSummaryTa}</span>
+              <span className="text-muted-foreground/80"> · Read mode</span>
+            </span>
+          </div>
+        )}
 
         <div
           className={cn(
@@ -122,6 +162,8 @@ export function ProsodyLab() {
             poemText={poemTextForResults}
             live={ctx.live}
             pinLiveEndWhileEditing={ctx.editorOpen}
+            onOpenEditor={openEditor}
+            onOpenNew={openNewPoem}
           />
         </div>
       </div>
@@ -139,13 +181,9 @@ export function ProsodyLab() {
         }}
         onCursorLineChange={setEditorFocusLine}
         paperPhysicsEnabled={paperPhysicsOn}
-        onPaperPhysicsEnabledChange={(on) => {
-          writePaperPhysicsEnabled(on)
-          setPaperPhysicsOn(on)
-        }}
+        onPaperPhysicsEnabledChange={setPaperPhysicsOn}
         typewriterSoundEnabled={typewriterSoundOn}
         onTypewriterSoundEnabledChange={(on) => {
-          writeTypewriterSoundEnabled(on)
           setTypewriterSoundOn(on)
           if (on) void resume()
         }}

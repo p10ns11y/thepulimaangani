@@ -3,8 +3,6 @@ import { feetPerPhysicalLine, groupsFromFeet } from '#/lib/prosody/layout/parser
 import { physicalPoemLines } from '#/lib/prosody/layout/mapFeetToPhysicalLines'
 import { cn } from '#/lib/utils'
 
-import { PretextLineViewport } from './PretextLineViewport'
-import { TAMIL_PRETEXT_FONT_COMPACT } from './pretextConstants'
 import { SyllableAnnotationCell } from './SyllableAnnotationCell'
 
 type SyllableLivePreviewProps = {
@@ -16,6 +14,12 @@ type SyllableLivePreviewProps = {
   disableLiveAnimations?: boolean
 }
 
+/**
+ * Live preview layout (the simple flex fix):
+ * - Outer: `mx-auto w-fit max-w-full` → block centered, not full tab stretch
+ * - Poem card: `flex flex-col items-start` → children keep intrinsic width (LTR)
+ * - Text + chips: start-aligned; never justify-center / text-align:center
+ */
 export function SyllableLivePreview({
   poemText,
   live,
@@ -33,8 +37,8 @@ export function SyllableLivePreview({
   const feetByLine = parsed ? feetPerPhysicalLine(parsed, poemText) : []
 
   return (
-    <div className={cn(compact ? 'space-y-2' : 'space-y-3')}>
-      <div className="flex flex-wrap items-end justify-between gap-2">
+    <div className={cn('mx-auto w-fit max-w-full', compact ? 'space-y-2' : 'space-y-3')}>
+      <div className="flex w-full flex-wrap items-end justify-between gap-2">
         <p className="text-muted-foreground m-0 flex items-center gap-2 text-xs font-medium tracking-wide">
           <span>{compact ? 'Live' : 'Live syllables'}</span>
           {isRefreshing ? (
@@ -65,11 +69,6 @@ export function SyllableLivePreview({
           </span>
         </div>
       </div>
-      {!compact ? (
-        <p className="text-muted-foreground m-0 max-w-xl text-xs leading-relaxed">
-          Each source line is one row; syllables are grouped by **linguistic word** (same grouping as the WASM parser).
-        </p>
-      ) : null}
 
       {(live.status === 'invalid' || live.status === 'error') && live.message ? (
         <p className="text-muted-foreground m-0 text-sm leading-relaxed">{live.message}</p>
@@ -78,16 +77,17 @@ export function SyllableLivePreview({
       {parsed ? (
         <div
           className={cn(
-            'max-w-full overflow-hidden rounded-xl border',
+            'flex max-w-full flex-col items-start overflow-x-auto rounded-xl border',
             compact
               ? 'border-rim/50 bg-surface-3/65 shadow-none'
-              : 'max-w-3xl rounded-2xl border-rim/55 bg-gradient-to-b from-surface-1/95 via-surface-2/80 to-surface-3/55 shadow-[0_18px_48px_color-mix(in_oklab,var(--foreground)_6%,transparent)]',
+              : 'border-rim/55 bg-surface-1/90 shadow-[0_8px_28px_color-mix(in_oklab,var(--foreground)_4%,transparent)]',
           )}
+          data-testid="live-poem-card"
         >
           {physicalLines.map((lineText, lineIdx) => {
             const lineFeet = feetByLine[lineIdx] ?? []
             const groups = groupsFromFeet(lineFeet)
-            const pretextSource = lineText.length === 0 ? '\u00a0' : lineText
+            const displayLine = lineText.length === 0 ? '\u00a0' : lineText
 
             let stagger = 0
 
@@ -95,35 +95,28 @@ export function SyllableLivePreview({
               <div
                 key={`live-block-${lineIdx}`}
                 className={cn(
-                  'border-b border-border/80 last:border-b-0',
-                  compact ? 'px-3 py-2.5 sm:px-3.5' : 'border-rim/45 px-4 py-4 sm:px-5 sm:py-5',
+                  // no w-full: under flex-col items-start, width follows content (LTR)
+                  'border-b border-border/70 last:border-b-0',
+                  compact ? 'px-3 py-3 sm:px-4' : 'px-4 py-4 sm:px-5',
+                  isRefreshing && !disableLiveAnimations && 'live-line-shimmer opacity-[0.85]',
                 )}
+                data-testid="live-line-column"
               >
-                <div
+                <p
                   className={cn(
-                    'text-foreground/90 rounded-md',
-                    isRefreshing && !disableLiveAnimations && 'live-line-shimmer',
+                    'font-tamil text-foreground m-0 text-left whitespace-pre-wrap break-words',
+                    compact ? 'text-[0.95rem] leading-snug' : 'text-[1rem] leading-relaxed',
                   )}
                 >
-                  <PretextLineViewport
-                    text={pretextSource}
-                    trimForMeasure={false}
-                    lineHeightPx={compact ? 24 : 26}
-                    font={TAMIL_PRETEXT_FONT_COMPACT}
-                    className={cn(compact ? 'text-[0.92rem] leading-snug' : 'text-[0.98rem] leading-relaxed')}
-                  />
-                </div>
+                  {displayLine}
+                </p>
 
                 {groups.length > 0 ? (
                   <div
                     key={`chips-lv-${live.layoutVersion}-line-${lineIdx}`}
                     className={cn(
-                      'flex flex-wrap items-end border-t',
-                      'motion-safe:transition-[opacity,transform] motion-safe:duration-300 motion-safe:ease-out',
-                      compact
-                        ? 'mt-2 gap-x-4 gap-y-1.5 border-rim/45 pt-2'
-                        : 'mt-3 gap-x-6 gap-y-2.5 border-rim/35 pt-3',
-                      isRefreshing && !disableLiveAnimations && 'opacity-[0.72]',
+                      'mt-2 flex flex-wrap items-end justify-start border-rim/40 border-t pt-2',
+                      compact ? 'gap-x-1.5 gap-y-1.5' : 'gap-x-2 gap-y-2',
                     )}
                     aria-busy={isRefreshing}
                     aria-label="Syllable preview for this line"
@@ -131,19 +124,21 @@ export function SyllableLivePreview({
                     {groups.map(({ word, syllables: syls }, gi) => (
                       <div
                         key={`${lineIdx}-g-${gi}-${word.slice(0, 8)}`}
-                        className="inline-flex flex-col gap-1"
+                        className="inline-flex flex-col items-start gap-0.5"
                       >
-                        <div className="flex flex-wrap items-end gap-1">
+                        <div className="flex flex-wrap items-end justify-start gap-1">
                           {syls.map((syl, sylIdx) => {
                             const ms = stagger
-                            stagger += compact ? 28 : 38
+                            stagger += compact ? 24 : 32
                             return (
                               <SyllableAnnotationCell
                                 key={`${live.layoutVersion}-${lineIdx}-${gi}-${sylIdx}`}
                                 syllableType={syl.syllable_type}
                                 text={syl.text}
-                                staggerMs={ms}
-                                motionVariant={compact ? 'live' : 'default'}
+                                staggerMs={disableLiveAnimations ? 0 : ms}
+                                motionVariant={
+                                  disableLiveAnimations ? 'default' : compact ? 'live' : 'default'
+                                }
                               />
                             )
                           })}
@@ -152,7 +147,7 @@ export function SyllableLivePreview({
                     ))}
                   </div>
                 ) : (
-                  <p className="text-muted-foreground border-rim/35 mt-3 border-t pt-3 text-xs">
+                  <p className="text-muted-foreground border-rim/40 m-0 mt-2 border-t pt-2 text-left text-xs">
                     No syllables for this line.
                   </p>
                 )}
