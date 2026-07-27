@@ -3,7 +3,6 @@ import { BookOpen } from 'lucide-react'
 
 import {
   FALLBACK_METRE_EXPLAINER,
-  IN_SAMPLE_ADOPT_NOTE,
   formatSoftScore,
   hasMetreTechNotesFromPoem,
   headDisplayName,
@@ -22,9 +21,8 @@ function DeveloperEvaluationHeader() {
           Developer Evaluation
         </h2>
         <p className="text-muted-foreground m-0 text-[0.72rem] leading-snug">
-          Entropy and confidence gap describe how peaked the four-way ML distribution is — not classical
-          proof. Multi-head soft masses are relative votes (often in-sample on anthology poems); ADOPT
-          lives in freeze reports. Soft classical sketch flags the ML top guess in parallel only.
+          Live numbers from this poem’s parse. They show how sure the small models are — not whether a
+          classical scholar would agree. Full story on the guide page.
         </p>
       </div>
       <Link
@@ -79,14 +77,14 @@ export function DeveloperEvaluationPanel({ data }: DeveloperEvaluationPanelProps
             Number.isFinite(data.metre_entropy_bits) ? (
               <div
                 className="bg-surface-2/40 rounded-md px-2.5 py-2"
-                title="How mixed the four-way ML mass is. Low = one metre stands out. Not classical proof."
+                title="Low = one metre stands out. High = several look similar."
               >
-                <dt className="text-muted-foreground text-[0.65rem]">Entropy</dt>
+                <dt className="text-muted-foreground text-[0.65rem]">How mixed?</dt>
                 <dd className="text-foreground mt-0.5 tabular-nums">
                   {data.metre_entropy_bits.toFixed(2)} bits
                 </dd>
                 <dd className="text-muted-foreground mt-0.5 text-[0.6rem] leading-snug">
-                  Peakedness of 4-way guess
+                  Entropy · lower is clearer
                 </dd>
               </div>
             ) : null}
@@ -94,20 +92,20 @@ export function DeveloperEvaluationPanel({ data }: DeveloperEvaluationPanelProps
             Number.isFinite(data.metre_epistemic_margin) ? (
               <div
                 className="bg-surface-2/40 rounded-md px-2.5 py-2"
-                title="Top class mass minus second. Large gap = leader is clear among ML votes only."
+                title="How far the top guess beats second place."
               >
-                <dt className="text-muted-foreground text-[0.65rem]">Confidence gap</dt>
+                <dt className="text-muted-foreground text-[0.65rem]">Lead over #2</dt>
                 <dd className="text-foreground mt-0.5 tabular-nums">
                   {(data.metre_epistemic_margin * 100).toFixed(0)} pp
                 </dd>
                 <dd className="text-muted-foreground mt-0.5 text-[0.6rem] leading-snug">
-                  Top1 − top2 (ML only)
+                  Confidence gap
                 </dd>
               </div>
             ) : null}
             {data.metre_type ? (
               <div className="bg-surface-2/40 rounded-md px-2.5 py-2">
-                <dt className="text-muted-foreground text-[0.65rem]">Parser metre</dt>
+                <dt className="text-muted-foreground text-[0.65rem]">Best guess</dt>
                 <dd className="text-foreground mt-0.5 font-tamil text-[0.8rem] font-medium">
                   {data.metre_type}
                 </dd>
@@ -119,7 +117,7 @@ export function DeveloperEvaluationPanel({ data }: DeveloperEvaluationPanelProps
         {data.metre_ml && data.metre_ml.head_votes.length > 0 ? (
           <div data-testid="metre-ml-head-votes">
             <span className="text-muted-foreground text-[0.7rem] font-medium">
-              Model heads · soft mass 0–1 (relative vote, not calibrated %)
+              Model votes (0–1 share — compare heads, not a proof score)
             </span>
             <ul className="mt-1.5 flex flex-col gap-1.5">
               {data.metre_ml.head_votes.map((vote) => (
@@ -146,7 +144,7 @@ export function DeveloperEvaluationPanel({ data }: DeveloperEvaluationPanelProps
         {data.metre_ml && data.metre_ml.pattern_features.length > 0 ? (
           <div data-testid="metre-ml-pattern-features">
             <span className="text-muted-foreground text-[0.7rem] font-medium">
-              Pattern features (dense signals for this poem)
+              Strong signals in this poem’s 51 numbers
             </span>
             <ul className="mt-1.5 flex flex-col gap-1">
               {data.metre_ml.pattern_features.map((f) => (
@@ -169,21 +167,14 @@ export function DeveloperEvaluationPanel({ data }: DeveloperEvaluationPanelProps
 
         {data.metre_ml?.a12_freeze_date ? (
           <p className="text-muted-foreground m-0 text-[0.68rem] tabular-nums">
-            Pattern freeze {data.metre_ml.a12_freeze_date} · ADOPT baseline era (reports, not live %)
+            Pattern freeze date: {data.metre_ml.a12_freeze_date}
           </p>
         ) : null}
 
         {dual?.separation_policy ? (
-          <p className="text-muted-foreground m-0 font-mono text-[0.65rem]">
-            dual-truth policy: {dual.separation_policy}
-          </p>
-        ) : null}
-
-        {dual != null ? (
-          <p className="text-muted-foreground m-0 text-[0.68rem] leading-relaxed">
-            Soft classical sketch reports flags for the ML top guess only (parallel dual-truth). Research
-            dual-compare uses buckets such as <span className="font-mono">ml_only_classical_flags</span> —
-            not full classical proof.
+          <p className="text-muted-foreground m-0 text-[0.65rem] leading-snug">
+            ML scores and classical flags stay side by side (
+            <span className="font-mono text-[0.62rem]">{dual.separation_policy}</span>).
           </p>
         ) : null}
 
@@ -191,11 +182,7 @@ export function DeveloperEvaluationPanel({ data }: DeveloperEvaluationPanelProps
           <p className="text-muted-foreground m-0 text-[0.7rem] leading-relaxed">
             {data.metre_ml.uncertainty_blurb}
           </p>
-        ) : (
-          <p className="text-muted-foreground m-0 text-[0.7rem] leading-relaxed">
-            {IN_SAMPLE_ADOPT_NOTE}
-          </p>
-        )}
+        ) : null}
       </div>
     </div>
   )

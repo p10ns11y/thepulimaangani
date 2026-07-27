@@ -21,10 +21,7 @@ vi.mock('@tanstack/react-router', () => ({
     </a>
   ),
 }))
-import {
-  FALLBACK_METRE_EXPLAINER,
-  IN_SAMPLE_ADOPT_NOTE,
-} from '#/components/prosody/metrePanelCopy'
+import { FALLBACK_METRE_EXPLAINER } from '#/components/prosody/metrePanelCopy'
 import {
   parsedFoot,
   parsedLine,
@@ -92,12 +89,12 @@ describe('DeveloperEvaluationPanel', () => {
     expect(screen.getByText('Pattern model')).toBeTruthy()
     expect(screen.getByTestId('metre-ml-pattern-features')).toBeTruthy()
     expect(screen.getByText(/feat_line_count/)).toBeTruthy()
-    expect(screen.getByText(/Pattern freeze 2026-01-01/)).toBeTruthy()
-    expect(screen.getByText(/policy: no_fuse/)).toBeTruthy()
-    expect(screen.getByText(IN_SAMPLE_ADOPT_NOTE)).toBeTruthy()
+    expect(screen.getByText(/Pattern freeze date: 2026-01-01/)).toBeTruthy()
+    expect(screen.getByText(/no_fuse/)).toBeTruthy()
+    expect(screen.queryByText(/four-way ML distribution/i)).toBeNull()
   })
 
-  it('shows uncertainty blurb when provided instead of default adopt note', () => {
+  it('shows uncertainty blurb when provided', () => {
     const data = parsedPoem({
       original_text: 'x',
       metre_type: 'கலிப்பா',
@@ -117,6 +114,5 @@ describe('DeveloperEvaluationPanel', () => {
     })
     render(<DeveloperEvaluationPanel data={data} />)
     expect(screen.getByText('Heads disagree on this sample.')).toBeTruthy()
-    expect(screen.queryByText(IN_SAMPLE_ADOPT_NOTE)).toBeNull()
   })
 })
