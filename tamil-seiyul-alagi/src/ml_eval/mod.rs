@@ -10,13 +10,19 @@ pub mod disagreement;
 pub mod head_ab;
 pub mod knn;
 pub mod metrics;
-pub mod mi_chi2;
 pub mod motifs;
-pub mod offline_b;
 pub mod pattern_cards;
-pub mod pca_lda;
-pub mod pilots_c;
 pub mod product_surface;
+
+// Offline / research modules — optional for lean WASM (`--no-default-features`).
+#[cfg(feature = "ml-eval-offline")]
+pub mod mi_chi2;
+#[cfg(feature = "ml-eval-offline")]
+pub mod offline_b;
+#[cfg(feature = "ml-eval-offline")]
+pub mod pca_lda;
+#[cfg(feature = "ml-eval-offline")]
+pub mod pilots_c;
 
 /// Portfolio step ids A00–D03 (canonical order after S03).
 pub const TIER_STEP_IDS: &[&str] = &[

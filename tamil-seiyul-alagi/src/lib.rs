@@ -196,14 +196,14 @@ pub fn parse_poem(text: &str, options: ParseOptions) -> Result<ParseResult, Pars
     let metre_ml = if options.no_detect || building_train {
         None
     } else {
-        let (train_x, train_y) = special_type_train_xy();
-        Some(ml_eval::product_surface::build_product_surface(
+        // Hot path: predict with OnceLock-cached fitted heads (no per-parse refit).
+        let heads = cached_product_heads();
+        Some(ml_eval::product_surface::build_product_surface_with_heads(
             metre.as_ref(),
             &metre_hypotheses,
             parse_features.as_ref().map(|p| p.dense.as_slice()),
             classical_violations,
-            &train_x,
-            &train_y,
+            Some(heads),
         ))
     };
 
@@ -234,36 +234,40 @@ pub fn parse_poem(text: &str, options: ParseOptions) -> Result<ParseResult, Pars
     })
 }
 
-/// Cached special_type dense/gold for multi-head product surface (A03/A04).
+/// Build special_type dense/gold once (used only while fitting the product-head cache).
 fn special_type_train_xy() -> (Vec<Vec<f32>>, Vec<usize>) {
-    use std::sync::OnceLock;
-    static CACHE: OnceLock<(Vec<Vec<f32>>, Vec<usize>)> = OnceLock::new();
-    CACHE
-        .get_or_init(|| {
-            BUILDING_SPECIAL_TYPE_TRAIN.with(|c| c.set(true));
-            let all = poem_variation_label_rows();
-            let labels = poem_variation_special_type_rows(&all);
-            let mut xs = Vec::new();
-            let mut ys = Vec::new();
-            for label in labels {
-                let mut opts = ParseOptions::poem_variations_training();
-                opts.skip_ml_metre = true;
-                if let Ok(r) = parse_poem(&label.text, opts) {
-                    if let (Some(pf), Some(gold)) = (
-                        r.parse_features.as_ref(),
-                        gold_metre_type_for_parent(&label.parent_metre),
-                    ) {
-                        if let Some(yi) = metre::ml_head::class_index_for_metre(&gold) {
-                            xs.push(pf.dense.clone());
-                            ys.push(yi);
-                        }
-                    }
+    BUILDING_SPECIAL_TYPE_TRAIN.with(|c| c.set(true));
+    let all = poem_variation_label_rows();
+    let labels = poem_variation_special_type_rows(&all);
+    let mut xs = Vec::new();
+    let mut ys = Vec::new();
+    for label in labels {
+        let mut opts = ParseOptions::poem_variations_training();
+        opts.skip_ml_metre = true;
+        if let Ok(r) = parse_poem(&label.text, opts) {
+            if let (Some(pf), Some(gold)) = (
+                r.parse_features.as_ref(),
+                gold_metre_type_for_parent(&label.parent_metre),
+            ) {
+                if let Some(yi) = metre::ml_head::class_index_for_metre(&gold) {
+                    xs.push(pf.dense.clone());
+                    ys.push(yi);
                 }
             }
-            BUILDING_SPECIAL_TYPE_TRAIN.with(|c| c.set(false));
-            (xs, ys)
-        })
-        .clone()
+        }
+    }
+    BUILDING_SPECIAL_TYPE_TRAIN.with(|c| c.set(false));
+    (xs, ys)
+}
+
+/// Cached fitted multi-head bundle (logistic + z-prototypes). Fit once; predict on every parse.
+fn cached_product_heads() -> &'static ml_eval::product_surface::CachedProductHeads {
+    use std::sync::OnceLock;
+    static CACHE: OnceLock<ml_eval::product_surface::CachedProductHeads> = OnceLock::new();
+    CACHE.get_or_init(|| {
+        let (xs, ys) = special_type_train_xy();
+        ml_eval::product_surface::fit_product_heads(&xs, &ys)
+    })
 }
 
 #[wasm_bindgen]

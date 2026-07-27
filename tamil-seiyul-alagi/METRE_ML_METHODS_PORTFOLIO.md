@@ -4,7 +4,7 @@
 **Date:** 2026-07-27  
 **Goal:** Discover and freeze **what ML believes** about coarse Tamil metre *before* implementing classical rule-based metre analysis, so later comparison is scientific (not retrospective storytelling).
 
-**Related:** [`METRE_PREDICTION.md`](METRE_PREDICTION.md) · [`TRAINING_PROCESS.md`](TRAINING_PROCESS.md) · [`PARSE_FEATURES.md`](PARSE_FEATURES.md) · [`MACHINE_FIRST_SPEC.md`](MACHINE_FIRST_SPEC.md) · `classical_checker.rs` (placeholder, intentionally dark)
+**Related:** [`METRE_ML_BEGINNER_GUIDE.md`](METRE_ML_BEGINNER_GUIDE.md) (story + diagrams + I/O) · [`METRE_PREDICTION.md`](METRE_PREDICTION.md) · [`TRAINING_PROCESS.md`](TRAINING_PROCESS.md) · [`PARSE_FEATURES.md`](PARSE_FEATURES.md) · [`MACHINE_FIRST_SPEC.md`](MACHINE_FIRST_SPEC.md) · `classical_checker.rs` (soft sketch after A12 freeze)
 
 **External maps:**
 

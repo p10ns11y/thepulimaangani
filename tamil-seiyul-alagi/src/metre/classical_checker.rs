@@ -1,7 +1,7 @@
-//! Strict classical metre verification (line–foot–தளை constraints).
+//! Soft classical metre sketches (line–foot–தளை heuristics).
 //!
-//! Wired as dual-truth only: violations annotate `ParseResult.metre_ml` classical channel and
-//! never subtract from hybrid/heuristic aggregate scores. Gated by A12 freeze
+//! These are **not** full classical proof. They annotate `ParseResult.metre_ml` dual-truth only
+//! and never subtract from hybrid/heuristic aggregate scores. Gated by A12 freeze
 //! (`ml_eval::classical_path_allowed`).
 
 use crate::foot::Foot;

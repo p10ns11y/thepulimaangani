@@ -153,11 +153,16 @@ export function StructureAccordion({ data }: StructureAccordionProps) {
                 </div>
               </dl>
               {data.metre_ml.dual_truth.classical_violations.length > 0 ? (
-                <ul className="text-muted-foreground mt-1.5 list-inside list-disc text-[0.68rem]">
-                  {data.metre_ml.dual_truth.classical_violations.slice(0, 6).map((v) => (
-                    <li key={v}>{v}</li>
-                  ))}
-                </ul>
+                <div className="mt-1.5">
+                  <p className="text-muted-foreground m-0 text-[0.65rem] leading-snug">
+                    Soft classical sketch (not full scholarly proof):
+                  </p>
+                  <ul className="text-muted-foreground mt-0.5 list-inside list-disc text-[0.68rem]">
+                    {data.metre_ml.dual_truth.classical_violations.slice(0, 6).map((v) => (
+                      <li key={v}>{v}</li>
+                    ))}
+                  </ul>
+                </div>
               ) : null}
               <p className="text-muted-foreground m-0 mt-1.5 text-[0.65rem]">
                 {data.metre_ml.dual_truth.separation_policy}
@@ -170,7 +175,9 @@ export function StructureAccordion({ data }: StructureAccordionProps) {
               className="border-rim/30 bg-surface-2/25 rounded-md border px-3 py-2"
               data-testid="metre-ml-head-votes"
             >
-              <span className="text-muted-foreground text-xs">Multi-head comparison</span>
+              <span className="text-muted-foreground text-xs">
+                Multi-head comparison (soft mass 0–1, not calibrated %)
+              </span>
               <ul className="mt-1.5 flex flex-col gap-1">
                 {data.metre_ml.head_votes.map((vote) => (
                   <li
@@ -183,8 +190,11 @@ export function StructureAccordion({ data }: StructureAccordionProps) {
                       </span>
                       {vote.metre_type}
                     </span>
-                    <span className="text-muted-foreground shrink-0 tabular-nums">
-                      {(vote.score * 100).toFixed(1)}%
+                    <span
+                      className="text-muted-foreground shrink-0 tabular-nums"
+                      title="Unitless soft mass / relative score (0–1), not a calibrated probability %"
+                    >
+                      {vote.score.toFixed(2)}
                     </span>
                   </li>
                 ))}
