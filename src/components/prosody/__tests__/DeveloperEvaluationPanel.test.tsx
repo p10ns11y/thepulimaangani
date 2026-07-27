@@ -1,26 +1,9 @@
 /** @vitest-environment jsdom */
 
 import { render, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 import { DeveloperEvaluationPanel } from '#/components/prosody/DeveloperEvaluationPanel'
-
-vi.mock('@tanstack/react-router', () => ({
-  Link: ({
-    to,
-    children,
-    ...rest
-  }: {
-    to: string
-    children: React.ReactNode
-    className?: string
-    'data-testid'?: string
-  }) => (
-    <a href={to} {...rest}>
-      {children}
-    </a>
-  ),
-}))
 import { FALLBACK_METRE_EXPLAINER } from '#/components/prosody/metrePanelCopy'
 import {
   parsedFoot,

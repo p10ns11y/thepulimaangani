@@ -1,4 +1,3 @@
-import { Link } from '@tanstack/react-router'
 import { BookOpen } from 'lucide-react'
 
 import {
@@ -13,6 +12,7 @@ type DeveloperEvaluationPanelProps = {
   data: ParsedPoem
 }
 
+/** Plain <a> so ProsodyLab unit/integration tests need no TanStack Router provider. */
 function DeveloperEvaluationHeader() {
   return (
     <header className="flex flex-col gap-1.5 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
@@ -25,14 +25,14 @@ function DeveloperEvaluationHeader() {
           classical scholar would agree. Full story on the guide page.
         </p>
       </div>
-      <Link
-        to="/developer-evaluation"
+      <a
+        href="/developer-evaluation"
         className="border-rim/45 bg-surface-1/90 text-foreground hover:bg-surface-2/90 inline-flex shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[0.7rem] font-medium no-underline transition-colors"
         data-testid="developer-evaluation-guide-link"
       >
         <BookOpen className="size-3.5 opacity-80" aria-hidden />
         How this works
-      </Link>
+      </a>
     </header>
   )
 }
