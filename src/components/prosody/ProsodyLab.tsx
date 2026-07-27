@@ -1,24 +1,15 @@
 import { ChevronRight, PanelLeftOpen } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useSelector } from '@xstate/react'
 
 import { useProsodyActorRefFromApp } from '#/components/AppActorProvider'
 import { Button } from '#/components/ui/button'
 import { useLivePreviewBridge } from '#/hooks/useLivePreviewBridge'
 import { usePrefersReducedMotion } from '#/hooks/usePrefersReducedMotion'
+import { useProsodyLabChrome } from '#/hooks/useProsodyLabChrome'
 import type { TypewriterPhysicsCue } from '#/hooks/useTypewriterPaperPhysics'
 import { useTypewriterSound } from '#/hooks/useTypewriterSound'
-import {
-  prosodyLabGridClass,
-  readInputRailExpanded,
-  writeInputRailExpanded,
-} from '#/lib/prosodyLabLayoutPreferences'
-import {
-  readPaperPhysicsEnabled,
-  readTypewriterSoundEnabled,
-  writePaperPhysicsEnabled,
-  writeTypewriterSoundEnabled,
-} from '#/lib/typewriterEditorPreferences'
+import { prosodyLabGridClass } from '#/lib/prosodyLabLayoutPreferences'
 import { cn } from '#/lib/utils'
 import { getFlatRows, METRE_TAB_LABEL } from '#/machines/prosodyLab.defaults'
 
@@ -40,21 +31,21 @@ function previewSource(editorOpen: boolean, poemText: string, poemDraft: string)
 }
 
 export function ProsodyLab() {
+  // Ephemeral editor cursor → live context rail (not a persisted pref).
   const [editorFocusLine, setEditorFocusLine] = useState(0)
-  const [paperPhysicsOn, setPaperPhysicsOn] = useState(() => readPaperPhysicsEnabled())
-  const [typewriterSoundOn, setTypewriterSoundOn] = useState(() => readTypewriterSoundEnabled())
-  /** Left sample picker + poem rail — collapse for wide Structure reading. */
-  const [inputRailExpanded, setInputRailExpanded] = useState(() => readInputRailExpanded())
+  const {
+    inputRailExpanded,
+    paperPhysicsOn,
+    typewriterSoundOn,
+    setInputRail,
+    setPaperPhysicsOn,
+    setTypewriterSoundOn,
+  } = useProsodyLabChrome()
   const reducedMotion = usePrefersReducedMotion()
   const prosodyRef = useProsodyActorRefFromApp()
   const ctx = useSelector(prosodyRef, (s) => s?.context)
   const previewSrc = ctx ? previewSource(ctx.editorOpen, ctx.poemText, ctx.poemDraft) : ''
   const debounceMs = ctx ? previewDebounceMs(ctx.editorOpen) : 420
-
-  const setInputRail = useCallback((expanded: boolean) => {
-    writeInputRailExpanded(expanded)
-    setInputRailExpanded(expanded)
-  }, [])
 
   const { playCue, resume } = useTypewriterSound(
     typewriterSoundOn && !reducedMotion,
@@ -71,12 +62,6 @@ export function ProsodyLab() {
   // Live bridge seeds parse.result on ready (setLive). Avoid a mount-time PARSE
   // invoke that races the first live WASM load and can drop LIVE.STATE.
   useLivePreviewBridge(prosodyRef, previewSrc, debounceMs)
-
-  useEffect(() => {
-    if (!ctx?.editorOpen) return
-    setPaperPhysicsOn(readPaperPhysicsEnabled())
-    setTypewriterSoundOn(readTypewriterSoundEnabled())
-  }, [ctx?.editorOpen])
 
   if (!prosodyRef || !ctx) {
     return null
@@ -196,13 +181,9 @@ export function ProsodyLab() {
         }}
         onCursorLineChange={setEditorFocusLine}
         paperPhysicsEnabled={paperPhysicsOn}
-        onPaperPhysicsEnabledChange={(on) => {
-          writePaperPhysicsEnabled(on)
-          setPaperPhysicsOn(on)
-        }}
+        onPaperPhysicsEnabledChange={setPaperPhysicsOn}
         typewriterSoundEnabled={typewriterSoundOn}
         onTypewriterSoundEnabledChange={(on) => {
-          writeTypewriterSoundEnabled(on)
           setTypewriterSoundOn(on)
           if (on) void resume()
         }}
