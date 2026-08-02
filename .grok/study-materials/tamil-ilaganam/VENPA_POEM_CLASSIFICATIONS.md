@@ -1,5 +1,7 @@
 # வெண்பா
 
+> **Machine spike (paused):** catalogue intent below is human SoT. Do **not** translate Tamil prose directly into algorithms. Sensors + decision DAG live in [`tamil-seiyul-alagi/src/metre/venpaa_subtype.rs`](../../../tamil-seiyul-alagi/src/metre/venpaa_subtype.rs); resume handoff [`tamil-seiyul-alagi/VENPAA_SUBTYPE_SPIKE.md`](../../../tamil-seiyul-alagi/VENPAA_SUBTYPE_SPIKE.md) (10/10 Venpaa `special_type` gold as of 2026-08-02).
+
 ## Common rules
 
 - ஈற்றடியின் ஈற்றுச்சீரைத் தவிர்த்து ஈரசைச்சீர்களும் காய்ச்சீர்களும் மட்டுமே பயின்று வருதல் வேண்டும் 
