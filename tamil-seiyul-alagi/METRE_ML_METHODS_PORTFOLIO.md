@@ -4,7 +4,7 @@
 **Date:** 2026-07-27  
 **Goal:** Discover and freeze **what ML believes** about coarse Tamil metre *before* implementing classical rule-based metre analysis, so later comparison is scientific (not retrospective storytelling).
 
-**Related:** [`METRE_ML_BEGINNER_GUIDE.md`](METRE_ML_BEGINNER_GUIDE.md) (story + diagrams + I/O) · [`METRE_PREDICTION.md`](METRE_PREDICTION.md) · [`TRAINING_PROCESS.md`](TRAINING_PROCESS.md) · [`PARSE_FEATURES.md`](PARSE_FEATURES.md) · [`MACHINE_FIRST_SPEC.md`](MACHINE_FIRST_SPEC.md) · `classical_checker.rs` (soft sketch after A12 freeze)
+**Related:** [`METRE_ML_BEGINNER_GUIDE.md`](METRE_ML_BEGINNER_GUIDE.md) (story + diagrams + I/O) · [`METRE_PREDICTION.md`](METRE_PREDICTION.md) · [`TRAINING_PROCESS.md`](TRAINING_PROCESS.md) · [`PARSE_FEATURES.md`](PARSE_FEATURES.md) · [`MACHINE_FIRST_SPEC.md`](MACHINE_FIRST_SPEC.md) · `classical_checker.rs` (soft sketch after A12 freeze) · [`VENPAA_SUBTYPE_SPIKE.md`](VENPAA_SUBTYPE_SPIKE.md) (**paused** rules-first Venpaa `sample_id` classifier — not an ML head)
 
 **External maps:**
 
@@ -166,6 +166,13 @@ Live preview **debounce** is UX rate-limiting only — not a second architecture
 - Heavy MPC/LQR
 - Raw-text deep learning before structure baselines
 - Training bulk on all variation rows without relabel
+- **Hierarchical tiny ML** for special_type names / per-parent variation heads **before** rule sensors + more gold (see [`VENPAA_SUBTYPE_SPIKE.md`](VENPAA_SUBTYPE_SPIKE.md) — rules-first path preferred; ML later only under Volume/Variety gates)
+
+### 3.9 Classical subtype path (paused spike, 2026-08)
+
+- **Do:** machine-first sensors + decision DAG for Venpaa `special_type` `sample_id` (`metre/venpaa_subtype.rs`).
+- **Do not:** treat the spike as fused into hybrid scores or as permission to train on `variation`.
+- Resume notes, backlog, and verify command: [`VENPAA_SUBTYPE_SPIKE.md`](VENPAA_SUBTYPE_SPIKE.md).
 
 ---
 
