@@ -1,50 +1,27 @@
-%%{init: {"theme": "neutral", "themeVariables": {"fontFamily": "Noto Sans Tamil, Noto Sans, sans-serif", "fontSize": "15px"}, "flowchart": {"wrappingWidth": 420, "padding": 12, "htmlLabels": true, "curve": "linear", "nodeSpacing": 28, "rankSpacing": 36}}}%%
-flowchart TD
-  start["அடி<br/>சீர்<br/>தளை"]
-  start --> aciriyappaa
+%%{init: {"theme": "neutral", "themeVariables": {"fontFamily": "Noto Sans Tamil, Noto Serif Tamil, sans-serif", "fontSize": "15px"}, "flowchart": {"wrappingWidth": 280, "padding": 10, "htmlLabels": true, "curve": "linear", "nodeSpacing": 24, "rankSpacing": 36}}}%%
+flowchart TB
+  start["அடி<br/>சீர்<br/>தளை"] --> aciriyappaa
   aciriyappaa["ஆசிரியப்பா<br/>8 combined<br/>3+ அடி<br/>இயற்சீர் மேல் 40<br/>ஆசிரியத்தளை மேல் 40<br/>ஈறு<br/>விளங்கனி இல்லை<br/>நீளம் இல்லை<br/>ஓர அளவடி<br/>இடை அடி"]
-  aciriyappaa -->|இல்லை| kattalai_kalithurai
   kattalai_kalithurai["கட்டளைக்கலித்துறை<br/>6 combined<br/>4 நெடிலடி<br/>எதுகை<br/>16/17 எழுத்து<br/>அடிக்குள் வெண்"]
-  kattalai_kalithurai -->|இல்லை| venpaa
-  venpaa["வெண்பா<br/>4 combined<br/>ஈறு சிந்தடி<br/>உடல் சீர்<br/>வெண்டளை<br/>ஈற்றுச்சீர்"]
-  venpaa -->|இல்லை| vanjippaa
-  vanjippaa["வஞ்சிப்பா<br/>4 combined<br/>வஞ்சி அமைப்பு<br/>கனி பத்து<br/>வஞ்சித்தளை<br/>சுரிதகம்"]
-  vanjippaa -->|இல்லை| aciriya_virutham
+  venpaa["வெண்பா<br/>4 combined<br/>ஈறு சிந்தடி<br/>உடல் சீர்<br/>வெண்டளை<br/>ஈற்றுச்சீர்"] -->|இல்லை| vanjippaa
+  vanjippaa["வஞ்சிப்பா<br/>4 combined<br/>வஞ்சி அமைப்பு<br/>கனி பத்து<br/>வஞ்சித்தளை<br/>சுரிதகம்"] -->|இல்லை| aciriya_virutham
   aciriya_virutham["ஆசிரிய விருத்தம்<br/>4 combined<br/>4 சம அடி<br/>கழிநெடிலடி<br/>எதுகை"]
-  aciriya_virutham -->|இல்லை| kattalai_kalippaa
   kattalai_kalippaa["கட்டளைக்கலிப்பா<br/>3 combined<br/>8 அரையடி<br/>4 சீர்<br/>11/12 எழுத்து"]
-  kattalai_kalippaa -->|இல்லை| kalivenpaa_long_osai
-  kalivenpaa_long_osai["கலிவெண்பா ஓசை<br/>2 combined<br/>13+ அடி<br/>ஈறு சிந்தடி"]
-  kalivenpaa_long_osai -->|இல்லை| tharavukocha_kalippaa
-  tharavukocha_kalippaa["தரவுகொச்சகம்<br/>2 combined<br/>4+ அளவடி"]
-  tharavukocha_kalippaa -->|இல்லை| venkalippaa
-  venkalippaa["வெண்கலிப்பா<br/>2 combined<br/>அளவடி+சிந்தடி<br/>உடல் சீர்"]
-  venkalippaa -->|இல்லை| velivirutham
-  velivirutham["வெளிவிருத்தம்<br/>2 combined<br/>3/4 நெடிலடி"]
-  velivirutham -->|இல்லை| ventazhisai
-  ventazhisai["வெண்டாழிசை<br/>2 combined<br/>3 அடி<br/>முதல் அளவடி"]
-  ventazhisai -->|இல்லை| aciriya_thurai
+  kalivenpaa_long_osai["கலிவெண்பா ஓசை<br/>2 combined<br/>13+ அடி<br/>ஈறு சிந்தடி"] -->|இல்லை| tharavukocha_kalippaa
+  tharavukocha_kalippaa["தரவுகொச்சகம்<br/>2 combined<br/>4+ அளவடி"] -->|இல்லை| venkalippaa
+  venkalippaa["வெண்கலிப்பா<br/>2 combined<br/>அளவடி+சிந்தடி<br/>உடல் சீர்"] -->|இல்லை| velivirutham
+  velivirutham["வெளிவிருத்தம்<br/>2 combined<br/>3/4 நெடிலடி"] -->|இல்லை| ventazhisai
+  ventazhisai["வெண்டாழிசை<br/>2 combined<br/>3 அடி<br/>முதல் அளவடி"] -->|இல்லை| aciriya_thurai
   aciriya_thurai["ஆசிரியத் துறை<br/>2 combined<br/>4 அடி<br/>ஒரு அடி குறைவு"]
-  aciriya_thurai -->|இல்லை| kurattazhisai
-  kurattazhisai["குறட்டாழிசை<br/>1 combined<br/>2 அடி"]
-  kurattazhisai -->|இல்லை| aciriya_thazhisai
-  aciriya_thazhisai["ஆசிரியத் தாழிசை<br/>1 combined<br/>3 அடி"]
-  aciriya_thazhisai -->|இல்லை| kalithurai
-  kalithurai["கலித்துறை<br/>1 combined<br/>4 அடி"]
-  kalithurai -->|இல்லை| kalivirutham
-  kalivirutham["கலிவிருத்தம்<br/>1 combined<br/>4 அடி"]
-  kalivirutham -->|இல்லை| vanjivirutham
+  kurattazhisai["குறட்டாழிசை<br/>1 combined<br/>2 அடி"] -->|இல்லை| aciriya_thazhisai
+  aciriya_thazhisai["ஆசிரியத் தாழிசை<br/>1 combined<br/>3 அடி"] -->|இல்லை| kalithurai
+  kalithurai["கலித்துறை<br/>1 combined<br/>4 அடி"] -->|இல்லை| kalivirutham
+  kalivirutham["கலிவிருத்தம்<br/>1 combined<br/>4 அடி"] -->|இல்லை| vanjivirutham
   vanjivirutham["வஞ்சி விருத்தம்<br/>1 combined<br/>4 அடி"]
-  vanjivirutham -->|இல்லை| vellathazhisai
-  vellathazhisai["வெள்ளொத்தாழிசை<br/>1 combined<br/>9 அடி"]
-  vellathazhisai -->|இல்லை| vendurai
-  vendurai["வெண்டுறை<br/>1 combined<br/>3-7 அடி"]
-  vendurai -->|இல்லை| kural_vensenthurai
-  kural_vensenthurai["குறள் வெண்செந்துறை<br/>1 combined<br/>2 அடி"]
-  kural_vensenthurai -->|இல்லை| kalithazhisai
-  kalithazhisai["கலித்தாழிசை<br/>1 combined<br/>பல அடி"]
-  kalithazhisai -->|இல்லை| vanjithazhisai
-  vanjithazhisai["வஞ்சித்தாழிசை<br/>1 combined<br/>12 அடி"]
-  vanjithazhisai -->|இல்லை| vanjithurai
-  vanjithurai["வஞ்சித்துறை<br/>1 combined<br/>4 அடி"]
-  vanjithurai -->|இல்லை| none["no rule fitted"]
+  vellathazhisai["வெள்ளொத்தாழிசை<br/>1 combined<br/>9 அடி"] -->|இல்லை| vendurai
+  vendurai["வெண்டுறை<br/>1 combined<br/>3-7 அடி"] -->|இல்லை| kural_vensenthurai
+  kural_vensenthurai["குறள் வெண்செந்துறை<br/>1 combined<br/>2 அடி"] -->|இல்லை| kalithazhisai
+  kalithazhisai["கலித்தாழிசை<br/>1 combined<br/>பல அடி"] -->|இல்லை| vanjithazhisai
+  vanjithazhisai["வஞ்சித்தாழிசை<br/>1 combined<br/>12 அடி"] -->|இல்லை| vanjithurai
+  vanjithurai["வஞ்சித்துறை<br/>1 combined<br/>4 அடி"] -->|இல்லை| none
+  none["no rule fitted"]
