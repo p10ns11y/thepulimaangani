@@ -1,21 +1,21 @@
 //! Strict-first classical decision tree beside the ML metre verdict.
 //!
 //! A family gate is the shared combined conditions. Each leaf then adds one or
-//! two discriminating rules, recorded as the last step before that leaf. Gates
-//! still run from the most combined conditions to the fewest. Equal counts keep
-//! Avalokitam's order. Nothing here writes heuristic scores, the hybrid head,
-//! or `metre_ml`.
+//! two discriminating rules, recorded as the last step before that leaf. The
+//! leaf itself is the gate `family_walk_gate` returns. Gates still run from the
+//! most combined conditions to the fewest. Equal counts keep Avalokitam's
+//! order. Nothing here writes heuristic scores, the hybrid head, or `metre_ml`.
 
 use unicode_segmentation::UnicodeSegmentation;
 
 pub use crate::classical_decision::ALAVADI_SEER_COUNT;
 use crate::classical_decision::{
-    alavadi_word_message, fifth_seer_message, fifth_seer_pattern_allowed,
-    kalivenpaa_route_for_gate, kalivenpaa_route_message, merkathuvai_seat_message,
+    alavadi_word_message, family_walk_gate, fifth_seer_message, fifth_seer_pattern_allowed,
+    gate_index, kalivenpaa_route_for_gate, kalivenpaa_route_message, merkathuvai_seat_message,
     merkathuvai_seat_positions, nerisai_tie_message, repeated_tanichol_keeps_kattalai,
     repeated_tanichol_message, share_passes, share_route_message, tharavu_alavadi_message,
     tharavu_line_count_passes, walk_order_message, FifthSeerRoute, AVALOKITAM_WALK_ORDER,
-    GATE_FACTS, KANI_TENTH_40, KATTALAI_FIFTH_SEER_ROUTE, MERKATHUVAI_SEAT_ROUTE,
+    GATE_COUNT, GATE_FACTS, KANI_TENTH_40, KATTALAI_FIFTH_SEER_ROUTE, MERKATHUVAI_SEAT_ROUTE,
     NAMED_ORDER_OVERLAPS, REPEATED_TANICHOL_ROUTE, SHARE_DECISIONS, SHARE_STRICT_25,
     SHARE_STRICT_40, SHARE_STRICT_50, SHARE_STRICT_90, THARAVU_ALAVADI_ROUTE, WALK_ORDER_ROUTE,
 };
@@ -71,7 +71,8 @@ struct PoemView<'a> {
 ///
 /// Gates run strict-first: more combined conditions first. Equal counts keep
 /// Avalokitam's order. A family gate is emitted once. Each leaf that reaches
-/// its discriminator records that pair as the last step before the leaf.
+/// its discriminator records that pair as the last step before the leaf. The
+/// leaf id is the one `family_walk_gate` returns for those pass bits.
 pub fn evaluate_classical_tree(
     source: &str,
     lines: &[Line],
@@ -84,10 +85,13 @@ pub fn evaluate_classical_tree(
         linkage,
     };
     let mut path = Vec::new();
-    let mut fitted: Option<Leaf> = None;
+    let passes = gate_pass_bits(&view);
+    let winner_id = family_walk_gate(&passes, WALK_ORDER_ROUTE).map(|index| GATE_FACTS[index].id);
     let gates = gates_sorted(true);
     let mut index = 0;
-    while index < gates.len() && fitted.is_none() {
+    let mut trace_closed = false;
+    let mut trace_leaf_id: Option<&str> = None;
+    while index < gates.len() && !trace_closed {
         let family_name = family_id(gates[index].id);
         let head = assess(gates[index].id, &view);
         let head_family_len = family_prefix_len(gates[index].id, head.len());
@@ -109,7 +113,7 @@ pub fn evaluate_classical_tree(
                 &condition.message_ta,
             ));
         }
-        while index < gates.len() && family_id(gates[index].id) == family_name && fitted.is_none() {
+        while index < gates.len() && family_id(gates[index].id) == family_name && !trace_closed {
             let gate = gates[index];
             let conditions = assess(gate.id, &view);
             let prefix_len = family_prefix_len(gate.id, conditions.len());
@@ -141,12 +145,15 @@ pub fn evaluate_classical_tree(
                     &message,
                 ));
                 if discriminator_passed {
-                    fitted = Some(gate.leaf);
+                    trace_closed = true;
+                    trace_leaf_id = Some(gate.id);
                 }
             }
             index += 1;
         }
     }
+    debug_assert_eq!(trace_leaf_id, winner_id);
+    let mut fitted = winner_id.and_then(leaf_for_gate_id);
     fitted = leaf_after_repeated_tanichol_route(fitted, &view);
     if fitted.is_none() {
         path.push(check("no_rule_fitted", false, "எந்த விதியும் பொருந்தவில்லை."));
@@ -340,6 +347,24 @@ fn nerisai_mark(has_tanichol: bool, vikarpam_ok: bool, vikarpam_text: &str) -> C
     requirement("nerisai_mark", has_tanichol && vikarpam_ok, &text)
 }
 
+fn gate_pass_bits(view: &PoemView<'_>) -> [bool; GATE_COUNT] {
+    let mut passes = [false; GATE_COUNT];
+    for gate in &GATES {
+        let index = gate_index(gate.id).unwrap_or_else(|| panic!("missing gate {}", gate.id));
+        passes[index] = assess(gate.id, view)
+            .iter()
+            .all(|condition| condition.passed);
+    }
+    passes
+}
+
+fn leaf_for_gate_id(gate_id: &str) -> Option<Leaf> {
+    GATES
+        .iter()
+        .find(|gate| gate.id == gate_id)
+        .map(|gate| gate.leaf)
+}
+
 fn gates_sorted(strict_first: bool) -> Vec<GateSpec> {
     let order = if strict_first {
         WALK_ORDER_ROUTE
@@ -360,16 +385,13 @@ fn gates_sorted(strict_first: bool) -> Vec<GateSpec> {
 
 #[cfg(test)]
 fn matching_leaf(view: &PoemView<'_>, strict_first: bool) -> Option<Leaf> {
-    let fitted = gates_sorted(strict_first).into_iter().find_map(|gate| {
-        let passed = assess(gate.id, view)
-            .iter()
-            .all(|condition| condition.passed);
-        if passed {
-            Some(gate.leaf)
-        } else {
-            None
-        }
-    });
+    let order = if strict_first {
+        WALK_ORDER_ROUTE
+    } else {
+        AVALOKITAM_WALK_ORDER
+    };
+    let fitted = family_walk_gate(&gate_pass_bits(view), order)
+        .and_then(|index| leaf_for_gate_id(GATE_FACTS[index].id));
     leaf_after_repeated_tanichol_route(fitted, view)
 }
 

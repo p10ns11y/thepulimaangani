@@ -129,10 +129,8 @@ AllowedShadows == {
   [paa |-> "inaikkural_aciriyappaa", paavinam |-> "aciriya_thazhisai"]
 }
 
-EveryLeaf ==
-  \A index \in DOMAIN Gates :
-    /\ First(StrictOrder, {Gates[index].id}) = Gates[index].id
-    /\ First(AvalOrder, {Gates[index].id}) = Gates[index].id
+\* EveryLeaf was removed. First of a singleton returns that id for any total
+\* order, so reversing BeforeStrict or BeforeAval could not make it false.
 
 NamedAreOverlaps == NamedOverlaps \subseteq OverlapPairs
 
@@ -151,14 +149,8 @@ AllowedShadowsAgree ==
          /\ First(AvalOrder, passing) = shadow.paa
          /\ [strict |-> shadow.paa, aval |-> shadow.paavinam] \notin OverlapPairs
 
-\* If the two winners differ, that winner pair is one of the overlap pairs.
-AgreeOnDoubletons ==
-  \A left \in DOMAIN Gates, right \in DOMAIN Gates :
-    LET passing == {Gates[left].id, Gates[right].id}
-        strictGateId == First(StrictOrder, passing)
-        avalGateId == First(AvalOrder, passing)
-    IN \/ strictGateId = avalGateId
-       \/ [strict |-> strictGateId, aval |-> avalGateId] \in OverlapPairs
+\* AgreeOnDoubletons was removed. OverlapPairs is defined as the doubletons
+\* whose two winners differ, so the claim restated that definition.
 
 \* False on the current tree. The counterexample config shows one pair.
 AlwaysAgree ==

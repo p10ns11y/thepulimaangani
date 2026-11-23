@@ -25,7 +25,7 @@ if [[ ! -f "${jar}" ]] || ! echo "${tla_sha256}  ${jar}" | sha256sum -c - >/dev/
   mv "${jar}.partial" "${jar}"
 fi
 
-echo "TLC ${tla_version}: every leaf, named overlaps, agreement when a doubleton is not an overlap"
+echo "TLC ${tla_version}: named overlaps, the 142 doubletons, the probe, and the allowed shadows"
 java -jar "${jar}" -workers 1 -config "${spec_dir}/ClassicalTreeWalk.cfg" "${spec_dir}/ClassicalTreeWalk.tla"
 
 echo "TLC ${tla_version}: unconditional agreement must fail on the repeated-tanichol probe"

@@ -1,8 +1,9 @@
 //! Named routes for the classical-tree inconsistencies.
 //!
 //! Each route records the source that won: the treatise seat or count, or the
-//! Avalokitam site wording. `classical_tree` calls these functions, and the
-//! trace records the route that ran. The leaf machine is `family_walk_gate`.
+//! Avalokitam site wording. `evaluate_classical_tree` selects its leaf by
+//! calling `family_walk_gate`. The trace records that same gate. It does not
+//! keep a second leaf choice.
 
 use crate::syllable::SyllableType;
 
@@ -873,18 +874,22 @@ pub fn family_scan_fixed_order(
     None
 }
 
-pub fn first_matching_gate(passes: &[bool; GATE_COUNT], order: WalkOrderRoute) -> Option<usize> {
-    let indexes = ordered_gate_indexes(order);
-    first_in_fixed_order(passes, &indexes)
+fn fixed_order(order: WalkOrderRoute) -> &'static [usize; GATE_COUNT] {
+    match order {
+        WalkOrderRoute::StrictFirstAvalokitamTie { .. } => &STRICT_GATE_ORDER,
+        WalkOrderRoute::AvalokitamFirstMatch { .. } => &AVALOKITAM_GATE_ORDER,
+    }
 }
 
-/// Family walk: scan each contiguous family and return the first passing gate.
-/// A failed family cannot hide a later passing gate inside it, because the scan
-/// still sees that gate's bit. The product trace stops early only when the
-/// shared prefix already failed, which clears every gate in the family.
+pub fn first_matching_gate(passes: &[bool; GATE_COUNT], order: WalkOrderRoute) -> Option<usize> {
+    first_in_fixed_order(passes, fixed_order(order))
+}
+
+/// The leaf machine `evaluate_classical_tree` calls. Each contiguous family is
+/// scanned, and the first passing gate in that family is the leaf. A later
+/// sibling still wins when the family's first gate fails.
 pub fn family_walk_gate(passes: &[bool; GATE_COUNT], order: WalkOrderRoute) -> Option<usize> {
-    let indexes = ordered_gate_indexes(order);
-    family_scan_fixed_order(passes, &indexes)
+    family_scan_fixed_order(passes, fixed_order(order))
 }
 
 fn passes_for_pair(left: usize, right: usize) -> [bool; GATE_COUNT] {
@@ -1044,16 +1049,17 @@ mod kani_proofs {
         assert!(!share_passes(KANI_TENTH_40, 6, 18));
     }
 
-    fn scan_is_one_leaf(passes: &[bool; GATE_COUNT], order: &[usize; GATE_COUNT]) {
-        let first = super::first_in_fixed_order(passes, order);
-        let again = super::first_in_fixed_order(passes, order);
-        assert_eq!(first, again);
-        assert_eq!(first, super::family_scan_fixed_order(passes, order));
-        if let Some(chosen) = first {
+    fn shipped_walk_is_one_leaf(passes: &[bool; GATE_COUNT], order: super::WalkOrderRoute) {
+        let leaf = super::family_walk_gate(passes, order);
+        let again = super::family_walk_gate(passes, order);
+        assert_eq!(leaf, again);
+        assert_eq!(leaf, super::first_matching_gate(passes, order));
+        if let Some(chosen) = leaf {
             assert!(passes[chosen]);
+            let indexes = super::fixed_order(order);
             let mut cursor = 0;
             while cursor < GATE_COUNT {
-                let index = order[cursor];
+                let index = indexes[cursor];
                 if index == chosen {
                     break;
                 }
@@ -1063,11 +1069,14 @@ mod kani_proofs {
         }
     }
 
+    /// Proves the function `evaluate_classical_tree` calls, on every pattern of
+    /// 37 pass bits. A scan that keeps only the first gate of a family fails
+    /// the equality with `first_matching_gate`.
     #[kani::proof]
     #[kani::unwind(40)]
     fn walk_is_deterministic_and_returns_at_most_one_leaf() {
         let passes: [bool; GATE_COUNT] = kani::any();
-        scan_is_one_leaf(&passes, &super::STRICT_GATE_ORDER);
-        scan_is_one_leaf(&passes, &super::AVALOKITAM_GATE_ORDER);
+        shipped_walk_is_one_leaf(&passes, super::WALK_ORDER_ROUTE);
+        shipped_walk_is_one_leaf(&passes, super::AVALOKITAM_WALK_ORDER);
     }
 }
