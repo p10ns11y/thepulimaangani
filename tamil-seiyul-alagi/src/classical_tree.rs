@@ -263,9 +263,9 @@ fn requirement(id: &'static str, passed: bool, text: &str) -> Condition {
 
 fn family_id(gate_id: &str) -> &'static str {
     match gate_id {
-        "nilaimandila_aciriyappaa" | "nerisai_aciriyappaa" | "inaikkural_aciriyappaa" => {
-            "aciriyappaa"
-        }
+        "nilaimandila_aciriyappaa" => "aciriyappaa",
+        "nerisai_aciriyappaa" => "aciriyappaa",
+        "inaikkural_aciriyappaa" => "aciriyappaa",
         "oru_vikarpa_kural_venpaa"
         | "iru_vikarpa_kural_venpaa"
         | "nerisai_sinthiyal_venpaa"
