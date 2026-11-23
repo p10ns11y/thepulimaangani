@@ -318,6 +318,33 @@ flowchart TD
   kural_vensenthurai_disc -->|பொருந்தும்| kural_vensenthurai_leaf
 ```
 
+## Walk
+
+The same order as a state chart. A state is a family gate or a leaf discriminator. பொருந்தும் ends on that leaf. இல்லை moves to the next discriminator. The family's இல்லை edge is the fall-through to the next family, including the miss after its last discriminator.
+
+![Walk](classical-tree-walk.svg)
+
+[PNG](classical-tree-walk.png)
+
+Source: [classical-tree-walk.mmd](classical-tree-walk.mmd). `walk_state_chart_mermaid` writes it. `UPDATE_CLASSICAL_WALK=1 cargo test --lib walk_state_chart_matches_the_committed_diagram` refreshes the file. The PNG is rendered with [classical-tree-walk.css](classical-tree-walk.css) so the edge labels use Noto Sans Tamil.
+
+## Decision routes
+
+Each inconsistency is a named route in `tamil-seiyul-alagi/src/classical_decision.rs`. The trace records the route that is in force. A `decision.*` step means that route was the one applied.
+
+| Inconsistency | Route in force | Source |
+| --- | --- | --- |
+| Shares above 40, 50, 25, and 90 | `ShareRoute::StrictAbove` | site |
+| சிந்தடி வஞ்சி கனி, 7/18 passes and 6/18 fails | `ShareRoute::RoundToTenth` | site |
+| அளவடி is 4 seers | `AlavadiWordRoute::FourSeers` | treatise |
+| மேற்கதுவாய் seats 1, 3, 4 | `MerkathuvaiSeatRoute::TreatiseOneThreeFour` | treatise |
+| Fifth seer accepts விளங்காய், மாங்கனி, and மாந்தண்பூ | `FifthSeerRoute::TreatisePlusSiteStandIns` | treatise and site |
+| தரவுகொச்சகம் is four or more அளவடி | `TharavuAlavadiRoute::FourOrMore` | treatise |
+| நேரிசை stays one mark and ties with குறள் | `NerisaiTieRoute::CombinedMarkAvalokitamRank` | site |
+| Strict-first, Avalokitam rank on a tie | `WalkOrderRoute::StrictFirstAvalokitamTie` | site |
+
+The four order pairs that can disagree are recorded as `decision.order.kattalai_kalithurai_velivirutham`, `decision.order.aciriyappaa_kural_venpaa`, `decision.order.kattalai_kalippaa_tharavu`, and `decision.order.vanjippaa_kalivenpaa_osai`.
+
 ## Inconsistencies
 
 Site-tuned thresholds:
