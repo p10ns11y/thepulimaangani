@@ -3580,7 +3580,7 @@
       {
         "rule_id": "aciriya_talai",
         "passed": false,
-        "message_ta": "ஆசிரியத்தளை 40% அளவு இல்லை."
+        "message_ta": "ஆசிரியத்தளை 40%க்கு மேல் இல்லை."
       },
       {
         "rule_id": "tharavu_kochaga",
