@@ -39,7 +39,8 @@ pub fn infer_tinai(
     if lon <= 77.35 && (9.2..=12.8).contains(&lat) {
         return Ok((Tinai::Kurinji, TinaiSource::Geo));
     }
-    if lat >= 11.0 && lon <= 77.05 {
+    // Keep this northern-hills branch inside the v1 Tamil Nadu box (`in_tn`).
+    if in_tn && lat >= 11.0 && lon <= 77.05 {
         return Ok((Tinai::Kurinji, TinaiSource::Geo));
     }
 

@@ -131,6 +131,15 @@ fn infer_tinai_geo() {
 }
 
 #[test]
+fn infer_tinai_west_of_tn_is_out_of_band_default() {
+    // Hubballi, Karnataka: west of 77.05°E, lat >= 11, clearly outside Tamil Nadu
+    // and north of the v1 TN lat band, so it must not match the third Kurinji rule.
+    let (t, src) = infer_tinai(Some(15.3647), Some(75.1240), None).unwrap();
+    assert_eq!(t, Tinai::Marutham);
+    assert_eq!(src, TinaiSource::Default);
+}
+
+#[test]
 fn wallpaper_fallback_chain() {
     let names = wallpaper_fallback_names("marutham-erpaadu-b.jpg");
     assert_eq!(names[0], "marutham-erpaadu-b.jpg");
