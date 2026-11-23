@@ -36,6 +36,12 @@ const VANJI_MIN_ADIS: usize = 3;
 const SURITHAGAM_MIN_LINES: usize = 2;
 const VENDURAI_MIN_LINES: usize = 3;
 const VENDURAI_MAX_LINES: usize = 7;
+/// கட்டளைக்கலிப்பா அரையடி: நேர் தொடக்கம் 11, நிரை தொடக்கம் 12, மெய்யொழித்து.
+const KATTALAI_KALIPPAA_NER_LETTER_COUNT: usize = 11;
+const KATTALAI_KALIPPAA_NIRAI_LETTER_COUNT: usize = 12;
+/// கட்டளைக்கலித்துறை அடி: நேர் தொடக்கம் 16, நிரை தொடக்கம் 17, மெய்யொழித்து.
+const KATTALAI_KALITHURAI_NER_LETTER_COUNT: usize = 16;
+const KATTALAI_KALITHURAI_NIRAI_LETTER_COUNT: usize = 17;
 
 #[derive(Clone, Copy)]
 struct Leaf {
@@ -597,11 +603,11 @@ fn try_aciriya_paavinam(view: &PoemView<'_>, path: &mut Vec<ClassicalTreeCheck>)
 
 fn try_kali_paavinam(view: &PoemView<'_>, path: &mut Vec<ClassicalTreeCheck>) -> Option<Leaf> {
     let counts = content_seer_counts(view.lines);
-    if counts.len() == 8 && counts.iter().all(|count| *count == ALAVADI_SEER_COUNT) {
+    if is_kattalai_kalippaa(view, &counts) {
         path.push(check(
             "kattalai_kalippaa",
             true,
-            "நான்கு சீர் கொண்ட அரையடி எட்டு.",
+            "அரையடி எட்டு; மெய்யொழித்து 11/12 எழுத்து; முதல் தளை ஆசிரியம், பின் தளை வெண்.",
         ));
         return Some(paavinam(
             "kattalai_kalippaa",
@@ -614,7 +620,7 @@ fn try_kali_paavinam(view: &PoemView<'_>, path: &mut Vec<ClassicalTreeCheck>) ->
         path.push(check(
             "kattalai_kalithurai",
             true,
-            "நெடிலடி நான்கு; அடிக்குள் வெண்டளை; ஈற்றசை ஏ; ஒரே எதுகை.",
+            "நெடிலடி நான்கு; அடிக்குள் வெண்டளை; ஐந்தாம் சீர் விளங்காய்; மெய்யொழித்து 16/17; ஈறு ஏ; ஒரே எதுகை.",
         ));
         return Some(paavinam(
             "kattalai_kalithurai",
@@ -863,6 +869,32 @@ fn is_aciriya_thurai(counts: &[usize]) -> bool {
     shorter && peer
 }
 
+fn is_kattalai_kalippaa(view: &PoemView<'_>, counts: &[usize]) -> bool {
+    if counts.len() != 8 || counts.iter().any(|count| *count != ALAVADI_SEER_COUNT) {
+        return false;
+    }
+    let lines = content_lines(view.lines);
+    lines.len() == 8
+        && lines.iter().all(|line| {
+            kattalai_letter_count_matches(
+                line,
+                KATTALAI_KALIPPAA_NER_LETTER_COUNT,
+                KATTALAI_KALIPPAA_NIRAI_LETTER_COUNT,
+            )
+        })
+        && arai_adi_talai_pattern(view)
+}
+
+/// First bond inside the அரையடி is ஆசிரியத்தளை; the later bonds are வெண்டளை.
+fn arai_adi_talai_pattern(view: &PoemView<'_>) -> bool {
+    content_spans(view.lines).iter().all(|(start, count)| {
+        *count == ALAVADI_SEER_COUNT
+            && bond_is_kind(view.linkage, *start, LinkageType::AciriyaTalai)
+            && bond_is_kind(view.linkage, start + 1, LinkageType::VenTalai)
+            && bond_is_kind(view.linkage, start + 2, LinkageType::VenTalai)
+    })
+}
+
 fn is_kattalai_kalithurai(view: &PoemView<'_>, counts: &[usize]) -> bool {
     if counts.len() != 4 || counts.iter().any(|count| *count != NEDILADI_SEER_COUNT) {
         return false;
@@ -870,16 +902,129 @@ fn is_kattalai_kalithurai(view: &PoemView<'_>, counts: &[usize]) -> bool {
     if !lines_share_etukai(view.lines) {
         return false;
     }
-    if !aciriya_ending(&last_syllable_text(view.lines)) {
+    if !ends_on_ekaram(view.lines) {
+        return false;
+    }
+    let lines = content_lines(view.lines);
+    if !lines.iter().all(|line| {
+        kattalai_letter_count_matches(
+            line,
+            KATTALAI_KALITHURAI_NER_LETTER_COUNT,
+            KATTALAI_KALITHURAI_NIRAI_LETTER_COUNT,
+        ) && kalithurai_fifth_seer(line)
+    }) {
         return false;
     }
     content_spans(view.lines).iter().all(|(start, count)| {
         (0..count.saturating_sub(1)).all(|offset| {
-            view.linkage
-                .get(start + offset)
-                .is_some_and(|bond| matches!(bond.linkage_type, LinkageType::VenTalai))
+            bond_is_kind(view.linkage, start + offset, LinkageType::VenTalai)
         })
     })
+}
+
+fn kalithurai_fifth_seer(line: &Line) -> bool {
+    let Some(fifth_seer) = line.feet.get(NEDILADI_SEER_COUNT - 1) else {
+        return false;
+    };
+    is_kattalai_fifth_seer(fifth_seer)
+        && line
+            .feet
+            .iter()
+            .take(NEDILADI_SEER_COUNT - 1)
+            .all(|foot| !is_vilangaay(foot))
+}
+
+/// விளங்காய், or the site's rare stand-ins மாங்கனி and மாந்தண்பூ.
+fn is_kattalai_fifth_seer(foot: &Foot) -> bool {
+    is_vilangaay(foot) || is_maangani(foot) || is_maanthanpuu(foot)
+}
+
+fn is_vilangaay(foot: &Foot) -> bool {
+    syllable_pattern_is(foot, &[SyllableType::Ner, SyllableType::Nirai, SyllableType::Ner])
+        || syllable_pattern_is(
+            foot,
+            &[SyllableType::Nirai, SyllableType::Nirai, SyllableType::Ner],
+        )
+}
+
+fn is_maangani(foot: &Foot) -> bool {
+    syllable_pattern_is(foot, &[SyllableType::Ner, SyllableType::Ner, SyllableType::Nirai])
+        || syllable_pattern_is(
+            foot,
+            &[SyllableType::Nirai, SyllableType::Ner, SyllableType::Nirai],
+        )
+}
+
+fn is_maanthanpuu(foot: &Foot) -> bool {
+    syllable_pattern_is(
+        foot,
+        &[
+            SyllableType::Ner,
+            SyllableType::Ner,
+            SyllableType::Ner,
+            SyllableType::Ner,
+        ],
+    ) || syllable_pattern_is(
+        foot,
+        &[
+            SyllableType::Nirai,
+            SyllableType::Ner,
+            SyllableType::Ner,
+            SyllableType::Ner,
+        ],
+    )
+}
+
+fn syllable_pattern_is(foot: &Foot, pattern: &[SyllableType]) -> bool {
+    foot.syllables.len() == pattern.len()
+        && foot
+            .syllables
+            .iter()
+            .zip(pattern.iter())
+            .all(|(syllable, expected)| syllable.syllable_type == *expected)
+}
+
+fn ends_on_ekaram(lines: &[Line]) -> bool {
+    let text = last_syllable_text(lines);
+    text.ends_with('ஏ') || text.ends_with('ே')
+}
+
+fn kattalai_letter_count_matches(line: &Line, ner_letters: usize, nirai_letters: usize) -> bool {
+    let Some(first_syllable) = line.feet.first().and_then(|foot| foot.syllables.first()) else {
+        return false;
+    };
+    let expected = match first_syllable.syllable_type {
+        SyllableType::Ner => ner_letters,
+        SyllableType::Nirai => nirai_letters,
+    };
+    line_letters_excluding_mei(line) == expected
+}
+
+fn line_letters_excluding_mei(line: &Line) -> usize {
+    let text: String = line
+        .feet
+        .iter()
+        .flat_map(|foot| foot.syllables.iter().map(|syllable| syllable.text.as_str()))
+        .collect();
+    letters_excluding_mei(&text)
+}
+
+/// எழுத்து count with மெய் (consonant + pulli) left out.
+fn letters_excluding_mei(text: &str) -> usize {
+    text.graphemes(true)
+        .filter(|grapheme| {
+            grapheme
+                .chars()
+                .any(|character| ('\u{0B80}'..='\u{0BFF}').contains(&character))
+        })
+        .filter(|grapheme| !grapheme.chars().any(|character| character == '\u{0BCD}'))
+        .count()
+}
+
+fn bond_is_kind(linkage: &[Linkage], index: usize, kind: LinkageType) -> bool {
+    linkage
+        .get(index)
+        .is_some_and(|bond| bond.linkage_type == kind)
 }
 
 fn content_lines(lines: &[Line]) -> Vec<&Line> {
@@ -1264,6 +1409,24 @@ mod tests {
         assert_eq!(result.metre_type, Some(MetreType::Venpaa));
         assert_eq!(result.classical_tree.tree_agrees_with_ml, Some(true));
         assert!(result.classical_rules.rules.iter().all(|rule| rule.passed));
+    }
+
+    #[test]
+    fn eight_koovilam_lines_are_not_kattalai_kalippaa() {
+        let line = "யெத்தனை யெத்தனை யெத்தனை யெத்தனை";
+        let poem = [line; 8].join("\n");
+        let result = parse_poem(&poem, options_without_ml()).expect("parse");
+        assert_eq!(content_seer_counts(&result.lines), vec![4, 4, 4, 4, 4, 4, 4, 4]);
+        assert_ne!(result.classical_tree.leaf_id, "kattalai_kalippaa");
+        assert_ne!(result.classical_tree.label_ta, "கட்டளை கலிப்பா");
+    }
+
+    #[test]
+    fn kattalai_kalithurai_ending_koovilamo_fails() {
+        let poem = "தனந்தரும் கல்வி தருமொரு நாளும் தளர்வறியா\nமனந்தரும் தெய்வ வடிவும் தரும்நெஞ்சில் வஞ்சமில்லா\nஇனந்தரும் நல்லன எல்லாம் தருமன்பர் என்பவர்க்கே\nகனந்தரும் பூங்குழ லாளபி ராமி கடைக்கண்களோ";
+        let result = parse_poem(poem, options_without_ml()).expect("parse");
+        assert_ne!(result.classical_tree.leaf_id, "kattalai_kalithurai");
+        assert_ne!(result.classical_tree.label_ta, "கட்டளை கலித்துறை");
     }
 
     #[test]
