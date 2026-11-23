@@ -1,0 +1,40 @@
+%%{init: {"theme": "neutral", "themeVariables": {"fontFamily": "Noto Sans Tamil, Noto Serif Tamil, sans-serif", "fontSize": "15px"}, "flowchart": {"wrappingWidth": 420, "padding": 12, "htmlLabels": true, "curve": "linear", "nodeSpacing": 28, "rankSpacing": 36}}}%%
+flowchart TD
+  aciriyappaa["ஆசிரியப்பா<br/>3+ அடி<br/>இயற்சீர் மேல் 40<br/>ஆசிரியத்தளை மேல் 40<br/>ஈறு ஏ ஓ ஈ ஆய் ஐ என்<br/>விளங்கனி இல்லை<br/>அளவடிக்கு மேல் நீளாது<br/>முதல் ஈறு அளவடி<br/>இடை அடி 2 3 4"]
+  aciriyappaa -->|பொருந்தும்| nilaimandila_aciriyappaa_disc
+  aciriyappaa -->|இல்லை| next_family["அடுத்த குடும்பம்"]
+  nilaimandila_aciriyappaa_disc["குறுகிய அடி இல்லை"]
+  nilaimandila_aciriyappaa_leaf["நிலைமண்டில ஆசிரியப்பா"]
+  nilaimandila_aciriyappaa_disc -->|பொருந்தும்| nilaimandila_aciriyappaa_leaf
+  nilaimandila_aciriyappaa_disc -->|இல்லை| nerisai_aciriyappaa_disc
+  nerisai_aciriyappaa_disc["குறுகிய அடி<br/>ஈற்றயலடி மட்டும்"]
+  nerisai_aciriyappaa_leaf["நேரிசை ஆசிரியப்பா"]
+  nerisai_aciriyappaa_disc -->|பொருந்தும்| nerisai_aciriyappaa_leaf
+  nerisai_aciriyappaa_disc -->|இல்லை| inaikkural_aciriyappaa_disc
+  inaikkural_aciriyappaa_disc["குறுகிய அடி<br/>வேறு இடத்திலும்"]
+  inaikkural_aciriyappaa_leaf["இணைக்குறள் ஆசிரியப்பா"]
+  inaikkural_aciriyappaa_disc -->|பொருந்தும்| inaikkural_aciriyappaa_leaf
+  aciriya_virutham["ஆசிரிய விருத்தம்<br/>4 சம அடி<br/>கழிநெடிலடி<br/>எதுகை"]
+  aciriya_virutham -->|பொருந்தும்| arucir_kazhinediladi_aciriya_virutham_disc
+  aciriya_virutham -->|இல்லை| next_family
+  arucir_kazhinediladi_aciriya_virutham_disc["அறுசீர்"]
+  arucir_kazhinediladi_aciriya_virutham_leaf["அறுசீர் கழிநெடிலடி ஆசிரிய விருத்தம்"]
+  arucir_kazhinediladi_aciriya_virutham_disc -->|பொருந்தும்| arucir_kazhinediladi_aciriya_virutham_leaf
+  arucir_kazhinediladi_aciriya_virutham_disc -->|இல்லை| elucir_kazhinediladi_aciriya_virutham_disc
+  elucir_kazhinediladi_aciriya_virutham_disc["எழுசீர்"]
+  elucir_kazhinediladi_aciriya_virutham_leaf["எழுசீர் கழிநெடிலடி ஆசிரிய விருத்தம்"]
+  elucir_kazhinediladi_aciriya_virutham_disc -->|பொருந்தும்| elucir_kazhinediladi_aciriya_virutham_leaf
+  elucir_kazhinediladi_aciriya_virutham_disc -->|இல்லை| encir_kazhinediladi_aciriya_virutham_disc
+  encir_kazhinediladi_aciriya_virutham_disc["எண்சீர்"]
+  encir_kazhinediladi_aciriya_virutham_leaf["எண்சீர் கழிநெடிலடி ஆசிரிய விருத்தம்"]
+  encir_kazhinediladi_aciriya_virutham_disc -->|பொருந்தும்| encir_kazhinediladi_aciriya_virutham_leaf
+  aciriya_thazhisai["ஆசிரியத் தாழிசை<br/>3 அடி"]
+  aciriya_thazhisai_disc["சம அளவு<br/>குறளடி அல்லது மேல்"]
+  aciriya_thazhisai_leaf["ஆசிரியத் தாழிசை"]
+  aciriya_thazhisai -->|பொருந்தும்| aciriya_thazhisai_disc
+  aciriya_thazhisai_disc -->|பொருந்தும்| aciriya_thazhisai_leaf
+  aciriya_thurai["ஆசிரியத் துறை<br/>4 அடி<br/>ஒரு அடி குறைவு"]
+  aciriya_thurai_disc["நீளம் இல்லை<br/>சம அடி உண்டு"]
+  aciriya_thurai_leaf["ஆசிரியத் துறை"]
+  aciriya_thurai -->|பொருந்தும்| aciriya_thurai_disc
+  aciriya_thurai_disc -->|பொருந்தும்| aciriya_thurai_leaf

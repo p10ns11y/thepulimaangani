@@ -1,0 +1,43 @@
+%%{init: {"theme": "neutral", "themeVariables": {"fontFamily": "Noto Sans Tamil, Noto Serif Tamil, sans-serif", "fontSize": "15px"}, "flowchart": {"wrappingWidth": 420, "padding": 12, "htmlLabels": true, "curve": "linear", "nodeSpacing": 28, "rankSpacing": 36}}}%%
+flowchart TD
+  kattalai_kalithurai["கட்டளைக்கலித்துறை<br/>4 நெடிலடி<br/>எதுகை<br/>16/17 எழுத்து<br/>அடிக்குள் வெண்<br/>பிற சீர் விளங்காய் அல்ல"]
+  kattalai_kalithurai_disc["ஐந்தாம் சீர்<br/>ஈறு ஏ"]
+  kattalai_kalithurai_leaf["கட்டளை கலித்துறை"]
+  kattalai_kalithurai -->|பொருந்தும்| kattalai_kalithurai_disc
+  kattalai_kalithurai_disc -->|பொருந்தும்| kattalai_kalithurai_leaf
+  kattalai_kalithurai -->|இல்லை| kattalai_kalippaa
+  kattalai_kalippaa["கட்டளைக்கலிப்பா<br/>8 அரையடி<br/>4 சீர்<br/>11/12 எழுத்து"]
+  kattalai_kalippaa_disc["முதல் தளை ஆசிரியம்<br/>பின் தளை வெண்"]
+  kattalai_kalippaa_leaf["கட்டளை கலிப்பா"]
+  kattalai_kalippaa -->|பொருந்தும்| kattalai_kalippaa_disc
+  kattalai_kalippaa_disc -->|பொருந்தும்| kattalai_kalippaa_leaf
+  kattalai_kalippaa -->|இல்லை| tharavukocha_kalippaa
+  tharavukocha_kalippaa["தரவுகொச்சகக் கலிப்பா<br/>4+ அடி<br/>அளவடி"]
+  tharavukocha_kalippaa_disc["மா விளங்கனி இல்லை<br/>கலி மேல் 40"]
+  tharavukocha_kalippaa_leaf["தரவுகொச்சகக் கலிப்பா"]
+  tharavukocha_kalippaa -->|பொருந்தும்| tharavukocha_kalippaa_disc
+  tharavukocha_kalippaa_disc -->|பொருந்தும்| tharavukocha_kalippaa_leaf
+  tharavukocha_kalippaa -->|இல்லை| venkalippaa
+  venkalippaa["வெண்கலிப்பா<br/>அளவடி மற்றும் சிந்தடி<br/>உடல் மா விளங்கனி இல்லை"]
+  venkalippaa_disc["கலி+வெண் மேல் 50<br/>கலி மேல் 25"]
+  venkalippaa_leaf["வெண்கலிப்பா"]
+  venkalippaa -->|பொருந்தும்| venkalippaa_disc
+  venkalippaa_disc -->|பொருந்தும்| venkalippaa_leaf
+  venkalippaa -->|இல்லை| kalithurai
+  kalithurai["கலித்துறை<br/>4 அடி"]
+  kalithurai_disc["நெடிலடி<br/>எதுகை"]
+  kalithurai_leaf["கலித்துறை"]
+  kalithurai -->|பொருந்தும்| kalithurai_disc
+  kalithurai_disc -->|பொருந்தும்| kalithurai_leaf
+  kalithurai -->|இல்லை| kalivirutham
+  kalivirutham["கலிவிருத்தம்<br/>4 அடி"]
+  kalivirutham_disc["அளவடி<br/>எதுகை"]
+  kalivirutham_leaf["கலிவிருத்தம்"]
+  kalivirutham -->|பொருந்தும்| kalivirutham_disc
+  kalivirutham_disc -->|பொருந்தும்| kalivirutham_leaf
+  kalivirutham -->|இல்லை| kalithazhisai
+  kalithazhisai["கலித்தாழிசை<br/>பல அடி"]
+  kalithazhisai_disc["ஈறு பிற அடியை விட நீளம்"]
+  kalithazhisai_leaf["கலித்தாழிசை"]
+  kalithazhisai -->|பொருந்தும்| kalithazhisai_disc
+  kalithazhisai_disc -->|பொருந்தும்| kalithazhisai_leaf

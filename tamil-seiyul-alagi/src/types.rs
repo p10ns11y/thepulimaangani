@@ -86,6 +86,9 @@ pub struct ParseResult {
     /// வெண்பா rule hints. Does not change `metre_type`, scores, or `metre_ml`.
     #[serde(default)]
     pub classical_rules: ClassicalRulesReport,
+    /// Classical decision tree (family, subtype, பாவினம்) beside the ML verdict.
+    #[serde(default)]
+    pub classical_tree: ClassicalTreeReport,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
@@ -162,6 +165,37 @@ pub struct ClassicalRulesReport {
     /// `false` when they disagree. `null` when there is no ML verdict.
     #[serde(default)]
     pub rules_agree_with_ml: Option<bool>,
+}
+
+/// One check on the classical decision-tree path.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema)]
+pub struct ClassicalTreeCheck {
+    pub rule_id: String,
+    pub passed: bool,
+    pub message_ta: String,
+}
+
+/// Rule-tree classification beside the ML verdict. It does not change scores or `metre_ml`.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema, Default)]
+pub struct ClassicalTreeReport {
+    #[serde(default)]
+    pub leaf_id: String,
+    #[serde(default)]
+    pub family_ta: String,
+    #[serde(default)]
+    pub subtype_ta: String,
+    #[serde(default)]
+    pub paavinam_ta: String,
+    #[serde(default)]
+    pub label_ta: String,
+    #[serde(default)]
+    pub fitted: bool,
+    #[serde(default)]
+    pub path: Vec<ClassicalTreeCheck>,
+    /// `true` when the tree's family and the ML four-way verdict name the same family.
+    /// `false` when they differ or no rule fitted. `null` when there is no ML verdict.
+    #[serde(default)]
+    pub tree_agrees_with_ml: Option<bool>,
 }
 
 /// Learner-facing ML product block on ParseResult (WASM JSON `metre_ml`).

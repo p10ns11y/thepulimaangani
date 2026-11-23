@@ -47,6 +47,71 @@
         },
         "type": "object"
       },
+      "ClassicalTreeCheck": {
+        "description": "One check on the classical decision-tree path.",
+        "properties": {
+          "message_ta": {
+            "type": "string"
+          },
+          "passed": {
+            "type": "boolean"
+          },
+          "rule_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message_ta",
+          "passed",
+          "rule_id"
+        ],
+        "type": "object"
+      },
+      "ClassicalTreeReport": {
+        "description": "Rule-tree classification beside the ML verdict. It does not change scores or `metre_ml`.",
+        "properties": {
+          "family_ta": {
+            "default": "",
+            "type": "string"
+          },
+          "fitted": {
+            "default": false,
+            "type": "boolean"
+          },
+          "label_ta": {
+            "default": "",
+            "type": "string"
+          },
+          "leaf_id": {
+            "default": "",
+            "type": "string"
+          },
+          "paavinam_ta": {
+            "default": "",
+            "type": "string"
+          },
+          "path": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ClassicalTreeCheck"
+            },
+            "type": "array"
+          },
+          "subtype_ta": {
+            "default": "",
+            "type": "string"
+          },
+          "tree_agrees_with_ml": {
+            "default": null,
+            "description": "`true` when the tree's family and the ML four-way verdict name the same family. `false` when they differ or no rule fitted. `null` when there is no ML verdict.",
+            "type": [
+              "boolean",
+              "null"
+            ]
+          }
+        },
+        "type": "object"
+      },
       "DisplayFoot": {
         "description": "One foot in `DisplayResult` (WASM `presentation.feet[]`).",
         "properties": {
@@ -623,6 +688,24 @@
               "rules_agree_with_ml": null
             },
             "description": "வெண்பா rule hints. Does not change `metre_type`, scores, or `metre_ml`."
+          },
+          "classical_tree": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ClassicalTreeReport"
+              }
+            ],
+            "default": {
+              "family_ta": "",
+              "fitted": false,
+              "label_ta": "",
+              "leaf_id": "",
+              "paavinam_ta": "",
+              "path": [],
+              "subtype_ta": "",
+              "tree_agrees_with_ml": null
+            },
+            "description": "Classical decision tree (family, subtype, பாவினம்) beside the ML verdict."
           },
           "confidence": {
             "default": 0,

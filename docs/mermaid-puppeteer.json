@@ -1,0 +1,10 @@
+{
+  "executablePath": "/usr/bin/google-chrome-stable",
+  "args": [
+    "--no-sandbox",
+    "--disable-setuid-sandbox",
+    "--disable-dev-shm-usage",
+    "--font-render-hinting=none",
+    "--allow-file-access-from-files"
+  ]
+}

@@ -3563,5 +3563,296 @@
       }
     ],
     "rules_agree_with_ml": false
+  },
+  "classical_tree": {
+    "leaf_id": "no_rule_fitted",
+    "family_ta": "",
+    "subtype_ta": "",
+    "paavinam_ta": "",
+    "label_ta": "no rule fitted",
+    "fitted": false,
+    "path": [
+      {
+        "rule_id": "aciriyappaa.three_lines",
+        "passed": true,
+        "message_ta": "குறைந்தபட்சம் மூன்று அடி"
+      },
+      {
+        "rule_id": "aciriyappaa.iyar_cir",
+        "passed": true,
+        "message_ta": "இயற்சீர் 40%க்கு மேல்"
+      },
+      {
+        "rule_id": "aciriyappaa.aciriya_talai",
+        "passed": false,
+        "message_ta": "ஆசிரியத்தளை 40%க்கு மேல் இல்லை."
+      },
+      {
+        "rule_id": "aciriyappaa.aciriya_ending",
+        "passed": true,
+        "message_ta": "ஈற்றசை ஏ, ஓ, ஈ, ஆய், ஐ அல்லது என்"
+      },
+      {
+        "rule_id": "aciriyappaa.no_vilangani",
+        "passed": true,
+        "message_ta": "கருவிளங்கனியும் கூவிளங்கனியும் இல்லாமல்"
+      },
+      {
+        "rule_id": "aciriyappaa.no_long_line",
+        "passed": true,
+        "message_ta": "அளவடிக்கு மேல் நீளாத அடி"
+      },
+      {
+        "rule_id": "aciriyappaa.edge_alavadi",
+        "passed": false,
+        "message_ta": "முதலடியும் ஈற்றடியும் அளவடி இல்லை."
+      },
+      {
+        "rule_id": "aciriyappaa.middle_adi",
+        "passed": true,
+        "message_ta": "இடை அடி குறளடி, சிந்தடி அல்லது அளவடி"
+      },
+      {
+        "rule_id": "kattalai_kalithurai.four_lines",
+        "passed": false,
+        "message_ta": "நான்கு அடி இல்லை."
+      },
+      {
+        "rule_id": "kattalai_kalithurai.nediladi",
+        "passed": false,
+        "message_ta": "அடிதோறும் நெடிலடி இல்லை."
+      },
+      {
+        "rule_id": "kattalai_kalithurai.shared_etukai",
+        "passed": false,
+        "message_ta": "ஒரே அடி எதுகை இல்லை."
+      },
+      {
+        "rule_id": "kattalai_kalithurai.letter_count",
+        "passed": false,
+        "message_ta": "மெய்யொழித்து நேர் 16, நிரை 17 எழுத்து இல்லை."
+      },
+      {
+        "rule_id": "kattalai_kalithurai.internal_ven",
+        "passed": false,
+        "message_ta": "அடிக்குள் வெண்டளை இல்லை."
+      },
+      {
+        "rule_id": "kattalai_kalithurai.other_seers",
+        "passed": false,
+        "message_ta": "ஏனைய சீர் விளங்காய் அல்ல இல்லை."
+      },
+      {
+        "rule_id": "venpaa.venpaa_shape",
+        "passed": false,
+        "message_ta": "ஈற்றடி சிந்தடி; ஏனைய அடி அளவடி இல்லை."
+      },
+      {
+        "rule_id": "venpaa.allowed_seers",
+        "passed": false,
+        "message_ta": "உடல் சீர் ஈரசை மா/விளம் அல்லது காய் இல்லை."
+      },
+      {
+        "rule_id": "venpaa.ven_talai",
+        "passed": false,
+        "message_ta": "தளை அனைத்தும் வெண்டளை இல்லை."
+      },
+      {
+        "rule_id": "venpaa.ending_seer",
+        "passed": false,
+        "message_ta": "ஈற்றுச்சீர் நாள், மலர், காசு அல்லது பிறப்பு இல்லை."
+      },
+      {
+        "rule_id": "vanjippaa.skeleton",
+        "passed": false,
+        "message_ta": "வஞ்சி அடி, தனிச்சொல், சுரிதகம் இல்லை."
+      },
+      {
+        "rule_id": "vanjippaa.kani_tenth",
+        "passed": false,
+        "message_ta": "கனிச்சீர் பத்தில் 40 இல்லை."
+      },
+      {
+        "rule_id": "vanjippaa.vanji_talai",
+        "passed": false,
+        "message_ta": "வஞ்சித்தளை 40%க்கு மேல் இல்லை."
+      },
+      {
+        "rule_id": "vanjippaa.surithagam",
+        "passed": false,
+        "message_ta": "சுரிதக ஆசிரியத்தளை 40%க்கு மேல் இல்லை."
+      },
+      {
+        "rule_id": "aciriya_virutham.four_lines",
+        "passed": false,
+        "message_ta": "நான்கு அடி இல்லை."
+      },
+      {
+        "rule_id": "aciriya_virutham.equal_lines",
+        "passed": false,
+        "message_ta": "நான்கு அடியும் ஒரே அளவு இல்லை."
+      },
+      {
+        "rule_id": "aciriya_virutham.kazhinediladi",
+        "passed": false,
+        "message_ta": "கழிநெடிலடி இல்லை."
+      },
+      {
+        "rule_id": "aciriya_virutham.shared_etukai",
+        "passed": false,
+        "message_ta": "ஒரே அடி எதுகை இல்லை."
+      },
+      {
+        "rule_id": "kattalai_kalippaa.eight_lines",
+        "passed": false,
+        "message_ta": "எட்டு அரையடி இல்லை."
+      },
+      {
+        "rule_id": "kattalai_kalippaa.alavadi",
+        "passed": false,
+        "message_ta": "அரையடிதோறும் நான்கு சீர் இல்லை."
+      },
+      {
+        "rule_id": "kattalai_kalippaa.letter_count",
+        "passed": false,
+        "message_ta": "மெய்யொழித்து நேர் 11, நிரை 12 எழுத்து இல்லை."
+      },
+      {
+        "rule_id": "kalivenpaa_long_osai.thirteen_lines",
+        "passed": false,
+        "message_ta": "பன்னிரண்டு அடிக்கு மேல் இல்லை."
+      },
+      {
+        "rule_id": "kalivenpaa_long_osai.last_cinthadi",
+        "passed": false,
+        "message_ta": "ஈற்றடி சிந்தடி இல்லை."
+      },
+      {
+        "rule_id": "tharavukocha_kalippaa.four_lines",
+        "passed": false,
+        "message_ta": "நான்கு அடி அல்லது மேல் இல்லை."
+      },
+      {
+        "rule_id": "tharavukocha_kalippaa.alavadi_only",
+        "passed": false,
+        "message_ta": "அடிதோறும் அளவடி இல்லை."
+      },
+      {
+        "rule_id": "venkalippaa.venkali_shape",
+        "passed": false,
+        "message_ta": "ஈற்றடி சிந்தடி; ஏனைய அடி அளவடி; நான்கு அடி அல்லது மேல் இல்லை."
+      },
+      {
+        "rule_id": "venkalippaa.body_seers",
+        "passed": false,
+        "message_ta": "ஈற்றடி அல்லாத அடியில் மாச்சீரும் விளங்கனியும் இல்லாமல் இல்லை."
+      },
+      {
+        "rule_id": "velivirutham.three_or_four",
+        "passed": true,
+        "message_ta": "மூன்று அல்லது நான்கு அடி"
+      },
+      {
+        "rule_id": "velivirutham.nediladi",
+        "passed": false,
+        "message_ta": "அடிதோறும் நெடிலடி இல்லை."
+      },
+      {
+        "rule_id": "ventazhisai.three_lines",
+        "passed": true,
+        "message_ta": "மூன்று அடி"
+      },
+      {
+        "rule_id": "ventazhisai.first_alavadi",
+        "passed": false,
+        "message_ta": "முதல் அடி அளவடி இல்லை."
+      },
+      {
+        "rule_id": "aciriya_thurai.four_lines",
+        "passed": false,
+        "message_ta": "நான்கு அடி இல்லை."
+      },
+      {
+        "rule_id": "aciriya_thurai.one_shorter",
+        "passed": false,
+        "message_ta": "ஒரு அடி ஈற்றடியை விடக் குறைவு இல்லை."
+      },
+      {
+        "rule_id": "kurattazhisai.two_lines",
+        "passed": false,
+        "message_ta": "இரண்டு அடி இல்லை."
+      },
+      {
+        "rule_id": "aciriya_thazhisai.three_lines",
+        "passed": true,
+        "message_ta": "மூன்று அடி"
+      },
+      {
+        "rule_id": "aciriya_thazhisai.discriminator",
+        "passed": false,
+        "message_ta": "மூன்று அடியும் ஒரே அளவு இல்லை. ஒவ்வொரு அடியும் குறளடி அல்லது மேல்"
+      },
+      {
+        "rule_id": "kalithurai.four_lines",
+        "passed": false,
+        "message_ta": "நான்கு அடி இல்லை."
+      },
+      {
+        "rule_id": "kalivirutham.four_lines",
+        "passed": false,
+        "message_ta": "நான்கு அடி இல்லை."
+      },
+      {
+        "rule_id": "vanjivirutham.four_lines",
+        "passed": false,
+        "message_ta": "நான்கு அடி இல்லை."
+      },
+      {
+        "rule_id": "vellathazhisai.nine_lines",
+        "passed": false,
+        "message_ta": "ஒன்பது அடி இல்லை."
+      },
+      {
+        "rule_id": "vendurai.three_to_seven",
+        "passed": true,
+        "message_ta": "மூன்று முதல் ஏழு அடி"
+      },
+      {
+        "rule_id": "vendurai.discriminator",
+        "passed": false,
+        "message_ta": "ஒரே படியாகக் குறையும் அடி இல்லை."
+      },
+      {
+        "rule_id": "kural_vensenthurai.two_lines",
+        "passed": false,
+        "message_ta": "இரண்டு அடி இல்லை."
+      },
+      {
+        "rule_id": "kalithazhisai.several_lines",
+        "passed": true,
+        "message_ta": "ஒன்றுக்கு மேற்பட்ட அடி"
+      },
+      {
+        "rule_id": "kalithazhisai.discriminator",
+        "passed": false,
+        "message_ta": "ஈற்றடி பிற அடிகளை விட நீளம் இல்லை."
+      },
+      {
+        "rule_id": "vanjithazhisai.twelve_lines",
+        "passed": false,
+        "message_ta": "பன்னிரண்டு அடி இல்லை."
+      },
+      {
+        "rule_id": "vanjithurai.four_lines",
+        "passed": false,
+        "message_ta": "நான்கு அடி இல்லை."
+      },
+      {
+        "rule_id": "no_rule_fitted",
+        "passed": false,
+        "message_ta": "எந்த விதியும் பொருந்தவில்லை."
+      }
+    ],
+    "tree_agrees_with_ml": false
   }
 }

@@ -1,0 +1,29 @@
+%%{init: {"theme": "neutral", "themeVariables": {"fontFamily": "Noto Sans Tamil, Noto Serif Tamil, sans-serif", "fontSize": "15px"}, "flowchart": {"wrappingWidth": 420, "padding": 12, "htmlLabels": true, "curve": "linear", "nodeSpacing": 28, "rankSpacing": 36}}}%%
+flowchart TD
+  vanjippaa["வஞ்சிப்பா<br/>வஞ்சி அடி தனிச்சொல் சுரிதகம்<br/>கனி பத்தில் 40<br/>வஞ்சித்தளை மேல் 40<br/>சுரிதக ஆசிரியத்தளை மேல் 40"]
+  vanjippaa -->|பொருந்தும்| kuraladi_vanjippaa_disc
+  kuraladi_vanjippaa_disc["குறளடி"]
+  kuraladi_vanjippaa_leaf["குறளடி வஞ்சிப்பா"]
+  kuraladi_vanjippaa_disc -->|பொருந்தும்| kuraladi_vanjippaa_leaf
+  kuraladi_vanjippaa_disc -->|இல்லை| sinthadi_vanjippaa_disc
+  sinthadi_vanjippaa_disc["சிந்தடி"]
+  sinthadi_vanjippaa_leaf["சிந்தடி வஞ்சிப்பா"]
+  sinthadi_vanjippaa_disc -->|பொருந்தும்| sinthadi_vanjippaa_leaf
+  vanjippaa -->|இல்லை| vanjivirutham
+  vanjivirutham["வஞ்சி விருத்தம்<br/>4 அடி"]
+  vanjivirutham_disc["சிந்தடி<br/>எதுகை"]
+  vanjivirutham_leaf["வஞ்சி விருத்தம்"]
+  vanjivirutham -->|பொருந்தும்| vanjivirutham_disc
+  vanjivirutham_disc -->|பொருந்தும்| vanjivirutham_leaf
+  vanjivirutham -->|இல்லை| vanjithazhisai
+  vanjithazhisai["வஞ்சித்தாழிசை<br/>12 அடி"]
+  vanjithazhisai_disc["குறளடி"]
+  vanjithazhisai_leaf["வஞ்சித்தாழிசை"]
+  vanjithazhisai -->|பொருந்தும்| vanjithazhisai_disc
+  vanjithazhisai_disc -->|பொருந்தும்| vanjithazhisai_leaf
+  vanjithazhisai -->|இல்லை| vanjithurai
+  vanjithurai["வஞ்சித்துறை<br/>4 அடி"]
+  vanjithurai_disc["குறளடி"]
+  vanjithurai_leaf["வஞ்சித்துறை"]
+  vanjithurai -->|பொருந்தும்| vanjithurai_disc
+  vanjithurai_disc -->|பொருந்தும்| vanjithurai_leaf

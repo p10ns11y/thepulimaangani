@@ -1,0 +1,49 @@
+%%{init: {"theme": "neutral", "themeVariables": {"fontFamily": "Noto Sans Tamil, Noto Serif Tamil, sans-serif", "fontSize": "15px"}, "flowchart": {"wrappingWidth": 420, "padding": 12, "htmlLabels": true, "curve": "linear", "nodeSpacing": 28, "rankSpacing": 36}}}%%
+flowchart TD
+  venpaa["வெண்பா குடும்பம்<br/>ஈறு சிந்தடி; பிற அளவடி<br/>உடல் சீர் மா விளம் காய்<br/>தளை வெண்டளை<br/>ஈற்றுச்சீர் நாள் மலர் காசு பிறப்பு"]
+  venpaa -->|பொருந்தும்| oru_vikarpa_kural_venpaa_disc
+  venpaa -->|இல்லை| next_family["அடுத்த குடும்பம்"]
+  oru_vikarpa_kural_venpaa_disc["இரண்டு அடி<br/>விகற்பம் ஒன்று"]
+  oru_vikarpa_kural_venpaa_leaf["ஒரு விகற்ப குறள் வெண்பா"]
+  oru_vikarpa_kural_venpaa_disc -->|பொருந்தும்| oru_vikarpa_kural_venpaa_leaf
+  oru_vikarpa_kural_venpaa_disc -->|இல்லை| iru_vikarpa_kural_venpaa_disc
+  iru_vikarpa_kural_venpaa_disc["இரண்டு அடி<br/>விகற்பம் இரண்டு அல்லது மேல்"]
+  iru_vikarpa_kural_venpaa_leaf["இரு விகற்ப குறள் வெண்பா"]
+  iru_vikarpa_kural_venpaa_disc -->|பொருந்தும்| iru_vikarpa_kural_venpaa_leaf
+  iru_vikarpa_kural_venpaa_disc -->|இல்லை| nerisai_sinthiyal_venpaa_disc
+  nerisai_sinthiyal_venpaa_disc["மூன்று அடி<br/>தனிச்சொல்<br/>விகற்பம் இரண்டுக்கு மிகாது"]
+  nerisai_sinthiyal_venpaa_leaf["நேரிசை சிந்தியல் வெண்பா"]
+  nerisai_sinthiyal_venpaa_disc -->|பொருந்தும்| nerisai_sinthiyal_venpaa_leaf
+  nerisai_sinthiyal_venpaa_disc -->|இல்லை| oru_vikarpa_nerisai_venpaa_disc
+  oru_vikarpa_nerisai_venpaa_disc["நான்கு அடி<br/>தனிச்சொல்<br/>விகற்பம் ஒன்று"]
+  oru_vikarpa_nerisai_venpaa_leaf["ஒரு விகற்ப நேரிசை வெண்பா"]
+  oru_vikarpa_nerisai_venpaa_disc -->|பொருந்தும்| oru_vikarpa_nerisai_venpaa_leaf
+  oru_vikarpa_nerisai_venpaa_disc -->|இல்லை| iru_vikarpa_nerisai_venpaa_disc
+  iru_vikarpa_nerisai_venpaa_disc["நான்கு அடி<br/>தனிச்சொல்<br/>விகற்பம் இரண்டு"]
+  iru_vikarpa_nerisai_venpaa_leaf["இரு விகற்ப நேரிசை வெண்பா"]
+  iru_vikarpa_nerisai_venpaa_disc -->|பொருந்தும்| iru_vikarpa_nerisai_venpaa_leaf
+  iru_vikarpa_nerisai_venpaa_disc -->|இல்லை| oru_vikarpa_inisai_venpaa_disc
+  oru_vikarpa_inisai_venpaa_disc["நான்கு அடி<br/>விகற்பம் ஒன்று"]
+  oru_vikarpa_inisai_venpaa_leaf["ஒரு விகற்ப இன்னிசை வெண்பா"]
+  oru_vikarpa_inisai_venpaa_disc -->|பொருந்தும்| oru_vikarpa_inisai_venpaa_leaf
+  oru_vikarpa_inisai_venpaa_disc -->|இல்லை| inisai_sinthiyal_venpaa_disc
+  inisai_sinthiyal_venpaa_disc["மூன்று அடி"]
+  inisai_sinthiyal_venpaa_leaf["இன்னிசை சிந்தியல் வெண்பா"]
+  inisai_sinthiyal_venpaa_disc -->|பொருந்தும்| inisai_sinthiyal_venpaa_leaf
+  inisai_sinthiyal_venpaa_disc -->|இல்லை| pala_vikarpa_inisai_venpaa_disc
+  pala_vikarpa_inisai_venpaa_disc["நான்கு அடி"]
+  pala_vikarpa_inisai_venpaa_leaf["பல விகற்ப இன்னிசை வெண்பா"]
+  pala_vikarpa_inisai_venpaa_disc -->|பொருந்தும்| pala_vikarpa_inisai_venpaa_leaf
+  pala_vikarpa_inisai_venpaa_disc -->|இல்லை| paqrodai_venpaa_disc
+  paqrodai_venpaa_disc["5-12 அடி"]
+  paqrodai_venpaa_leaf["பஃறொடை வெண்பா"]
+  paqrodai_venpaa_disc -->|பொருந்தும்| paqrodai_venpaa_leaf
+  paqrodai_venpaa_disc -->|இல்லை| kalivenpaa_strict_disc
+  kalivenpaa_strict_disc["13+ அடி"]
+  kalivenpaa_strict_leaf["கலிவெண்பா"]
+  kalivenpaa_strict_disc -->|பொருந்தும்| kalivenpaa_strict_leaf
+  kalivenpaa_long_osai["கலிவெண்பா ஓசை<br/>13+ அடி<br/>ஈறு சிந்தடி"]
+  kalivenpaa_long_osai_disc["வெண் மேல் 90<br/>கனி இல்லை"]
+  kalivenpaa_long_osai_leaf["கலிவெண்பா"]
+  kalivenpaa_long_osai -->|பொருந்தும்| kalivenpaa_long_osai_disc
+  kalivenpaa_long_osai_disc -->|பொருந்தும்| kalivenpaa_long_osai_leaf
