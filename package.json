@@ -11,7 +11,7 @@
   },
   "scripts": {
     "dev": "pnpm run build:wasm && vite dev --port 3000",
-    "build": "pnpm run build:wasm && vite build",
+    "build": "bash build/tamil_seiyul_alagi_wasm.sh && vite build",
     "build:wasm": "bash build/tamil_seiyul_alagi_wasm.sh",
     "build:wasm:old": "cd tamil-seiyul-alagi && wasm-pack build --target web --out-dir pkg && cd .. && rsync --mkpath -a tamil-seiyul-alagi/pkg/ src/wasm/ && echo '✅ WASM copied to src/wasm/'",
     "build:only": "vite build",
