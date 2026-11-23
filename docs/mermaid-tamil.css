@@ -1,0 +1,42 @@
+/* Point mermaid-cli HTML labels at the installed Noto Tamil faces. */
+@font-face {
+  font-family: "Noto Sans Tamil";
+  font-style: normal;
+  font-weight: 400;
+  src: url("file:///usr/share/fonts/truetype/noto/NotoSansTamil-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Noto Sans Tamil";
+  font-style: normal;
+  font-weight: 700;
+  src: url("file:///usr/share/fonts/truetype/noto/NotoSansTamil-Bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Noto Serif Tamil";
+  font-style: normal;
+  font-weight: 400;
+  src: url("file:///usr/share/fonts/truetype/noto/NotoSerifTamil-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Noto Serif Tamil";
+  font-style: normal;
+  font-weight: 700;
+  src: url("file:///usr/share/fonts/truetype/noto/NotoSerifTamil-Bold.ttf") format("truetype");
+}
+
+:root {
+  --mermaid-font-family: "Noto Sans Tamil", "Noto Serif Tamil", sans-serif;
+}
+
+body,
+svg,
+.edgeLabel,
+.nodeLabel,
+.label,
+span,
+p {
+  font-family: "Noto Sans Tamil", "Noto Serif Tamil", sans-serif !important;
+}
