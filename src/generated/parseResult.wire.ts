@@ -25,6 +25,34 @@ export interface components {
              */
             rules_agree_with_ml: boolean | null;
         };
+        /** @description One check on the classical decision-tree path. */
+        ClassicalTreeCheck: {
+            message_ta: string;
+            passed: boolean;
+            rule_id: string;
+        };
+        /** @description Rule-tree classification beside the ML verdict. It does not change scores or `metre_ml`. */
+        ClassicalTreeReport: {
+            /** @default  */
+            family_ta: string;
+            /** @default false */
+            fitted: boolean;
+            /** @default  */
+            label_ta: string;
+            /** @default  */
+            leaf_id: string;
+            /** @default  */
+            paavinam_ta: string;
+            /** @default [] */
+            path: components["schemas"]["ClassicalTreeCheck"][];
+            /** @default  */
+            subtype_ta: string;
+            /**
+             * @description `true` when the tree's family and the ML four-way verdict name the same family. `false` when they differ or no rule fitted. `null` when there is no ML verdict.
+             * @default null
+             */
+            tree_agrees_with_ml: boolean | null;
+        };
         /** @description One foot in `DisplayResult` (WASM `presentation.feet[]`). */
         DisplayFoot: {
             /** @description Stable combined label for older clients: `தமிழ் · latin`, or pattern / em dash when unknown. */
@@ -190,6 +218,20 @@ export interface components {
              *     }
              */
             classical_rules: components["schemas"]["ClassicalRulesReport"];
+            /**
+             * @description Classical decision tree (family, subtype, பாவினம்) beside the ML verdict.
+             * @default {
+             *       "family_ta": "",
+             *       "fitted": false,
+             *       "label_ta": "",
+             *       "leaf_id": "",
+             *       "paavinam_ta": "",
+             *       "path": [],
+             *       "subtype_ta": "",
+             *       "tree_agrees_with_ml": null
+             *     }
+             */
+            classical_tree: components["schemas"]["ClassicalTreeReport"];
             /**
              * Format: int32
              * @default 0

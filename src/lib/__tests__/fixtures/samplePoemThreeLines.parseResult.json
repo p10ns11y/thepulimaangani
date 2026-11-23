@@ -3563,5 +3563,66 @@
       }
     ],
     "rules_agree_with_ml": false
+  },
+  "classical_tree": {
+    "leaf_id": "no_rule_fitted",
+    "family_ta": "",
+    "subtype_ta": "",
+    "paavinam_ta": "",
+    "label_ta": "no rule fitted",
+    "fitted": false,
+    "path": [
+      {
+        "rule_id": "venpaa_core",
+        "passed": false,
+        "message_ta": "வெண்பா பொருந்தவில்லை (அடி வடிவம் false, அனுமதி சீர் false, வெண்டளை false, ஈற்றுச்சீர் false)."
+      },
+      {
+        "rule_id": "aciriya_talai",
+        "passed": false,
+        "message_ta": "ஆசிரியத்தளை 40% அளவு இல்லை."
+      },
+      {
+        "rule_id": "tharavu_kochaga",
+        "passed": false,
+        "message_ta": "தரவுகொச்சகக் கலிப்பா பொருந்தவில்லை."
+      },
+      {
+        "rule_id": "venkalippaa",
+        "passed": false,
+        "message_ta": "வெண்கலிப்பா பொருந்தவில்லை."
+      },
+      {
+        "rule_id": "vanji_skeleton",
+        "passed": false,
+        "message_ta": "வஞ்சி அடி, தனிச்சொல், சுரிதகம் என்ற அமைப்பு இல்லை."
+      },
+      {
+        "rule_id": "venpaavinam",
+        "passed": false,
+        "message_ta": "வெண்பாவினம் பொருந்தவில்லை."
+      },
+      {
+        "rule_id": "aciriya_paavinam",
+        "passed": false,
+        "message_ta": "ஆசிரியப்பாவினம் பொருந்தவில்லை."
+      },
+      {
+        "rule_id": "kali_paavinam",
+        "passed": false,
+        "message_ta": "கலிப்பாவினம் பொருந்தவில்லை."
+      },
+      {
+        "rule_id": "vanji_paavinam",
+        "passed": false,
+        "message_ta": "வஞ்சிப்பாவினம் பொருந்தவில்லை."
+      },
+      {
+        "rule_id": "no_rule_fitted",
+        "passed": false,
+        "message_ta": "எந்த விதியும் பொருந்தவில்லை."
+      }
+    ],
+    "tree_agrees_with_ml": false
   }
 }
