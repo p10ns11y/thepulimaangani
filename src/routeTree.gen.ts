@@ -9,15 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as DeveloperEvaluationRouteImport } from './routes/developer-evaluation'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AboutTimelineRouteImport } from './routes/about.timeline'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as DeveloperEvaluationRouteImport } from './routes/developer-evaluation'
 import { Route as AboutHistoryRouteImport } from './routes/about.history'
+import { Route as AboutTimelineRouteImport } from './routes/about.timeline'
 
-const DeveloperEvaluationRoute = DeveloperEvaluationRouteImport.update({
-  id: '/developer-evaluation',
-  path: '/developer-evaluation',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -25,19 +25,19 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const DeveloperEvaluationRoute = DeveloperEvaluationRouteImport.update({
+  id: '/developer-evaluation',
+  path: '/developer-evaluation',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AboutTimelineRoute = AboutTimelineRouteImport.update({
-  id: '/timeline',
-  path: '/timeline',
-  getParentRoute: () => AboutRoute,
 } as any)
 const AboutHistoryRoute = AboutHistoryRouteImport.update({
   id: '/history',
   path: '/history',
+  getParentRoute: () => AboutRoute,
+} as any)
+const AboutTimelineRoute = AboutTimelineRouteImport.update({
+  id: '/timeline',
+  path: '/timeline',
   getParentRoute: () => AboutRoute,
 } as any)
 
@@ -95,11 +95,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/developer-evaluation': {
-      id: '/developer-evaluation'
-      path: '/developer-evaluation'
-      fullPath: '/developer-evaluation'
-      preLoaderRoute: typeof DeveloperEvaluationRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -109,25 +109,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/developer-evaluation': {
+      id: '/developer-evaluation'
+      path: '/developer-evaluation'
+      fullPath: '/developer-evaluation'
+      preLoaderRoute: typeof DeveloperEvaluationRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/about/timeline': {
-      id: '/about/timeline'
-      path: '/timeline'
-      fullPath: '/about/timeline'
-      preLoaderRoute: typeof AboutTimelineRouteImport
-      parentRoute: typeof AboutRoute
     }
     '/about/history': {
       id: '/about/history'
       path: '/history'
       fullPath: '/about/history'
       preLoaderRoute: typeof AboutHistoryRouteImport
+      parentRoute: typeof AboutRoute
+    }
+    '/about/timeline': {
+      id: '/about/timeline'
+      path: '/timeline'
+      fullPath: '/about/timeline'
+      preLoaderRoute: typeof AboutTimelineRouteImport
       parentRoute: typeof AboutRoute
     }
   }
