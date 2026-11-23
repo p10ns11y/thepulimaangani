@@ -165,6 +165,32 @@ pub trait PoemLayer {
     fn normalized_source(&self) -> &str;
 }
 
+/// Adi class from the number of seers on one line.
+///
+/// குறளடி 2, சிந்தடி 3, அளவடி 4, நெடிலடி 5, கழிநெடிலடி 6+. Fewer than two seers stays unmarked.
+pub fn adi_class_from_seer_count(seer_count: usize) -> &'static str {
+    match seer_count {
+        2 => "Kuraladi",
+        3 => "Cinthadi",
+        4 => "Alavadi",
+        5 => "Nediladi",
+        6.. => "Kazhinediladi",
+        _ => "—",
+    }
+}
+
+fn seer_count_on_line(linguistic_words: &[LinguisticWordNode], feet: &[WordNode]) -> usize {
+    let linguistic_seer_count = linguistic_words
+        .iter()
+        .filter(|word| !word.syllables.is_empty())
+        .count();
+    if linguistic_seer_count > 0 {
+        linguistic_seer_count
+    } else {
+        feet.len()
+    }
+}
+
 fn linguistic_words_per_line(syllables: &[Syllable]) -> Vec<Vec<LinguisticWordNode>> {
     if syllables.is_empty() {
         return vec![];
@@ -263,9 +289,10 @@ pub fn build_poem_tree(
             .get(li)
             .cloned()
             .unwrap_or_default();
+        let seer_count = seer_count_on_line(&linguistic_words, &words);
         lines.push(PoemLineNode {
             line_index: li,
-            line_class: "—".to_string(),
+            line_class: adi_class_from_seer_count(seer_count).to_string(),
             linguistic_words,
             words,
         });
@@ -276,5 +303,67 @@ pub fn build_poem_tree(
         lines,
         syllables_flat,
         linkage,
+    }
+}
+
+#[cfg(test)]
+mod adi_class_tests {
+    use super::{adi_class_from_seer_count, build_poem_tree};
+    use crate::foot::group_into_feet_with_ranges;
+    use crate::linkage::FootPosition;
+    use crate::syllable::{Syllable, SyllableType};
+
+    fn seer_syllable(word_index_in_line: usize) -> Syllable {
+        Syllable {
+            text: "க".into(),
+            syllable_type: SyllableType::Ner,
+            split_hint: None,
+            alt_split: false,
+            rule_ref: None,
+            line_index: 0,
+            word_index_in_line,
+        }
+    }
+
+    #[test]
+    fn adi_class_matches_seer_counts_from_two_through_six() {
+        let expected = [
+            (2, "Kuraladi"),
+            (3, "Cinthadi"),
+            (4, "Alavadi"),
+            (5, "Nediladi"),
+            (6, "Kazhinediladi"),
+        ];
+        for (seer_count, class_name) in expected {
+            assert_eq!(adi_class_from_seer_count(seer_count), class_name);
+            let syllables: Vec<Syllable> = (0..seer_count).map(seer_syllable).collect();
+            let placements = group_into_feet_with_ranges(&syllables);
+            let foot_positions: Vec<FootPosition> = (0..seer_count)
+                .map(|seer_index| FootPosition {
+                    foot_index: seer_index,
+                    line_index: 0,
+                    word_index_in_line: seer_index,
+                })
+                .collect();
+            let poem = build_poem_tree(
+                String::new(),
+                &syllables,
+                &foot_positions,
+                &placements,
+                Vec::new(),
+            );
+            assert_eq!(poem.lines.len(), 1, "seer count {seer_count}");
+            assert_eq!(
+                poem.lines[0].line_class, class_name,
+                "poem tree line class for {seer_count} seers"
+            );
+        }
+    }
+
+    #[test]
+    fn six_or_more_seers_stay_kazhinediladi_and_short_lines_stay_unmarked() {
+        assert_eq!(adi_class_from_seer_count(7), "Kazhinediladi");
+        assert_eq!(adi_class_from_seer_count(1), "—");
+        assert_eq!(adi_class_from_seer_count(0), "—");
     }
 }

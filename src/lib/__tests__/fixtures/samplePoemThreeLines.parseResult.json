@@ -1,5 +1,5 @@
 {
-  "parse_result_schema_version": 1,
+  "parse_result_schema_version": 2,
   "original_text": "சுடர்த்தொடீஇ கேளாய் தெருவில்நாம்\nமணற்சிற்றில் காலில் சிதையா அடை\nகோதை பரிந்து வரிப்பந்து கொண்டோ\n",
   "normalized_text": "சுடர்த்தொடீஇ கேளாய் தெருவில்நாம்\nமணற்சிற்றில் காலில் சிதையா அடை\nகோதை பரிந்து வரிப்பந்து கொண்டோ",
   "letter_count": 56,
@@ -9,7 +9,7 @@
     "lines": [
       {
         "line_index": 0,
-        "line_class": "—",
+        "line_class": "Cinthadi",
         "linguistic_words": [
           {
             "word_index_in_line": 0,
@@ -991,7 +991,7 @@
       },
       {
         "line_index": 1,
-        "line_class": "—",
+        "line_class": "Alavadi",
         "linguistic_words": [
           {
             "word_index_in_line": 0,
@@ -1235,7 +1235,7 @@
       },
       {
         "line_index": 2,
-        "line_class": "—",
+        "line_class": "Alavadi",
         "linguistic_words": [
           {
             "word_index_in_line": 0,
@@ -2850,7 +2850,7 @@
           "foot_index_global": 2
         }
       ],
-      "line_class": "—"
+      "line_class": "Cinthadi"
     },
     {
       "feet": [
@@ -2951,7 +2951,7 @@
           "foot_index_global": 6
         }
       ],
-      "line_class": "—"
+      "line_class": "Alavadi"
     },
     {
       "feet": [
@@ -3061,7 +3061,7 @@
           "foot_index_global": 10
         }
       ],
-      "line_class": "—"
+      "line_class": "Alavadi"
     }
   ],
   "metre_type": "Venpaa",
@@ -3470,5 +3470,98 @@
         "is_valid": true
       }
     ]
+  },
+  "metre_ml": {
+    "dual_truth": {
+      "ml_metre_type": "Venpaa",
+      "classical_metre_type": "Venpaa",
+      "classical_ok_for_ml_top": true,
+      "classical_violations": [],
+      "separation_policy": "ml_scores_parallel_to_classical_violations"
+    },
+    "pattern_features": [
+      {
+        "dense_index": 4,
+        "feature_id": "syllable_count",
+        "weight": 25.0,
+        "direction": "positive"
+      },
+      {
+        "dense_index": 3,
+        "feature_id": "foot_count",
+        "weight": 11.0,
+        "direction": "positive"
+      },
+      {
+        "dense_index": 11,
+        "feature_id": "linkage_edge_count",
+        "weight": 10.0,
+        "direction": "positive"
+      },
+      {
+        "dense_index": 0,
+        "feature_id": "log_letters",
+        "weight": 4.0430512,
+        "direction": "positive"
+      },
+      {
+        "dense_index": 6,
+        "feature_id": "max_feet_per_line",
+        "weight": 4.0,
+        "direction": "positive"
+      }
+    ],
+    "head_votes": [
+      {
+        "head_id": "heuristic_or_hybrid",
+        "metre_type": "Venpaa",
+        "score": 0.9969495,
+        "note": "Shipped parse path (rules + optional hybrid logit)"
+      },
+      {
+        "head_id": "dense_logistic",
+        "metre_type": "Venpaa",
+        "score": 0.34375805,
+        "note": "Pure dense multinomial (cached z-scored head + temperature); in-sample on anthology"
+      },
+      {
+        "head_id": "prototype_knn",
+        "metre_type": "Venpaa",
+        "score": 0.5189385,
+        "note": "Nearest class prototype in z-space (soft mass, not calibrated %)"
+      }
+    ],
+    "honesty_label": "Statistical estimate (ML / heuristic) — not classical proof",
+    "uncertainty_blurb": "Entropy and confidence gap describe how peaked the four-way ML distribution is — not classical proof. Multi-head dense/prototype votes are fitted on special_type anthology rows (in-sample if you parse those poems); ADOPT evidence is the baseline freeze, not live head agreement. Soft classical sketch found no flags for the ML top guess (still not sole scholarly truth). Dual-compare: agree.",
+    "a12_freeze_date": "2026-07-27"
+  },
+  "classical_rules": {
+    "rules": [
+      {
+        "rule_id": "venpaa_allowed_seers",
+        "passed": false,
+        "position": "line:1/seer:3",
+        "message_ta": "அனுமதி இல்லாத சீர்: ஈரசை மா/விளம் அல்லது காய் மட்டும்; கனி கூடாது."
+      },
+      {
+        "rule_id": "venpaa_ven_talai",
+        "passed": false,
+        "position": "bond:2",
+        "message_ta": "வெண்டளை அல்லாத தளை உள்ளது. இயற்சீர் வெண்டளை அல்லது வெண்சீர் வெண்டளை வேண்டும்."
+      },
+      {
+        "rule_id": "venpaa_adi_shape",
+        "passed": false,
+        "position": "line:0",
+        "message_ta": "ஈற்றடி சிந்தடியாகவும் ஏனைய அடி அளவடியாகவும் இல்லை."
+      },
+      {
+        "rule_id": "venpaa_last_seer",
+        "passed": false,
+        "position": "line:2/seer:3",
+        "message_ta": "ஈற்றுச்சீர் நாள், மலர், காசு, பிறப்பு ஆகியவற்றுள் இல்லை."
+      }
+    ],
+    "rules_agree_with_ml": false
   }
 }

@@ -1,6 +1,52 @@
 {
   "components": {
     "schemas": {
+      "ClassicalRuleFinding": {
+        "description": "One வெண்பா rule check. Annotation only; it does not feed metre scores.",
+        "properties": {
+          "message_ta": {
+            "type": "string"
+          },
+          "passed": {
+            "type": "boolean"
+          },
+          "position": {
+            "description": "Locus of the check: `poem`, `line:{index}`, `line:{index}/seer:{index}`, or `bond:{index}`.",
+            "type": "string"
+          },
+          "rule_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message_ta",
+          "passed",
+          "position",
+          "rule_id"
+        ],
+        "type": "object"
+      },
+      "ClassicalRulesReport": {
+        "description": "Per-poem classical rule layer beside the ML verdict.",
+        "properties": {
+          "rules": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ClassicalRuleFinding"
+            },
+            "type": "array"
+          },
+          "rules_agree_with_ml": {
+            "default": null,
+            "description": "`true` when the venpa rule set and the ML verdict agree on Venpaa. `false` when they disagree. `null` when there is no ML verdict.",
+            "type": [
+              "boolean",
+              "null"
+            ]
+          }
+        },
+        "type": "object"
+      },
       "DisplayFoot": {
         "description": "One foot in `DisplayResult` (WASM `presentation.feet[]`).",
         "properties": {
@@ -566,6 +612,18 @@
       },
       "ParseResult": {
         "properties": {
+          "classical_rules": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ClassicalRulesReport"
+              }
+            ],
+            "default": {
+              "rules": [],
+              "rules_agree_with_ml": null
+            },
+            "description": "வெண்பா rule hints. Does not change `metre_type`, scores, or `metre_ml`."
+          },
           "confidence": {
             "default": 0,
             "format": "int32",

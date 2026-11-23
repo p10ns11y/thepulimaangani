@@ -83,6 +83,9 @@ pub struct ParseResult {
     /// Learner/product ML surface: dual-truth, pattern features, multi-head votes (never fused scores).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub metre_ml: Option<MetreMlProductSurface>,
+    /// வெண்பா rule hints. Does not change `metre_type`, scores, or `metre_ml`.
+    #[serde(default)]
+    pub classical_rules: ClassicalRulesReport,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
@@ -138,6 +141,27 @@ pub struct HeadVote {
     pub metre_type: String,
     pub score: f32,
     pub note: String,
+}
+
+/// One வெண்பா rule check. Annotation only; it does not feed metre scores.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema)]
+pub struct ClassicalRuleFinding {
+    pub rule_id: String,
+    pub passed: bool,
+    /// Locus of the check: `poem`, `line:{index}`, `line:{index}/seer:{index}`, or `bond:{index}`.
+    pub position: String,
+    pub message_ta: String,
+}
+
+/// Per-poem classical rule layer beside the ML verdict.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema, Default)]
+pub struct ClassicalRulesReport {
+    #[serde(default)]
+    pub rules: Vec<ClassicalRuleFinding>,
+    /// `true` when the venpa rule set and the ML verdict agree on Venpaa.
+    /// `false` when they disagree. `null` when there is no ML verdict.
+    #[serde(default)]
+    pub rules_agree_with_ml: Option<bool>,
 }
 
 /// Learner-facing ML product block on ParseResult (WASM JSON `metre_ml`).

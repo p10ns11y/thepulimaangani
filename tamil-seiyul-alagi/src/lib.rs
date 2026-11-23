@@ -1,3 +1,4 @@
+mod classical_rules;
 mod error;
 mod foot;
 mod foot_pattern;
@@ -95,9 +96,9 @@ pub use prosodic_unit::{Consonant, ProsodicUnit, Vowel};
 pub use syllable::{Syllable, SyllableType};
 pub use syllable_builder::SyllableBuilder;
 pub use types::{
-    flat_lines_from_poem, DualTruthSurface, HeadVote, MetreHypothesis, MetreMlProductSurface,
-    ParseFeatureSnapshot, ParseOptions, ParseResult, PatternFeatureHit, RuleId,
-    PARSE_RESULT_SCHEMA_VERSION,
+    flat_lines_from_poem, ClassicalRuleFinding, ClassicalRulesReport, DualTruthSurface, HeadVote,
+    MetreHypothesis, MetreMlProductSurface, ParseFeatureSnapshot, ParseOptions, ParseResult,
+    PatternFeatureHit, RuleId, PARSE_RESULT_SCHEMA_VERSION,
 };
 
 use std::cell::Cell;
@@ -185,6 +186,8 @@ pub fn parse_poem(text: &str, options: ParseOptions) -> Result<ParseResult, Pars
     };
 
     let metre = metre_hypotheses.first().map(|h| h.metre_type.clone());
+    let classical_rules =
+        classical_rules::evaluate_venpaa_rules(&lines, &linkage, metre.as_ref());
 
     let classical_violations = if let Some(ref m) = metre {
         metre::classical_violations_for_metre(m, &feet, &linkage)
@@ -231,6 +234,7 @@ pub fn parse_poem(text: &str, options: ParseOptions) -> Result<ParseResult, Pars
         presentation: presentation::to_display(text, &metre, &syllables, &feet, &linkage),
         errors: vec![],
         metre_ml,
+        classical_rules,
     })
 }
 

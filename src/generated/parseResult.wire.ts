@@ -7,6 +7,24 @@ export type paths = Record<string, never>;
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @description One வெண்பா rule check. Annotation only; it does not feed metre scores. */
+        ClassicalRuleFinding: {
+            message_ta: string;
+            passed: boolean;
+            /** @description Locus of the check: `poem`, `line:{index}`, `line:{index}/seer:{index}`, or `bond:{index}`. */
+            position: string;
+            rule_id: string;
+        };
+        /** @description Per-poem classical rule layer beside the ML verdict. */
+        ClassicalRulesReport: {
+            /** @default [] */
+            rules: components["schemas"]["ClassicalRuleFinding"][];
+            /**
+             * @description `true` when the venpa rule set and the ML verdict agree on Venpaa. `false` when they disagree. `null` when there is no ML verdict.
+             * @default null
+             */
+            rules_agree_with_ml: boolean | null;
+        };
         /** @description One foot in `DisplayResult` (WASM `presentation.feet[]`). */
         DisplayFoot: {
             /** @description Stable combined label for older clients: `தமிழ் · latin`, or pattern / em dash when unknown. */
@@ -164,6 +182,14 @@ export interface components {
         };
         /** ParseResult */
         ParseResult: {
+            /**
+             * @description வெண்பா rule hints. Does not change `metre_type`, scores, or `metre_ml`.
+             * @default {
+             *       "rules": [],
+             *       "rules_agree_with_ml": null
+             *     }
+             */
+            classical_rules: components["schemas"]["ClassicalRulesReport"];
             /**
              * Format: int32
              * @default 0
