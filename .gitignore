@@ -147,3 +147,6 @@ tamil-seiyul-alagi/target/
 
 # WebAssembly build output (generated files)
 src/wasm/
+
+# tamil-time crate
+tamil-time/target/
