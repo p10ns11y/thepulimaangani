@@ -42,12 +42,14 @@ const lineClassMap: Record<string, string> = {
   Thanichol: 'தனிச்சொல்',
   Alavadi: 'அளவடி',
   Nediladi: 'நெடிலடி',
+  Kazhinediladi: 'கழிநெடிலடி',
   // Legacy keys (same labels)
   kuRaLaTi: 'குறளடி',
   ci_ntaTi: 'சிந்தடி',
   taVi_cco_l: 'தனிச்சொல்',
   _aLavaTi: 'அளவடி',
   neTilaTi: 'நெடிலடி',
+  kazhineTilaTi: 'கழிநெடிலடி',
 }
 
 /** Logic layer `foot_type` = hyphenated Ner/Nirai pattern; Tamil aligns with feet-calculations.md. */
