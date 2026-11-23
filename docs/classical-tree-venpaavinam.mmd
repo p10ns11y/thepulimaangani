@@ -1,0 +1,37 @@
+%%{init: {"theme": "neutral", "themeVariables": {"fontFamily": "Noto Sans Tamil, Noto Sans, sans-serif", "fontSize": "15px"}, "flowchart": {"wrappingWidth": 420, "padding": 12, "htmlLabels": true, "curve": "linear", "nodeSpacing": 28, "rankSpacing": 36}}}%%
+flowchart TD
+  velivirutham["வெளிவிருத்தம்<br/>3 அல்லது 4 அடி<br/>நெடிலடி"]
+  velivirutham_disc["ஒரே தனிச்சொல்<br/>எதுகை"]
+  velivirutham_leaf["வெளிவிருத்தம்"]
+  velivirutham -->|பொருந்தும்| velivirutham_disc
+  velivirutham_disc -->|பொருந்தும்| velivirutham_leaf
+  velivirutham -->|இல்லை| ventazhisai
+  ventazhisai["வெண்டாழிசை<br/>3 அடி<br/>முதல் அடி அளவடி"]
+  ventazhisai_disc["இரண்டாம் அடி அளவடி<br/>ஈறு சிந்தடி"]
+  ventazhisai_leaf["வெண்டாழிசை"]
+  ventazhisai -->|பொருந்தும்| ventazhisai_disc
+  ventazhisai_disc -->|பொருந்தும்| ventazhisai_leaf
+  ventazhisai -->|இல்லை| kurattazhisai
+  kurattazhisai["குறட்டாழிசை<br/>2 அடி"]
+  kurattazhisai_disc["முதல் அடி 4 சீர் அல்லது மேல்<br/>இரண்டாம் அடி குறைவு"]
+  kurattazhisai_leaf["குறட்டாழிசை"]
+  kurattazhisai -->|பொருந்தும்| kurattazhisai_disc
+  kurattazhisai_disc -->|பொருந்தும்| kurattazhisai_leaf
+  kurattazhisai -->|இல்லை| vellathazhisai
+  vellathazhisai["வெள்ளொத்தாழிசை<br/>9 அடி"]
+  vellathazhisai_disc["மூன்று வெண்பா அடுக்கு"]
+  vellathazhisai_leaf["வெள்ளொத்தாழிசை"]
+  vellathazhisai -->|பொருந்தும்| vellathazhisai_disc
+  vellathazhisai_disc -->|பொருந்தும்| vellathazhisai_leaf
+  vellathazhisai -->|இல்லை| vendurai
+  vendurai["வெண்டுறை<br/>3-7 அடி"]
+  vendurai_disc["ஒரே படி இறக்கம்"]
+  vendurai_leaf["வெண்டுறை"]
+  vendurai -->|பொருந்தும்| vendurai_disc
+  vendurai_disc -->|பொருந்தும்| vendurai_leaf
+  vendurai -->|இல்லை| kural_vensenthurai
+  kural_vensenthurai["குறள் வெண்செந்துறை<br/>2 அடி"]
+  kural_vensenthurai_disc["இரண்டும் சம அளவு"]
+  kural_vensenthurai_leaf["குறள் வெண்செந்துறை"]
+  kural_vensenthurai -->|பொருந்தும்| kural_vensenthurai_disc
+  kural_vensenthurai_disc -->|பொருந்தும்| kural_vensenthurai_leaf

@@ -1,92 +1,322 @@
 # Classical decision tree
 
-The ML verdict stays the primary metre. `classical_tree` sits beside it. Each leaf is one AND-gate. A gate matches only when every condition passes; any failure drops to the next gate. Gates run strict-first: more combined conditions first. Equal counts keep Avalokitam's order.
+The ML verdict stays the primary metre. `classical_tree` sits beside it. A family gate is the shared combined conditions. Each leaf then has one or two discriminating rules. Those rules are the last step in the trace, `{leaf}.discriminator`, and the last node before the leaf in the diagram. Any failed condition rejects that leaf. More combined conditions run first. Equal counts keep Avalokitam's order.
 
-![Strict-first classical tree](classical-tree.svg)
+One picture of every leaf was a single narrow column, so the diagram is an overview plus one sub-diagram per family.
+
+## Overview
+
+Family gates in strict-first order. A failed family drops to the next. Equal condition counts keep Avalokitam's order. Leaf discriminators are in the family diagrams.
+
+![Overview](classical-tree.svg)
 
 [PNG](classical-tree.png)
 
 ```mermaid
-%%{init: {"theme": "neutral", "themeVariables": {"fontFamily": "Noto Sans Tamil, Noto Sans, sans-serif"}, "flowchart": {"wrappingWidth": 640, "padding": 16, "htmlLabels": true, "curve": "linear"}}}%%
+%%{init: {"theme": "neutral", "themeVariables": {"fontFamily": "Noto Sans Tamil, Noto Sans, sans-serif", "fontSize": "15px"}, "flowchart": {"wrappingWidth": 420, "padding": 12, "htmlLabels": true, "curve": "linear", "nodeSpacing": 28, "rankSpacing": 36}}}%%
 flowchart TD
-  start["அடி சீர் தளை எதுகை தனிச்சொல்"] --> nilaimandila_aciriyappaa
-  nilaimandila_aciriyappaa["நிலைமண்டில ஆசிரியப்பா<br/>9 conditions<br/>3+ அடி<br/>இயற்சீர் மேல் 40<br/>ஆசிரியத்தளை மேல் 40<br/>ஈறு<br/>விளங்கனி இல்லை<br/>நீளம் இல்லை<br/>ஓர அளவடி<br/>இடை அடி<br/>குறுகிய அடி இல்லை"]
-  nilaimandila_aciriyappaa -->|இல்லை| nerisai_aciriyappaa
-  nerisai_aciriyappaa["நேரிசை ஆசிரியப்பா<br/>9 conditions<br/>ஆசிரிய உள்ளகம்<br/>குறுகிய அடி ஈற்றயலடி மட்டும்"]
-  nerisai_aciriyappaa -->|இல்லை| inaikkural_aciriyappaa
-  inaikkural_aciriyappaa["இணைக்குறள் ஆசிரியப்பா<br/>9 conditions<br/>ஆசிரிய உள்ளகம்<br/>குறுகிய அடி வேறு இடத்திலும்"]
-  inaikkural_aciriyappaa -->|இல்லை| kattalai_kalithurai
-  kattalai_kalithurai["கட்டளை கலித்துறை<br/>8 conditions<br/>4 நெடிலடி<br/>எதுகை<br/>16/17 எழுத்து<br/>அடிக்குள் வெண்<br/>ஐந்தாம் சீர்<br/>பிற சீர் விளங்காய் அல்ல<br/>ஈறு ஏ"]
-  kattalai_kalithurai -->|இல்லை| nerisai_sinthiyal_venpaa
-  nerisai_sinthiyal_venpaa["நேரிசை சிந்தியல் வெண்பா<br/>7 conditions<br/>3 அடி வெண்பா<br/>தனிச்சொல்<br/>விகற்பம் 2 வரை"]
-  nerisai_sinthiyal_venpaa -->|இல்லை| oru_vikarpa_nerisai_venpaa
-  oru_vikarpa_nerisai_venpaa["ஒரு விகற்ப நேரிசை வெண்பா<br/>7 conditions<br/>4 அடி வெண்பா<br/>தனிச்சொல்<br/>விகற்பம் 1"]
-  oru_vikarpa_nerisai_venpaa -->|இல்லை| iru_vikarpa_nerisai_venpaa
-  iru_vikarpa_nerisai_venpaa["இரு விகற்ப நேரிசை வெண்பா<br/>7 conditions<br/>4 அடி வெண்பா<br/>தனிச்சொல்<br/>விகற்பம் 2"]
-  iru_vikarpa_nerisai_venpaa -->|இல்லை| oru_vikarpa_kural_venpaa
-  oru_vikarpa_kural_venpaa["ஒரு விகற்ப குறள் வெண்பா<br/>6 conditions<br/>2 அடி வெண்பா<br/>விகற்பம் 1"]
-  oru_vikarpa_kural_venpaa -->|இல்லை| iru_vikarpa_kural_venpaa
-  iru_vikarpa_kural_venpaa["இரு விகற்ப குறள் வெண்பா<br/>6 conditions<br/>2 அடி வெண்பா<br/>விகற்பம் 2+"]
-  iru_vikarpa_kural_venpaa -->|இல்லை| oru_vikarpa_inisai_venpaa
-  oru_vikarpa_inisai_venpaa["ஒரு விகற்ப இன்னிசை வெண்பா<br/>6 conditions<br/>4 அடி வெண்பா<br/>விகற்பம் 1"]
-  oru_vikarpa_inisai_venpaa -->|இல்லை| inisai_sinthiyal_venpaa
-  inisai_sinthiyal_venpaa["இன்னிசை சிந்தியல் வெண்பா<br/>5 conditions<br/>3 அடி வெண்பா"]
-  inisai_sinthiyal_venpaa -->|இல்லை| pala_vikarpa_inisai_venpaa
-  pala_vikarpa_inisai_venpaa["பல விகற்ப இன்னிசை வெண்பா<br/>5 conditions<br/>4 அடி வெண்பா"]
-  pala_vikarpa_inisai_venpaa -->|இல்லை| paqrodai_venpaa
-  paqrodai_venpaa["பஃறொடை வெண்பா<br/>5 conditions<br/>5-12 அடி வெண்பா"]
-  paqrodai_venpaa -->|இல்லை| kalivenpaa_strict
-  kalivenpaa_strict["கலிவெண்பா கடு வெண்பா<br/>5 conditions<br/>13+ அடி வெண்பா"]
-  kalivenpaa_strict -->|இல்லை| kuraladi_vanjippaa
-  kuraladi_vanjippaa["குறளடி வஞ்சிப்பா<br/>5 conditions<br/>வஞ்சி அமைப்பு<br/>கனி பத்து<br/>வஞ்சித்தளை<br/>சுரிதகம்<br/>குறளடி"]
-  kuraladi_vanjippaa -->|இல்லை| sinthadi_vanjippaa
-  sinthadi_vanjippaa["சிந்தடி வஞ்சிப்பா<br/>5 conditions<br/>வஞ்சி அமைப்பு<br/>கனி பத்து<br/>வஞ்சித்தளை<br/>சுரிதகம்<br/>சிந்தடி"]
-  sinthadi_vanjippaa -->|இல்லை| arucir_kazhinediladi_aciriya_virutham
-  arucir_kazhinediladi_aciriya_virutham["அறுசீர் கழிநெடிலடி ஆசிரிய விருத்தம்<br/>5 conditions<br/>4 சம கழிநெடிலடி<br/>எதுகை<br/>அறுசீர்"]
-  arucir_kazhinediladi_aciriya_virutham -->|இல்லை| elucir_kazhinediladi_aciriya_virutham
-  elucir_kazhinediladi_aciriya_virutham["எழுசீர் கழிநெடிலடி ஆசிரிய விருத்தம்<br/>5 conditions<br/>4 சம கழிநெடிலடி<br/>எதுகை<br/>எழுசீர்"]
-  elucir_kazhinediladi_aciriya_virutham -->|இல்லை| encir_kazhinediladi_aciriya_virutham
-  encir_kazhinediladi_aciriya_virutham["எண்சீர் கழிநெடிலடி ஆசிரிய விருத்தம்<br/>5 conditions<br/>4 சம கழிநெடிலடி<br/>எதுகை<br/>எண்சீர்"]
-  encir_kazhinediladi_aciriya_virutham -->|இல்லை| kattalai_kalippaa
-  kattalai_kalippaa["கட்டளை கலிப்பா<br/>5 conditions<br/>8 அரையடி<br/>11/12 எழுத்து<br/>முதல் தளை ஆசிரியம்<br/>பின் தளை வெண்"]
+  start["அடி<br/>சீர்<br/>தளை"]
+  start --> aciriyappaa
+  aciriyappaa["ஆசிரியப்பா<br/>8 combined<br/>3+ அடி<br/>இயற்சீர் மேல் 40<br/>ஆசிரியத்தளை மேல் 40<br/>ஈறு<br/>விளங்கனி இல்லை<br/>நீளம் இல்லை<br/>ஓர அளவடி<br/>இடை அடி"]
+  aciriyappaa -->|இல்லை| kattalai_kalithurai
+  kattalai_kalithurai["கட்டளைக்கலித்துறை<br/>6 combined<br/>4 நெடிலடி<br/>எதுகை<br/>16/17 எழுத்து<br/>அடிக்குள் வெண்"]
+  kattalai_kalithurai -->|இல்லை| venpaa
+  venpaa["வெண்பா<br/>4 combined<br/>ஈறு சிந்தடி<br/>உடல் சீர்<br/>வெண்டளை<br/>ஈற்றுச்சீர்"]
+  venpaa -->|இல்லை| vanjippaa
+  vanjippaa["வஞ்சிப்பா<br/>4 combined<br/>வஞ்சி அமைப்பு<br/>கனி பத்து<br/>வஞ்சித்தளை<br/>சுரிதகம்"]
+  vanjippaa -->|இல்லை| aciriya_virutham
+  aciriya_virutham["ஆசிரிய விருத்தம்<br/>4 combined<br/>4 சம அடி<br/>கழிநெடிலடி<br/>எதுகை"]
+  aciriya_virutham -->|இல்லை| kattalai_kalippaa
+  kattalai_kalippaa["கட்டளைக்கலிப்பா<br/>3 combined<br/>8 அரையடி<br/>4 சீர்<br/>11/12 எழுத்து"]
   kattalai_kalippaa -->|இல்லை| kalivenpaa_long_osai
-  kalivenpaa_long_osai["கலிவெண்பா நெடுஞ்சீர் ஓசை<br/>4 conditions<br/>13+ அடி<br/>ஈறு சிந்தடி<br/>வெண் மேல் 90<br/>கனி இல்லை"]
+  kalivenpaa_long_osai["கலிவெண்பா ஓசை<br/>2 combined<br/>13+ அடி<br/>ஈறு சிந்தடி"]
   kalivenpaa_long_osai -->|இல்லை| tharavukocha_kalippaa
-  tharavukocha_kalippaa["தரவுகொச்சகக் கலிப்பா<br/>4 conditions<br/>4+ அளவடி<br/>மா/விளங்கனி இல்லை<br/>கலி மேல் 40"]
+  tharavukocha_kalippaa["தரவுகொச்சகம்<br/>2 combined<br/>4+ அளவடி"]
   tharavukocha_kalippaa -->|இல்லை| venkalippaa
-  venkalippaa["வெண்கலிப்பா<br/>4 conditions<br/>அளவடி+சிந்தடி<br/>உடல் மா/விளங்கனி இல்லை<br/>கலி+வெண் மேல் 50<br/>கலி மேல் 25"]
+  venkalippaa["வெண்கலிப்பா<br/>2 combined<br/>அளவடி+சிந்தடி<br/>உடல் சீர்"]
   venkalippaa -->|இல்லை| velivirutham
-  velivirutham["வெளிவிருத்தம்<br/>4 conditions<br/>3/4 நெடிலடி<br/>ஒரே தனிச்சொல்<br/>எதுகை"]
+  velivirutham["வெளிவிருத்தம்<br/>2 combined<br/>3/4 நெடிலடி"]
   velivirutham -->|இல்லை| ventazhisai
-  ventazhisai["வெண்டாழிசை<br/>4 conditions<br/>அளவடி<br/>அளவடி<br/>சிந்தடி"]
+  ventazhisai["வெண்டாழிசை<br/>2 combined<br/>3 அடி<br/>முதல் அளவடி"]
   ventazhisai -->|இல்லை| aciriya_thurai
-  aciriya_thurai["ஆசிரியத் துறை<br/>4 conditions<br/>4 அடி<br/>ஒன்று குறைவு<br/>நீளம் இல்லை<br/>சம அடி உண்டு"]
+  aciriya_thurai["ஆசிரியத் துறை<br/>2 combined<br/>4 அடி<br/>ஒரு அடி குறைவு"]
   aciriya_thurai -->|இல்லை| kurattazhisai
-  kurattazhisai["குறட்டாழிசை<br/>3 conditions<br/>2 அடி<br/>முதல் 4 அல்லது மேல்<br/>இரண்டாம் குறைவு"]
+  kurattazhisai["குறட்டாழிசை<br/>1 combined<br/>2 அடி"]
   kurattazhisai -->|இல்லை| aciriya_thazhisai
-  aciriya_thazhisai["ஆசிரியத் தாழிசை<br/>3 conditions<br/>3 சம அடி<br/>குறளடி அல்லது மேல்"]
+  aciriya_thazhisai["ஆசிரியத் தாழிசை<br/>1 combined<br/>3 அடி"]
   aciriya_thazhisai -->|இல்லை| kalithurai
-  kalithurai["கலித்துறை<br/>3 conditions<br/>4 நெடிலடி<br/>எதுகை"]
+  kalithurai["கலித்துறை<br/>1 combined<br/>4 அடி"]
   kalithurai -->|இல்லை| kalivirutham
-  kalivirutham["கலிவிருத்தம்<br/>3 conditions<br/>4 அளவடி<br/>எதுகை"]
+  kalivirutham["கலிவிருத்தம்<br/>1 combined<br/>4 அடி"]
   kalivirutham -->|இல்லை| vanjivirutham
-  vanjivirutham["வஞ்சி விருத்தம்<br/>3 conditions<br/>4 சிந்தடி<br/>எதுகை"]
+  vanjivirutham["வஞ்சி விருத்தம்<br/>1 combined<br/>4 அடி"]
   vanjivirutham -->|இல்லை| vellathazhisai
-  vellathazhisai["வெள்ளொத்தாழிசை<br/>2 conditions<br/>9 அடி<br/>மூன்று வெண்பா அடுக்கு"]
+  vellathazhisai["வெள்ளொத்தாழிசை<br/>1 combined<br/>9 அடி"]
   vellathazhisai -->|இல்லை| vendurai
-  vendurai["வெண்டுறை<br/>2 conditions<br/>3-7 அடி<br/>ஒரே படி இறக்கம்"]
+  vendurai["வெண்டுறை<br/>1 combined<br/>3-7 அடி"]
   vendurai -->|இல்லை| kural_vensenthurai
-  kural_vensenthurai["குறள் வெண்செந்துறை<br/>2 conditions<br/>2 சம அடி"]
+  kural_vensenthurai["குறள் வெண்செந்துறை<br/>1 combined<br/>2 அடி"]
   kural_vensenthurai -->|இல்லை| kalithazhisai
-  kalithazhisai["கலித்தாழிசை<br/>2 conditions<br/>ஈற்றடி பிற அடிகளை விட நீளம்"]
+  kalithazhisai["கலித்தாழிசை<br/>1 combined<br/>பல அடி"]
   kalithazhisai -->|இல்லை| vanjithazhisai
-  vanjithazhisai["வஞ்சித்தாழிசை<br/>2 conditions<br/>12 குறளடி"]
+  vanjithazhisai["வஞ்சித்தாழிசை<br/>1 combined<br/>12 அடி"]
   vanjithazhisai -->|இல்லை| vanjithurai
-  vanjithurai["வஞ்சித்துறை<br/>2 conditions<br/>4 குறளடி"]
+  vanjithurai["வஞ்சித்துறை<br/>1 combined<br/>4 அடி"]
   vanjithurai -->|இல்லை| none["no rule fitted"]
 ```
 
-வெண்பா core, used inside the வெண்பா gates, is four conditions: ஈற்றடி சிந்தடி and the other lines அளவடி; body seers are ஈரசை மா/விளம் or காய்; every bond is வெண்டளை; the last seer is நாள், மலர், காசு, or பிறப்பு. ஆசிரிய core is eight conditions; the ninth is the subtype pattern. கலிவெண்பா has two gates that share one leaf: the strict 13-line வெண்பா, then the looser long ஓசை gate.
+## Venpaa
+
+The வெண்பா gate is four combined conditions. Each leaf hangs off one discriminator node: line count, and for நேரிசை the தனிச்சொல் plus விகற்பம் mark. The long கலிவெண்பா ஓசை gate is separate; other families sit between it and the strict வெண்பா leaves.
+
+![Venpaa](classical-tree-venpaa.svg)
+
+[PNG](classical-tree-venpaa.png)
+
+```mermaid
+%%{init: {"theme": "neutral", "themeVariables": {"fontFamily": "Noto Sans Tamil, Noto Sans, sans-serif", "fontSize": "15px"}, "flowchart": {"wrappingWidth": 420, "padding": 12, "htmlLabels": true, "curve": "linear", "nodeSpacing": 28, "rankSpacing": 36}}}%%
+flowchart TD
+  venpaa["வெண்பா குடும்பம்<br/>ஈறு சிந்தடி; பிற அளவடி<br/>உடல் சீர் மா விளம் காய்<br/>தளை வெண்டளை<br/>ஈற்றுச்சீர் நாள் மலர் காசு பிறப்பு"]
+  venpaa -->|பொருந்தும்| oru_vikarpa_kural_venpaa_disc
+  venpaa -->|இல்லை| next_family["அடுத்த குடும்பம்"]
+  oru_vikarpa_kural_venpaa_disc["இரண்டு அடி<br/>விகற்பம் ஒன்று"]
+  oru_vikarpa_kural_venpaa_leaf["ஒரு விகற்ப குறள் வெண்பா"]
+  oru_vikarpa_kural_venpaa_disc -->|பொருந்தும்| oru_vikarpa_kural_venpaa_leaf
+  oru_vikarpa_kural_venpaa_disc -->|இல்லை| iru_vikarpa_kural_venpaa_disc
+  iru_vikarpa_kural_venpaa_disc["இரண்டு அடி<br/>விகற்பம் இரண்டு அல்லது மேல்"]
+  iru_vikarpa_kural_venpaa_leaf["இரு விகற்ப குறள் வெண்பா"]
+  iru_vikarpa_kural_venpaa_disc -->|பொருந்தும்| iru_vikarpa_kural_venpaa_leaf
+  iru_vikarpa_kural_venpaa_disc -->|இல்லை| nerisai_sinthiyal_venpaa_disc
+  nerisai_sinthiyal_venpaa_disc["மூன்று அடி<br/>தனிச்சொல்<br/>விகற்பம் இரண்டுக்கு மிகாது"]
+  nerisai_sinthiyal_venpaa_leaf["நேரிசை சிந்தியல் வெண்பா"]
+  nerisai_sinthiyal_venpaa_disc -->|பொருந்தும்| nerisai_sinthiyal_venpaa_leaf
+  nerisai_sinthiyal_venpaa_disc -->|இல்லை| oru_vikarpa_nerisai_venpaa_disc
+  oru_vikarpa_nerisai_venpaa_disc["நான்கு அடி<br/>தனிச்சொல்<br/>விகற்பம் ஒன்று"]
+  oru_vikarpa_nerisai_venpaa_leaf["ஒரு விகற்ப நேரிசை வெண்பா"]
+  oru_vikarpa_nerisai_venpaa_disc -->|பொருந்தும்| oru_vikarpa_nerisai_venpaa_leaf
+  oru_vikarpa_nerisai_venpaa_disc -->|இல்லை| iru_vikarpa_nerisai_venpaa_disc
+  iru_vikarpa_nerisai_venpaa_disc["நான்கு அடி<br/>தனிச்சொல்<br/>விகற்பம் இரண்டு"]
+  iru_vikarpa_nerisai_venpaa_leaf["இரு விகற்ப நேரிசை வெண்பா"]
+  iru_vikarpa_nerisai_venpaa_disc -->|பொருந்தும்| iru_vikarpa_nerisai_venpaa_leaf
+  iru_vikarpa_nerisai_venpaa_disc -->|இல்லை| oru_vikarpa_inisai_venpaa_disc
+  oru_vikarpa_inisai_venpaa_disc["நான்கு அடி<br/>விகற்பம் ஒன்று"]
+  oru_vikarpa_inisai_venpaa_leaf["ஒரு விகற்ப இன்னிசை வெண்பா"]
+  oru_vikarpa_inisai_venpaa_disc -->|பொருந்தும்| oru_vikarpa_inisai_venpaa_leaf
+  oru_vikarpa_inisai_venpaa_disc -->|இல்லை| inisai_sinthiyal_venpaa_disc
+  inisai_sinthiyal_venpaa_disc["மூன்று அடி"]
+  inisai_sinthiyal_venpaa_leaf["இன்னிசை சிந்தியல் வெண்பா"]
+  inisai_sinthiyal_venpaa_disc -->|பொருந்தும்| inisai_sinthiyal_venpaa_leaf
+  inisai_sinthiyal_venpaa_disc -->|இல்லை| pala_vikarpa_inisai_venpaa_disc
+  pala_vikarpa_inisai_venpaa_disc["நான்கு அடி"]
+  pala_vikarpa_inisai_venpaa_leaf["பல விகற்ப இன்னிசை வெண்பா"]
+  pala_vikarpa_inisai_venpaa_disc -->|பொருந்தும்| pala_vikarpa_inisai_venpaa_leaf
+  pala_vikarpa_inisai_venpaa_disc -->|இல்லை| paqrodai_venpaa_disc
+  paqrodai_venpaa_disc["5-12 அடி"]
+  paqrodai_venpaa_leaf["பஃறொடை வெண்பா"]
+  paqrodai_venpaa_disc -->|பொருந்தும்| paqrodai_venpaa_leaf
+  paqrodai_venpaa_disc -->|இல்லை| kalivenpaa_strict_disc
+  kalivenpaa_strict_disc["13+ அடி"]
+  kalivenpaa_strict_leaf["கலிவெண்பா"]
+  kalivenpaa_strict_disc -->|பொருந்தும்| kalivenpaa_strict_leaf
+  kalivenpaa_long_osai["கலிவெண்பா ஓசை<br/>13+ அடி<br/>ஈறு சிந்தடி"]
+  kalivenpaa_long_osai_disc["வெண் மேல் 90<br/>கனி இல்லை"]
+  kalivenpaa_long_osai_leaf["கலிவெண்பா"]
+  kalivenpaa_long_osai -->|பொருந்தும்| kalivenpaa_long_osai_disc
+  kalivenpaa_long_osai_disc -->|பொருந்தும்| kalivenpaa_long_osai_leaf
+```
+
+## Aciriyappaa
+
+ஆசிரியப்பா shares eight conditions. The discriminator is where the short line sits. விருத்தம் then splits on சீர் count. தாழிசை and துறை split on line count and line length.
+
+![Aciriyappaa](classical-tree-aciriyappaa.svg)
+
+[PNG](classical-tree-aciriyappaa.png)
+
+```mermaid
+%%{init: {"theme": "neutral", "themeVariables": {"fontFamily": "Noto Sans Tamil, Noto Sans, sans-serif", "fontSize": "15px"}, "flowchart": {"wrappingWidth": 420, "padding": 12, "htmlLabels": true, "curve": "linear", "nodeSpacing": 28, "rankSpacing": 36}}}%%
+flowchart TD
+  aciriyappaa["ஆசிரியப்பா<br/>3+ அடி<br/>இயற்சீர் மேல் 40<br/>ஆசிரியத்தளை மேல் 40<br/>ஈறு ஏ ஓ ஈ ஆய் ஐ என்<br/>விளங்கனி இல்லை<br/>அளவடிக்கு மேல் நீளாது<br/>முதல் ஈறு அளவடி<br/>இடை அடி 2 3 4"]
+  aciriyappaa -->|பொருந்தும்| nilaimandila_aciriyappaa_disc
+  aciriyappaa -->|இல்லை| next_family["அடுத்த குடும்பம்"]
+  nilaimandila_aciriyappaa_disc["குறுகிய அடி இல்லை"]
+  nilaimandila_aciriyappaa_leaf["நிலைமண்டில ஆசிரியப்பா"]
+  nilaimandila_aciriyappaa_disc -->|பொருந்தும்| nilaimandila_aciriyappaa_leaf
+  nilaimandila_aciriyappaa_disc -->|இல்லை| nerisai_aciriyappaa_disc
+  nerisai_aciriyappaa_disc["குறுகிய அடி<br/>ஈற்றயலடி மட்டும்"]
+  nerisai_aciriyappaa_leaf["நேரிசை ஆசிரியப்பா"]
+  nerisai_aciriyappaa_disc -->|பொருந்தும்| nerisai_aciriyappaa_leaf
+  nerisai_aciriyappaa_disc -->|இல்லை| inaikkural_aciriyappaa_disc
+  inaikkural_aciriyappaa_disc["குறுகிய அடி<br/>வேறு இடத்திலும்"]
+  inaikkural_aciriyappaa_leaf["இணைக்குறள் ஆசிரியப்பா"]
+  inaikkural_aciriyappaa_disc -->|பொருந்தும்| inaikkural_aciriyappaa_leaf
+  aciriya_virutham["ஆசிரிய விருத்தம்<br/>4 சம அடி<br/>கழிநெடிலடி<br/>எதுகை"]
+  aciriya_virutham -->|பொருந்தும்| arucir_kazhinediladi_aciriya_virutham_disc
+  aciriya_virutham -->|இல்லை| next_family
+  arucir_kazhinediladi_aciriya_virutham_disc["அறுசீர்"]
+  arucir_kazhinediladi_aciriya_virutham_leaf["அறுசீர் கழிநெடிலடி ஆசிரிய விருத்தம்"]
+  arucir_kazhinediladi_aciriya_virutham_disc -->|பொருந்தும்| arucir_kazhinediladi_aciriya_virutham_leaf
+  arucir_kazhinediladi_aciriya_virutham_disc -->|இல்லை| elucir_kazhinediladi_aciriya_virutham_disc
+  elucir_kazhinediladi_aciriya_virutham_disc["எழுசீர்"]
+  elucir_kazhinediladi_aciriya_virutham_leaf["எழுசீர் கழிநெடிலடி ஆசிரிய விருத்தம்"]
+  elucir_kazhinediladi_aciriya_virutham_disc -->|பொருந்தும்| elucir_kazhinediladi_aciriya_virutham_leaf
+  elucir_kazhinediladi_aciriya_virutham_disc -->|இல்லை| encir_kazhinediladi_aciriya_virutham_disc
+  encir_kazhinediladi_aciriya_virutham_disc["எண்சீர்"]
+  encir_kazhinediladi_aciriya_virutham_leaf["எண்சீர் கழிநெடிலடி ஆசிரிய விருத்தம்"]
+  encir_kazhinediladi_aciriya_virutham_disc -->|பொருந்தும்| encir_kazhinediladi_aciriya_virutham_leaf
+  aciriya_thazhisai["ஆசிரியத் தாழிசை<br/>3 அடி"]
+  aciriya_thazhisai_disc["சம அளவு<br/>குறளடி அல்லது மேல்"]
+  aciriya_thazhisai_leaf["ஆசிரியத் தாழிசை"]
+  aciriya_thazhisai -->|பொருந்தும்| aciriya_thazhisai_disc
+  aciriya_thazhisai_disc -->|பொருந்தும்| aciriya_thazhisai_leaf
+  aciriya_thurai["ஆசிரியத் துறை<br/>4 அடி<br/>ஒரு அடி குறைவு"]
+  aciriya_thurai_disc["நீளம் இல்லை<br/>சம அடி உண்டு"]
+  aciriya_thurai_leaf["ஆசிரியத் துறை"]
+  aciriya_thurai -->|பொருந்தும்| aciriya_thurai_disc
+  aciriya_thurai_disc -->|பொருந்தும்| aciriya_thurai_leaf
+```
+
+## Kalippaa
+
+கட்டளைக்கலித்துறை is the heavy gate: the discriminator is the fifth seer and the ஏ ending. தாழிசை, துறை, and விருத்தம் split on line count and line length.
+
+![Kalippaa](classical-tree-kalippaa.svg)
+
+[PNG](classical-tree-kalippaa.png)
+
+```mermaid
+%%{init: {"theme": "neutral", "themeVariables": {"fontFamily": "Noto Sans Tamil, Noto Sans, sans-serif", "fontSize": "15px"}, "flowchart": {"wrappingWidth": 420, "padding": 12, "htmlLabels": true, "curve": "linear", "nodeSpacing": 28, "rankSpacing": 36}}}%%
+flowchart TD
+  kattalai_kalithurai["கட்டளைக்கலித்துறை<br/>4 நெடிலடி<br/>எதுகை<br/>16/17 எழுத்து<br/>அடிக்குள் வெண்<br/>பிற சீர் விளங்காய் அல்ல"]
+  kattalai_kalithurai_disc["ஐந்தாம் சீர்<br/>ஈறு ஏ"]
+  kattalai_kalithurai_leaf["கட்டளை கலித்துறை"]
+  kattalai_kalithurai -->|பொருந்தும்| kattalai_kalithurai_disc
+  kattalai_kalithurai_disc -->|பொருந்தும்| kattalai_kalithurai_leaf
+  kattalai_kalithurai -->|இல்லை| kattalai_kalippaa
+  kattalai_kalippaa["கட்டளைக்கலிப்பா<br/>8 அரையடி<br/>4 சீர்<br/>11/12 எழுத்து"]
+  kattalai_kalippaa_disc["முதல் தளை ஆசிரியம்<br/>பின் தளை வெண்"]
+  kattalai_kalippaa_leaf["கட்டளை கலிப்பா"]
+  kattalai_kalippaa -->|பொருந்தும்| kattalai_kalippaa_disc
+  kattalai_kalippaa_disc -->|பொருந்தும்| kattalai_kalippaa_leaf
+  kattalai_kalippaa -->|இல்லை| tharavukocha_kalippaa
+  tharavukocha_kalippaa["தரவுகொச்சகக் கலிப்பா<br/>4+ அடி<br/>அளவடி"]
+  tharavukocha_kalippaa_disc["மா விளங்கனி இல்லை<br/>கலி மேல் 40"]
+  tharavukocha_kalippaa_leaf["தரவுகொச்சகக் கலிப்பா"]
+  tharavukocha_kalippaa -->|பொருந்தும்| tharavukocha_kalippaa_disc
+  tharavukocha_kalippaa_disc -->|பொருந்தும்| tharavukocha_kalippaa_leaf
+  tharavukocha_kalippaa -->|இல்லை| venkalippaa
+  venkalippaa["வெண்கலிப்பா<br/>அளவடி மற்றும் சிந்தடி<br/>உடல் மா விளங்கனி இல்லை"]
+  venkalippaa_disc["கலி+வெண் மேல் 50<br/>கலி மேல் 25"]
+  venkalippaa_leaf["வெண்கலிப்பா"]
+  venkalippaa -->|பொருந்தும்| venkalippaa_disc
+  venkalippaa_disc -->|பொருந்தும்| venkalippaa_leaf
+  venkalippaa -->|இல்லை| kalithurai
+  kalithurai["கலித்துறை<br/>4 அடி"]
+  kalithurai_disc["நெடிலடி<br/>எதுகை"]
+  kalithurai_leaf["கலித்துறை"]
+  kalithurai -->|பொருந்தும்| kalithurai_disc
+  kalithurai_disc -->|பொருந்தும்| kalithurai_leaf
+  kalithurai -->|இல்லை| kalivirutham
+  kalivirutham["கலிவிருத்தம்<br/>4 அடி"]
+  kalivirutham_disc["அளவடி<br/>எதுகை"]
+  kalivirutham_leaf["கலிவிருத்தம்"]
+  kalivirutham -->|பொருந்தும்| kalivirutham_disc
+  kalivirutham_disc -->|பொருந்தும்| kalivirutham_leaf
+  kalivirutham -->|இல்லை| kalithazhisai
+  kalithazhisai["கலித்தாழிசை<br/>பல அடி"]
+  kalithazhisai_disc["ஈறு பிற அடியை விட நீளம்"]
+  kalithazhisai_leaf["கலித்தாழிசை"]
+  kalithazhisai -->|பொருந்தும்| kalithazhisai_disc
+  kalithazhisai_disc -->|பொருந்தும்| kalithazhisai_leaf
+```
+
+## Vanjippaa
+
+வஞ்சிப்பா shares the skeleton. குறளடி and சிந்தடி are the discriminator. The பாவினம் leaves split on line count and line length.
+
+![Vanjippaa](classical-tree-vanjippaa.svg)
+
+[PNG](classical-tree-vanjippaa.png)
+
+```mermaid
+%%{init: {"theme": "neutral", "themeVariables": {"fontFamily": "Noto Sans Tamil, Noto Sans, sans-serif", "fontSize": "15px"}, "flowchart": {"wrappingWidth": 420, "padding": 12, "htmlLabels": true, "curve": "linear", "nodeSpacing": 28, "rankSpacing": 36}}}%%
+flowchart TD
+  vanjippaa["வஞ்சிப்பா<br/>வஞ்சி அடி தனிச்சொல் சுரிதகம்<br/>கனி பத்தில் 40<br/>வஞ்சித்தளை மேல் 40<br/>சுரிதக ஆசிரியத்தளை மேல் 40"]
+  vanjippaa -->|பொருந்தும்| kuraladi_vanjippaa_disc
+  kuraladi_vanjippaa_disc["குறளடி"]
+  kuraladi_vanjippaa_leaf["குறளடி வஞ்சிப்பா"]
+  kuraladi_vanjippaa_disc -->|பொருந்தும்| kuraladi_vanjippaa_leaf
+  kuraladi_vanjippaa_disc -->|இல்லை| sinthadi_vanjippaa_disc
+  sinthadi_vanjippaa_disc["சிந்தடி"]
+  sinthadi_vanjippaa_leaf["சிந்தடி வஞ்சிப்பா"]
+  sinthadi_vanjippaa_disc -->|பொருந்தும்| sinthadi_vanjippaa_leaf
+  vanjippaa -->|இல்லை| vanjivirutham
+  vanjivirutham["வஞ்சி விருத்தம்<br/>4 அடி"]
+  vanjivirutham_disc["சிந்தடி<br/>எதுகை"]
+  vanjivirutham_leaf["வஞ்சி விருத்தம்"]
+  vanjivirutham -->|பொருந்தும்| vanjivirutham_disc
+  vanjivirutham_disc -->|பொருந்தும்| vanjivirutham_leaf
+  vanjivirutham -->|இல்லை| vanjithazhisai
+  vanjithazhisai["வஞ்சித்தாழிசை<br/>12 அடி"]
+  vanjithazhisai_disc["குறளடி"]
+  vanjithazhisai_leaf["வஞ்சித்தாழிசை"]
+  vanjithazhisai -->|பொருந்தும்| vanjithazhisai_disc
+  vanjithazhisai_disc -->|பொருந்தும்| vanjithazhisai_leaf
+  vanjithazhisai -->|இல்லை| vanjithurai
+  vanjithurai["வஞ்சித்துறை<br/>4 அடி"]
+  vanjithurai_disc["குறளடி"]
+  vanjithurai_leaf["வஞ்சித்துறை"]
+  vanjithurai -->|பொருந்தும்| vanjithurai_disc
+  vanjithurai_disc -->|பொருந்தும்| vanjithurai_leaf
+```
+
+## Venpaavinam
+
+வெளிவிருத்தம் is separated by one தனிச்சொல் and shared எதுகை. The other leaves are line count plus line length.
+
+![Venpaavinam](classical-tree-venpaavinam.svg)
+
+[PNG](classical-tree-venpaavinam.png)
+
+```mermaid
+%%{init: {"theme": "neutral", "themeVariables": {"fontFamily": "Noto Sans Tamil, Noto Sans, sans-serif", "fontSize": "15px"}, "flowchart": {"wrappingWidth": 420, "padding": 12, "htmlLabels": true, "curve": "linear", "nodeSpacing": 28, "rankSpacing": 36}}}%%
+flowchart TD
+  velivirutham["வெளிவிருத்தம்<br/>3 அல்லது 4 அடி<br/>நெடிலடி"]
+  velivirutham_disc["ஒரே தனிச்சொல்<br/>எதுகை"]
+  velivirutham_leaf["வெளிவிருத்தம்"]
+  velivirutham -->|பொருந்தும்| velivirutham_disc
+  velivirutham_disc -->|பொருந்தும்| velivirutham_leaf
+  velivirutham -->|இல்லை| ventazhisai
+  ventazhisai["வெண்டாழிசை<br/>3 அடி<br/>முதல் அடி அளவடி"]
+  ventazhisai_disc["இரண்டாம் அடி அளவடி<br/>ஈறு சிந்தடி"]
+  ventazhisai_leaf["வெண்டாழிசை"]
+  ventazhisai -->|பொருந்தும்| ventazhisai_disc
+  ventazhisai_disc -->|பொருந்தும்| ventazhisai_leaf
+  ventazhisai -->|இல்லை| kurattazhisai
+  kurattazhisai["குறட்டாழிசை<br/>2 அடி"]
+  kurattazhisai_disc["முதல் அடி 4 சீர் அல்லது மேல்<br/>இரண்டாம் அடி குறைவு"]
+  kurattazhisai_leaf["குறட்டாழிசை"]
+  kurattazhisai -->|பொருந்தும்| kurattazhisai_disc
+  kurattazhisai_disc -->|பொருந்தும்| kurattazhisai_leaf
+  kurattazhisai -->|இல்லை| vellathazhisai
+  vellathazhisai["வெள்ளொத்தாழிசை<br/>9 அடி"]
+  vellathazhisai_disc["மூன்று வெண்பா அடுக்கு"]
+  vellathazhisai_leaf["வெள்ளொத்தாழிசை"]
+  vellathazhisai -->|பொருந்தும்| vellathazhisai_disc
+  vellathazhisai_disc -->|பொருந்தும்| vellathazhisai_leaf
+  vellathazhisai -->|இல்லை| vendurai
+  vendurai["வெண்டுறை<br/>3-7 அடி"]
+  vendurai_disc["ஒரே படி இறக்கம்"]
+  vendurai_leaf["வெண்டுறை"]
+  vendurai -->|பொருந்தும்| vendurai_disc
+  vendurai_disc -->|பொருந்தும்| vendurai_leaf
+  vendurai -->|இல்லை| kural_vensenthurai
+  kural_vensenthurai["குறள் வெண்செந்துறை<br/>2 அடி"]
+  kural_vensenthurai_disc["இரண்டும் சம அளவு"]
+  kural_vensenthurai_leaf["குறள் வெண்செந்துறை"]
+  kural_vensenthurai -->|பொருந்தும்| kural_vensenthurai_disc
+  kural_vensenthurai_disc -->|பொருந்தும்| kural_vensenthurai_leaf
+```
 
 ## Inconsistencies
 
@@ -100,6 +330,7 @@ Site-tuned thresholds:
 - மேற்கதுவாய் is recorded as seers 1, 3, and 4. The site text says 1, 2, 3. It is a note, not a gate.
 - கட்டளைக்கலித்துறை's fifth seer accepts விளங்காய் or the site's rare மாங்கனி and மாந்தண்பூ. The published example's last fifth seer is புளிமாங்கனி.
 - தரவுகொச்சகக் கலிப்பா matches four or more அளவடி. The Tamil success line says நான்கு அளவடிக்கு மேல்.
+- நேரிசை records தனிச்சொல் and விகற்பம் as one mark. Those three leaves therefore have 6 combined conditions and tie with குறள் வெண்பா. Avalokitam rank still tries குறள் first. The line counts do not overlap, so the leaf does not move.
 
 Order-dependent verdicts. Avalokitam walks families first. Strict-first walks condition count first. Where those orders disagree:
 
