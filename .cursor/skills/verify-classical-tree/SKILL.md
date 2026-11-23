@@ -86,4 +86,4 @@ For a TLA+ result, read it with the pstack `/statechart` skill. Do not copy that
 - `tamil-seiyul-alagi/src/classical_tree.rs`: `evaluate_classical_tree` calls `family_walk_gate` for the leaf and calls those routes for the trace. The leaf on each `/types` row is locked by `each_types_example_lands_on_its_leaf`. The harness `classical_tree_does_not_panic_up_to_one_line` is not a finished proof.
 - `tamil-seiyul-alagi/verify/ClassicalTreeWalk.tla` and the two configs. The pass config does not list `EveryLeaf` or `AgreeOnDoubletons`. The Rust test `tla_gate_table_matches_the_rust_facts` checks the gate rows against `GATE_FACTS`.
 
-Sync commit: `935a1bd8840112058278085684b1518e336fd4d4`. Move this forward only after the command above has passed on the commit you name, and the files listed here still describe that commit.
+Sync commit: `76c476174cbc22cd56654b6137435bee872046df`. Move this forward only after the command above has passed on the commit you name, and the files listed here still describe that commit.
