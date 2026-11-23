@@ -40,9 +40,9 @@ pub use linkage::{
     CirAcaiClass, FootPosition, Linkage, LinkageSpecialType, LinkageType, Talai, TalaiType,
 };
 pub use metre::{
-    boost_metre_hypotheses_with_dense, classical_violations_for_metre, detect_metre_hypotheses,
-    dual_compare_label, linkage_coarse_fractions, ml_head, sort_metre_hypotheses_by_score,
-    MetreType,
+    boost_metre_hypotheses_with_dense, classical_violations_for_metre, classify_venpaa_special_type,
+    detect_metre_hypotheses, dual_compare_label, linkage_coarse_fractions, measure_venpaa_subtype_sensors,
+    ml_head, sort_metre_hypotheses_by_score, MetreType, VenpaaSubtypeDecision, VenpaaSubtypeSensors,
 };
 pub use ontology_map::{
     ontology_cir_class_ids, ontology_dual_truth_channel_ids, ontology_issue36_bond_table_len,

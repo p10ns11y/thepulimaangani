@@ -1,5 +1,5 @@
 //! Coarse metre: [`MetreType`], linkage summaries, heuristic [`prediction`], hybrid [`ml_head`],
-//! and [`classical_checker`] (strict rules — placeholder until implemented).
+//! [`classical_checker`] (soft sketches), and Venpaa subtype spike [`venpaa_subtype`].
 //!
 //! See **[`METRE_PREDICTION.md`](../../METRE_PREDICTION.md)** for first principles, second-order effects, and third-order consequences of changes to this stack.
 
@@ -7,11 +7,16 @@ mod classical_checker;
 mod fractions;
 pub mod ml_head;
 mod prediction;
+pub mod venpaa_subtype;
 
 pub use classical_checker::{classical_violations_for_metre, dual_compare_label};
 pub use fractions::linkage_coarse_fractions;
 pub use prediction::{
     boost_metre_hypotheses_with_dense, detect_metre_hypotheses, sort_metre_hypotheses_by_score,
+};
+pub use venpaa_subtype::{
+    classify_venpaa_special_type, classify_venpaa_special_type_from_sensors,
+    measure_venpaa_subtype_sensors, EthukaiKey, VenpaaSubtypeDecision, VenpaaSubtypeSensors,
 };
 
 use schemars::JsonSchema;

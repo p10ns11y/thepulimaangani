@@ -1,3 +1,5 @@
+> **Note (2026-08-02):** Venpaa *vinam* / variation rules here are catalogue SoT for a **future** rule path. The paused spike covers Venpaa **special_type** names only — see [`tamil-seiyul-alagi/VENPAA_SUBTYPE_SPIKE.md`](../../../tamil-seiyul-alagi/VENPAA_SUBTYPE_SPIKE.md). Variations remain stress-only for ML train gold.
+
 # type: குறட்டாழிசை
 
 நண்ணு வார்வினை நைய நாடொறும் நற்ற வர்க்கர சாய ஞானநல்
