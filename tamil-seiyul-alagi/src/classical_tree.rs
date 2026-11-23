@@ -579,7 +579,7 @@ fn try_aciriya_paavinam(view: &PoemView<'_>, path: &mut Vec<ClassicalTreeCheck>)
         path.push(check(
             "aciriya_thurai",
             true,
-            "நான்கு அடி; ஒரு அடி ஈற்றடியை விடக் குறைவு; குறையாத அடி ஈற்றடியின் அளவு.",
+            "நான்கு அடி; ஒரு அடி ஈற்றடியை விடக் குறைவு; நீண்ட அடி இல்லை; குறையாத அடி ஈற்றடியின் அளவு.",
         ));
         return Some(paavinam(
             "aciriya_thurai",
@@ -858,9 +858,11 @@ fn is_aciriya_thurai(counts: &[usize]) -> bool {
     let Some(last) = counts.last().copied() else {
         return false;
     };
-    let shorter = counts.iter().any(|count| *count < last);
-    let peer = counts[..counts.len() - 1].iter().any(|count| *count == last);
-    shorter && peer
+    let earlier = &counts[..counts.len() - 1];
+    let shorter = earlier.iter().any(|count| *count < last);
+    let none_longer = earlier.iter().all(|count| *count <= last);
+    let peer = earlier.iter().any(|count| *count == last);
+    shorter && none_longer && peer
 }
 
 fn is_kattalai_kalippaa(view: &PoemView<'_>, counts: &[usize]) -> bool {
@@ -1432,6 +1434,13 @@ mod tests {
         assert_eq!(result.classical_tree.leaf_id, "tharavukocha_kalippaa");
         assert_eq!(result.classical_tree.label_ta, "தரவுகொச்சகக் கலிப்பா");
         assert_ne!(result.classical_tree.leaf_id, "kalivirutham");
+    }
+
+    #[test]
+    fn aciriya_thurai_rejects_a_line_longer_than_the_last() {
+        assert!(!is_aciriya_thurai(&[5, 2, 4, 4]));
+        assert!(is_aciriya_thurai(&[4, 5, 4, 5]));
+        assert!(!is_aciriya_thurai(&[4, 4, 4, 5]));
     }
 
     #[test]
