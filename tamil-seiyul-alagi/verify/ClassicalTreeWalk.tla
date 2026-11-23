@@ -3,7 +3,10 @@
 \* StrictOrder is more conditions first, then Avalokitam rank.
 \* AvalOrder is Avalokitam rank only.
 \* A gate's pass bit is independent of the others. Real poems exclude many
-\* of those combinations. The overlap set is the over-approximation.
+\* of those combinations. OverlapPairs is that over-approximation.
+\* KnownOrderCounterexample is the one poem that actually disagrees:
+\* four copies of the line with a repeated line-final tanichol.
+\* AllowedShadows are paa-over-paavinam pairs. Both orders return the paa.
 
 EXTENDS Integers, Sequences, FiniteSets, TLC
 
@@ -105,6 +108,27 @@ NamedOverlaps == {
   [strict |-> "kuraladi_vanjippaa", aval |-> "kalivenpaa_long_osai"]
 }
 
+\* The probe poem. Strict-first keeps kattalai. Avalokitam keeps velivirutham.
+KnownOrderCounterexample ==
+  [strict |-> "kattalai_kalithurai", aval |-> "velivirutham"]
+
+\* paa shadows paavinam. Both orders return paa, so these are not counterexamples.
+AllowedShadows == {
+  [paa |-> "oru_vikarpa_kural_venpaa", paavinam |-> "kurattazhisai"],
+  [paa |-> "iru_vikarpa_kural_venpaa", paavinam |-> "kurattazhisai"],
+  [paa |-> "nerisai_sinthiyal_venpaa", paavinam |-> "ventazhisai"],
+  [paa |-> "nerisai_sinthiyal_venpaa", paavinam |-> "vendurai"],
+  [paa |-> "inisai_sinthiyal_venpaa", paavinam |-> "ventazhisai"],
+  [paa |-> "inisai_sinthiyal_venpaa", paavinam |-> "vendurai"],
+  [paa |-> "tharavukocha_kalippaa", paavinam |-> "kalivirutham"],
+  [paa |-> "nilaimandila_aciriyappaa", paavinam |-> "aciriya_thurai"],
+  [paa |-> "nilaimandila_aciriyappaa", paavinam |-> "aciriya_thazhisai"],
+  [paa |-> "nerisai_aciriyappaa", paavinam |-> "aciriya_thurai"],
+  [paa |-> "nerisai_aciriyappaa", paavinam |-> "aciriya_thazhisai"],
+  [paa |-> "inaikkural_aciriyappaa", paavinam |-> "aciriya_thurai"],
+  [paa |-> "inaikkural_aciriyappaa", paavinam |-> "aciriya_thazhisai"]
+}
+
 EveryLeaf ==
   \A index \in DOMAIN Gates :
     /\ First(StrictOrder, {Gates[index].id}) = Gates[index].id
@@ -113,6 +137,19 @@ EveryLeaf ==
 NamedAreOverlaps == NamedOverlaps \subseteq OverlapPairs
 
 OverlapCount == Cardinality(OverlapPairs) = ExpectedOverlapCount
+
+KnownProbeDisagrees ==
+  /\ KnownOrderCounterexample \in OverlapPairs
+  /\ First(StrictOrder, {"kattalai_kalithurai", "velivirutham"}) = "kattalai_kalithurai"
+  /\ First(AvalOrder, {"kattalai_kalithurai", "velivirutham"}) = "velivirutham"
+
+AllowedShadowsAgree ==
+  /\ Cardinality(AllowedShadows) = 13
+  /\ \A shadow \in AllowedShadows :
+      LET passing == {shadow.paa, shadow.paavinam}
+      IN /\ First(StrictOrder, passing) = shadow.paa
+         /\ First(AvalOrder, passing) = shadow.paa
+         /\ [strict |-> shadow.paa, aval |-> shadow.paavinam] \notin OverlapPairs
 
 \* If the two winners differ, that winner pair is one of the overlap pairs.
 AgreeOnDoubletons ==
@@ -131,6 +168,8 @@ AlwaysAgree ==
 
 ASSUME PrintT(<<"overlap_count", Cardinality(OverlapPairs)>>)
 ASSUME PrintT(<<"named_overlaps", NamedOverlaps>>)
+ASSUME PrintT(<<"known_order_counterexample", KnownOrderCounterexample>>)
+ASSUME PrintT(<<"allowed_shadows", Cardinality(AllowedShadows)>>)
 
 VARIABLES phase, strictGate, avalGate
 
@@ -138,16 +177,16 @@ vars == <<phase, strictGate, avalGate>>
 
 Init == phase = "ready" /\ strictGate = "none" /\ avalGate = "none"
 
-PickDisagreement ==
-  \E left \in DOMAIN Gates, right \in DOMAIN Gates :
-    /\ left < right
-    /\ LET passing == {Gates[left].id, Gates[right].id}
-           strictGateId == First(StrictOrder, passing)
-           avalGateId == First(AvalOrder, passing)
-       IN /\ strictGateId # avalGateId
-          /\ phase' = "done"
-          /\ strictGate' = strictGateId
-          /\ avalGate' = avalGateId
+\* The counterexample config must show the probe, not an abstract pair.
+PickKnownProbe ==
+  LET passing == {"kattalai_kalithurai", "velivirutham"}
+      strictGateId == First(StrictOrder, passing)
+      avalGateId == First(AvalOrder, passing)
+  IN /\ strictGateId = "kattalai_kalithurai"
+     /\ avalGateId = "velivirutham"
+     /\ phase' = "done"
+     /\ strictGate' = strictGateId
+     /\ avalGate' = avalGateId
 
 PassStep ==
   \/ /\ phase = "ready"
@@ -158,7 +197,7 @@ PassStep ==
 
 CounterStep ==
   \/ /\ phase = "ready"
-     /\ PickDisagreement
+     /\ PickKnownProbe
   \/ /\ phase = "done"
      /\ UNCHANGED vars
 

@@ -28,16 +28,22 @@ fi
 echo "TLC ${tla_version}: every leaf, named overlaps, agreement when a doubleton is not an overlap"
 java -jar "${jar}" -workers 1 -config "${spec_dir}/ClassicalTreeWalk.cfg" "${spec_dir}/ClassicalTreeWalk.tla"
 
-echo "TLC ${tla_version}: unconditional agreement must fail and name one overlap pair"
+echo "TLC ${tla_version}: unconditional agreement must fail on the repeated-tanichol probe"
+counter_log="${cache}/tlc-known-probe.log"
 set +e
-java -jar "${jar}" -workers 1 -config "${spec_dir}/ClassicalTreeWalkCounter.cfg" "${spec_dir}/ClassicalTreeWalk.tla"
+java -jar "${jar}" -workers 1 -config "${spec_dir}/ClassicalTreeWalkCounter.cfg" "${spec_dir}/ClassicalTreeWalk.tla" >"${counter_log}" 2>&1
 counter_status=$?
 set -e
+cat "${counter_log}"
 if [[ "${counter_status}" -eq 0 ]]; then
-  echo "unconditional agreement passed; the overlap counterexample disappeared" >&2
+  echo "unconditional agreement passed; the probe counterexample disappeared" >&2
   exit 1
 fi
-echo "unconditional agreement failed, as required (exit ${counter_status})"
+if ! grep -q 'kattalai_kalithurai' "${counter_log}" || ! grep -q 'velivirutham' "${counter_log}"; then
+  echo "counterexample did not name kattalai_kalithurai against velivirutham" >&2
+  exit 1
+fi
+echo "unconditional agreement failed on the probe, as required (exit ${counter_status})"
 
 if ! command -v cargo-kani >/dev/null && ! cargo kani --version >/dev/null 2>&1; then
   if ! rustup toolchain list | grep -q '^1.88.0'; then

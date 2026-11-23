@@ -342,8 +342,16 @@ Each inconsistency is a named route in `tamil-seiyul-alagi/src/classical_decisio
 | தரவுகொச்சகம் is four or more அளவடி | `TharavuAlavadiRoute::FourOrMore` | treatise |
 | நேரிசை stays one mark and ties with குறள் | `NerisaiTieRoute::CombinedMarkAvalokitamRank` | site |
 | Strict-first, Avalokitam rank on a tie | `WalkOrderRoute::StrictFirstAvalokitamTie` | site |
+| Repeated line-final தனிச்சொல் on the four-line probe | `RepeatedTanicholRoute::KeepStrictFirstKattalai` | site |
+| கலிவெண்பா strict versus long ஓசை, same leaf id | `decision.kalivenpaa_route` names the gate | site |
 
-The four order pairs that can disagree are recorded as `decision.order.kattalai_kalithurai_velivirutham`, `decision.order.aciriyappaa_kural_venpaa`, `decision.order.kattalai_kalippaa_tharavu`, and `decision.order.vanjippaa_kalivenpaa_osai`.
+The four abstract order pairs are recorded as `decision.order.kattalai_kalithurai_velivirutham`, `decision.order.aciriyappaa_kural_venpaa`, `decision.order.kattalai_kalippaa_tharavu`, and `decision.order.vanjippaa_kalivenpaa_osai`.
+
+Owner decision: four copies of `கனந்தரும் பூங்குழ லாளபி ராமி - கடைக்கண்களே` are strict-first கட்டளைக்கலித்துறை and Avalokitam வெளிவிருத்தம். The route in force keeps கட்டளைக்கலித்துறை. `RejectRepeatedLineFinalTanichol` and `VenpaaVinamBeforeKalippaaVinam` are named and not chosen; either one would move that leaf to வெளிவிருத்தம். The trace step is `decision.repeated_tanichol`.
+
+பா over பாவினம் is an allowed overlap. Both orders return the பா: குறள் வெண்பா over குறட்டாழிசை, சிந்தியல் over வெண்டாழிசை and வெண்டுறை, தரவு over கலிவிருத்தம், ஆசிரியப்பா over துறை and தாழிசை. Those pairs are not order counterexamples.
+
+`kalivenpaa_strict` and `kalivenpaa_long_osai` both report leaf id `kalivenpaa`. `decision.kalivenpaa_route` names which gate won.
 
 ## Inconsistencies
 
@@ -361,7 +369,7 @@ Site-tuned thresholds:
 
 Order-dependent verdicts. Avalokitam walks families first. Strict-first walks condition count first. Where those orders disagree:
 
-- கட்டளைக்கலித்துறை (8) is before வெளிவிருத்தம் (4). Avalokitam checks வெளிவிருத்தம் first. A four-line நெடிலடி poem that also has the letter count, inner வெண்டளை, fifth seer, and ஏ ending changes from வெளிவிருத்தம் to கட்டளைக்கலித்துறை. The `/types` examples do not combine those conditions.
+- கட்டளைக்கலித்துறை (8) is before வெளிவிருத்தம் (4). Avalokitam checks வெளிவிருத்தம் first. Four copies of `கனந்தரும் பூங்குழ லாளபி ராமி - கடைக்கண்களே` (4 நெடிலடி, எதுகை, repeated line-final தனிச்சொல்) are the one poem that takes both gates. Strict-first returns கட்டளைக்கலித்துறை. Avalokitam returns வெளிவிருத்தம். The chosen route keeps கட்டளைக்கலித்துறை. The `/types` rows do not include this probe.
 - ஆசிரியப்பா (9) is before வெண்பா. A குறள் still fails ஆசிரியப்பா because the last line is சிந்தடி, so the leaf stays குறள் வெண்பா.
 - கட்டளைக்கலிப்பா (5) is before தரவுகொச்சகக் கலிப்பா (4). The published கட்டளை example has no கலித்தளை above 40, so தரவு fails and the leaf stays.
 - வஞ்சிப்பா (5) is before the long கலிவெண்பா ஓசை gate (4). The published கலிவெண்பா has no வஞ்சி skeleton, so the leaf stays.

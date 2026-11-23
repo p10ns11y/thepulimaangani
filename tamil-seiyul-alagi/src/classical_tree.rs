@@ -10,11 +10,13 @@ use unicode_segmentation::UnicodeSegmentation;
 
 pub use crate::classical_decision::ALAVADI_SEER_COUNT;
 use crate::classical_decision::{
-    alavadi_word_message, fifth_seer_message, fifth_seer_pattern_allowed, merkathuvai_seat_message,
-    merkathuvai_seat_positions, nerisai_tie_message, share_passes, share_route_message,
-    tharavu_alavadi_message, tharavu_line_count_passes, walk_order_message, FifthSeerRoute,
-    AVALOKITAM_WALK_ORDER, GATE_FACTS, KANI_TENTH_40, KATTALAI_FIFTH_SEER_ROUTE,
-    MERKATHUVAI_SEAT_ROUTE, NAMED_ORDER_OVERLAPS, SHARE_DECISIONS, SHARE_STRICT_25,
+    alavadi_word_message, fifth_seer_message, fifth_seer_pattern_allowed,
+    kalivenpaa_route_for_gate, kalivenpaa_route_message, merkathuvai_seat_message,
+    merkathuvai_seat_positions, nerisai_tie_message, repeated_tanichol_keeps_kattalai,
+    repeated_tanichol_message, share_passes, share_route_message, tharavu_alavadi_message,
+    tharavu_line_count_passes, walk_order_message, FifthSeerRoute, AVALOKITAM_WALK_ORDER,
+    GATE_FACTS, KANI_TENTH_40, KATTALAI_FIFTH_SEER_ROUTE, MERKATHUVAI_SEAT_ROUTE,
+    NAMED_ORDER_OVERLAPS, REPEATED_TANICHOL_ROUTE, SHARE_DECISIONS, SHARE_STRICT_25,
     SHARE_STRICT_40, SHARE_STRICT_50, SHARE_STRICT_90, THARAVU_ALAVADI_ROUTE, WALK_ORDER_ROUTE,
 };
 use crate::classical_rules::venpaa_ending_seer_name;
@@ -145,6 +147,7 @@ pub fn evaluate_classical_tree(
             index += 1;
         }
     }
+    fitted = leaf_after_repeated_tanichol_route(fitted, &view);
     if fitted.is_none() {
         path.push(check("no_rule_fitted", false, "எந்த விதியும் பொருந்தவில்லை."));
     } else if let Some(note) = merkathuvai_note(view.lines) {
@@ -178,6 +181,21 @@ fn append_decision_routes(path: &mut Vec<ClassicalTreeCheck>) {
     path.push(route_step("decision.nerisai_tie", &nerisai_tie));
     path.push(route_step("decision.alavadi_word", &alavadi_word));
     path.push(route_step("decision.merkathuvai_seats", &merkathuvai_seats));
+    let repeated_tanichol = repeated_tanichol_message();
+    path.push(route_step("decision.repeated_tanichol", &repeated_tanichol));
+    let winning_gate = path.iter().rev().find_map(|step| {
+        if step.passed && step.rule_id.ends_with(".discriminator") {
+            Some(step.rule_id.trim_end_matches(".discriminator").to_string())
+        } else {
+            None
+        }
+    });
+    if let Some(gate_id) = winning_gate.as_deref() {
+        if let Some(route) = kalivenpaa_route_for_gate(gate_id) {
+            let kalivenpaa_route = kalivenpaa_route_message(route);
+            path.push(route_step("decision.kalivenpaa_route", &kalivenpaa_route));
+        }
+    }
     for overlap in NAMED_ORDER_OVERLAPS {
         path.push(route_step(
             &format!("decision.order.{}", overlap.id),
@@ -342,7 +360,7 @@ fn gates_sorted(strict_first: bool) -> Vec<GateSpec> {
 
 #[cfg(test)]
 fn matching_leaf(view: &PoemView<'_>, strict_first: bool) -> Option<Leaf> {
-    gates_sorted(strict_first).into_iter().find_map(|gate| {
+    let fitted = gates_sorted(strict_first).into_iter().find_map(|gate| {
         let passed = assess(gate.id, view)
             .iter()
             .all(|condition| condition.passed);
@@ -351,7 +369,8 @@ fn matching_leaf(view: &PoemView<'_>, strict_first: bool) -> Option<Leaf> {
         } else {
             None
         }
-    })
+    });
+    leaf_after_repeated_tanichol_route(fitted, view)
 }
 
 const GATES: [GateSpec; 37] = [
@@ -1947,6 +1966,35 @@ fn etukai_tanichol(source: &str, lines: &[Line]) -> Option<String> {
     })
 }
 
+fn line_final_tanichol_repeats(source: &str) -> bool {
+    let tokens = tanichol_tokens(source);
+    tokens.len() >= 2 && tokens.iter().all(|token| token == &tokens[0])
+}
+
+/// The chosen route keeps கட்டளைக்கலித்துறை. The unchosen routes move the
+/// probe to வெளிவிருத்தம் only when that gate also passes.
+fn leaf_after_repeated_tanichol_route(fitted: Option<Leaf>, view: &PoemView<'_>) -> Option<Leaf> {
+    let Some(leaf) = fitted else {
+        return None;
+    };
+    if leaf.id != "kattalai_kalithurai" || !line_final_tanichol_repeats(view.source) {
+        return Some(leaf);
+    }
+    if repeated_tanichol_keeps_kattalai(REPEATED_TANICHOL_ROUTE) {
+        return Some(leaf);
+    }
+    let velivirutham_passes = assess("velivirutham", view)
+        .iter()
+        .all(|condition| condition.passed);
+    if !velivirutham_passes {
+        return Some(leaf);
+    }
+    GATES
+        .iter()
+        .find(|gate| gate.id == "velivirutham")
+        .map(|gate| gate.leaf)
+}
+
 fn tanichol_tokens(source: &str) -> Vec<String> {
     source
         .lines()
@@ -2391,12 +2439,16 @@ mod tests {
     }
 
     #[test]
-    fn kattalai_kalithurai_wins_when_velivirutham_also_matches() {
-        let line = "கனந்தரும் பூங்குழ லாளபி ராமி - கடைக்கண்களே";
-        let poem = [line; 4].join("\n");
+    fn repeated_tanichol_probe_keeps_kattalai_under_the_chosen_route() {
+        use crate::classical_decision::{
+            repeated_tanichol_keeps_kattalai, DecisionSource, RepeatedTanicholRoute,
+            REPEATED_TANICHOL_PROBE_LINE, REPEATED_TANICHOL_ROUTE,
+        };
+        let poem = [REPEATED_TANICHOL_PROBE_LINE; 4].join("\n");
         let result = parse_poem(&poem, options_without_ml()).expect("parse");
         assert_eq!(content_seer_counts(&result.lines), vec![5, 5, 5, 5]);
         let view = poem_view(&result.normalized_text, &result.lines, &result.linkage);
+        assert!(line_final_tanichol_repeats(&result.normalized_text));
         assert!(assess("kattalai_kalithurai", &view)
             .iter()
             .all(|condition| condition.passed));
@@ -2411,8 +2463,28 @@ mod tests {
             matching_leaf(&view, true).expect("strict").id,
             "kattalai_kalithurai"
         );
+        assert!(repeated_tanichol_keeps_kattalai(REPEATED_TANICHOL_ROUTE));
+        assert!(!repeated_tanichol_keeps_kattalai(
+            RepeatedTanicholRoute::RejectRepeatedLineFinalTanichol {
+                source: DecisionSource::Site,
+            }
+        ));
+        assert!(!repeated_tanichol_keeps_kattalai(
+            RepeatedTanicholRoute::VenpaaVinamBeforeKalippaaVinam {
+                source: DecisionSource::Site,
+            }
+        ));
         assert_eq!(result.classical_tree.leaf_id, "kattalai_kalithurai");
         assert_eq!(result.classical_tree.label_ta, "கட்டளை கலித்துறை");
+        let route = result
+            .classical_tree
+            .path
+            .iter()
+            .find(|step| step.rule_id == "decision.repeated_tanichol")
+            .expect("route");
+        assert!(route.message_ta.contains("keep_strict_first"));
+        assert!(route.message_ta.contains("velivirutham"));
+        assert!(route.message_ta.contains("not chosen"));
     }
 
     fn variation_row(sample_id: &str) -> crate::poem_variations::PoemVariationRow {
@@ -2481,6 +2553,23 @@ mod tests {
             "kalivenpaa"
         );
         assert_eq!(matching_leaf(&view, true).expect("strict").id, "kalivenpaa");
+        let winner = result
+            .classical_tree
+            .path
+            .iter()
+            .rev()
+            .find(|step| step.passed && step.rule_id.ends_with(".discriminator"))
+            .expect("winner");
+        let winner_gate = winner.rule_id.trim_end_matches(".discriminator");
+        let route = result
+            .classical_tree
+            .path
+            .iter()
+            .find(|step| step.rule_id == "decision.kalivenpaa_route")
+            .expect("kalivenpaa route");
+        assert!(route.message_ta.contains(winner_gate));
+        assert!(route.message_ta.contains("leaf_id kalivenpaa"));
+        assert_ne!(winner_gate, "kalivenpaa");
     }
 
     #[test]
@@ -2707,6 +2796,42 @@ mod tests {
     }
 
     #[test]
+    fn allowed_paa_shadows_agree_under_both_orders() {
+        use crate::classical_decision::{
+            first_matching_gate, gate_index, minimal_overlap_pairs, ALLOWED_PAA_SHADOWS,
+            AVALOKITAM_WALK_ORDER, GATE_COUNT, WALK_ORDER_ROUTE,
+        };
+        let disagreements = minimal_overlap_pairs();
+        assert_eq!(ALLOWED_PAA_SHADOWS.len(), 13);
+        for shadow in ALLOWED_PAA_SHADOWS {
+            let paa_index = gate_index(shadow.paa_gate).expect(shadow.paa_gate);
+            let paavinam_index = gate_index(shadow.paavinam_gate).expect(shadow.paavinam_gate);
+            let mut passes = [false; GATE_COUNT];
+            passes[paa_index] = true;
+            passes[paavinam_index] = true;
+            assert_eq!(
+                first_matching_gate(&passes, WALK_ORDER_ROUTE).map(|index| GATE_FACTS[index].id),
+                Some(shadow.paa_gate),
+                "{}",
+                shadow.id
+            );
+            assert_eq!(
+                first_matching_gate(&passes, AVALOKITAM_WALK_ORDER)
+                    .map(|index| GATE_FACTS[index].id),
+                Some(shadow.paa_gate),
+                "{}",
+                shadow.id
+            );
+            assert!(
+                !disagreements.contains(&(paa_index, paavinam_index))
+                    && !disagreements.contains(&(paavinam_index, paa_index)),
+                "{}",
+                shadow.id
+            );
+        }
+    }
+
+    #[test]
     fn every_gate_is_reachable_when_it_alone_passes() {
         use crate::classical_decision::{family_walk_gate, first_matching_gate, GATE_COUNT};
         for index in 0..GATE_COUNT {
@@ -2783,6 +2908,7 @@ mod tests {
             "decision.order.aciriyappaa_kural_venpaa",
             "decision.order.kattalai_kalippaa_tharavu",
             "decision.order.vanjippaa_kalivenpaa_osai",
+            "decision.repeated_tanichol",
             "decision.share.iyar_cir",
             "decision.share.aciriya_talai",
         ] {
@@ -2888,6 +3014,21 @@ mod tests {
             assert_eq!(fact.condition_count, *count);
         }
         assert!(spec.contains("ExpectedOverlapCount == 142"));
+        assert!(spec.contains("KnownOrderCounterexample"));
+        assert!(spec.contains("kattalai_kalithurai"));
+        assert!(spec.contains("velivirutham"));
+        for shadow in crate::classical_decision::ALLOWED_PAA_SHADOWS {
+            assert!(
+                spec.contains(&format!("paa |-> \"{}\"", shadow.paa_gate)),
+                "{}",
+                shadow.id
+            );
+            assert!(
+                spec.contains(&format!("paavinam |-> \"{}\"", shadow.paavinam_gate)),
+                "{}",
+                shadow.id
+            );
+        }
     }
 }
 

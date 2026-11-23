@@ -266,7 +266,8 @@ pub struct OrderOverlap {
 }
 
 /// The four order differences called out on the tree. The product walk keeps
-/// the strict gate when both pass.
+/// the strict gate when both pass. Only `kattalai_kalithurai_velivirutham`
+/// is reached by a real poem; see `REPEATED_TANICHOL_ROUTE`.
 pub const NAMED_ORDER_OVERLAPS: [OrderOverlap; 4] = [
     OrderOverlap {
         id: "kattalai_kalithurai_velivirutham",
@@ -289,6 +290,168 @@ pub const NAMED_ORDER_OVERLAPS: [OrderOverlap; 4] = [
         avalokitam_gate: "kalivenpaa_long_osai",
     },
 ];
+
+/// Four நெடிலடி lines, shared எதுகை, and the same line-final தனிச்சொல்.
+/// The probe is four copies of
+/// `கனந்தரும் பூங்குழ லாளபி ராமி - கடைக்கண்களே`.
+/// Strict-first returns கட்டளைக்கலித்துறை. Avalokitam returns வெளிவிருத்தம்.
+/// The constant is the owner decision. The leaf stays கட்டளைக்கலித்துறை.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum RepeatedTanicholRoute {
+    /// Product walk. The probe stays கட்டளைக்கலித்துறை.
+    KeepStrictFirstKattalai { source: DecisionSource },
+    /// கட்டளை would fail when the line-final தனிச்சொல் repeats.
+    /// The probe would fall through to வெளிவிருத்தம். Not chosen.
+    #[allow(dead_code)]
+    RejectRepeatedLineFinalTanichol { source: DecisionSource },
+    /// வெண்பாவினம் would be tried before கலிப்பாவினம் for this pair.
+    /// The probe would land on வெளிவிருத்தம். Not chosen.
+    #[allow(dead_code)]
+    VenpaaVinamBeforeKalippaaVinam { source: DecisionSource },
+}
+
+pub const REPEATED_TANICHOL_ROUTE: RepeatedTanicholRoute =
+    RepeatedTanicholRoute::KeepStrictFirstKattalai {
+        source: DecisionSource::Site,
+    };
+
+pub const REPEATED_TANICHOL_PROBE_LINE: &str = "கனந்தரும் பூங்குழ லாளபி ராமி - கடைக்கண்களே";
+
+/// `true` keeps the strict-first leaf. The two unchosen routes return `false`
+/// and the probe would become வெளிவிருத்தம்.
+pub fn repeated_tanichol_keeps_kattalai(route: RepeatedTanicholRoute) -> bool {
+    match route {
+        RepeatedTanicholRoute::KeepStrictFirstKattalai { .. } => true,
+        RepeatedTanicholRoute::RejectRepeatedLineFinalTanichol { .. }
+        | RepeatedTanicholRoute::VenpaaVinamBeforeKalippaaVinam { .. } => false,
+    }
+}
+
+pub fn repeated_tanichol_message() -> String {
+    match REPEATED_TANICHOL_ROUTE {
+        RepeatedTanicholRoute::KeepStrictFirstKattalai { source } => format!(
+            "keep_strict_first; probe kattalai_kalithurai vs velivirutham; reject_repeated_tanichol not chosen; venpaa_vinam_before_kalippaa_vinam not chosen; மூலம் {}",
+            source.label()
+        ),
+        RepeatedTanicholRoute::RejectRepeatedLineFinalTanichol { source } => format!(
+            "reject_repeated_tanichol; probe would be velivirutham; மூலம் {}",
+            source.label()
+        ),
+        RepeatedTanicholRoute::VenpaaVinamBeforeKalippaaVinam { source } => format!(
+            "venpaa_vinam_before_kalippaa_vinam; probe would be velivirutham; மூலம் {}",
+            source.label()
+        ),
+    }
+}
+
+/// பா shadows its பாவினம். Both orders return the பா, so the pair is not an
+/// order counterexample. The shadow is the classical reading.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct AllowedPaaShadow {
+    pub id: &'static str,
+    pub paa_gate: &'static str,
+    pub paavinam_gate: &'static str,
+}
+
+pub const ALLOWED_PAA_SHADOWS: [AllowedPaaShadow; 13] = [
+    AllowedPaaShadow {
+        id: "oru_kural_kurattazhisai",
+        paa_gate: "oru_vikarpa_kural_venpaa",
+        paavinam_gate: "kurattazhisai",
+    },
+    AllowedPaaShadow {
+        id: "iru_kural_kurattazhisai",
+        paa_gate: "iru_vikarpa_kural_venpaa",
+        paavinam_gate: "kurattazhisai",
+    },
+    AllowedPaaShadow {
+        id: "nerisai_sinthiyal_ventazhisai",
+        paa_gate: "nerisai_sinthiyal_venpaa",
+        paavinam_gate: "ventazhisai",
+    },
+    AllowedPaaShadow {
+        id: "nerisai_sinthiyal_vendurai",
+        paa_gate: "nerisai_sinthiyal_venpaa",
+        paavinam_gate: "vendurai",
+    },
+    AllowedPaaShadow {
+        id: "inisai_sinthiyal_ventazhisai",
+        paa_gate: "inisai_sinthiyal_venpaa",
+        paavinam_gate: "ventazhisai",
+    },
+    AllowedPaaShadow {
+        id: "inisai_sinthiyal_vendurai",
+        paa_gate: "inisai_sinthiyal_venpaa",
+        paavinam_gate: "vendurai",
+    },
+    AllowedPaaShadow {
+        id: "tharavu_kalivirutham",
+        paa_gate: "tharavukocha_kalippaa",
+        paavinam_gate: "kalivirutham",
+    },
+    AllowedPaaShadow {
+        id: "nilaimandila_aciriya_thurai",
+        paa_gate: "nilaimandila_aciriyappaa",
+        paavinam_gate: "aciriya_thurai",
+    },
+    AllowedPaaShadow {
+        id: "nilaimandila_aciriya_thazhisai",
+        paa_gate: "nilaimandila_aciriyappaa",
+        paavinam_gate: "aciriya_thazhisai",
+    },
+    AllowedPaaShadow {
+        id: "nerisai_aciriya_thurai",
+        paa_gate: "nerisai_aciriyappaa",
+        paavinam_gate: "aciriya_thurai",
+    },
+    AllowedPaaShadow {
+        id: "nerisai_aciriya_thazhisai",
+        paa_gate: "nerisai_aciriyappaa",
+        paavinam_gate: "aciriya_thazhisai",
+    },
+    AllowedPaaShadow {
+        id: "inaikkural_aciriya_thurai",
+        paa_gate: "inaikkural_aciriyappaa",
+        paavinam_gate: "aciriya_thurai",
+    },
+    AllowedPaaShadow {
+        id: "inaikkural_aciriya_thazhisai",
+        paa_gate: "inaikkural_aciriyappaa",
+        paavinam_gate: "aciriya_thazhisai",
+    },
+];
+
+/// The two கலிவெண்பா gates share `leaf_id` `kalivenpaa`. The trace names the gate.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum KalivenpaaRoute {
+    StrictLineCount { source: DecisionSource },
+    LongOsai { source: DecisionSource },
+}
+
+pub fn kalivenpaa_route_for_gate(gate_id: &str) -> Option<KalivenpaaRoute> {
+    match gate_id {
+        "kalivenpaa_strict" => Some(KalivenpaaRoute::StrictLineCount {
+            source: DecisionSource::Site,
+        }),
+        "kalivenpaa_long_osai" => Some(KalivenpaaRoute::LongOsai {
+            source: DecisionSource::Site,
+        }),
+        _ => None,
+    }
+}
+
+pub fn kalivenpaa_route_message(route: KalivenpaaRoute) -> String {
+    match route {
+        KalivenpaaRoute::StrictLineCount { source } => format!(
+            "gate kalivenpaa_strict; leaf_id kalivenpaa; மூலம் {}",
+            source.label()
+        ),
+        KalivenpaaRoute::LongOsai { source } => format!(
+            "gate kalivenpaa_long_osai; leaf_id kalivenpaa; மூலம் {}",
+            source.label()
+        ),
+    }
+}
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct FifthSeerPattern {

@@ -3873,6 +3873,11 @@
         "message_ta": "seers_1_3_4; மூலம் treatise; site_1_2_3 தவிர்க்கப்பட்டது"
       },
       {
+        "rule_id": "decision.repeated_tanichol",
+        "passed": true,
+        "message_ta": "keep_strict_first; probe kattalai_kalithurai vs velivirutham; reject_repeated_tanichol not chosen; venpaa_vinam_before_kalippaa_vinam not chosen; மூலம் site"
+      },
+      {
         "rule_id": "decision.order.kattalai_kalithurai_velivirutham",
         "passed": true,
         "message_ta": "strict_first keeps kattalai_kalithurai; avalokitam would keep velivirutham"
