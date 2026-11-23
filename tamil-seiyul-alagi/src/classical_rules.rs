@@ -9,7 +9,6 @@ use crate::syllable::SyllableType;
 use crate::types::{ClassicalRuleFinding, ClassicalRulesReport, Line};
 use crate::Foot;
 
-const VALLINAM: [char; 6] = ['க', 'ச', 'ட', 'த', 'ப', 'ற'];
 const KURIL_U_SIGN: char = '\u{0BC1}';
 
 /// Venpaa rule findings plus whether they agree with the ML verdict.
@@ -132,7 +131,7 @@ fn ven_talai_rule(lines: &[Line], linkage: &[Linkage]) -> ClassicalRuleFinding {
 }
 
 fn adi_shape_rule(lines: &[Line]) -> ClassicalRuleFinding {
-    if lines.is_empty() {
+    if lines.len() < 2 {
         return finding(
             "venpaa_adi_shape",
             false,
@@ -160,40 +159,35 @@ fn adi_shape_rule(lines: &[Line]) -> ClassicalRuleFinding {
     )
 }
 
-/// Word-final short உ after vallinam (க் ச் ட் த் ப் ற்) is குற்றியலுகரம்.
-fn ends_with_kurriyalugaram(text: &str) -> bool {
-    let mut chars = text.chars().rev();
-    match (chars.next(), chars.next()) {
-        (Some(vowel_sign), Some(consonant)) => {
-            vowel_sign == KURIL_U_SIGN && VALLINAM.contains(&consonant)
+/// Exactly two characters: one Tamil consonant plus the short-உ sign (ு).
+fn is_single_consonant_kuril_u(text: &str) -> bool {
+    let mut chars = text.chars();
+    match (chars.next(), chars.next(), chars.next()) {
+        (Some(consonant), Some(vowel_sign), None) => {
+            vowel_sign == KURIL_U_SIGN && ('\u{0B95}'..='\u{0BB9}').contains(&consonant)
         }
         _ => false,
     }
 }
 
-/// நாள் / மலர் are full one-acai endings. காசு is நேர்பு and பிறப்பு is நிரைபு
-/// when the closing syllable is குற்றியலுகரம்.
+/// நாள் / மலர் are a single asai. காசு (நேர்பு) and பிறப்பு (நிரைபு) need exactly two asai,
+/// with the last asai நேர் whose text is one consonant plus ு. Any other shape fails.
 pub fn venpaa_ending_seer_name(foot: &Foot) -> Option<&'static str> {
-    let syllables = foot.syllables.as_slice();
-    let last = syllables.last()?;
-    if ends_with_kurriyalugaram(&last.text) {
-        let host_acai = if syllables.len() >= 2 {
-            syllables[syllables.len() - 2].syllable_type
-        } else {
-            last.syllable_type
-        };
-        return match host_acai {
-            SyllableType::Ner => Some("காசு"),
-            SyllableType::Nirai => Some("பிறப்பு"),
-        };
-    }
-    if syllables.len() == 1 {
-        return match last.syllable_type {
+    match foot.syllables.as_slice() {
+        [only] => match only.syllable_type {
             SyllableType::Ner => Some("நாள்"),
             SyllableType::Nirai => Some("மலர்"),
-        };
+        },
+        [first, last]
+            if last.syllable_type == SyllableType::Ner && is_single_consonant_kuril_u(&last.text) =>
+        {
+            match first.syllable_type {
+                SyllableType::Ner => Some("காசு"),
+                SyllableType::Nirai => Some("பிறப்பு"),
+            }
+        }
+        _ => None,
     }
-    None
 }
 
 fn ending_handle(name: &str) -> &'static str {
@@ -309,6 +303,36 @@ mod tests {
             ])),
             None
         );
+    }
+
+    fn ending_name_of_single_word(word: &str) -> Option<&'static str> {
+        let mut options = product_options();
+        options.no_detect = true;
+        let result = parse_poem(word, options).expect("parse");
+        let foot = result
+            .lines
+            .first()
+            .and_then(|line| line.feet.first())
+            .expect("one seer");
+        venpaa_ending_seer_name(foot)
+    }
+
+    #[test]
+    fn nerpu_niraipu_only_when_two_asai_and_last_is_single_consonant_u() {
+        assert_eq!(ending_name_of_single_word("உலகு"), Some("பிறப்பு"));
+        assert_eq!(ending_name_of_single_word("பசு"), Some("மலர்"));
+        assert_eq!(ending_name_of_single_word("தேமாங்கு"), None);
+        assert_eq!(ending_name_of_single_word("கருவிளங்கு"), None);
+        assert_eq!(ending_name_of_single_word("மலர்படு"), None);
+    }
+
+    #[test]
+    fn one_adi_fails_line_shape_and_agreement_is_not_true() {
+        let result = parse_poem("பகவன் முதற்றே உலகு", product_options()).expect("parse");
+        assert_eq!(result.lines.len(), 1);
+        assert_eq!(result.metre_type, Some(MetreType::Venpaa));
+        assert!(!rule(&result.classical_rules, "venpaa_adi_shape").passed);
+        assert_ne!(result.classical_rules.rules_agree_with_ml, Some(true));
     }
 
     #[test]
