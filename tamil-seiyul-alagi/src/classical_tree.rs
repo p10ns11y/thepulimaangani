@@ -464,7 +464,7 @@ fn try_venpaavinam(view: &PoemView<'_>, path: &mut Vec<ClassicalTreeCheck>) -> O
         path.push(check(
             "velivirutham",
             true,
-            "மூன்று அல்லது நான்கு நெடிலடி; ஒவ்வொன்றிலும் ஒரே தனிச்சொல்.",
+            "மூன்று அல்லது நான்கு நெடிலடி; ஒவ்வொன்றிலும் ஒரே தனிச்சொல்; ஒரே அடி எதுகை.",
         ));
         return Some(paavinam(
             "velivirutham",
@@ -829,7 +829,9 @@ fn is_velivirutham(view: &PoemView<'_>) -> bool {
         return false;
     }
     let tokens = tanichol_tokens(view.source);
-    tokens.len() == counts.len() && tokens.iter().all(|token| token == &tokens[0])
+    tokens.len() == counts.len()
+        && tokens.iter().all(|token| token == &tokens[0])
+        && lines_share_etukai(view.lines)
 }
 
 fn is_single_step_down(counts: &[usize]) -> bool {
@@ -1450,6 +1452,15 @@ mod tests {
         assert!(!is_aciriya_thurai(&[5, 2, 4, 4]));
         assert!(is_aciriya_thurai(&[4, 5, 4, 5]));
         assert!(!is_aciriya_thurai(&[4, 4, 4, 5]));
+    }
+
+    #[test]
+    fn velivirutham_rejects_lines_without_shared_etukai() {
+        let poem = "மருள்அறுத்த பெரும்போதி மாதவரைக் கண்டிலனால்! - என்செய்கோயான்!\nஅகழ்இருந்த திருமொழியால் அறவழக்கங் கேட்டிலனால்! - என்செய்கோயான்!\nபொருள்அறியும் அருந்தவத்துப் புரவலரைக் கண்டிலனால்! - என்செய்கோயான்!";
+        let result = parse_poem(poem, options_without_ml()).expect("parse");
+        assert_eq!(content_seer_counts(&result.lines), vec![5, 5, 5]);
+        assert_ne!(result.classical_tree.leaf_id, "velivirutham");
+        assert_ne!(result.classical_tree.label_ta, "வெளிவிருத்தம்");
     }
 
     #[test]
