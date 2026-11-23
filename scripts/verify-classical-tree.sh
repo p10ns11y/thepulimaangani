@@ -47,7 +47,8 @@ if ! command -v cargo-kani >/dev/null && ! cargo kani --version >/dev/null 2>&1;
   cargo kani setup
 fi
 
-version_line="$(cargo kani --version | head -n 1)"
+version_output="$(cargo kani --version 2>&1)"
+version_line="${version_output%%$'\n'*}"
 if [[ "${version_line}" != *" ${kani_version} "* && "${version_line}" != *" ${kani_version}" ]]; then
   echo "cargo kani is ${version_line}; this script pins ${kani_version}" >&2
   exit 1
