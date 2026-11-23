@@ -39,10 +39,16 @@ Lean is not used. The share comparisons are saturating integer arithmetic on poe
 | Every leaf is reached when it is the only passing gate | `ClassicalTreeWalk.tla` invariant `EveryLeaf` | the 37-gate table | A singleton pass set returns that gate under both orders |
 | The four named order pairs are real disagreements, and there are 142 such doubletons | invariants `NamedAreOverlaps`, `OverlapCount` | pass bits treated as independent | The over-approximation is stable |
 | On a doubleton, the two orders agree, or the winner pair is one of those 142 | invariant `AgreeOnDoubletons` | every unordered pair of gates | A disagreement is listed, not silent |
+| The repeated-தனிச்சொல் probe disagrees | invariant `KnownProbeDisagrees` | the pair `kattalai_kalithurai`, `velivirutham` | Strict-first keeps கட்டளைக்கலித்துறை. Avalokitam keeps வெளிவிருத்தம் |
+| The 13 பா-over-பாவினம் pairs agree | invariant `AllowedShadowsAgree` | each pair in `AllowedShadows` | Both orders return the பா. The pair is not a counterexample |
 
 The 142 doubletons are an over-approximation. Real poems cannot combine many of those pairs, because the line shapes exclude each other. The four pairs named in `docs/classical-tree.md` are inside the 142. `sinthadi_vanjippaa` against `kalivenpaa_long_osai` is the same வஞ்சி-versus-ஓசை case as the named வஞ்சி pair.
 
-`AlwaysAgree` is defined in the module and is not an invariant of the pass config. The counter config (`ClassicalTreeWalkCounter.cfg`) checks `NoDisagreement` and must exit non-zero. The script treats a zero exit there as a failure of the check. The first trace TLC prints is one disagreeing pair. The full set is `OverlapPairs`.
+The one poem that does disagree is four copies of `கனந்தரும் பூங்குழ லாளபி ராமி - கடைக்கண்களே`. That is `KnownOrderCounterexample`. The route in force is `RepeatedTanicholRoute::KeepStrictFirstKattalai`, so the leaf stays கட்டளைக்கலித்துறை. `RejectRepeatedLineFinalTanichol` and `VenpaaVinamBeforeKalippaaVinam` are named and not chosen.
+
+`AllowedShadows` is the பா-over-பாவினம் set: குறள் வெண்பா over குறட்டாழிசை, சிந்தியல் over வெண்டாழிசை and வெண்டுறை, தரவு over கலிவிருத்தம், ஆசிரியப்பா over துறை and தாழிசை. Both orders return the பா.
+
+`AlwaysAgree` is defined in the module and is not an invariant of the pass config. The counter config (`ClassicalTreeWalkCounter.cfg`) checks `NoDisagreement` and must exit non-zero. The script treats a zero exit there as a failure of the check, and it requires the trace to name `kattalai_kalithurai` against `velivirutham`. The full abstract set is still `OverlapPairs`.
 
 ## What a failure looks like
 
@@ -75,8 +81,8 @@ For a TLA+ result, read it with the pstack `/statechart` skill. Do not copy that
 
 ## Coverage
 
-- `tamil-seiyul-alagi/src/classical_decision.rs`: `strict_above`, `round_to_tenth`, `share_passes`, `ordered_gate_indexes`, `first_in_fixed_order`, `family_scan_fixed_order`, `STRICT_GATE_ORDER`, `AVALOKITAM_GATE_ORDER`, the share constants, and the route enums the trace prints.
+- `tamil-seiyul-alagi/src/classical_decision.rs`: `strict_above`, `round_to_tenth`, `share_passes`, `ordered_gate_indexes`, `first_in_fixed_order`, `family_scan_fixed_order`, `STRICT_GATE_ORDER`, `AVALOKITAM_GATE_ORDER`, the share constants, `REPEATED_TANICHOL_ROUTE`, `ALLOWED_PAA_SHADOWS`, `kalivenpaa_route_for_gate`, and the route enums the trace prints.
 - `tamil-seiyul-alagi/src/classical_tree.rs`: `evaluate_classical_tree` calls those routes. The leaf on each `/types` row is locked by `each_types_example_lands_on_its_leaf`. The harness `classical_tree_does_not_panic_up_to_one_line` is not a finished proof.
 - `tamil-seiyul-alagi/verify/ClassicalTreeWalk.tla` and the two configs. The Rust test `tla_gate_table_matches_the_rust_facts` checks the gate rows against `GATE_FACTS`.
 
-Sync commit: `2f6e5a52e204e68f714614c8627d1f96943d11cb`. Move this forward only after the command above has passed on the commit you name, and the files listed here still describe that commit.
+Sync commit: `935a1bd8840112058278085684b1518e336fd4d4`. Move this forward only after the command above has passed on the commit you name, and the files listed here still describe that commit.
