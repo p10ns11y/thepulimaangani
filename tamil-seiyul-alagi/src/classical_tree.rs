@@ -107,7 +107,7 @@ fn try_venpaa(view: &PoemView<'_>, path: &mut Vec<ClassicalTreeCheck>) -> Option
         path.push(check(
             "kalivenpaa_long_ven_osai",
             true,
-            "பன்னிரண்டு அடிக்கு மேல்; ஈற்றடி சிந்தடி; வெண்டளை குறைந்தபட்சம் 90%; கனிச்சீர் இல்லை.",
+            "பன்னிரண்டு அடிக்கு மேல்; ஈற்றடி சிந்தடி; வெண்டளை 90%க்கு மேல்; கனிச்சீர் இல்லை.",
         ));
         return Some(leaf_venpaa(
             "kalivenpaa",
@@ -192,20 +192,20 @@ fn try_aciriyapaa(view: &PoemView<'_>, path: &mut Vec<ClassicalTreeCheck>) -> Op
         .iter()
         .filter(|foot| matches!(cir_class_for_foot(foot), Some(CirAcaiClass::Maa | CirAcaiClass::Vilam)))
         .count();
-    if !share_at_least(iyar, feet.len(), MAJORITY_PERCENT) {
+    if !share_above(iyar, feet.len(), MAJORITY_PERCENT) {
         path.push(check(
             "aciriya_iyar_cir",
             false,
-            "இயற்சீர் 40% அளவு இல்லை.",
+            "இயற்சீர் 40%க்கு மேல் இல்லை.",
         ));
         return None;
     }
     let aciriya_bonds = count_bonds(view.linkage, LinkageType::AciriyaTalai);
-    if !share_at_least(aciriya_bonds, view.linkage.len(), MAJORITY_PERCENT) {
+    if !share_above(aciriya_bonds, view.linkage.len(), MAJORITY_PERCENT) {
         path.push(check(
             "aciriya_talai",
             false,
-            "ஆசிரியத்தளை 40% அளவு இல்லை.",
+            "ஆசிரியத்தளை 40%க்கு மேல் இல்லை.",
         ));
         return None;
     }
@@ -271,7 +271,7 @@ fn try_aciriyapaa(view: &PoemView<'_>, path: &mut Vec<ClassicalTreeCheck>) -> Op
     path.push(check(
         "aciriya_core",
         true,
-        "இயற்சீர் 40%, ஆசிரியத்தளை 40%, ஈற்றசை, அளவடி வரம்பு.",
+        "இயற்சீர் 40%க்கு மேல், ஆசிரியத்தளை 40%க்கு மேல், ஈற்றசை, அளவடி வரம்பு.",
     ));
     path.push(check("aciriya_subtype", true, label));
     Some(Leaf {
@@ -291,7 +291,7 @@ fn try_tharavu_kochaga(view: &PoemView<'_>, path: &mut Vec<ClassicalTreeCheck>) 
     let feet = content_feet(view.lines);
     let no_maa_or_vilangani = feet.iter().all(|foot| !is_maa_or_vilangani(foot));
     let kali = count_bonds(view.linkage, LinkageType::KaliTalai);
-    let kali_ok = share_at_least(kali, view.linkage.len(), MAJORITY_PERCENT);
+    let kali_ok = share_above(kali, view.linkage.len(), MAJORITY_PERCENT);
     if alavadi_only && no_maa_or_vilangani && kali_ok {
         path.push(check(
             "tharavu_kochaga",
@@ -325,8 +325,8 @@ fn try_venkalippaa(view: &PoemView<'_>, path: &mut Vec<ClassicalTreeCheck>) -> O
     let body_ok = non_last_lines_lack_maa_and_vilangani(view.lines);
     let kali = count_bonds(view.linkage, LinkageType::KaliTalai);
     let ven = count_bonds(view.linkage, LinkageType::VenTalai);
-    let mix_ok = share_at_least(kali + ven, view.linkage.len(), VENKALI_COMBINED_TALAI_PERCENT)
-        && share_at_least(kali, view.linkage.len(), VENKALI_KALI_TALAI_FLOOR_PERCENT);
+    let mix_ok = share_above(kali + ven, view.linkage.len(), VENKALI_COMBINED_TALAI_PERCENT)
+        && share_above(kali, view.linkage.len(), VENKALI_KALI_TALAI_FLOOR_PERCENT);
     if shape_ok && body_ok && mix_ok {
         path.push(check(
             "venkalippaa",
@@ -372,17 +372,17 @@ fn try_vanjippaa(view: &PoemView<'_>, path: &mut Vec<ClassicalTreeCheck>) -> Opt
         .count();
     // The published சிந்தடி வஞ்சி example is 7/18 கனி. Avalokitam still
     // accepts that share: rounded to one tenth it is 0.4. 6/18 rounds to 0.3
-    // and the site rejects it. Other 40% gates stay exact.
+    // and the site rejects it. The other percent gates are strict above.
     let kani_ok = share_rounds_to_tenth(kani, vanji_feet.len(), MAJORITY_PERCENT);
-    let talai_ok = share_at_least(vanji_talai, vanji_bonds.len(), MAJORITY_PERCENT);
+    let talai_ok = share_above(vanji_talai, vanji_bonds.len(), MAJORITY_PERCENT);
     let suri_ok = split.surithagam_lines >= SURITHAGAM_MIN_LINES
-        && share_at_least(suri_aciriya, suri_bonds.len(), MAJORITY_PERCENT);
+        && share_above(suri_aciriya, suri_bonds.len(), MAJORITY_PERCENT);
     if !(kani_ok && talai_ok && suri_ok) {
         path.push(check(
             "vanji_osai",
             false,
             &format!(
-                "வஞ்சி அடியின் கனி {kani}/{} வஞ்சித்தளை {vanji_talai}/{} சுரிதகம் {suri_aciriya}/{} 40% அளவு இல்லை.",
+                "வஞ்சி அடியின் கனி {kani}/{} வஞ்சித்தளை {vanji_talai}/{} சுரிதகம் {suri_aciriya}/{} 40%க்கு மேல் இல்லை.",
                 vanji_feet.len(),
                 vanji_bonds.len(),
                 suri_bonds.len()
@@ -740,7 +740,7 @@ fn venpaa_shape(counts: &[usize]) -> bool {
 fn kalivenpaa_long_osai(view: &PoemView<'_>, counts: &[usize]) -> bool {
     counts.len() >= KALIVENPAA_MIN_LINES
         && counts.last() == Some(&CINTHADI_SEER_COUNT)
-        && share_at_least(
+        && share_above(
             count_bonds(view.linkage, LinkageType::VenTalai),
             view.linkage.len(),
             KALIVENPAA_VEN_TALAI_PERCENT,
@@ -1083,8 +1083,9 @@ fn count_bonds(linkage: &[Linkage], kind: LinkageType) -> usize {
         .count()
 }
 
-fn share_at_least(part: usize, whole: usize, percent: usize) -> bool {
-    whole > 0 && part.saturating_mul(100) >= whole.saturating_mul(percent)
+/// Site wording is "above" the percent, so an exact share does not pass.
+fn share_above(part: usize, whole: usize, percent: usize) -> bool {
+    whole > 0 && part.saturating_mul(100) > whole.saturating_mul(percent)
 }
 
 /// Round `part / whole` to one tenth, then compare with `percent`.
@@ -1322,7 +1323,15 @@ mod tests {
     fn sinthadi_vanji_kani_share_follows_the_site_tenth() {
         assert!(share_rounds_to_tenth(7, 18, MAJORITY_PERCENT));
         assert!(!share_rounds_to_tenth(6, 18, MAJORITY_PERCENT));
-        assert!(!share_at_least(7, 18, MAJORITY_PERCENT));
+        assert!(!share_above(7, 18, MAJORITY_PERCENT));
+    }
+
+    #[test]
+    fn exact_percent_is_not_above_the_gate() {
+        assert!(!share_above(2, 5, MAJORITY_PERCENT));
+        assert!(!share_above(1, 2, VENKALI_COMBINED_TALAI_PERCENT));
+        assert!(!share_above(1, 4, VENKALI_KALI_TALAI_FLOOR_PERCENT));
+        assert!(share_above(3, 5, MAJORITY_PERCENT));
     }
 
     #[test]
