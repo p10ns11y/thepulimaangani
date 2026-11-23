@@ -1,3 +1,4 @@
+pub mod classical_decision;
 mod classical_rules;
 mod classical_tree;
 mod error;

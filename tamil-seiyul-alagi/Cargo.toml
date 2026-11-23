@@ -20,6 +20,9 @@ wasm-bindgen = "0.2"
 [lib]
 crate-type = ["cdylib", "rlib"]
 
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ["cfg(kani)"] }
+
 [features]
 default = ["ml-eval-offline"]
 # Offline research modules (PCA/LDA, B/C pilots, freeze examples). WASM product builds may use
