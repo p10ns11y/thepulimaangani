@@ -289,19 +289,14 @@ fn try_tharavu_kochaga(view: &PoemView<'_>, path: &mut Vec<ClassicalTreeCheck>) 
     let alavadi_only = counts.len() >= ALAVADI_SEER_COUNT
         && counts.iter().all(|count| *count == ALAVADI_SEER_COUNT);
     let feet = content_feet(view.lines);
-    let no_maa_or_kani = feet.iter().all(|foot| {
-        !matches!(
-            cir_class_for_foot(foot),
-            Some(CirAcaiClass::Maa | CirAcaiClass::Kani)
-        )
-    });
+    let no_maa_or_vilangani = feet.iter().all(|foot| !is_maa_or_vilangani(foot));
     let kali = count_bonds(view.linkage, LinkageType::KaliTalai);
     let kali_ok = share_at_least(kali, view.linkage.len(), MAJORITY_PERCENT);
-    if alavadi_only && no_maa_or_kani && kali_ok {
+    if alavadi_only && no_maa_or_vilangani && kali_ok {
         path.push(check(
             "tharavu_kochaga",
             true,
-            "நான்கு அளவடிக்கு மேல்; மாச்சீரும் கனிச்சீரும் இல்லை; கலித்தளை 40%.",
+            "நான்கு அளவடிக்கு மேல்; மாச்சீரும் விளங்கனியும் இல்லை; கலித்தளை 40%க்கு மேல்.",
         ));
         return Some(Leaf {
             id: "tharavukocha_kalippaa",
@@ -327,7 +322,7 @@ fn try_venkalippaa(view: &PoemView<'_>, path: &mut Vec<ClassicalTreeCheck>) -> O
         && counts[..counts.len() - 1]
             .iter()
             .all(|count| *count == ALAVADI_SEER_COUNT);
-    let body_ok = non_last_lines_lack_maa_and_kani(view.lines);
+    let body_ok = non_last_lines_lack_maa_and_vilangani(view.lines);
     let kali = count_bonds(view.linkage, LinkageType::KaliTalai);
     let ven = count_bonds(view.linkage, LinkageType::VenTalai);
     let mix_ok = share_at_least(kali + ven, view.linkage.len(), VENKALI_COMBINED_TALAI_PERCENT)
@@ -336,7 +331,7 @@ fn try_venkalippaa(view: &PoemView<'_>, path: &mut Vec<ClassicalTreeCheck>) -> O
         path.push(check(
             "venkalippaa",
             true,
-            "ஈற்றடி சிந்தடி, பிற அளவடி; மா/கனி ஈற்றடியில் மட்டும்; கலி+வெண் 50%, கலி 25%.",
+            "ஈற்றடி சிந்தடி, பிற அளவடி; மா/விளங்கனி ஈற்றடியில் மட்டும்; கலி+வெண் 50%க்கு மேல், கலி 25%க்கு மேல்.",
         ));
         return Some(Leaf {
             id: "venkalippaa",
@@ -784,18 +779,17 @@ fn poem_ending_seer(lines: &[Line]) -> Option<&'static str> {
         .and_then(venpaa_ending_seer_name)
 }
 
-fn non_last_lines_lack_maa_and_kani(lines: &[Line]) -> bool {
+fn non_last_lines_lack_maa_and_vilangani(lines: &[Line]) -> bool {
     let content = content_lines(lines);
     content
         .iter()
         .take(content.len().saturating_sub(1))
         .flat_map(|line| line.feet.iter())
-        .all(|foot| {
-            !matches!(
-                cir_class_for_foot(foot),
-                Some(CirAcaiClass::Maa | CirAcaiClass::Kani)
-            )
-        })
+        .all(|foot| !is_maa_or_vilangani(foot))
+}
+
+fn is_maa_or_vilangani(foot: &Foot) -> bool {
+    matches!(cir_class_for_foot(foot), Some(CirAcaiClass::Maa)) || is_forbidden_aciriya_foot(foot)
 }
 
 fn is_forbidden_aciriya_foot(foot: &Foot) -> bool {
@@ -1427,6 +1421,17 @@ mod tests {
         let result = parse_poem(poem, options_without_ml()).expect("parse");
         assert_ne!(result.classical_tree.leaf_id, "kattalai_kalithurai");
         assert_ne!(result.classical_tree.label_ta, "கட்டளை கலித்துறை");
+    }
+
+    #[test]
+    fn pulimaangani_line_is_tharavu_not_kalivirutham() {
+        let line = "தரும்நெஞ்சில் தரும்நெஞ்சில் தரும்நெஞ்சில் கடைக்கண்களே";
+        let poem = [line; 4].join("\n");
+        let result = parse_poem(&poem, options_without_ml()).expect("parse");
+        assert_eq!(content_seer_counts(&result.lines), vec![4, 4, 4, 4]);
+        assert_eq!(result.classical_tree.leaf_id, "tharavukocha_kalippaa");
+        assert_eq!(result.classical_tree.label_ta, "தரவுகொச்சகக் கலிப்பா");
+        assert_ne!(result.classical_tree.leaf_id, "kalivirutham");
     }
 
     #[test]
