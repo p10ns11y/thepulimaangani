@@ -1,8 +1,10 @@
 //! Strict-first classical decision tree beside the ML metre verdict.
 //!
-//! Each leaf is one AND-gate. Gates run from the most combined conditions to
-//! the fewest. Equal counts keep Avalokitam's order. Nothing here writes
-//! heuristic scores, the hybrid head, or `metre_ml`.
+//! A family gate is the shared combined conditions. Each leaf then adds one or
+//! two discriminating rules, recorded as the last step before that leaf. Gates
+//! still run from the most combined conditions to the fewest. Equal counts keep
+//! Avalokitam's order. Nothing here writes heuristic scores, the hybrid head,
+//! or `metre_ml`.
 
 use unicode_segmentation::UnicodeSegmentation;
 
@@ -70,7 +72,8 @@ struct PoemView<'a> {
 /// Classify one poem. `source` is the normalized text (dashes kept, punctuation spaced).
 ///
 /// Gates run strict-first: more combined conditions first. Equal counts keep
-/// Avalokitam's order. A gate matches only when every condition passes.
+/// Avalokitam's order. A family gate is emitted once. Each leaf that reaches
+/// its discriminator records that pair as the last step before the leaf.
 pub fn evaluate_classical_tree(
     source: &str,
     lines: &[Line],
@@ -84,20 +87,64 @@ pub fn evaluate_classical_tree(
     };
     let mut path = Vec::new();
     let mut fitted: Option<Leaf> = None;
-    for gate in gates_sorted(true) {
-        let conditions = assess(gate.id, &view);
-        debug_assert_eq!(conditions.len(), gate.condition_count as usize, "{}", gate.id);
-        let gate_passed = conditions.iter().all(|condition| condition.passed);
-        for condition in conditions {
+    let gates = gates_sorted(true);
+    let mut index = 0;
+    while index < gates.len() && fitted.is_none() {
+        let family_name = family_id(gates[index].id);
+        let head = assess(gates[index].id, &view);
+        let head_family_len = family_prefix_len(gates[index].id, head.len());
+        debug_assert_eq!(
+            head.len(),
+            gates[index].condition_count as usize,
+            "{}",
+            gates[index].id
+        );
+        let head_signature: Vec<(&'static str, bool)> = head[..head_family_len]
+            .iter()
+            .map(|condition| (condition.id, condition.passed))
+            .collect();
+        let family_passed = head_signature.iter().all(|(_, passed)| *passed);
+        for condition in &head[..head_family_len] {
             path.push(check(
-                &format!("{}.{}", gate.id, condition.id),
+                &format!("{family_name}.{}", condition.id),
                 condition.passed,
                 &condition.message_ta,
             ));
         }
-        if gate_passed {
-            fitted = Some(gate.leaf);
-            break;
+        while index < gates.len()
+            && family_id(gates[index].id) == family_name
+            && fitted.is_none()
+        {
+            let gate = gates[index];
+            let conditions = assess(gate.id, &view);
+            let prefix_len = family_prefix_len(gate.id, conditions.len());
+            debug_assert_eq!(conditions.len(), gate.condition_count as usize, "{}", gate.id);
+            debug_assert!(
+                conditions[..prefix_len]
+                    .iter()
+                    .map(|condition| (condition.id, condition.passed))
+                    .eq(head_signature.iter().copied()),
+                "{} family prefix drifted from {family_name}",
+                gate.id
+            );
+            if family_passed {
+                let discriminators = &conditions[prefix_len..];
+                let discriminator_passed = discriminators.iter().all(|condition| condition.passed);
+                let message = discriminators
+                    .iter()
+                    .map(|condition| condition.message_ta.as_str())
+                    .collect::<Vec<_>>()
+                    .join(" ");
+                path.push(check(
+                    &format!("{}.discriminator", gate.id),
+                    discriminator_passed,
+                    &message,
+                ));
+                if discriminator_passed {
+                    fitted = Some(gate.leaf);
+                }
+            }
+            index += 1;
         }
     }
     if fitted.is_none() {
@@ -137,6 +184,83 @@ fn requirement(id: &'static str, passed: bool, text: &str) -> Condition {
         passed,
         message_ta,
     }
+}
+
+fn family_id(gate_id: &str) -> &'static str {
+    match gate_id {
+        "nilaimandila_aciriyappaa" | "nerisai_aciriyappaa" | "inaikkural_aciriyappaa" => "aciriyappaa",
+        "oru_vikarpa_kural_venpaa"
+        | "iru_vikarpa_kural_venpaa"
+        | "nerisai_sinthiyal_venpaa"
+        | "inisai_sinthiyal_venpaa"
+        | "oru_vikarpa_nerisai_venpaa"
+        | "iru_vikarpa_nerisai_venpaa"
+        | "oru_vikarpa_inisai_venpaa"
+        | "pala_vikarpa_inisai_venpaa"
+        | "paqrodai_venpaa"
+        | "kalivenpaa_strict" => "venpaa",
+        "kuraladi_vanjippaa" | "sinthadi_vanjippaa" => "vanjippaa",
+        "arucir_kazhinediladi_aciriya_virutham"
+        | "elucir_kazhinediladi_aciriya_virutham"
+        | "encir_kazhinediladi_aciriya_virutham" => "aciriya_virutham",
+        "kattalai_kalithurai" => "kattalai_kalithurai",
+        "kalivenpaa_long_osai" => "kalivenpaa_long_osai",
+        "tharavukocha_kalippaa" => "tharavukocha_kalippaa",
+        "venkalippaa" => "venkalippaa",
+        "vellathazhisai" => "vellathazhisai",
+        "velivirutham" => "velivirutham",
+        "ventazhisai" => "ventazhisai",
+        "vendurai" => "vendurai",
+        "kural_vensenthurai" => "kural_vensenthurai",
+        "kurattazhisai" => "kurattazhisai",
+        "aciriya_thurai" => "aciriya_thurai",
+        "aciriya_thazhisai" => "aciriya_thazhisai",
+        "kattalai_kalippaa" => "kattalai_kalippaa",
+        "kalithurai" => "kalithurai",
+        "kalivirutham" => "kalivirutham",
+        "kalithazhisai" => "kalithazhisai",
+        "vanjithazhisai" => "vanjithazhisai",
+        "vanjithurai" => "vanjithurai",
+        "vanjivirutham" => "vanjivirutham",
+        _ => unreachable!("unknown classical gate {gate_id}"),
+    }
+}
+
+fn discriminator_count(gate_id: &str) -> usize {
+    match gate_id {
+        "inisai_sinthiyal_venpaa"
+        | "pala_vikarpa_inisai_venpaa"
+        | "paqrodai_venpaa"
+        | "kalivenpaa_strict"
+        | "nilaimandila_aciriyappaa"
+        | "nerisai_aciriyappaa"
+        | "inaikkural_aciriyappaa"
+        | "kuraladi_vanjippaa"
+        | "sinthadi_vanjippaa"
+        | "vellathazhisai"
+        | "vendurai"
+        | "kural_vensenthurai"
+        | "kalithazhisai"
+        | "vanjithazhisai"
+        | "vanjithurai"
+        | "arucir_kazhinediladi_aciriya_virutham"
+        | "elucir_kazhinediladi_aciriya_virutham"
+        | "encir_kazhinediladi_aciriya_virutham" => 1,
+        _ => 2,
+    }
+}
+
+fn family_prefix_len(gate_id: &str, condition_len: usize) -> usize {
+    condition_len - discriminator_count(gate_id)
+}
+
+fn nerisai_mark(has_tanichol: bool, vikarpam_ok: bool, vikarpam_text: &str) -> Condition {
+    let text = match (has_tanichol, vikarpam_ok) {
+        (false, true) => "எதுகை அமைந்த தனிச்சொல்".to_string(),
+        (true, false) => vikarpam_text.to_string(),
+        _ => format!("எதுகை அமைந்த தனிச்சொல்; {vikarpam_text}"),
+    };
+    requirement("nerisai_mark", has_tanichol && vikarpam_ok, &text)
 }
 
 fn gates_sorted(strict_first: bool) -> Vec<GateSpec> {
@@ -207,7 +331,7 @@ const GATES: [GateSpec; 37] = [
     GateSpec {
         id: "nerisai_sinthiyal_venpaa",
         avalokitam_rank: 3,
-        condition_count: 7,
+        condition_count: 6,
         leaf: Leaf {
             id: "nerisai_sinthiyal_venpaa",
             family_ta: "வெண்பா",
@@ -233,7 +357,7 @@ const GATES: [GateSpec; 37] = [
     GateSpec {
         id: "oru_vikarpa_nerisai_venpaa",
         avalokitam_rank: 5,
-        condition_count: 7,
+        condition_count: 6,
         leaf: Leaf {
             id: "oru_vikarpa_nerisai_venpaa",
             family_ta: "வெண்பா",
@@ -246,7 +370,7 @@ const GATES: [GateSpec; 37] = [
     GateSpec {
         id: "iru_vikarpa_nerisai_venpaa",
         avalokitam_rank: 6,
-        condition_count: 7,
+        condition_count: 6,
         leaf: Leaf {
             id: "iru_vikarpa_nerisai_venpaa",
             family_ta: "வெண்பா",
@@ -720,8 +844,8 @@ fn venpaa_core_conditions(view: &PoemView<'_>) -> Vec<Condition> {
 fn assess_kural_venpaa(view: &PoemView<'_>, one_vikarpam: bool) -> Vec<Condition> {
     let counts = content_seer_counts(view.lines);
     let vikarpam = vikarpam_run_count(view.lines);
-    let mut conditions = vec![requirement("two_lines", counts.len() == 2, "இரண்டு அடி")];
-    conditions.extend(venpaa_core_conditions(view));
+    let mut conditions = venpaa_core_conditions(view);
+    conditions.push(requirement("two_lines", counts.len() == 2, "இரண்டு அடி"));
     if one_vikarpam {
         conditions.push(requirement("one_vikarpam", vikarpam <= 1, "விகற்பம் ஒன்று"));
     } else {
@@ -736,18 +860,14 @@ fn assess_kural_venpaa(view: &PoemView<'_>, one_vikarpam: bool) -> Vec<Condition
 
 fn assess_sinthiyal(view: &PoemView<'_>, nerisai: bool) -> Vec<Condition> {
     let counts = content_seer_counts(view.lines);
-    let mut conditions = vec![requirement("three_lines", counts.len() == 3, "மூன்று அடி")];
-    conditions.extend(venpaa_core_conditions(view));
+    let mut conditions = venpaa_core_conditions(view);
+    conditions.push(requirement("three_lines", counts.len() == 3, "மூன்று அடி"));
     if nerisai {
-        conditions.push(requirement(
-            "etukai_tanichol",
+        let vikarpam_text = "விகற்பம் இரண்டுக்கு மிகாது";
+        conditions.push(nerisai_mark(
             etukai_tanichol(view.source, view.lines).is_some(),
-            "எதுகை அமைந்த தனிச்சொல்",
-        ));
-        conditions.push(requirement(
-            "vikarpam_at_most_two",
             vikarpam_run_count(view.lines) <= 2,
-            "விகற்பம் இரண்டுக்கு மிகாது",
+            vikarpam_text,
         ));
     }
     conditions
@@ -756,25 +876,25 @@ fn assess_sinthiyal(view: &PoemView<'_>, nerisai: bool) -> Vec<Condition> {
 fn assess_nerisai_venpaa(view: &PoemView<'_>, one_vikarpam: bool) -> Vec<Condition> {
     let counts = content_seer_counts(view.lines);
     let vikarpam = vikarpam_run_count(view.lines);
-    let mut conditions = vec![requirement("four_lines", counts.len() == 4, "நான்கு அடி")];
-    conditions.extend(venpaa_core_conditions(view));
-    conditions.push(requirement(
-        "etukai_tanichol",
-        etukai_tanichol(view.source, view.lines).is_some(),
-        "எதுகை அமைந்த தனிச்சொல்",
-    ));
-    if one_vikarpam {
-        conditions.push(requirement("one_vikarpam", vikarpam <= 1, "விகற்பம் ஒன்று"));
+    let mut conditions = venpaa_core_conditions(view);
+    conditions.push(requirement("four_lines", counts.len() == 4, "நான்கு அடி"));
+    let (vikarpam_ok, vikarpam_text) = if one_vikarpam {
+        (vikarpam <= 1, "விகற்பம் ஒன்று")
     } else {
-        conditions.push(requirement("two_vikarpam", vikarpam == 2, "விகற்பம் இரண்டு"));
-    }
+        (vikarpam == 2, "விகற்பம் இரண்டு")
+    };
+    conditions.push(nerisai_mark(
+        etukai_tanichol(view.source, view.lines).is_some(),
+        vikarpam_ok,
+        vikarpam_text,
+    ));
     conditions
 }
 
 fn assess_inisai_venpaa(view: &PoemView<'_>, one_vikarpam: bool) -> Vec<Condition> {
     let counts = content_seer_counts(view.lines);
-    let mut conditions = vec![requirement("four_lines", counts.len() == 4, "நான்கு அடி")];
-    conditions.extend(venpaa_core_conditions(view));
+    let mut conditions = venpaa_core_conditions(view);
+    conditions.push(requirement("four_lines", counts.len() == 4, "நான்கு அடி"));
     if one_vikarpam {
         conditions.push(requirement(
             "one_vikarpam",
@@ -787,23 +907,23 @@ fn assess_inisai_venpaa(view: &PoemView<'_>, one_vikarpam: bool) -> Vec<Conditio
 
 fn assess_paqrodai(view: &PoemView<'_>) -> Vec<Condition> {
     let counts = content_seer_counts(view.lines);
-    let mut conditions = vec![requirement(
+    let mut conditions = venpaa_core_conditions(view);
+    conditions.push(requirement(
         "line_span",
         (PAQRODAI_MIN_LINES..=PAQRODAI_MAX_LINES).contains(&counts.len()),
         "ஐந்து முதல் பன்னிரண்டு அடி",
-    )];
-    conditions.extend(venpaa_core_conditions(view));
+    ));
     conditions
 }
 
 fn assess_kalivenpaa_strict(view: &PoemView<'_>) -> Vec<Condition> {
     let counts = content_seer_counts(view.lines);
-    let mut conditions = vec![requirement(
+    let mut conditions = venpaa_core_conditions(view);
+    conditions.push(requirement(
         "thirteen_lines",
         counts.len() >= KALIVENPAA_MIN_LINES,
         "பதிமூன்று அடி அல்லது மேல்",
-    )];
-    conditions.extend(venpaa_core_conditions(view));
+    ));
     conditions
 }
 
@@ -1361,12 +1481,12 @@ fn assess_kattalai_kalithurai(view: &PoemView<'_>) -> Vec<Condition> {
             kalithurai_internal_ven(view),
             "அடிக்குள் வெண்டளை",
         ),
+        requirement("other_seers", others, "ஏனைய சீர் விளங்காய் அல்ல"),
         requirement(
             "fifth_seer",
             fifth,
             "ஐந்தாம் சீர் விளங்காய், மாங்கனி அல்லது மாந்தண்பூ",
         ),
-        requirement("other_seers", others, "ஏனைய சீர் விளங்காய் அல்ல"),
         requirement("ekaram", ends_on_ekaram(view.lines), "ஈறு ஏ"),
     ]
 }
@@ -1983,12 +2103,32 @@ mod tests {
             linkage: &[],
         };
         for gate in GATES {
-            assert_eq!(
-                assess(gate.id, &view).len(),
-                gate.condition_count as usize,
-                "{}",
+            let conditions = assess(gate.id, &view);
+            assert_eq!(conditions.len(), gate.condition_count as usize, "{}", gate.id);
+            let disc_count = discriminator_count(gate.id);
+            assert!(
+                disc_count == 1 || disc_count == 2,
+                "{} discriminator {disc_count}",
                 gate.id
             );
+            assert!(conditions.len() > disc_count, "{}", gate.id);
+        }
+    }
+
+    #[test]
+    fn families_stay_contiguous_under_strict_order() {
+        let order = gates_sorted(true);
+        let mut seen = std::collections::BTreeSet::new();
+        let mut previous = "";
+        for gate in &order {
+            let family_name = family_id(gate.id);
+            if family_name != previous {
+                assert!(
+                    seen.insert(family_name),
+                    "{family_name} returns after another family"
+                );
+                previous = family_name;
+            }
         }
     }
 
@@ -2010,21 +2150,40 @@ mod tests {
     }
 
     #[test]
-    fn mermaid_lists_gates_in_strict_first_order() {
-        let diagram = include_str!("../../docs/classical-tree.mmd");
-        let mut seen = Vec::new();
-        for line in diagram.lines() {
+    fn mermaid_lists_families_then_every_leaf_discriminator() {
+        let overview = include_str!("../../docs/classical-tree.mmd");
+        let venpaa = include_str!("../../docs/classical-tree-venpaa.mmd");
+        let aciriyappaa = include_str!("../../docs/classical-tree-aciriyappaa.mmd");
+        let kalippaa = include_str!("../../docs/classical-tree-kalippaa.mmd");
+        let vanjippaa = include_str!("../../docs/classical-tree-vanjippaa.mmd");
+        let venpaavinam = include_str!("../../docs/classical-tree-venpaavinam.mmd");
+        let bundle = [overview, venpaa, aciriyappaa, kalippaa, vanjippaa, venpaavinam].join("\n");
+        let mut seen_families = Vec::new();
+        for line in overview.lines() {
             let Some(bracket_at) = line.find('[') else {
                 continue;
             };
-            let gate_id = line[..bracket_at].trim();
-            if !GATES.iter().any(|gate| gate.id == gate_id) {
+            let node_id = line[..bracket_at].trim();
+            if node_id.is_empty() || node_id.contains(' ') || node_id == "start" || node_id == "none" {
                 continue;
             }
-            seen.push(gate_id);
+            seen_families.push(node_id);
         }
-        let expected: Vec<&str> = gates_sorted(true).into_iter().map(|gate| gate.id).collect();
-        assert_eq!(seen, expected);
+        let mut expected_families = Vec::new();
+        for gate in gates_sorted(true) {
+            let family_name = family_id(gate.id);
+            if expected_families.last() != Some(&family_name) {
+                expected_families.push(family_name);
+            }
+        }
+        assert_eq!(seen_families, expected_families);
+        for gate in GATES {
+            let discriminator_node = format!("{}_disc[", gate.id);
+            assert!(
+                bundle.contains(&discriminator_node),
+                "missing discriminator node {discriminator_node}"
+            );
+        }
     }
 
     #[test]
@@ -2046,40 +2205,47 @@ mod tests {
     }
 
     #[test]
-    fn trace_names_every_condition_of_each_failed_stricter_gate() {
+    fn trace_ends_each_reached_leaf_with_its_discriminator() {
         for block in poem_variations_blocks() {
             for row in block.special_types.iter().chain(block.variations.iter()) {
                 let result = parse_poem(row.example, options_without_ml()).expect("parse");
-                let mut groups: Vec<(String, Vec<&ClassicalTreeCheck>)> = Vec::new();
-                for step in &result.classical_tree.path {
-                    if step.rule_id == "thodai_merkathuvai" {
-                        continue;
-                    }
-                    let Some((gate_id, _)) = step.rule_id.split_once('.') else {
-                        panic!("{} bare rule {}", row.en, step.rule_id);
-                    };
-                    if groups.last().is_some_and(|(id, _)| id == gate_id) {
-                        groups.last_mut().expect("group").1.push(step);
-                    } else {
-                        groups.push((gate_id.to_string(), vec![step]));
+                let steps: Vec<_> = result
+                    .classical_tree
+                    .path
+                    .iter()
+                    .filter(|step| step.rule_id != "thodai_merkathuvai")
+                    .collect();
+                let winner = steps
+                    .iter()
+                    .rfind(|step| step.rule_id.ends_with(".discriminator"))
+                    .unwrap_or_else(|| panic!("{} has no discriminator", row.en));
+                assert!(winner.passed, "{} {}", row.en, winner.rule_id);
+                let winner_gate = winner.rule_id.trim_end_matches(".discriminator");
+                let gate = GATES.iter().find(|candidate| candidate.id == winner_gate).expect(winner_gate);
+                assert_eq!(gate.leaf.id, result.classical_tree.leaf_id, "{}", row.en);
+                assert!(!winner.message_ta.is_empty(), "{}", row.en);
+                for step in &steps {
+                    if step.rule_id.ends_with(".discriminator") && step.rule_id != winner.rule_id {
+                        assert!(!step.passed, "{} {}", row.en, step.rule_id);
                     }
                 }
-                let (winner_id, winner_steps) = groups.last().expect(row.en);
-                assert!(
-                    winner_steps.iter().all(|step| step.passed),
-                    "{} winner {}",
-                    row.en,
-                    winner_id
-                );
-                let winner = GATES.iter().find(|gate| gate.id == winner_id).expect(winner_id);
-                assert_eq!(winner_steps.len(), winner.condition_count as usize, "{}", row.en);
-                assert_eq!(winner.leaf.id, result.classical_tree.leaf_id, "{}", row.en);
-                for (gate_id, steps) in &groups[..groups.len() - 1] {
-                    let gate = GATES.iter().find(|candidate| candidate.id == gate_id).expect(gate_id);
-                    assert_eq!(steps.len(), gate.condition_count as usize, "{gate_id}");
+                let mut family_seen = std::collections::BTreeSet::new();
+                for step in &steps {
+                    let Some((prefix, condition_id)) = step.rule_id.split_once('.') else {
+                        panic!("{} bare {}", row.en, step.rule_id);
+                    };
+                    if condition_id == "discriminator" {
+                        continue;
+                    }
                     assert!(
-                        steps.iter().any(|step| !step.passed),
-                        "{gate_id} on {}",
+                        family_seen.insert(step.rule_id.as_str()),
+                        "{} repeated family condition {}",
+                        row.en,
+                        step.rule_id
+                    );
+                    assert!(
+                        GATES.iter().any(|gate| family_id(gate.id) == prefix),
+                        "{} unknown family {prefix}",
                         row.en
                     );
                 }
@@ -2212,10 +2378,11 @@ mod tests {
         assert_ne!(result.classical_tree.leaf_id, "oru_vikarpa_kural_venpaa");
         assert_ne!(result.classical_tree.leaf_id, "iru_vikarpa_kural_venpaa");
         assert!(result.classical_tree.path.iter().any(|step| {
-            step.rule_id == "oru_vikarpa_kural_venpaa.ending_seer" && !step.passed
+            step.rule_id == "venpaa.ending_seer" && !step.passed
         }));
-        assert!(result.classical_tree.path.iter().any(|step| {
-            step.rule_id == "iru_vikarpa_kural_venpaa.ending_seer" && !step.passed
+        assert!(result.classical_tree.path.iter().all(|step| {
+            !step.rule_id.starts_with("oru_vikarpa_kural_venpaa.")
+                && !step.rule_id.starts_with("iru_vikarpa_kural_venpaa.")
         }));
         let kurattazhisai: Vec<_> = result
             .classical_tree
@@ -2223,8 +2390,12 @@ mod tests {
             .iter()
             .filter(|step| step.rule_id.starts_with("kurattazhisai."))
             .collect();
-        assert_eq!(kurattazhisai.len(), 3);
+        assert_eq!(kurattazhisai.len(), 2);
         assert!(kurattazhisai.iter().all(|step| step.passed));
+        assert_eq!(
+            kurattazhisai.last().expect("disc").rule_id,
+            "kurattazhisai.discriminator"
+        );
         assert_eq!(result.classical_tree.leaf_id, "kurattazhisai");
         assert_eq!(result.classical_tree.label_ta, "குறட்டாழிசை");
         assert_eq!(result.metre_type, Some(MetreType::Venpaa));
