@@ -35,7 +35,7 @@ const linkageSpecialMap: Record<string, string> = {
   NiraiondriyaAasiriyathalai: 'நிரையொன்றிய ஆசிரியத்தளை',
 }
 
-/** Machine `line_class` → Tamil label. Prefer simple transliteration keys; legacy Avalokitam-style keys kept as aliases. */
+/** Machine `line_class` → Tamil label. Simple transliteration keys only. */
 const lineClassMap: Record<string, string> = {
   Kuraladi: 'குறளடி',
   Cinthadi: 'சிந்தடி',
@@ -43,13 +43,6 @@ const lineClassMap: Record<string, string> = {
   Alavadi: 'அளவடி',
   Nediladi: 'நெடிலடி',
   Kazhinediladi: 'கழிநெடிலடி',
-  // Legacy keys (same labels)
-  kuRaLaTi: 'குறளடி',
-  ci_ntaTi: 'சிந்தடி',
-  taVi_cco_l: 'தனிச்சொல்',
-  _aLavaTi: 'அளவடி',
-  neTilaTi: 'நெடிலடி',
-  kazhineTilaTi: 'கழிநெடிலடி',
 }
 
 /** Logic layer `foot_type` = hyphenated Ner/Nirai pattern; Tamil aligns with feet-calculations.md. */
