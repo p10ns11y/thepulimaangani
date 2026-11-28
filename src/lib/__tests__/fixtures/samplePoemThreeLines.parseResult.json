@@ -3851,6 +3851,81 @@
         "rule_id": "no_rule_fitted",
         "passed": false,
         "message_ta": "எந்த விதியும் பொருந்தவில்லை."
+      },
+      {
+        "rule_id": "decision.walk_order",
+        "passed": true,
+        "message_ta": "strict_first; tie avalokitam; மூலம் site"
+      },
+      {
+        "rule_id": "decision.nerisai_tie",
+        "passed": true,
+        "message_ta": "combined_mark; குறள் முதலில்; மூலம் site"
+      },
+      {
+        "rule_id": "decision.alavadi_word",
+        "passed": true,
+        "message_ta": "four_seers; மூலம் treatise"
+      },
+      {
+        "rule_id": "decision.merkathuvai_seats",
+        "passed": true,
+        "message_ta": "seers_1_3_4; மூலம் treatise; site_1_2_3 தவிர்க்கப்பட்டது"
+      },
+      {
+        "rule_id": "decision.repeated_tanichol",
+        "passed": true,
+        "message_ta": "keep_strict_first; probe kattalai_kalithurai vs velivirutham; reject_repeated_tanichol not chosen; venpaa_vinam_before_kalippaa_vinam not chosen; மூலம் site"
+      },
+      {
+        "rule_id": "decision.order.kattalai_kalithurai_velivirutham",
+        "passed": true,
+        "message_ta": "strict_first keeps kattalai_kalithurai; avalokitam would keep velivirutham"
+      },
+      {
+        "rule_id": "decision.order.aciriyappaa_kural_venpaa",
+        "passed": true,
+        "message_ta": "strict_first keeps nilaimandila_aciriyappaa; avalokitam would keep oru_vikarpa_kural_venpaa"
+      },
+      {
+        "rule_id": "decision.order.kattalai_kalippaa_tharavu",
+        "passed": true,
+        "message_ta": "strict_first keeps kattalai_kalippaa; avalokitam would keep tharavukocha_kalippaa"
+      },
+      {
+        "rule_id": "decision.order.vanjippaa_kalivenpaa_osai",
+        "passed": true,
+        "message_ta": "strict_first keeps kuraladi_vanjippaa; avalokitam would keep kalivenpaa_long_osai"
+      },
+      {
+        "rule_id": "decision.share.iyar_cir",
+        "passed": true,
+        "message_ta": "strict_above_40; மூலம் site"
+      },
+      {
+        "rule_id": "decision.share.aciriya_talai",
+        "passed": true,
+        "message_ta": "strict_above_40; மூலம் site"
+      },
+      {
+        "rule_id": "decision.share.vanji_talai",
+        "passed": true,
+        "message_ta": "strict_above_40; மூலம் site"
+      },
+      {
+        "rule_id": "decision.share.surithagam",
+        "passed": true,
+        "message_ta": "strict_above_40; மூலம் site"
+      },
+      {
+        "rule_id": "decision.share.kani_tenth",
+        "passed": true,
+        "message_ta": "round_to_tenth_40; மூலம் site; 7/18 passes; 6/18 fails"
+      },
+      {
+        "rule_id": "decision.tharavu_alavadi",
+        "passed": true,
+        "message_ta": "four_or_more; மூலம் treatise; site_wording_above_four தவிர்க்கப்பட்டது"
       }
     ],
     "tree_agrees_with_ml": false

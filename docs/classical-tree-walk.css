@@ -1,0 +1,8 @@
+.edgeLabel,
+.edgeLabel p,
+.edgeLabel span,
+.nodeLabel,
+.nodeLabel p,
+.nodeLabel span {
+  font-family: "Noto Sans Tamil", "Noto Sans", sans-serif !important;
+}

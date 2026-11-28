@@ -1,32 +1,30 @@
 //! Strict-first classical decision tree beside the ML metre verdict.
 //!
 //! A family gate is the shared combined conditions. Each leaf then adds one or
-//! two discriminating rules, recorded as the last step before that leaf. Gates
-//! still run from the most combined conditions to the fewest. Equal counts keep
-//! Avalokitam's order. Nothing here writes heuristic scores, the hybrid head,
-//! or `metre_ml`.
+//! two discriminating rules, recorded as the last step before that leaf. The
+//! leaf itself is the gate `family_walk_gate` returns. Gates still run from the
+//! most combined conditions to the fewest. Equal counts keep Avalokitam's
+//! order. Nothing here writes heuristic scores, the hybrid head, or `metre_ml`.
 
 use unicode_segmentation::UnicodeSegmentation;
 
+pub use crate::classical_decision::ALAVADI_SEER_COUNT;
+use crate::classical_decision::{
+    alavadi_word_message, family_walk_gate, fifth_seer_message, fifth_seer_pattern_allowed,
+    gate_index, kalivenpaa_route_for_gate, kalivenpaa_route_message, merkathuvai_seat_message,
+    merkathuvai_seat_positions, nerisai_tie_message, repeated_tanichol_keeps_kattalai,
+    repeated_tanichol_message, share_passes, share_route_message, tharavu_alavadi_message,
+    tharavu_line_count_passes, walk_order_message, FifthSeerRoute, AVALOKITAM_WALK_ORDER,
+    GATE_COUNT, GATE_FACTS, KANI_TENTH_40, KATTALAI_FIFTH_SEER_ROUTE, MERKATHUVAI_SEAT_ROUTE,
+    NAMED_ORDER_OVERLAPS, REPEATED_TANICHOL_ROUTE, SHARE_DECISIONS, SHARE_STRICT_25,
+    SHARE_STRICT_40, SHARE_STRICT_50, SHARE_STRICT_90, THARAVU_ALAVADI_ROUTE, WALK_ORDER_ROUTE,
+};
 use crate::classical_rules::venpaa_ending_seer_name;
 use crate::linkage::{cir_class_for_foot, CirAcaiClass, Linkage, LinkageType};
 use crate::metre::MetreType;
 use crate::syllable::SyllableType;
 use crate::types::{ClassicalTreeCheck, ClassicalTreeReport, Line};
 use crate::Foot;
-
-/// Avalokitam's "மிகுந்து" cutoff for இயற்சீர், ஆசிரியத்தளை, கலித்தளை, கனிச்சீர், வஞ்சித்தளை.
-pub const MAJORITY_PERCENT: usize = 40;
-/// வெண்கலிப்பா: கலித்தளை and வெண்டளை together.
-pub const VENKALI_COMBINED_TALAI_PERCENT: usize = 50;
-/// வெண்கலிப்பா: கலித்தளை alone.
-pub const VENKALI_KALI_TALAI_FLOOR_PERCENT: usize = 25;
-/// கலிவெண்பா keeps a வெண்டளை mass when one line is not a strict அளவடி.
-pub const KALIVENPAA_VEN_TALAI_PERCENT: usize = 90;
-/// Site text says மேற்கதுவாய் is seers 1, 2, 3. The classical seats are 1, 3, 4.
-pub const MERKATHUVAI_SEER_POSITIONS: [usize; 3] = [1, 3, 4];
-/// அளவடி is four seers. The site sometimes uses the word for a line in general.
-pub const ALAVADI_SEER_COUNT: usize = 4;
 const CINTHADI_SEER_COUNT: usize = 3;
 const KURALADI_SEER_COUNT: usize = 2;
 const NEDILADI_SEER_COUNT: usize = 5;
@@ -73,7 +71,8 @@ struct PoemView<'a> {
 ///
 /// Gates run strict-first: more combined conditions first. Equal counts keep
 /// Avalokitam's order. A family gate is emitted once. Each leaf that reaches
-/// its discriminator records that pair as the last step before the leaf.
+/// its discriminator records that pair as the last step before the leaf. The
+/// leaf id is the one `family_walk_gate` returns for those pass bits.
 pub fn evaluate_classical_tree(
     source: &str,
     lines: &[Line],
@@ -86,10 +85,13 @@ pub fn evaluate_classical_tree(
         linkage,
     };
     let mut path = Vec::new();
-    let mut fitted: Option<Leaf> = None;
+    let passes = gate_pass_bits(&view);
+    let winner_id = family_walk_gate(&passes, WALK_ORDER_ROUTE).map(|index| GATE_FACTS[index].id);
     let gates = gates_sorted(true);
     let mut index = 0;
-    while index < gates.len() && fitted.is_none() {
+    let mut trace_closed = false;
+    let mut trace_leaf_id: Option<&str> = None;
+    while index < gates.len() && !trace_closed {
         let family_name = family_id(gates[index].id);
         let head = assess(gates[index].id, &view);
         let head_family_len = family_prefix_len(gates[index].id, head.len());
@@ -111,14 +113,16 @@ pub fn evaluate_classical_tree(
                 &condition.message_ta,
             ));
         }
-        while index < gates.len()
-            && family_id(gates[index].id) == family_name
-            && fitted.is_none()
-        {
+        while index < gates.len() && family_id(gates[index].id) == family_name && !trace_closed {
             let gate = gates[index];
             let conditions = assess(gate.id, &view);
             let prefix_len = family_prefix_len(gate.id, conditions.len());
-            debug_assert_eq!(conditions.len(), gate.condition_count as usize, "{}", gate.id);
+            debug_assert_eq!(
+                conditions.len(),
+                gate.condition_count as usize,
+                "{}",
+                gate.id
+            );
             debug_assert!(
                 conditions[..prefix_len]
                     .iter()
@@ -141,22 +145,98 @@ pub fn evaluate_classical_tree(
                     &message,
                 ));
                 if discriminator_passed {
-                    fitted = Some(gate.leaf);
+                    trace_closed = true;
+                    trace_leaf_id = Some(gate.id);
                 }
             }
             index += 1;
         }
     }
+    debug_assert_eq!(trace_leaf_id, winner_id);
+    let mut fitted = winner_id.and_then(leaf_for_gate_id);
+    fitted = leaf_after_repeated_tanichol_route(fitted, &view);
     if fitted.is_none() {
-        path.push(check(
-            "no_rule_fitted",
-            false,
-            "எந்த விதியும் பொருந்தவில்லை.",
-        ));
+        path.push(check("no_rule_fitted", false, "எந்த விதியும் பொருந்தவில்லை."));
     } else if let Some(note) = merkathuvai_note(view.lines) {
         path.push(check("thodai_merkathuvai", true, &note));
     }
+    append_decision_routes(&mut path);
     report_for(fitted, path, ml_verdict)
+}
+
+fn route_step(rule_id: &str, message_ta: &str) -> ClassicalTreeCheck {
+    check(rule_id, true, message_ta)
+}
+
+/// Record the route each inconsistency took. These steps sit after the leaf
+/// discriminator, so the winning leaf is still the last passed discriminator.
+fn append_decision_routes(path: &mut Vec<ClassicalTreeCheck>) {
+    let seen_conditions: Vec<String> = path
+        .iter()
+        .filter_map(|step| {
+            step.rule_id
+                .rsplit_once('.')
+                .map(|(_, condition_id)| condition_id.to_string())
+        })
+        .collect();
+    let seen_rules: Vec<String> = path.iter().map(|step| step.rule_id.clone()).collect();
+    let walk_order = walk_order_message();
+    let nerisai_tie = nerisai_tie_message();
+    let alavadi_word = alavadi_word_message();
+    let merkathuvai_seats = merkathuvai_seat_message();
+    path.push(route_step("decision.walk_order", &walk_order));
+    path.push(route_step("decision.nerisai_tie", &nerisai_tie));
+    path.push(route_step("decision.alavadi_word", &alavadi_word));
+    path.push(route_step("decision.merkathuvai_seats", &merkathuvai_seats));
+    let repeated_tanichol = repeated_tanichol_message();
+    path.push(route_step("decision.repeated_tanichol", &repeated_tanichol));
+    let winning_gate = path.iter().rev().find_map(|step| {
+        if step.passed && step.rule_id.ends_with(".discriminator") {
+            Some(step.rule_id.trim_end_matches(".discriminator").to_string())
+        } else {
+            None
+        }
+    });
+    if let Some(gate_id) = winning_gate.as_deref() {
+        if let Some(route) = kalivenpaa_route_for_gate(gate_id) {
+            let kalivenpaa_route = kalivenpaa_route_message(route);
+            path.push(route_step("decision.kalivenpaa_route", &kalivenpaa_route));
+        }
+    }
+    for overlap in NAMED_ORDER_OVERLAPS {
+        path.push(route_step(
+            &format!("decision.order.{}", overlap.id),
+            &format!(
+                "strict_first keeps {}; avalokitam would keep {}",
+                overlap.strict_gate, overlap.avalokitam_gate
+            ),
+        ));
+    }
+    for share in SHARE_DECISIONS {
+        if seen_conditions
+            .iter()
+            .any(|condition_id| *condition_id == share.condition_id)
+        {
+            path.push(route_step(
+                &format!("decision.share.{}", share.condition_id),
+                share_route_message(share.route),
+            ));
+        }
+    }
+    if seen_rules
+        .iter()
+        .any(|rule_id| *rule_id == "kattalai_kalithurai.discriminator")
+    {
+        let fifth_seer = fifth_seer_message();
+        path.push(route_step("decision.kattalai_fifth_seer", &fifth_seer));
+    }
+    if seen_rules
+        .iter()
+        .any(|rule_id| *rule_id == "tharavukocha_kalippaa.four_lines")
+    {
+        let tharavu_alavadi = tharavu_alavadi_message();
+        path.push(route_step("decision.tharavu_alavadi", &tharavu_alavadi));
+    }
 }
 
 struct Condition {
@@ -168,6 +248,8 @@ struct Condition {
 #[derive(Clone, Copy)]
 struct GateSpec {
     id: &'static str,
+    /// Avalokitam rank. The walk reads the same number from `GATE_FACTS`.
+    #[allow(dead_code)]
     avalokitam_rank: u16,
     condition_count: u8,
     leaf: Leaf,
@@ -188,7 +270,9 @@ fn requirement(id: &'static str, passed: bool, text: &str) -> Condition {
 
 fn family_id(gate_id: &str) -> &'static str {
     match gate_id {
-        "nilaimandila_aciriyappaa" | "nerisai_aciriyappaa" | "inaikkural_aciriyappaa" => "aciriyappaa",
+        "nilaimandila_aciriyappaa" => "aciriyappaa",
+        "nerisai_aciriyappaa" => "aciriyappaa",
+        "inaikkural_aciriyappaa" => "aciriyappaa",
         "oru_vikarpa_kural_venpaa"
         | "iru_vikarpa_kural_venpaa"
         | "nerisai_sinthiyal_venpaa"
@@ -263,29 +347,52 @@ fn nerisai_mark(has_tanichol: bool, vikarpam_ok: bool, vikarpam_text: &str) -> C
     requirement("nerisai_mark", has_tanichol && vikarpam_ok, &text)
 }
 
-fn gates_sorted(strict_first: bool) -> Vec<GateSpec> {
-    let mut gates = GATES.to_vec();
-    if strict_first {
-        gates.sort_by(|left, right| {
-            right
-                .condition_count
-                .cmp(&left.condition_count)
-                .then(left.avalokitam_rank.cmp(&right.avalokitam_rank))
-        });
-    } else {
-        gates.sort_by(|left, right| left.avalokitam_rank.cmp(&right.avalokitam_rank));
+fn gate_pass_bits(view: &PoemView<'_>) -> [bool; GATE_COUNT] {
+    let mut passes = [false; GATE_COUNT];
+    for gate in &GATES {
+        let index = gate_index(gate.id).unwrap_or_else(|| panic!("missing gate {}", gate.id));
+        passes[index] = assess(gate.id, view)
+            .iter()
+            .all(|condition| condition.passed);
     }
-    gates
+    passes
+}
+
+fn leaf_for_gate_id(gate_id: &str) -> Option<Leaf> {
+    GATES
+        .iter()
+        .find(|gate| gate.id == gate_id)
+        .map(|gate| gate.leaf)
+}
+
+fn gates_sorted(strict_first: bool) -> Vec<GateSpec> {
+    let order = if strict_first {
+        WALK_ORDER_ROUTE
+    } else {
+        AVALOKITAM_WALK_ORDER
+    };
+    crate::classical_decision::ordered_gate_indexes(order)
+        .into_iter()
+        .map(|index| {
+            let gate_id = GATE_FACTS[index].id;
+            *GATES
+                .iter()
+                .find(|gate| gate.id == gate_id)
+                .unwrap_or_else(|| panic!("missing gate {gate_id}"))
+        })
+        .collect()
 }
 
 #[cfg(test)]
 fn matching_leaf(view: &PoemView<'_>, strict_first: bool) -> Option<Leaf> {
-    gates_sorted(strict_first).into_iter().find_map(|gate| {
-        let passed = assess(gate.id, view)
-            .iter()
-            .all(|condition| condition.passed);
-        if passed { Some(gate.leaf) } else { None }
-    })
+    let order = if strict_first {
+        WALK_ORDER_ROUTE
+    } else {
+        AVALOKITAM_WALK_ORDER
+    };
+    let fitted = family_walk_gate(&gate_pass_bits(view), order)
+        .and_then(|index| leaf_for_gate_id(GATE_FACTS[index].id));
+    leaf_after_repeated_tanichol_route(fitted, view)
 }
 
 const GATES: [GateSpec; 37] = [
@@ -948,7 +1055,7 @@ fn assess_kalivenpaa_long_osai(view: &PoemView<'_>) -> Vec<Condition> {
         ),
         requirement(
             "ven_above_ninety",
-            share_above(ven_bonds, view.linkage.len(), KALIVENPAA_VEN_TALAI_PERCENT),
+            share_passes(SHARE_STRICT_90, ven_bonds, view.linkage.len()),
             "வெண்டளை 90%க்கு மேல்",
         ),
         requirement("no_kani", no_kani, "கனிச்சீர் தவிர்க்கப்பட்டுள்ளது"),
@@ -984,7 +1091,12 @@ fn aciriya_core_conditions(view: &PoemView<'_>) -> Vec<Condition> {
     let feet = content_feet(view.lines);
     let iyar = feet
         .iter()
-        .filter(|foot| matches!(cir_class_for_foot(foot), Some(CirAcaiClass::Maa | CirAcaiClass::Vilam)))
+        .filter(|foot| {
+            matches!(
+                cir_class_for_foot(foot),
+                Some(CirAcaiClass::Maa | CirAcaiClass::Vilam)
+            )
+        })
         .count();
     let aciriya_bonds = count_bonds(view.linkage, LinkageType::AciriyaTalai);
     let ending_text = last_syllable_text(view.lines);
@@ -1007,12 +1119,12 @@ fn aciriya_core_conditions(view: &PoemView<'_>) -> Vec<Condition> {
         requirement("three_lines", counts.len() >= 3, "குறைந்தபட்சம் மூன்று அடி"),
         requirement(
             "iyar_cir",
-            share_above(iyar, feet.len(), MAJORITY_PERCENT),
+            share_passes(SHARE_STRICT_40, iyar, feet.len()),
             "இயற்சீர் 40%க்கு மேல்",
         ),
         requirement(
             "aciriya_talai",
-            share_above(aciriya_bonds, view.linkage.len(), MAJORITY_PERCENT),
+            share_passes(SHARE_STRICT_40, aciriya_bonds, view.linkage.len()),
             "ஆசிரியத்தளை 40%க்கு மேல்",
         ),
         requirement(
@@ -1060,25 +1172,17 @@ fn short_line_elsewhere(counts: &[usize]) -> bool {
 fn assess_tharavu(view: &PoemView<'_>) -> Vec<Condition> {
     let counts = content_seer_counts(view.lines);
     let feet = content_feet(view.lines);
-    let alavadi_only = counts.len() >= ALAVADI_SEER_COUNT
-        && counts.iter().all(|count| *count == ALAVADI_SEER_COUNT);
+    let enough_lines = tharavu_line_count_passes(THARAVU_ALAVADI_ROUTE, counts.len());
+    let alavadi_only = enough_lines && counts.iter().all(|count| *count == ALAVADI_SEER_COUNT);
     let no_maa = !feet.is_empty() && feet.iter().all(|foot| !is_maa_or_vilangani(foot));
     let kali = count_bonds(view.linkage, LinkageType::KaliTalai);
     vec![
-        requirement(
-            "four_lines",
-            counts.len() >= ALAVADI_SEER_COUNT,
-            "நான்கு அடி அல்லது மேல்",
-        ),
+        requirement("four_lines", enough_lines, "நான்கு அடி அல்லது மேல்"),
         requirement("alavadi_only", alavadi_only, "அடிதோறும் அளவடி"),
-        requirement(
-            "no_maa_or_vilangani",
-            no_maa,
-            "மாச்சீரும் விளங்கனியும் இல்லாமல்",
-        ),
+        requirement("no_maa_or_vilangani", no_maa, "மாச்சீரும் விளங்கனியும் இல்லாமல்"),
         requirement(
             "kali_talai",
-            share_above(kali, view.linkage.len(), MAJORITY_PERCENT),
+            share_passes(SHARE_STRICT_40, kali, view.linkage.len()),
             "கலித்தளை 40%க்கு மேல்",
         ),
     ]
@@ -1088,7 +1192,8 @@ fn assess_venkali(view: &PoemView<'_>) -> Vec<Condition> {
     let counts = content_seer_counts(view.lines);
     let kali = count_bonds(view.linkage, LinkageType::KaliTalai);
     let ven = count_bonds(view.linkage, LinkageType::VenTalai);
-    let body_ok = counts.len() >= ALAVADI_SEER_COUNT && non_last_lines_lack_maa_and_vilangani(view.lines);
+    let body_ok =
+        counts.len() >= ALAVADI_SEER_COUNT && non_last_lines_lack_maa_and_vilangani(view.lines);
     vec![
         requirement(
             "venkali_shape",
@@ -1102,12 +1207,12 @@ fn assess_venkali(view: &PoemView<'_>) -> Vec<Condition> {
         ),
         requirement(
             "kali_and_ven",
-            share_above(kali + ven, view.linkage.len(), VENKALI_COMBINED_TALAI_PERCENT),
+            share_passes(SHARE_STRICT_50, kali + ven, view.linkage.len()),
             "கலித்தளை மற்றும் வெண்டளை 50%க்கு மேல்",
         ),
         requirement(
             "kali_floor",
-            share_above(kali, view.linkage.len(), VENKALI_KALI_TALAI_FLOOR_PERCENT),
+            share_passes(SHARE_STRICT_25, kali, view.linkage.len()),
             "கலித்தளை 25%க்கு மேல்",
         ),
     ]
@@ -1190,18 +1295,18 @@ fn assess_vanji(view: &PoemView<'_>, expected_seers: usize, seer_name: &str) -> 
         requirement("skeleton", true, "வஞ்சி அடி, தனிச்சொல், சுரிதகம்"),
         requirement(
             "kani_tenth",
-            share_rounds_to_tenth(kani, vanji_feet.len(), MAJORITY_PERCENT),
+            share_passes(KANI_TENTH_40, kani, vanji_feet.len()),
             &format!("கனிச்சீர் {kani}/{} பத்தில் 40", vanji_feet.len()),
         ),
         requirement(
             "vanji_talai",
-            share_above(vanji_talai, vanji_bonds.len(), MAJORITY_PERCENT),
+            share_passes(SHARE_STRICT_40, vanji_talai, vanji_bonds.len()),
             "வஞ்சித்தளை 40%க்கு மேல்",
         ),
         requirement(
             "surithagam",
             split.surithagam_lines >= SURITHAGAM_MIN_LINES
-                && share_above(suri_aciriya, suri_bonds.len(), MAJORITY_PERCENT),
+                && share_passes(SHARE_STRICT_40, suri_aciriya, suri_bonds.len()),
             "சுரிதக ஆசிரியத்தளை 40%க்கு மேல்",
         ),
         requirement(
@@ -1319,7 +1424,11 @@ fn assess_kurattazhisai(view: &PoemView<'_>) -> Vec<Condition> {
     ]
 }
 
-fn assess_aciriya_virutham(view: &PoemView<'_>, expected_seers: usize, seer_name: &str) -> Vec<Condition> {
+fn assess_aciriya_virutham(
+    view: &PoemView<'_>,
+    expected_seers: usize,
+    seer_name: &str,
+) -> Vec<Condition> {
     let counts = content_seer_counts(view.lines);
     let four = counts.len() == 4;
     let equal = four && counts.iter().all(|count| *count == counts[0]);
@@ -1401,11 +1510,7 @@ fn assess_kattalai_kalippaa(view: &PoemView<'_>) -> Vec<Condition> {
             counts.len() == 8 && counts.iter().all(|count| *count == ALAVADI_SEER_COUNT),
             "அரையடிதோறும் நான்கு சீர்",
         ),
-        requirement(
-            "letter_count",
-            letters,
-            "மெய்யொழித்து நேர் 11, நிரை 12 எழுத்து",
-        ),
+        requirement("letter_count", letters, "மெய்யொழித்து நேர் 11, நிரை 12 எழுத்து"),
         requirement(
             "opening_aciriya",
             arai_openings_are_aciriya(view),
@@ -1471,22 +1576,14 @@ fn assess_kattalai_kalithurai(view: &PoemView<'_>) -> Vec<Condition> {
             lines_share_etukai(view.lines),
             "ஒரே அடி எதுகை",
         ),
-        requirement(
-            "letter_count",
-            letters,
-            "மெய்யொழித்து நேர் 16, நிரை 17 எழுத்து",
-        ),
+        requirement("letter_count", letters, "மெய்யொழித்து நேர் 16, நிரை 17 எழுத்து"),
         requirement(
             "internal_ven",
             kalithurai_internal_ven(view),
             "அடிக்குள் வெண்டளை",
         ),
         requirement("other_seers", others, "ஏனைய சீர் விளங்காய் அல்ல"),
-        requirement(
-            "fifth_seer",
-            fifth,
-            "ஐந்தாம் சீர் விளங்காய், மாங்கனி அல்லது மாந்தண்பூ",
-        ),
+        requirement("fifth_seer", fifth, "ஐந்தாம் சீர் விளங்காய், மாங்கனி அல்லது மாந்தண்பூ"),
         requirement("ekaram", ends_on_ekaram(view.lines), "ஈறு ஏ"),
     ]
 }
@@ -1496,9 +1593,8 @@ fn kalithurai_internal_ven(view: &PoemView<'_>) -> bool {
     spans.len() == 4
         && spans.iter().all(|(start, count)| {
             *count == NEDILADI_SEER_COUNT
-                && (0..NEDILADI_SEER_COUNT - 1).all(|offset| {
-                    bond_is_kind(view.linkage, start + offset, LinkageType::VenTalai)
-                })
+                && (0..NEDILADI_SEER_COUNT - 1)
+                    .all(|offset| bond_is_kind(view.linkage, start + offset, LinkageType::VenTalai))
         })
 }
 
@@ -1649,8 +1745,11 @@ fn is_forbidden_aciriya_foot(foot: &Foot) -> bool {
         .collect();
     matches!(
         pattern.as_slice(),
-        [SyllableType::Nirai, SyllableType::Nirai, SyllableType::Nirai]
-            | [SyllableType::Ner, SyllableType::Nirai, SyllableType::Nirai]
+        [
+            SyllableType::Nirai,
+            SyllableType::Nirai,
+            SyllableType::Nirai
+        ] | [SyllableType::Ner, SyllableType::Nirai, SyllableType::Nirai]
     )
 }
 
@@ -1701,52 +1800,21 @@ fn is_aciriya_thurai(counts: &[usize]) -> bool {
 
 /// விளங்காய், or the site's rare stand-ins மாங்கனி and மாந்தண்பூ.
 fn is_kattalai_fifth_seer(foot: &Foot) -> bool {
-    is_vilangaay(foot) || is_maangani(foot) || is_maanthanpuu(foot)
+    fifth_seer_pattern_allowed(KATTALAI_FIFTH_SEER_ROUTE, &foot_syllable_pattern(foot))
+}
+
+fn foot_syllable_pattern(foot: &Foot) -> Vec<SyllableType> {
+    foot.syllables
+        .iter()
+        .map(|syllable| syllable.syllable_type)
+        .collect()
 }
 
 fn is_vilangaay(foot: &Foot) -> bool {
-    syllable_pattern_is(foot, &[SyllableType::Ner, SyllableType::Nirai, SyllableType::Ner])
-        || syllable_pattern_is(
-            foot,
-            &[SyllableType::Nirai, SyllableType::Nirai, SyllableType::Ner],
-        )
-}
-
-fn is_maangani(foot: &Foot) -> bool {
-    syllable_pattern_is(foot, &[SyllableType::Ner, SyllableType::Ner, SyllableType::Nirai])
-        || syllable_pattern_is(
-            foot,
-            &[SyllableType::Nirai, SyllableType::Ner, SyllableType::Nirai],
-        )
-}
-
-fn is_maanthanpuu(foot: &Foot) -> bool {
-    syllable_pattern_is(
-        foot,
-        &[
-            SyllableType::Ner,
-            SyllableType::Ner,
-            SyllableType::Ner,
-            SyllableType::Ner,
-        ],
-    ) || syllable_pattern_is(
-        foot,
-        &[
-            SyllableType::Nirai,
-            SyllableType::Ner,
-            SyllableType::Ner,
-            SyllableType::Ner,
-        ],
+    fifth_seer_pattern_allowed(
+        FifthSeerRoute::TreatiseVilangaay,
+        &foot_syllable_pattern(foot),
     )
-}
-
-fn syllable_pattern_is(foot: &Foot, pattern: &[SyllableType]) -> bool {
-    foot.syllables.len() == pattern.len()
-        && foot
-            .syllables
-            .iter()
-            .zip(pattern.iter())
-            .all(|(syllable, expected)| syllable.syllable_type == *expected)
 }
 
 fn ends_on_ekaram(lines: &[Line]) -> bool {
@@ -1797,7 +1865,10 @@ fn content_lines(lines: &[Line]) -> Vec<&Line> {
 }
 
 fn content_seer_counts(lines: &[Line]) -> Vec<usize> {
-    content_lines(lines).iter().map(|line| line.feet.len()).collect()
+    content_lines(lines)
+        .iter()
+        .map(|line| line.feet.len())
+        .collect()
 }
 
 fn content_feet(lines: &[Line]) -> Vec<&Foot> {
@@ -1852,23 +1923,6 @@ fn count_bonds(linkage: &[Linkage], kind: LinkageType) -> usize {
         .count()
 }
 
-/// Site wording is "above" the percent, so an exact share does not pass.
-fn share_above(part: usize, whole: usize, percent: usize) -> bool {
-    whole > 0 && part.saturating_mul(100) > whole.saturating_mul(percent)
-}
-
-/// Round `part / whole` to one tenth, then compare with `percent`.
-fn share_rounds_to_tenth(part: usize, whole: usize, percent: usize) -> bool {
-    if whole == 0 {
-        return false;
-    }
-    let tenths = part
-        .saturating_mul(10)
-        .saturating_add(whole / 2)
-        / whole;
-    tenths.saturating_mul(10) >= percent
-}
-
 fn vikarpam_run_count(lines: &[Line]) -> usize {
     let keys: Vec<String> = content_lines(lines)
         .iter()
@@ -1898,7 +1952,11 @@ fn lines_share_etukai(lines: &[Line]) -> bool {
 }
 
 fn etukai_key(foot: &Foot) -> String {
-    let text: String = foot.syllables.iter().map(|syllable| syllable.text.as_str()).collect();
+    let text: String = foot
+        .syllables
+        .iter()
+        .map(|syllable| syllable.text.as_str())
+        .collect();
     second_consonant(&text)
 }
 
@@ -1928,6 +1986,35 @@ fn etukai_tanichol(source: &str, lines: &[Line]) -> Option<String> {
         let key = second_consonant(token);
         line_keys.iter().any(|line_key| line_key == &key)
     })
+}
+
+fn line_final_tanichol_repeats(source: &str) -> bool {
+    let tokens = tanichol_tokens(source);
+    tokens.len() >= 2 && tokens.iter().all(|token| token == &tokens[0])
+}
+
+/// The chosen route keeps கட்டளைக்கலித்துறை. The unchosen routes move the
+/// probe to வெளிவிருத்தம் only when that gate also passes.
+fn leaf_after_repeated_tanichol_route(fitted: Option<Leaf>, view: &PoemView<'_>) -> Option<Leaf> {
+    let Some(leaf) = fitted else {
+        return None;
+    };
+    if leaf.id != "kattalai_kalithurai" || !line_final_tanichol_repeats(view.source) {
+        return Some(leaf);
+    }
+    if repeated_tanichol_keeps_kattalai(REPEATED_TANICHOL_ROUTE) {
+        return Some(leaf);
+    }
+    let velivirutham_passes = assess("velivirutham", view)
+        .iter()
+        .all(|condition| condition.passed);
+    if !velivirutham_passes {
+        return Some(leaf);
+    }
+    GATES
+        .iter()
+        .find(|gate| gate.id == "velivirutham")
+        .map(|gate| gate.leaf)
 }
 
 fn tanichol_tokens(source: &str) -> Vec<String> {
@@ -1960,9 +2047,9 @@ fn last_syllable_text(lines: &[Line]) -> String {
         .unwrap_or_default()
 }
 
-/// Seer offsets (0-based) for மேற்கதுவாய்: positions 1, 3, and 4.
+/// Seer offsets (0-based) for the chosen மேற்கதுவாய் seats.
 pub fn merkathuvai_seer_indexes(seer_count: usize) -> Vec<usize> {
-    MERKATHUVAI_SEER_POSITIONS
+    merkathuvai_seat_positions(MERKATHUVAI_SEAT_ROUTE)
         .into_iter()
         .filter(|position| *position >= 1 && *position <= seer_count)
         .map(|position| position - 1)
@@ -2030,6 +2117,98 @@ fn report_for(
     }
 }
 
+#[allow(dead_code)]
+fn family_chart_label(family_name: &str) -> &'static str {
+    match family_name {
+        "aciriyappaa" => "ஆசிரியப்பா",
+        "kattalai_kalithurai" => "கட்டளைக்கலித்துறை",
+        "venpaa" => "வெண்பா",
+        "vanjippaa" => "வஞ்சிப்பா",
+        "aciriya_virutham" => "ஆசிரிய விருத்தம்",
+        "kattalai_kalippaa" => "கட்டளைக்கலிப்பா",
+        "kalivenpaa_long_osai" => "கலிவெண்பா ஓசை",
+        "tharavukocha_kalippaa" => "தரவுகொச்சகம்",
+        "venkalippaa" => "வெண்கலிப்பா",
+        "velivirutham" => "வெளிவிருத்தம்",
+        "ventazhisai" => "வெண்டாழிசை",
+        "aciriya_thurai" => "ஆசிரியத் துறை",
+        "kurattazhisai" => "குறட்டாழிசை",
+        "aciriya_thazhisai" => "ஆசிரியத் தாழிசை",
+        "kalithurai" => "கலித்துறை",
+        "kalivirutham" => "கலிவிருத்தம்",
+        "vanjivirutham" => "வஞ்சி விருத்தம்",
+        "vellathazhisai" => "வெள்ளொத்தாழிசை",
+        "vendurai" => "வெண்டுறை",
+        "kural_vensenthurai" => "குறள் வெண்செந்துறை",
+        "kalithazhisai" => "கலித்தாழிசை",
+        "vanjithazhisai" => "வஞ்சித்தாழிசை",
+        "vanjithurai" => "வஞ்சித்துறை",
+        _ => "unknown family",
+    }
+}
+
+/// State chart of the strict-first walk. A state is a family gate or a leaf
+/// discriminator. பொருந்தும் enters the discriminator or ends on the leaf.
+/// இல்லை moves to the next discriminator, then the next family.
+#[allow(dead_code)]
+fn walk_state_chart_mermaid() -> String {
+    let order = gates_sorted(true);
+    let mut families: Vec<(&str, Vec<&GateSpec>)> = Vec::new();
+    for gate in &order {
+        let family_name = family_id(gate.id);
+        if families
+            .last()
+            .is_some_and(|(name, _)| *name == family_name)
+        {
+            families.last_mut().expect("family").1.push(gate);
+        } else {
+            families.push((family_name, vec![gate]));
+        }
+    }
+    let mut chart = String::from(
+        "%%{init: {\"theme\": \"neutral\", \"themeVariables\": {\"fontFamily\": \"Noto Sans Tamil, Noto Sans, sans-serif\", \"fontSize\": \"16px\"}}}%%\nstateDiagram-v2\n  direction TB\n  state \"பொருந்தவில்லை\" as none\n",
+    );
+    chart.push_str("  [*] --> ");
+    chart.push_str(families[0].0);
+    chart.push('\n');
+    for (family_index, (family_name, gates)) in families.iter().enumerate() {
+        let next_family = families
+            .get(family_index + 1)
+            .map(|(name, _)| *name)
+            .unwrap_or("none");
+        chart.push_str(&format!(
+            "  state \"{}\" as {family_name}\n",
+            family_chart_label(family_name)
+        ));
+        chart.push_str(&format!("  state {family_name} {{\n"));
+        chart.push_str("    [*] --> ");
+        chart.push_str(&format!("{}_disc\n", gates[0].id));
+        for (gate_index, gate) in gates.iter().enumerate() {
+            let discriminator = format!("{}_disc", gate.id);
+            let leaf_state = format!("{}_leaf", gate.id);
+            chart.push_str(&format!(
+                "    state \"{}\" as {discriminator}\n",
+                gate.leaf.label_ta
+            ));
+            chart.push_str("    state \"இலை\" as ");
+            chart.push_str(&leaf_state);
+            chart.push('\n');
+            chart.push_str(&format!("    {discriminator} --> {leaf_state}: பொருந்தும்\n"));
+            if let Some(next_gate) = gates.get(gate_index + 1) {
+                chart.push_str(&format!(
+                    "    {discriminator} --> {}_disc: இல்லை\n",
+                    next_gate.id
+                ));
+            } else {
+                chart.push_str(&format!("    {discriminator} --> [*]: இல்லை\n"));
+            }
+        }
+        chart.push_str("  }\n");
+        chart.push_str(&format!("  {family_name} --> {next_family}: இல்லை\n"));
+    }
+    chart
+}
+
 fn agreement(family: Option<MlFamily>, ml_verdict: Option<&MetreType>) -> Option<bool> {
     let ml_family = match ml_verdict {
         Some(MetreType::Venpaa) => MlFamily::Venpaa,
@@ -2063,23 +2242,28 @@ mod tests {
 
     #[test]
     fn sinthadi_vanji_kani_share_follows_the_site_tenth() {
-        assert!(share_rounds_to_tenth(7, 18, MAJORITY_PERCENT));
-        assert!(!share_rounds_to_tenth(6, 18, MAJORITY_PERCENT));
-        assert!(!share_above(7, 18, MAJORITY_PERCENT));
+        for (part, whole, passes) in crate::classical_decision::KANI_TENTH_CASES {
+            assert_eq!(share_passes(KANI_TENTH_40, part, whole), passes);
+            assert!(!share_passes(SHARE_STRICT_40, part, whole));
+        }
     }
 
     #[test]
     fn exact_percent_is_not_above_the_gate() {
-        assert!(!share_above(2, 5, MAJORITY_PERCENT));
-        assert!(!share_above(1, 2, VENKALI_COMBINED_TALAI_PERCENT));
-        assert!(!share_above(1, 4, VENKALI_KALI_TALAI_FLOOR_PERCENT));
-        assert!(share_above(3, 5, MAJORITY_PERCENT));
+        assert!(!share_passes(SHARE_STRICT_40, 2, 5));
+        assert!(!share_passes(SHARE_STRICT_50, 1, 2));
+        assert!(!share_passes(SHARE_STRICT_25, 1, 4));
+        assert!(!share_passes(SHARE_STRICT_90, 9, 10));
+        assert!(share_passes(SHARE_STRICT_40, 3, 5));
     }
 
     #[test]
     fn merkathuvai_positions_are_seers_one_three_four() {
         assert_eq!(merkathuvai_seer_indexes(4), vec![0, 2, 3]);
-        assert_eq!(MERKATHUVAI_SEER_POSITIONS, [1, 3, 4]);
+        assert_eq!(
+            crate::classical_decision::MERKATHUVAI_SEER_POSITIONS,
+            [1, 3, 4]
+        );
         assert_eq!(ALAVADI_SEER_COUNT, 4);
     }
 
@@ -2104,7 +2288,12 @@ mod tests {
         };
         for gate in GATES {
             let conditions = assess(gate.id, &view);
-            assert_eq!(conditions.len(), gate.condition_count as usize, "{}", gate.id);
+            assert_eq!(
+                conditions.len(),
+                gate.condition_count as usize,
+                "{}",
+                gate.id
+            );
             let disc_count = discriminator_count(gate.id);
             assert!(
                 disc_count == 1 || disc_count == 2,
@@ -2157,14 +2346,26 @@ mod tests {
         let kalippaa = include_str!("../../docs/classical-tree-kalippaa.mmd");
         let vanjippaa = include_str!("../../docs/classical-tree-vanjippaa.mmd");
         let venpaavinam = include_str!("../../docs/classical-tree-venpaavinam.mmd");
-        let bundle = [overview, venpaa, aciriyappaa, kalippaa, vanjippaa, venpaavinam].join("\n");
+        let bundle = [
+            overview,
+            venpaa,
+            aciriyappaa,
+            kalippaa,
+            vanjippaa,
+            venpaavinam,
+        ]
+        .join("\n");
         let mut seen_families = Vec::new();
         for line in overview.lines() {
             let Some(bracket_at) = line.find('[') else {
                 continue;
             };
             let node_id = line[..bracket_at].trim();
-            if node_id.is_empty() || node_id.contains(' ') || node_id == "start" || node_id == "none" {
+            if node_id.is_empty()
+                || node_id.contains(' ')
+                || node_id == "start"
+                || node_id == "none"
+            {
                 continue;
             }
             seen_families.push(node_id);
@@ -2213,7 +2414,10 @@ mod tests {
                     .classical_tree
                     .path
                     .iter()
-                    .filter(|step| step.rule_id != "thodai_merkathuvai")
+                    .filter(|step| {
+                        step.rule_id != "thodai_merkathuvai"
+                            && !step.rule_id.starts_with("decision.")
+                    })
                     .collect();
                 let winner = steps
                     .iter()
@@ -2221,7 +2425,10 @@ mod tests {
                     .unwrap_or_else(|| panic!("{} has no discriminator", row.en));
                 assert!(winner.passed, "{} {}", row.en, winner.rule_id);
                 let winner_gate = winner.rule_id.trim_end_matches(".discriminator");
-                let gate = GATES.iter().find(|candidate| candidate.id == winner_gate).expect(winner_gate);
+                let gate = GATES
+                    .iter()
+                    .find(|candidate| candidate.id == winner_gate)
+                    .expect(winner_gate);
                 assert_eq!(gate.leaf.id, result.classical_tree.leaf_id, "{}", row.en);
                 assert!(!winner.message_ta.is_empty(), "{}", row.en);
                 for step in &steps {
@@ -2254,24 +2461,64 @@ mod tests {
     }
 
     #[test]
-    fn kattalai_kalithurai_wins_when_velivirutham_also_matches() {
-        let line = "கனந்தரும் பூங்குழ லாளபி ராமி - கடைக்கண்களே";
-        let poem = [line; 4].join("\n");
+    fn repeated_tanichol_probe_keeps_kattalai_under_the_chosen_route() {
+        use crate::classical_decision::{
+            repeated_tanichol_keeps_kattalai, DecisionSource, RepeatedTanicholRoute,
+            REPEATED_TANICHOL_PROBE_LINE, REPEATED_TANICHOL_ROUTE,
+        };
+        let poem = [REPEATED_TANICHOL_PROBE_LINE; 4].join("\n");
         let result = parse_poem(&poem, options_without_ml()).expect("parse");
         assert_eq!(content_seer_counts(&result.lines), vec![5, 5, 5, 5]);
         let view = poem_view(&result.normalized_text, &result.lines, &result.linkage);
-        assert!(assess("kattalai_kalithurai", &view).iter().all(|condition| condition.passed));
-        assert!(assess("velivirutham", &view).iter().all(|condition| condition.passed));
-        assert_eq!(matching_leaf(&view, false).expect("avalokitam").id, "velivirutham");
-        assert_eq!(matching_leaf(&view, true).expect("strict").id, "kattalai_kalithurai");
+        assert!(line_final_tanichol_repeats(&result.normalized_text));
+        assert!(assess("kattalai_kalithurai", &view)
+            .iter()
+            .all(|condition| condition.passed));
+        assert!(assess("velivirutham", &view)
+            .iter()
+            .all(|condition| condition.passed));
+        assert_eq!(
+            matching_leaf(&view, false).expect("avalokitam").id,
+            "velivirutham"
+        );
+        assert_eq!(
+            matching_leaf(&view, true).expect("strict").id,
+            "kattalai_kalithurai"
+        );
+        assert!(repeated_tanichol_keeps_kattalai(REPEATED_TANICHOL_ROUTE));
+        assert!(!repeated_tanichol_keeps_kattalai(
+            RepeatedTanicholRoute::RejectRepeatedLineFinalTanichol {
+                source: DecisionSource::Site,
+            }
+        ));
+        assert!(!repeated_tanichol_keeps_kattalai(
+            RepeatedTanicholRoute::VenpaaVinamBeforeKalippaaVinam {
+                source: DecisionSource::Site,
+            }
+        ));
         assert_eq!(result.classical_tree.leaf_id, "kattalai_kalithurai");
         assert_eq!(result.classical_tree.label_ta, "கட்டளை கலித்துறை");
+        let route = result
+            .classical_tree
+            .path
+            .iter()
+            .find(|step| step.rule_id == "decision.repeated_tanichol")
+            .expect("route");
+        assert!(route.message_ta.contains("keep_strict_first"));
+        assert!(route.message_ta.contains("velivirutham"));
+        assert!(route.message_ta.contains("not chosen"));
     }
 
     fn variation_row(sample_id: &str) -> crate::poem_variations::PoemVariationRow {
         poem_variations_blocks()
             .into_iter()
-            .flat_map(|block| block.special_types.iter().chain(block.variations.iter()).copied())
+            .flat_map(|block| {
+                block
+                    .special_types
+                    .iter()
+                    .chain(block.variations.iter())
+                    .copied()
+            })
             .find(|row| row.en == sample_id)
             .unwrap_or_else(|| panic!("missing {sample_id}"))
     }
@@ -2282,9 +2529,17 @@ mod tests {
         let result = parse_poem(row.example, options_without_ml()).expect("parse");
         let view = poem_view(&result.normalized_text, &result.lines, &result.linkage);
         let tharavu = assess("tharavukocha_kalippaa", &view);
-        assert!(tharavu.iter().any(|condition| condition.id == "kali_talai" && !condition.passed));
-        assert_eq!(matching_leaf(&view, false).expect("avalokitam").id, "kattalai_kalippaa");
-        assert_eq!(matching_leaf(&view, true).expect("strict").id, "kattalai_kalippaa");
+        assert!(tharavu
+            .iter()
+            .any(|condition| condition.id == "kali_talai" && !condition.passed));
+        assert_eq!(
+            matching_leaf(&view, false).expect("avalokitam").id,
+            "kattalai_kalippaa"
+        );
+        assert_eq!(
+            matching_leaf(&view, true).expect("strict").id,
+            "kattalai_kalippaa"
+        );
     }
 
     #[test]
@@ -2294,8 +2549,14 @@ mod tests {
         let view = poem_view(&result.normalized_text, &result.lines, &result.linkage);
         let aciriya = assess("nilaimandila_aciriyappaa", &view);
         assert!(aciriya.iter().any(|condition| !condition.passed));
-        assert_eq!(matching_leaf(&view, false).expect("avalokitam").id, "oru_vikarpa_kural_venpaa");
-        assert_eq!(matching_leaf(&view, true).expect("strict").id, "oru_vikarpa_kural_venpaa");
+        assert_eq!(
+            matching_leaf(&view, false).expect("avalokitam").id,
+            "oru_vikarpa_kural_venpaa"
+        );
+        assert_eq!(
+            matching_leaf(&view, true).expect("strict").id,
+            "oru_vikarpa_kural_venpaa"
+        );
     }
 
     #[test]
@@ -2303,10 +2564,34 @@ mod tests {
         let row = variation_row("kalivenpaa");
         let result = parse_poem(row.example, options_without_ml()).expect("parse");
         let view = poem_view(&result.normalized_text, &result.lines, &result.linkage);
-        assert!(assess("kuraladi_vanjippaa", &view).iter().any(|condition| !condition.passed));
-        assert!(assess("sinthadi_vanjippaa", &view).iter().any(|condition| !condition.passed));
-        assert_eq!(matching_leaf(&view, false).expect("avalokitam").id, "kalivenpaa");
+        assert!(assess("kuraladi_vanjippaa", &view)
+            .iter()
+            .any(|condition| !condition.passed));
+        assert!(assess("sinthadi_vanjippaa", &view)
+            .iter()
+            .any(|condition| !condition.passed));
+        assert_eq!(
+            matching_leaf(&view, false).expect("avalokitam").id,
+            "kalivenpaa"
+        );
         assert_eq!(matching_leaf(&view, true).expect("strict").id, "kalivenpaa");
+        let winner = result
+            .classical_tree
+            .path
+            .iter()
+            .rev()
+            .find(|step| step.passed && step.rule_id.ends_with(".discriminator"))
+            .expect("winner");
+        let winner_gate = winner.rule_id.trim_end_matches(".discriminator");
+        let route = result
+            .classical_tree
+            .path
+            .iter()
+            .find(|step| step.rule_id == "decision.kalivenpaa_route")
+            .expect("kalivenpaa route");
+        assert!(route.message_ta.contains(winner_gate));
+        assert!(route.message_ta.contains("leaf_id kalivenpaa"));
+        assert_ne!(winner_gate, "kalivenpaa");
     }
 
     #[test]
@@ -2377,9 +2662,11 @@ mod tests {
         let result = parse_poem(poem, options_with_ml()).expect("parse");
         assert_ne!(result.classical_tree.leaf_id, "oru_vikarpa_kural_venpaa");
         assert_ne!(result.classical_tree.leaf_id, "iru_vikarpa_kural_venpaa");
-        assert!(result.classical_tree.path.iter().any(|step| {
-            step.rule_id == "venpaa.ending_seer" && !step.passed
-        }));
+        assert!(result
+            .classical_tree
+            .path
+            .iter()
+            .any(|step| { step.rule_id == "venpaa.ending_seer" && !step.passed }));
         assert!(result.classical_tree.path.iter().all(|step| {
             !step.rule_id.starts_with("oru_vikarpa_kural_venpaa.")
                 && !step.rule_id.starts_with("iru_vikarpa_kural_venpaa.")
@@ -2427,7 +2714,10 @@ mod tests {
         let line = "யெத்தனை யெத்தனை யெத்தனை யெத்தனை";
         let poem = [line; 8].join("\n");
         let result = parse_poem(&poem, options_without_ml()).expect("parse");
-        assert_eq!(content_seer_counts(&result.lines), vec![4, 4, 4, 4, 4, 4, 4, 4]);
+        assert_eq!(
+            content_seer_counts(&result.lines),
+            vec![4, 4, 4, 4, 4, 4, 4, 4]
+        );
         assert_ne!(result.classical_tree.leaf_id, "kattalai_kalippaa");
         assert_ne!(result.classical_tree.label_ta, "கட்டளை கலிப்பா");
     }
@@ -2473,5 +2763,405 @@ mod tests {
         let result = parse_poem(poem, options_without_ml()).expect("parse");
         assert_eq!(result.classical_tree.tree_agrees_with_ml, None);
         assert_eq!(result.metre_type, None);
+    }
+
+    #[test]
+    fn gate_facts_match_the_leaf_table() {
+        assert_eq!(GATE_FACTS.len(), GATES.len());
+        for gate in GATES {
+            let fact = GATE_FACTS
+                .iter()
+                .find(|candidate| candidate.id == gate.id)
+                .unwrap_or_else(|| panic!("missing fact {}", gate.id));
+            assert_eq!(fact.avalokitam_rank, gate.avalokitam_rank, "{}", gate.id);
+            assert_eq!(fact.condition_count, gate.condition_count, "{}", gate.id);
+            assert_eq!(fact.family, family_id(gate.id), "{}", gate.id);
+            assert_eq!(
+                fact.avalokitam_rank as usize,
+                GATE_FACTS.iter().position(|row| row.id == gate.id).unwrap()
+            );
+        }
+    }
+
+    #[test]
+    fn named_order_overlaps_are_real_disagreements() {
+        use crate::classical_decision::{
+            first_matching_gate, gate_index, minimal_overlap_pairs, GATE_COUNT,
+        };
+        let pairs = minimal_overlap_pairs();
+        assert_eq!(pairs.len(), 142);
+        for overlap in NAMED_ORDER_OVERLAPS {
+            let strict_index = gate_index(overlap.strict_gate).expect(overlap.strict_gate);
+            let avalokitam_index =
+                gate_index(overlap.avalokitam_gate).expect(overlap.avalokitam_gate);
+            assert!(
+                pairs.contains(&(strict_index, avalokitam_index)),
+                "{}",
+                overlap.id
+            );
+            let mut passes = [false; GATE_COUNT];
+            passes[strict_index] = true;
+            passes[avalokitam_index] = true;
+            assert_eq!(
+                first_matching_gate(&passes, WALK_ORDER_ROUTE).map(|index| GATE_FACTS[index].id),
+                Some(overlap.strict_gate)
+            );
+            assert_eq!(
+                first_matching_gate(&passes, AVALOKITAM_WALK_ORDER)
+                    .map(|index| GATE_FACTS[index].id),
+                Some(overlap.avalokitam_gate)
+            );
+        }
+        let sinthadi = gate_index("sinthadi_vanjippaa").expect("sinthadi");
+        let long_osai = gate_index("kalivenpaa_long_osai").expect("osai");
+        assert!(pairs.contains(&(sinthadi, long_osai)));
+    }
+
+    #[test]
+    fn allowed_paa_shadows_agree_under_both_orders() {
+        use crate::classical_decision::{
+            first_matching_gate, gate_index, minimal_overlap_pairs, ALLOWED_PAA_SHADOWS,
+            AVALOKITAM_WALK_ORDER, GATE_COUNT, WALK_ORDER_ROUTE,
+        };
+        let disagreements = minimal_overlap_pairs();
+        assert_eq!(ALLOWED_PAA_SHADOWS.len(), 13);
+        for shadow in ALLOWED_PAA_SHADOWS {
+            let paa_index = gate_index(shadow.paa_gate).expect(shadow.paa_gate);
+            let paavinam_index = gate_index(shadow.paavinam_gate).expect(shadow.paavinam_gate);
+            let mut passes = [false; GATE_COUNT];
+            passes[paa_index] = true;
+            passes[paavinam_index] = true;
+            assert_eq!(
+                first_matching_gate(&passes, WALK_ORDER_ROUTE).map(|index| GATE_FACTS[index].id),
+                Some(shadow.paa_gate),
+                "{}",
+                shadow.id
+            );
+            assert_eq!(
+                first_matching_gate(&passes, AVALOKITAM_WALK_ORDER)
+                    .map(|index| GATE_FACTS[index].id),
+                Some(shadow.paa_gate),
+                "{}",
+                shadow.id
+            );
+            assert!(
+                !disagreements.contains(&(paa_index, paavinam_index))
+                    && !disagreements.contains(&(paavinam_index, paa_index)),
+                "{}",
+                shadow.id
+            );
+        }
+    }
+
+    #[test]
+    fn every_gate_is_reachable_when_it_alone_passes() {
+        use crate::classical_decision::{family_walk_gate, first_matching_gate, GATE_COUNT};
+        for index in 0..GATE_COUNT {
+            let mut passes = [false; GATE_COUNT];
+            passes[index] = true;
+            assert_eq!(first_matching_gate(&passes, WALK_ORDER_ROUTE), Some(index));
+            assert_eq!(
+                first_matching_gate(&passes, AVALOKITAM_WALK_ORDER),
+                Some(index)
+            );
+            assert_eq!(family_walk_gate(&passes, WALK_ORDER_ROUTE), Some(index));
+        }
+    }
+
+    #[test]
+    fn nerisai_combined_mark_keeps_kural_ahead() {
+        use crate::classical_decision::{
+            effective_condition_count, ordered_gate_indexes, NerisaiTieRoute, NERISAI_TIE_ROUTE,
+        };
+        assert!(matches!(
+            NERISAI_TIE_ROUTE,
+            NerisaiTieRoute::CombinedMarkAvalokitamRank { .. }
+        ));
+        let order = ordered_gate_indexes(WALK_ORDER_ROUTE);
+        let position = |gate_id: &str| {
+            order
+                .iter()
+                .position(|index| GATE_FACTS[*index].id == gate_id)
+                .unwrap()
+        };
+        assert!(position("oru_vikarpa_kural_venpaa") < position("nerisai_sinthiyal_venpaa"));
+        assert!(position("oru_vikarpa_kural_venpaa") < position("oru_vikarpa_nerisai_venpaa"));
+        assert!(position("oru_vikarpa_kural_venpaa") < position("iru_vikarpa_nerisai_venpaa"));
+        let nerisai = GATE_FACTS
+            .iter()
+            .find(|gate| gate.id == "nerisai_sinthiyal_venpaa")
+            .unwrap();
+        let kural = GATE_FACTS
+            .iter()
+            .find(|gate| gate.id == "oru_vikarpa_kural_venpaa")
+            .unwrap();
+        assert_eq!(effective_condition_count(nerisai), 6);
+        assert_eq!(effective_condition_count(kural), 6);
+        assert_eq!(
+            GATE_FACTS
+                .iter()
+                .filter(|gate| {
+                    gate.id == "nerisai_sinthiyal_venpaa"
+                        || gate.id == "oru_vikarpa_nerisai_venpaa"
+                        || gate.id == "iru_vikarpa_nerisai_venpaa"
+                })
+                .map(|gate| gate.avalokitam_rank)
+                .collect::<Vec<_>>(),
+            vec![3, 5, 6]
+        );
+    }
+
+    #[test]
+    fn decision_routes_are_on_the_trace() {
+        let poem = "அகர முதல எழுத்தெல்லாம் ஆதி\nபகவன் முதற்றே உலகு";
+        let result = parse_poem(poem, options_without_ml()).expect("parse");
+        let rule_ids: Vec<&str> = result
+            .classical_tree
+            .path
+            .iter()
+            .map(|step| step.rule_id.as_str())
+            .collect();
+        for expected in [
+            "decision.walk_order",
+            "decision.nerisai_tie",
+            "decision.alavadi_word",
+            "decision.merkathuvai_seats",
+            "decision.order.kattalai_kalithurai_velivirutham",
+            "decision.order.aciriyappaa_kural_venpaa",
+            "decision.order.kattalai_kalippaa_tharavu",
+            "decision.order.vanjippaa_kalivenpaa_osai",
+            "decision.repeated_tanichol",
+            "decision.share.iyar_cir",
+            "decision.share.aciriya_talai",
+        ] {
+            assert!(rule_ids.contains(&expected), "missing {expected}");
+        }
+        assert!(!rule_ids
+            .iter()
+            .any(|rule_id| *rule_id == "decision.share.kani_tenth"));
+        assert!(!rule_ids
+            .iter()
+            .any(|rule_id| *rule_id == "decision.kattalai_fifth_seer"));
+        assert!(!rule_ids
+            .iter()
+            .any(|rule_id| *rule_id == "decision.tharavu_alavadi"));
+        let seats = result
+            .classical_tree
+            .path
+            .iter()
+            .find(|step| step.rule_id == "decision.merkathuvai_seats")
+            .expect("seats");
+        assert!(seats.message_ta.contains("treatise"));
+        assert!(seats.message_ta.contains("site_1_2_3"));
+        assert_eq!(result.classical_tree.leaf_id, "oru_vikarpa_kural_venpaa");
+    }
+
+    #[test]
+    fn tharavu_route_keeps_four_alavadi_lines() {
+        use crate::classical_decision::{
+            tharavu_line_count_passes, DecisionSource, TharavuAlavadiRoute,
+        };
+        assert!(tharavu_line_count_passes(THARAVU_ALAVADI_ROUTE, 4));
+        assert!(!tharavu_line_count_passes(
+            TharavuAlavadiRoute::SiteWordingAboveFour {
+                source: DecisionSource::Site
+            },
+            4
+        ));
+        let line = "தரும்நெஞ்சில் தரும்நெஞ்சில் தரும்நெஞ்சில் கடைக்கண்களே";
+        let poem = [line; 4].join("\n");
+        let result = parse_poem(&poem, options_without_ml()).expect("parse");
+        assert_eq!(result.classical_tree.leaf_id, "tharavukocha_kalippaa");
+        assert!(result.classical_tree.path.iter().any(|step| {
+            step.rule_id == "decision.tharavu_alavadi" && step.message_ta.contains("treatise")
+        }));
+    }
+
+    #[test]
+    fn walk_state_chart_matches_the_committed_diagram() {
+        let generated = walk_state_chart_mermaid();
+        let path = concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/../docs/classical-tree-walk.mmd"
+        );
+        if std::env::var_os("UPDATE_CLASSICAL_WALK").is_some() {
+            std::fs::write(path, &generated).expect("write walk chart");
+        }
+        let committed = std::fs::read_to_string(path).unwrap_or_default();
+        assert_eq!(committed, generated);
+        assert!(generated.contains("stateDiagram-v2"));
+        for gate in GATES {
+            assert!(
+                generated.contains(&format!("{}_disc", gate.id)),
+                "{}",
+                gate.id
+            );
+        }
+    }
+
+    #[test]
+    fn tla_gate_table_matches_the_rust_facts() {
+        let spec = include_str!("../verify/ClassicalTreeWalk.tla");
+        let mut rows = Vec::new();
+        for line in spec.lines() {
+            let Some(id_at) = line.find("id |-> \"") else {
+                continue;
+            };
+            let rest = &line[id_at + "id |-> \"".len()..];
+            let Some(id_end) = rest.find('"') else {
+                continue;
+            };
+            let gate_id = &rest[..id_end];
+            let rank = line
+                .split("rank |-> ")
+                .nth(1)
+                .and_then(|tail| tail.split(',').next())
+                .and_then(|token| token.trim().parse::<u16>().ok())
+                .unwrap_or_else(|| panic!("rank in {line}"));
+            let count = line
+                .split("count |-> ")
+                .nth(1)
+                .and_then(|tail| {
+                    tail.split(|character: char| !character.is_ascii_digit())
+                        .next()
+                })
+                .and_then(|token| token.trim().parse::<u8>().ok())
+                .unwrap_or_else(|| panic!("count in {line}"));
+            rows.push((gate_id, rank, count));
+        }
+        assert_eq!(rows.len(), GATE_FACTS.len());
+        for (fact, (gate_id, rank, count)) in GATE_FACTS.iter().zip(rows.iter()) {
+            assert_eq!(fact.id, *gate_id);
+            assert_eq!(fact.avalokitam_rank, *rank);
+            assert_eq!(fact.condition_count, *count);
+        }
+        assert!(spec.contains("ExpectedOverlapCount == 142"));
+        assert!(spec.contains("KnownOrderCounterexample"));
+        assert!(spec.contains("kattalai_kalithurai"));
+        assert!(spec.contains("velivirutham"));
+        for shadow in crate::classical_decision::ALLOWED_PAA_SHADOWS {
+            assert!(
+                spec.contains(&format!("paa |-> \"{}\"", shadow.paa_gate)),
+                "{}",
+                shadow.id
+            );
+            assert!(
+                spec.contains(&format!("paavinam |-> \"{}\"", shadow.paavinam_gate)),
+                "{}",
+                shadow.id
+            );
+        }
+    }
+}
+
+#[cfg(kani)]
+mod kani_proofs {
+    use super::evaluate_classical_tree;
+    use crate::linkage::{FootPosition, Linkage, LinkageSpecialType, LinkageType};
+    use crate::syllable::{Syllable, SyllableType};
+    use crate::types::Line;
+    use crate::Foot;
+
+    fn bounded_syllable(kind: SyllableType) -> Syllable {
+        Syllable {
+            text: String::new(),
+            syllable_type: kind,
+            split_hint: None,
+            alt_split: false,
+            rule_ref: None,
+            line_index: 0,
+            word_index_in_line: 0,
+        }
+    }
+
+    fn symbolic_syllable_kind() -> SyllableType {
+        let ner: bool = kani::any();
+        if ner {
+            SyllableType::Ner
+        } else {
+            SyllableType::Nirai
+        }
+    }
+
+    fn symbolic_bond_kind() -> LinkageType {
+        let which: u8 = kani::any();
+        match which % 4 {
+            0 => LinkageType::VenTalai,
+            1 => LinkageType::AciriyaTalai,
+            2 => LinkageType::KaliTalai,
+            _ => LinkageType::VanjiTalai,
+        }
+    }
+
+    /// Poems of at most one line, one foot, one syllable, and one bond.
+    /// Syllable text is empty. Kind and bond family are symbolic.
+    ///
+    /// Not part of `scripts/verify-classical-tree.sh`. Unwind 40 also unrolls
+    /// every loop inside `evaluate_classical_tree`, and that run did not finish.
+    #[kani::proof]
+    #[kani::unwind(40)]
+    fn classical_tree_does_not_panic_up_to_one_line() {
+        let line_count: u8 = kani::any();
+        let foot_count: u8 = kani::any();
+        let syllable_count: u8 = kani::any();
+        let bond_count: u8 = kani::any();
+        kani::assume(line_count <= 1);
+        kani::assume(foot_count <= 1);
+        kani::assume(syllable_count <= 1);
+        kani::assume(bond_count <= 1);
+
+        let mut lines = Vec::new();
+        let mut built_lines = 0u8;
+        while built_lines < line_count {
+            let mut feet = Vec::new();
+            let mut built_feet = 0u8;
+            while built_feet < foot_count {
+                let mut syllables = Vec::new();
+                let mut built_syllables = 0u8;
+                while built_syllables < syllable_count {
+                    syllables.push(bounded_syllable(symbolic_syllable_kind()));
+                    built_syllables += 1;
+                }
+                feet.push(Foot {
+                    syllables,
+                    foot_type: String::new(),
+                    foot_index_global: Some(built_feet as usize),
+                });
+                built_feet += 1;
+            }
+            lines.push(Line {
+                feet,
+                line_class: String::new(),
+            });
+            built_lines += 1;
+        }
+        let mut linkage = Vec::new();
+        let mut built_bonds = 0u8;
+        while built_bonds < bond_count {
+            let position = FootPosition {
+                foot_index: 0,
+                line_index: 0,
+                word_index_in_line: 0,
+            };
+            linkage.push(Linkage {
+                from_foot: 0,
+                to_foot: 0,
+                from: position.clone(),
+                to: position,
+                linkage_type: symbolic_bond_kind(),
+                linkage_special_type: LinkageSpecialType::Unknown,
+                is_valid: true,
+            });
+            built_bonds += 1;
+        }
+        let report = evaluate_classical_tree("", &lines, &linkage, None);
+        let passed_discriminators = report
+            .path
+            .iter()
+            .filter(|step| step.rule_id.ends_with(".discriminator") && step.passed)
+            .count();
+        assert!(passed_discriminators <= 1);
+        let again = evaluate_classical_tree("", &lines, &linkage, None);
+        assert_eq!(report.leaf_id, again.leaf_id);
     }
 }
