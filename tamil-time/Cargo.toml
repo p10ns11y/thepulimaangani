@@ -1,0 +1,19 @@
+[package]
+name = "tamil-time"
+version = "0.1.0"
+edition = "2021"
+authors = ["Thepulimaangani Team"]
+description = "Tamil Nadu cultural time & calendar: Tinai × Perum × Siru × Nazhigai × Jaamam"
+license = "MIT"
+repository = "https://github.com/p10ns11y/thepulimaangani"
+readme = "README.md"
+keywords = ["tamil", "calendar", "tinai", "nazhigai", "jaamam"]
+categories = ["date-and-time"]
+
+[dependencies]
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+thiserror = "2"
+
+[lib]
+name = "tamil_time"
+path = "src/lib.rs"
